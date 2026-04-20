@@ -5,283 +5,767 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>吉林省养老金速算计算器</title>
 <style>
+/* ============================================
+   视觉系统：信任感 · 专业感 · 克制
+   配色主轴：深海蓝 + 冰灰 + 暖金色强调
+   ============================================ */
+
+:root {
+  /* 主色系 */
+  --primary: #1B3A6B;       /* 深海蓝 - 信任感 */
+  --primary-light: #2A5298;  /* 中蓝 */
+  --primary-pale: #EBF1FB;  /* 淡蓝背景 */
+  --primary-border: #C5D5ED;
+
+  /* 强调色 */
+  --accent: #C8793A;         /* 暖金色 - 金融感 */
+  --accent-light: #F5E6D8;  /* 淡金背景 */
+
+  /* 结果数字主色 */
+  --money: #1B3A6B;          /* 深蓝为主 */
+  --money-up: #0A6B5A;       /* 涨 - 青绿 */
+  --money-down: #B84040;     /* 跌 - 暗红 */
+
+  /* 辅助色 */
+  --bg: #F0F4F8;             /* 页面底色：冰灰 */
+  --card: #FFFFFF;
+  --text: #1A2A3A;           /* 正文 */
+  --text-sub: #5A6B7D;       /* 辅助文字 */
+  --text-light: #8A9BB0;      /* 极淡文字 */
+  --border: #DDE4EE;
+  --border-light: #EEF2F8;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(27,58,107,0.06), 0 1px 2px rgba(27,58,107,0.04);
+  --shadow-md: 0 4px 12px rgba(27,58,107,0.08), 0 2px 4px rgba(27,58,107,0.04);
+  --shadow-lg: 0 8px 24px rgba(27,58,107,0.10), 0 4px 8px rgba(27,58,107,0.06);
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* 字体 */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  /* 移动端优化 */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: smooth;
 }
+
+/* 禁用iOS输入框自动放大（font-size已设为16px，此处备用） */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ============================================
+   页面容器
+   ============================================ */
 .container {
-  max-width: 800px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 20px 16px 60px;
+  padding: 0 16px 60px;
 }
-h1 {
+
+/* ============================================
+   页面顶部：标题
+   ============================================ */
+.page-header {
   text-align: center;
-  font-size: 22px;
-  color: #1a56db;
-  margin: 20px 0 6px;
+  padding: 32px 0 20px;
 }
-.subtitle {
-  text-align: center;
-  color: #888;
+
+.page-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.page-header .brand-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+
+.page-header .subtitle {
   font-size: 13px;
-  margin-bottom: 24px;
+  color: var(--text-sub);
+  margin-top: 4px;
 }
+
+.page-header .source-tag {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-light);
+  background: var(--border-light);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+/* ============================================
+   通用卡片
+   ============================================ */
 .card {
-  background: #fff;
-  border-radius: 12px;
+  background: var(--card);
+  border-radius: var(--radius-lg);
   padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
 }
-.card-title {
-  font-size: 16px;
+
+/* ============================================
+   输入区
+   ============================================ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 14px;
   font-weight: 600;
-  color: #1a56db;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #eef2ff;
+  color: var(--text);
 }
+
 .form-row {
   display: flex;
   gap: 12px;
   margin-bottom: 14px;
   flex-wrap: wrap;
 }
+
 .form-group {
   flex: 1;
-  min-width: 180px;
+  min-width: 160px;
 }
+
 .form-group label {
   display: block;
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 4px;
+  font-size: 12px;
   font-weight: 500;
+  color: var(--text-sub);
+  margin-bottom: 5px;
+  letter-spacing: 0.3px;
 }
+
 .form-group input,
 .form-group select {
   width: 100%;
   height: 40px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 0 12px;
-  font-size: 14px;
-  color: #333;
-  background: #fff;
-  transition: border-color 0.2s;
+  font-size: 16px; /* iOS: ≥16px 防止focus时自动缩放 */
+  color: var(--text);
+  background: var(--card);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: var(--font);
+  -webkit-appearance: none;
+  /* 修复iOS日期选择器圆角 */
+  border-radius: var(--radius-sm);
 }
+
+/* 移动端：select下拉箭头 */
+@media (max-width: 768px) {
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6B7D' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #1a56db;
-  box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(27,58,107,0.08);
 }
+
 .form-group .hint {
   font-size: 11px;
-  color: #999;
-  margin-top: 2px;
+  color: var(--text-light);
+  margin-top: 4px;
+  line-height: 1.5;
 }
+
+/* 快捷指数按钮组 */
+.index-group {
+  margin-bottom: 14px;
+}
+
+.index-group-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+}
+
+.index-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.idx-btn {
+  padding: 5px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: var(--font);
+}
+
+.idx-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-pale);
+}
+
+.idx-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(27,58,107,0.25);
+}
+
+/* 主计算按钮 */
 .btn-calc {
   display: block;
   width: 100%;
   height: 48px;
-  background: linear-gradient(135deg, #1a56db, #1e40af);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 17px;
+  border-radius: var(--radius-md);
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 8px;
-  transition: opacity 0.2s;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  box-shadow: 0 4px 12px rgba(27,58,107,0.25);
+  font-family: var(--font);
 }
-.btn-calc:hover { opacity: 0.9; }
-.btn-calc:active { opacity: 0.8; }
-.idx-btn {
-  padding: 4px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #fff;
-  color: #555;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.idx-btn:hover { border-color: #1a56db; color: #1a56db; }
-.idx-btn.active { background: #1a56db; color: #fff; border-color: #1a56db; }
 
-/* 结果区 */
+.btn-calc:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(27,58,107,0.30);
+}
+
+.btn-calc:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(27,58,107,0.20);
+  opacity: 0.95;
+}
+
+/* ============================================
+   结果区
+   ============================================ */
 #result { display: block; }
 
-/* 对比卡片 */
+/* ---- 结果顶部大数字 ---- */
+.result-hero {
+  background: linear-gradient(160deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 24px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-md);
+  color: #fff;
+  text-align: center;
+}
+
+.result-hero .hero-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.result-hero .hero-amount {
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.result-hero .hero-amount .yuan {
+  font-size: 22px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.80);
+  margin-left: 2px;
+}
+
+.result-hero .hero-amount .per-month {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  margin-left: 4px;
+}
+
+.result-hero .hero-rate {
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
+}
+
+.result-hero .hero-rate strong {
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+}
+
+.result-hero .hero-rate-bar {
+  display: inline-block;
+  background: rgba(255,255,255,0.20);
+  border-radius: 20px;
+  padding: 3px 12px;
+  margin-top: 6px;
+}
+
+.result-hero .hero-detail {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.result-hero .hero-detail-item {
+  text-align: center;
+}
+
+.result-hero .hero-detail-item .val {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.result-hero .hero-detail-item .lbl {
+  font-size: 11px;
+  color: rgba(255,255,255,0.60);
+  margin-top: 1px;
+}
+
+/* ---- 对比卡片 ---- */
+.compare-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
 .compare-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
-.compare-card {
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-}
-.compare-card.active {
-  border-color: #1a56db;
-  background: #eff6ff;
-}
-.compare-card .tag {
-  display: inline-block;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-.compare-card.active .tag { background: #1a56db; color: #fff; }
-.compare-card .tag { background: #94a3b8; color: #fff; }
-.compare-card .c-age {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a56db;
-  margin: 4px 0;
-}
-.compare-card .c-date {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 8px;
-}
-.compare-card .c-amount {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a56db;
-}
-.compare-card .c-amount span { font-size: 14px; font-weight: 400; }
-.compare-card .c-rate {
-  font-size: 13px;
-  color: #3b82f6;
-  margin-top: 2px;
-}
-.compare-diff {
-  background: #fef3c7;
-  border: 1px solid #fbbf24;
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-around;
-  font-size: 13px;
-  color: #92400e;
-}
-.compare-diff-item { text-align: center; }
-.compare-diff-item .num { font-size: 18px; font-weight: 700; color: #b45309; }
 
-/* 汇总表 */
-.result-summary {
+.compare-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
   text-align: center;
-  padding: 24px 16px;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  border-radius: 12px;
-  margin-bottom: 16px;
+  transition: border-color 0.2s;
 }
-.result-amount {
-  font-size: 42px;
+
+.compare-card.legal {
+  border-color: var(--primary);
+  background: var(--primary-pale);
+}
+
+.compare-card .card-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+}
+
+.compare-card.legal .card-badge {
+  background: var(--primary);
+  color: #fff;
+}
+
+.compare-card.flex .card-badge {
+  background: var(--text-light);
+  color: #fff;
+}
+
+.compare-card .c-age {
+  font-size: 16px;
   font-weight: 700;
-  color: #1a56db;
+  color: var(--text);
+  margin: 2px 0;
+}
+
+.compare-card .c-date {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.compare-card .c-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
   line-height: 1.2;
 }
-.result-amount span { font-size: 18px; font-weight: 400; }
-.result-rate {
-  font-size: 15px;
-  color: #3b82f6;
-  margin-top: 6px;
+
+.compare-card .c-amount .unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-sub);
 }
-.result-detail-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
+
+.compare-card .c-rate {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 2px;
 }
-.result-detail-table th,
-.result-detail-table td {
-  padding: 10px 12px;
-  text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
-}
-.result-detail-table th {
-  color: #888;
-  font-weight: 500;
-  font-size: 13px;
-}
-.result-detail-table td:last-child {
-  text-align: right;
-  font-weight: 600;
-  color: #333;
-}
-.result-detail-table td:last-child.highlight {
-  color: #1a56db;
-  font-size: 16px;
-}
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.info-item {
+
+/* ---- 差异行 ---- */
+.compare-diff {
+  background: #FEF9F3;
+  border: 1px solid #F5DFC5;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
   display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
+  justify-content: space-around;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.compare-diff-item { text-align: center; }
+.compare-diff-item .num {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--money-down);
+  margin-top: 2px;
+}
+
+.compare-diff-item .lbl { font-size: 11px; color: var(--text-light); margin-top: 1px; }
+
+/* ---- 弹性提示 ---- */
+#flexNote {
+  font-size: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+#flexNote.info {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  color: #166534;
+}
+
+#flexNote.warn {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+/* ---- 明细表格 ---- */
+.detail-section-label {
   font-size: 13px;
-  border-bottom: 1px solid #f5f5f5;
-}
-.info-item .label { color: #888; }
-.info-item .value { font-weight: 500; }
-.note-box {
-  background: #fffbeb;
-  border-left: 3px solid #f59e0b;
-  padding: 12px 14px;
-  border-radius: 0 8px 8px 0;
-  font-size: 12px;
-  color: #92400e;
-  margin-top: 12px;
-  line-height: 1.8;
-}
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: #bbb;
-  margin-top: 24px;
-}
-.section-label {
-  font-size: 14px;
   font-weight: 600;
-  color: #475569;
-  margin: 16px 0 10px;
+  color: var(--text);
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.section-label::before {
+
+.detail-section-label::before {
   content: '';
   display: inline-block;
   width: 3px;
   height: 14px;
-  background: #1a56db;
+  background: var(--primary);
   border-radius: 2px;
 }
+
+.result-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.result-detail-table th,
+.result-detail-table td {
+  padding: 10px 4px;
+  text-align: left;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.result-detail-table th {
+  color: var(--text-light);
+  font-weight: 500;
+  font-size: 12px;
+  width: 60%;
+}
+
+.result-detail-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.result-detail-table tr:last-child th,
+.result-detail-table tr:last-child td {
+  border-bottom: none;
+}
+
+.result-detail-table tr.total-row th,
+.result-detail-table tr.total-row td {
+  padding-top: 12px;
+  border-top: 2px solid var(--primary-border);
+}
+
+.result-detail-table tr.total-row td {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ---- 参数明细 ---- */
+.params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.param-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 7px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.param-item .p-label { color: var(--text-light); }
+.param-item .p-value { font-weight: 500; color: var(--text); }
+
+/* ---- 免责说明 ---- */
+.note-box {
+  background: #FFFBEB;
+  border-left: 3px solid #F59E0B;
+  padding: 12px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 11px;
+  color: #92400E;
+  margin-top: 14px;
+  line-height: 2;
+}
+
+.note-box strong { display: block; margin-bottom: 4px; font-size: 12px; }
+
+/* ---- 底部 ---- */
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 24px;
+  line-height: 2;
+}
+
+/* ---- 响应式：平板 ---- */
+@media (max-width: 768px) {
+  .container { padding: 0 14px 48px; }
+  .card { padding: 16px 14px; border-radius: 14px; }
+  .page-header { padding: 24px 0 16px; }
+  .page-header h1 { font-size: 18px; }
+
+  /* Hero 区域缩小但不压缩 */
+  .result-hero { padding: 22px 16px 18px; border-radius: 14px; }
+  .result-hero .hero-amount { font-size: 42px; }
+  .result-hero .hero-amount .yuan { font-size: 18px; }
+  .result-hero .hero-amount .per-month { font-size: 14px; }
+  .result-hero .hero-label { font-size: 11px; }
+
+  /* 对比卡片 */
+  .compare-grid { gap: 8px; }
+  .compare-card { padding: 12px 10px; }
+  .compare-card .c-amount { font-size: 19px; }
+  .compare-card .c-age { font-size: 15px; }
+
+  /* 参数两列改单列 */
+  .params-grid { grid-template-columns: 1fr; }
+
+  /* 明细表格 */
+  .result-detail-table th, .result-detail-table td { font-size: 13px; padding: 9px 2px; }
+}
+
+/* ---- 响应式：手机 ---- */
+@media (max-width: 480px) {
+  /* 容器收紧 */
+  .container { padding: 0 12px 40px; }
+  .page-header { padding: 20px 0 14px; }
+  .page-header h1 { font-size: 17px; letter-spacing: -0.2px; }
+  .page-header .subtitle { font-size: 12px; }
+
+  /* Hero 紧凑化 */
+  .result-hero {
+    padding: 20px 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .result-hero .hero-amount {
+    font-size: 36px;
+    letter-spacing: -0.5px;
+  }
+  .result-hero .hero-amount .yuan { font-size: 16px; }
+  .result-hero .hero-amount .per-month { font-size: 13px; }
+  .result-hero .hero-rate { font-size: 13px; }
+  .result-hero .hero-detail {
+    gap: 12px;
+    padding-top: 12px;
+    margin-top: 14px;
+  }
+  .result-hero .hero-detail-item .val { font-size: 14px; }
+  .result-hero .hero-detail-item .lbl { font-size: 10px; }
+
+  /* 输入区 */
+  .card { padding: 14px 12px; border-radius: 12px; margin-bottom: 10px; }
+  .form-row { flex-direction: column; gap: 0; margin-bottom: 0; }
+  .form-group { min-width: 100%; margin-bottom: 12px; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-group label { font-size: 12px; }
+  .form-group input,
+  .form-group select { height: 42px; font-size: 15px; border-radius: 8px; }
+  .section-header { margin-bottom: 12px; }
+
+  /* 快捷指数按钮：两行布局 */
+  .index-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .idx-btn { text-align: center; padding: 6px 0; font-size: 13px; border-radius: 6px; }
+
+  /* 主按钮 */
+  .btn-calc { height: 46px; font-size: 15px; border-radius: 10px; margin-top: 4px; }
+
+  /* 对比卡片 */
+  .compare-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .compare-card { padding: 11px 8px; border-radius: 10px; }
+  .compare-card .card-badge { font-size: 9px; padding: 1px 6px; }
+  .compare-card .c-age { font-size: 14px; }
+  .compare-card .c-date { font-size: 10px; }
+  .compare-card .c-amount { font-size: 17px; }
+  .compare-card .c-amount .unit { font-size: 10px; }
+  .compare-card .c-rate { font-size: 10px; }
+
+  /* 差异行 */
+  .compare-diff { padding: 8px 10px; gap: 0; }
+  .compare-diff-item .num { font-size: 14px; }
+  .compare-diff-item .lbl { font-size: 10px; }
+
+  /* 提示 */
+  #flexNote { font-size: 11px; padding: 9px 10px; }
+
+  /* 明细表格 */
+  .result-detail-table th, .result-detail-table td { font-size: 12px; padding: 8px 2px; }
+  .result-detail-table tr.total-row td { font-size: 14px; }
+
+  /* 参数网格单列 */
+  .params-grid { grid-template-columns: 1fr; }
+  .param-item { font-size: 11px; padding: 6px 0; }
+
+  /* 免责说明 */
+  .note-box { font-size: 10px; padding: 10px 12px; }
+  .note-box strong { font-size: 11px; }
+
+  /* 底部 */
+  .footer { font-size: 10px; margin-top: 20px; }
+}
+
+/* ---- 响应式：超小屏（iPhone SE） ---- */
+@media (max-width: 360px) {
+  .result-hero .hero-amount { font-size: 30px; }
+  .result-hero .hero-detail-item .val { font-size: 12px; }
+  .compare-card .c-amount { font-size: 15px; }
+  .compare-card .c-age { font-size: 12px; }
+  .index-buttons { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---- 滚动条美化 ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🧮 吉林省养老金速算计算器</h1>
-  <div class="subtitle">输入你的信息，一键算出大概能领多少养老金</div>
 
+  <!-- 页面顶部 -->
+  <div class="page-header">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#1B3A6B"/>
+        <path d="M16 6C10.477 6 6 10.477 6 16s4.477 10 10 10 10-4.477 10-10S21.523 6 16 6zm0 2c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8zm-1 3v7h2v-5h3l-3-4-3 4h3v-2H15z" fill="white"/>
+      </svg>
+      <h1>吉林省养老金速算计算器</h1>
+    </div>
+    <div class="subtitle">输入你的信息，一键算出大概能领多少养老金</div>
+    <div class="source-tag">数据来源：吉人社联〔2025〕97号 · 人社部发〔2024〕94号</div>
+  </div>
+
+  <!-- 输入区：基本信息 -->
   <div class="card">
-    <div class="card-title">📐 基本信息</div>
+    <div class="section-header">
+      <svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="10" cy="7" r="3.5"/>
+        <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"/>
+      </svg>
+      <div class="section-title">基本信息</div>
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label>参保地</label>
@@ -311,102 +795,146 @@ h1 {
     </div>
   </div>
 
+  <!-- 输入区：缴费信息 -->
   <div class="card">
-    <div class="card-title">💰 缴费信息</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>平均缴费指数</label>
-        <input type="number" id="indexInput" min="0.6" max="3.0" step="0.01" value="1.0" style="margin-bottom:6px">
-        <div class="hint">可直接输入（如1.34），或点选下方常用档次</div>
+    <div class="section-header">
+      <svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="2" y="4" width="16" height="12" rx="2"/>
+        <path d="M14 8.5c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z" fill="currentColor"/>
+        <path d="M6 12h8"/>
+      </svg>
+      <div class="section-title">缴费信息</div>
+    </div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>平均缴费指数</label>
+      <input type="number" id="indexInput" min="0.6" max="3.0" step="0.01" value="1.0">
+      <div class="hint">可直接输入（如 1.34），或点选下方常用档次</div>
+    </div>
+    <div class="index-group">
+      <div class="index-buttons" id="indexBtns">
+        <button class="idx-btn" data-v="0.6">60%</button>
+        <button class="idx-btn" data-v="0.8">80%</button>
+        <button class="idx-btn active" data-v="1.0">100%</button>
+        <button class="idx-btn" data-v="1.5">150%</button>
+        <button class="idx-btn" data-v="2.0">200%</button>
+        <button class="idx-btn" data-v="3.0">300%</button>
       </div>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="indexBtns">
-      <button class="idx-btn" data-v="0.6">60%</button>
-      <button class="idx-btn" data-v="0.8">80%</button>
-      <button class="idx-btn active" data-v="1.0">100%</button>
-      <button class="idx-btn" data-v="1.5">150%</button>
-      <button class="idx-btn" data-v="2.0">200%</button>
-      <button class="idx-btn" data-v="3.0">300%</button>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>个人账户累计储存额（元）</label>
-        <input type="number" id="personalAcc" placeholder="不填则按简单累计估算" min="0">
-        <div class="hint">可在社保App或社保局查询，不填则按历年记账利率自动估算</div>
-      </div>
+    <div class="form-group">
+      <label>个人账户累计储存额 <span style="font-weight:400;color:var(--text-light)">（选填）</span></label>
+      <input type="number" id="personalAcc" placeholder="不填则按历年记账利率自动估算" min="0">
+      <div class="hint">可在社保App或社保局查询实际金额，不填则自动估算</div>
     </div>
     <button class="btn-calc" onclick="calculate()">开始计算</button>
   </div>
 
+  <!-- ===== 结果区 ===== -->
   <div id="result">
-    <!-- 弹性提前 vs 法定退休 对比 -->
+
+    <!-- 法定退休结果大字 -->
+    <div class="result-hero" id="resultHero">
+      <div class="hero-label">法定退休 · 每月可领</div>
+      <div class="hero-amount">
+        <span id="heroAmount">--</span><span class="yuan">元</span><span class="per-month">/月</span>
+      </div>
+      <div class="hero-rate">
+        替代率 <strong id="heroRate">--%</strong>
+        <div class="hero-rate-bar" id="heroRateBar"></div>
+      </div>
+      <div class="hero-detail">
+        <div class="hero-detail-item">
+          <div class="val" id="heroAge">--</div>
+          <div class="lbl">退休年龄</div>
+        </div>
+        <div class="hero-detail-item">
+          <div class="val" id="heroDate">--</div>
+          <div class="lbl">退休年月</div>
+        </div>
+        <div class="hero-detail-item">
+          <div class="val" id="heroMonths">--</div>
+          <div class="lbl">计发月数</div>
+        </div>
+        <div class="hero-detail-item">
+          <div class="val" id="heroYears">--</div>
+          <div class="lbl">累计缴费</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 对比卡片 -->
     <div class="card">
-      <div class="card-title">📊 弹性提前退休 vs 法定退休</div>
+      <div class="compare-section-title">提前 vs 法定 · 一目了然</div>
       <div class="compare-grid">
-        <div class="compare-card" id="flexCard">
-          <div class="tag">弹性提前</div>
+        <div class="compare-card flex" id="flexCard">
+          <div class="card-badge">弹性提前</div>
           <div class="c-age" id="flexAge">--</div>
           <div class="c-date" id="flexDate">--</div>
-          <div class="c-amount"><span>约 </span><span id="flexAmount">0</span><span> 元/月</span></div>
+          <div class="c-amount"><span id="flexAmount">--</span><span class="unit"> 元/月</span></div>
           <div class="c-rate" id="flexRate">替代率 --%</div>
         </div>
-        <div class="compare-card active">
-          <div class="tag">法定退休</div>
+        <div class="compare-card legal" id="legalCard">
+          <div class="card-badge">法定退休</div>
           <div class="c-age" id="legalAge">--</div>
           <div class="c-date" id="legalDate">--</div>
-          <div class="c-amount"><span>约 </span><span id="legalAmount">0</span><span> 元/月</span></div>
+          <div class="c-amount"><span id="legalAmount">--</span><span class="unit"> 元/月</span></div>
           <div class="c-rate" id="legalRate">替代率 --%</div>
         </div>
       </div>
       <div class="compare-diff" id="compareDiff">
         <div class="compare-diff-item">
-          <div>每月少领</div>
+          <div class="lbl">每月少领</div>
           <div class="num" id="diffMonth">--</div>
         </div>
         <div class="compare-diff-item">
-          <div>替代率低</div>
+          <div class="lbl">替代率低</div>
           <div class="num" id="diffRate">--</div>
         </div>
         <div class="compare-diff-item">
-          <div>提前月数</div>
+          <div class="lbl">提前月数</div>
           <div class="num" id="diffMonths">--</div>
         </div>
       </div>
-      <div id="flexNote" style="font-size:12px;color:#666;margin-top:10px;padding:8px;background:#f0fdf4;border-radius:6px;display:none"></div>
+      <div id="flexNote" class="info"></div>
     </div>
 
-    <!-- 法定退休 养老金明细 -->
+    <!-- 法定退休明细 -->
     <div class="card">
-      <div class="section-label">法定退休 · 养老金明细</div>
+      <div class="detail-section-label">法定退休 · 养老金构成</div>
       <table class="result-detail-table">
         <tr><th>构成部分</th><th>金额</th></tr>
-        <tr><td>基础养老金</td><td id="basicPension">0 元</td></tr>
-        <tr><td>基础养老金增发</td><td id="extraPension">0 元</td></tr>
-        <tr><td>个人账户养老金</td><td id="personalPension">0 元</td></tr>
-        <tr><td>过渡性养老金</td><td id="transPension">0 元</td></tr>
-        <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:600">合计</td><td class="highlight" id="totalPension2">0 元</td></tr>
+        <tr><td>基础养老金</td><td id="basicPension">--</td></tr>
+        <tr><td>基础养老金增发</td><td id="extraPension">--</td></tr>
+        <tr><td>个人账户养老金</td><td id="personalPension">--</td></tr>
+        <tr><td>过渡性养老金</td><td id="transPension">--</td></tr>
+        <tr class="total-row"><th>合计</th><td id="totalPension2">--</td></tr>
       </table>
     </div>
 
-    <!-- 弹性提前 养老金明细 -->
+    <!-- 弹性提前明细 -->
     <div class="card" id="flexDetailCard" style="display:none">
-      <div class="section-label">弹性提前退休 · 养老金明细</div>
+      <div class="detail-section-label">弹性提前 · 养老金构成</div>
       <table class="result-detail-table">
         <tr><th>构成部分</th><th>金额</th></tr>
-        <tr><td>基础养老金</td><td id="flexBasic">0 元</td></tr>
-        <tr><td>基础养老金增发</td><td id="flexExtra">0 元</td></tr>
-        <tr><td>个人账户养老金</td><td id="flexPersonal">0 元</td></tr>
-        <tr><td>过渡性养老金</td><td id="flexTrans">0 元</td></tr>
-        <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:600">合计</td><td class="highlight" id="flexTotal">0 元</td></tr>
+        <tr><td>基础养老金</td><td id="flexBasic">--</td></tr>
+        <tr><td>基础养老金增发</td><td id="flexExtra">--</td></tr>
+        <tr><td>个人账户养老金</td><td id="flexPersonal">--</td></tr>
+        <tr><td>过渡性养老金</td><td id="flexTrans">--</td></tr>
+        <tr class="total-row"><th>合计</th><td id="flexTotal">--</td></tr>
       </table>
     </div>
 
-    <!-- 计算参数明细 -->
+    <!-- 参数明细 -->
     <div class="card">
-      <div class="card-title">📋 计算参数明细</div>
-      <div class="info-grid" id="infoGrid"></div>
+      <div class="section-header">
+        <svg class="section-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="10" cy="10" r="8"/>
+          <path d="M10 6v4l3 3"/>
+        </svg>
+        <div class="section-title">计算参数明细</div>
+      </div>
+      <div class="params-grid" id="infoGrid"></div>
       <div class="note-box">
-        ⚠️ <b>估算说明</b>：<br>
+        <strong>估算说明</strong>
         ① 个人账户从建账日期（1995年7月）开始累计，逐年用当年计发基数×缴费指数×8%计算缴入<br>
         ② 记账利率：2016-2025年按人社部公布利率，2016年前按银行一年期定存约2.5%估算，2026年及以后按1.5%计算<br>
         ③ 历年计发基数：1995-2019年全省统一，2020-2025年分长春/全省两档（官方数据），2026-2030年长春按2.6%增长、全省按4.38%增长（预计2030年追平），2031年起全省统一<br>
@@ -422,7 +950,7 @@ h1 {
 
   <div class="footer">
     公众号「那都正常」· 吉林省社保政策解读<br>
-    数据来源：吉人社联〔2025〕97号 · 人社部发〔2024〕94号
+    基于吉人社联〔2025〕97号 · 人社部发〔2024〕94号
   </div>
 </div>
 
@@ -469,9 +997,8 @@ var MONTHS_TABLE_HALF = {
 
 // 计发月数：精确到月（按半年节点线性插值）
 function getMonths(ageExact) {
-  var age = Math.round(ageExact * 2) / 2; // 精确到0.5岁
+  var age = Math.round(ageExact * 2) / 2;
   if (MONTHS_TABLE_HALF[age] !== undefined) return MONTHS_TABLE_HALF[age];
-  // 在两个半年节点之间线性插值
   var lo = Math.floor(age * 2) / 2;
   var hi = lo + 0.5;
   if (MONTHS_TABLE_HALF[lo] !== undefined && MONTHS_TABLE_HALF[hi] !== undefined) {
@@ -490,22 +1017,16 @@ var MIN_YEARS = {
 };
 
 // 历年个人账户记账利率
-// 2016年起全国统一公布（人社部发〔2015〕18号）
 var ACC_RATES = {
   2016: 0.0831, 2017: 0.0712, 2018: 0.0829, 2019: 0.0761,
   2020: 0.0604, 2021: 0.0669, 2022: 0.0397, 2023: 0.0397,
   2024: 0.0262, 2025: 0.015
 };
-// 2016年前各省自行确定，吉林省无公开数据，按银行一年期定存利率估算（约2.5%-3%）
 var RATE_BEFORE_2016 = 0.025;
-// 2026年及以后，按1.5%计算
 var RATE_DEFAULT = 0.015;
-// 个人账户建账日期
 var ACC_START = { year: 1995, month: 7 };
 
-// 吉林省历年计发基数（月均，元/月）
-// 来源：系列一-历年计发基数汇总.md（官方文件）
-// 1995-2019年全省统一基数；2020年起分长春/全省两档
+// 吉林省历年计发基数
 var HIST_BASES_PROV = {
   1995: 369, 1996: 448, 1997: 472, 1998: 546, 1999: 597,
   2000: 660, 2001: 731, 2002: 833, 2003: 923, 2004: 1036,
@@ -515,40 +1036,32 @@ var HIST_BASES_PROV = {
   2020: 5088, 2021: 6005, 2022: 6385, 2023: 6655, 2024: 7179,
   2025: 7322
 };
-// 长春市历年计发基数（2020年起有独立数据）
 var HIST_BASES_CC = {
   2020: 6928, 2021: 7298, 2022: 7604, 2023: 7727, 2024: 7853,
   2025: 7978
 };
-// 2025年已知值
 var BASE_CC_2025 = 7978;
 var BASE_PROV_2025 = 7322;
-// 增长率预测：长春按2.6%，全省按4.38%，2030年追平，2031年起统一
 var CC_GROWTH = 0.026;
 var PROV_GROWTH = 0.0438;
-var MERGE_YEAR = 2031; // 2031年起全省统一基数
+var MERGE_YEAR = 2031;
 
-// 获取某年的参保地计发基数
 function getBase(city, year) {
   if (year <= 2019) {
-    // 1995-2019年全省统一，不分长春/全省
     return HIST_BASES_PROV[year] || HIST_BASES_PROV[1995];
   }
   if (year <= 2025) {
     if (city === 'cc') return HIST_BASES_CC[year] || BASE_CC_2025;
     return HIST_BASES_PROV[year] || BASE_PROV_2025;
   }
-  // 2026-2030年：长春按CC_GROWTH增长，全省按PROV_GROWTH增长
   if (year < MERGE_YEAR) {
     if (city === 'cc') return Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, year - 2025));
     return Math.round(BASE_PROV_2025 * Math.pow(1 + PROV_GROWTH, year - 2025));
   }
-  // 2031年起全省统一基数，按长春增长率继续增长
   var mergeBase = Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, MERGE_YEAR - 2025));
   return Math.round(mergeBase * Math.pow(1 + CC_GROWTH, year - MERGE_YEAR));
 }
 
-// 获取某年全省计发基数（用于基础养老金公式中的"全省基数"项）
 function getBaseProv(year) {
   return getBase('prov', year);
 }
@@ -559,13 +1072,11 @@ function getAccRate(year) {
   return RATE_DEFAULT;
 }
 
-// 延迟退休月数（人社部发〔2024〕94号）
 function getDelayMonths(year, month, type) {
   var baseYear, step, cap;
   if (type === 'male') { baseYear = 1965; step = 4; cap = 36; }
   else if (type === 'fc') { baseYear = 1970; step = 4; cap = 36; }
   else { baseYear = 1975; step = 2; cap = 60; }
-
   if (year < baseYear) return 0;
   var diff = (year - baseYear) * 12 + (month - 1);
   if (diff < 1) return 0;
@@ -573,19 +1084,16 @@ function getDelayMonths(year, month, type) {
   return Math.min(delay, cap);
 }
 
-// 退休年龄（含延迟），返回总月数
 function getRetireTotalMonths(birthYear, birthMonth, type) {
   var baseAge = type === 'male' ? 60 : (type === 'fc' ? 55 : 50);
   var delay = getDelayMonths(birthYear, birthMonth, type);
   return baseAge * 12 + delay;
 }
 
-// 原法定退休年龄（整岁，不含延迟）
 function getOriginalRetireAge(type) {
   return type === 'male' ? 60 : (type === 'fc' ? 55 : 50);
 }
 
-// 最低缴费年限
 function getMinYears(retireYear) {
   if (MIN_YEARS[retireYear] !== undefined) return MIN_YEARS[retireYear];
   if (retireYear < 2025) return 15;
@@ -603,7 +1111,6 @@ function calcYears(start, end) {
   return Math.max(0, totalMonths / 12);
 }
 
-// 计算退休年月（从出生年月 + 总退休月数）
 function getRetireDate(birthYear, birthMonth, totalMonths) {
   var y = birthYear + Math.floor(totalMonths / 12);
   var m = birthMonth + (totalMonths % 12);
@@ -611,39 +1118,32 @@ function getRetireDate(birthYear, birthMonth, totalMonths) {
   return { year: y, month: m };
 }
 
-// 计算退休年龄字符串
 function getAgeStr(totalMonths) {
   var years = Math.floor(totalMonths / 12);
   var remain = totalMonths % 12;
   return years + '岁' + (remain > 0 ? remain + '个月' : '');
 }
 
-// 核心计算：给定退休时间，算养老金
 function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, personalAccInput) {
   var baseRetire = getBase(city, retireDate.year - 1);
   var baseProv = getBaseProv(retireDate.year - 1);
   var cutoffDate = { year: 1995, month: 7 };
 
-  // 退休年龄（精确）
   var retireAgeExact = totalRetireMonths / 12;
   var months = getMonths(retireAgeExact);
 
-  // 缴费年限拆分
   var hasSight = work.year < 1995 || (work.year === 1995 && work.month < 7);
   var actualStart = hasSight ? cutoffDate : work;
   var actualYears = calcYears(actualStart, retireDate);
   var sightYears = hasSight ? calcYears(work, cutoffDate) : 0;
   var totalYears = actualYears + sightYears;
 
-  // 最低缴费年限
   var minYears = getMinYears(retireDate.year);
   var meetMin = totalYears >= minYears;
 
-  // 基础养老金
   var avgBase = (baseRetire + baseProv * idx) / 2;
   var basicPension = avgBase * totalYears * 0.01;
 
-  // 增发
   var extraPension = 0;
   var extraDesc = '未触发';
   if (actualYears > 20) {
@@ -655,22 +1155,16 @@ function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, pers
     extraDesc = '实际缴费' + actualYears.toFixed(2) + '年>20年，系数' + (coef * 100).toFixed(2) + '%';
   }
 
-  // 个人账户
   var personalPension, accDesc;
   if (personalAccInput && personalAccInput > 0) {
     personalPension = personalAccInput / months;
     accDesc = '用户输入 ' + personalAccInput.toLocaleString() + ' 元';
   } else {
-    // 个人账户起始 = max(参加工作, 建账日期1995年7月)
-    // 建账前的视同年限不产生个人账户
-    var accStart = ACC_START; // 1995年7月
-    var accEffStart = work;   // 实际个人账户起始
-    if (work.year < accStart.year || (work.year === accStart.year && work.month < accStart.month)) {
-      accEffStart = accStart; // 参加工作早于建账日，从建账日开始
+    var accEffStart = work;
+    if (work.year < ACC_START.year || (work.year === ACC_START.year && work.month < ACC_START.month)) {
+      accEffStart = ACC_START;
     }
-
     var accSpanMonths = (retireDate.year - accEffStart.year) * 12 + (retireDate.month - accEffStart.month);
-
     if (accSpanMonths <= 0) {
       personalPension = 0;
       accDesc = '无个人账户缴费记录';
@@ -678,22 +1172,17 @@ function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, pers
       var totalAcc = 0;
       var fY = accEffStart.year;
       var fM = accEffStart.month;
-
-      // 逐年计算：每年用当年参保地计发基数×缴费指数×8%算月缴入额
-      // 第一年可能不满12个月
       var firstMonths = 12 - fM + 1;
       if (firstMonths > 0 && firstMonths < 12) {
         var baseY = getBase(city, fY);
         var monthPayY = baseY * idx * 0.08;
         totalAcc = (totalAcc + monthPayY * firstMonths) * (1 + getAccRate(fY));
       }
-      // 完整年度：逐年用当年参保地计发基数
       for (var y = fY + 1; y < retireDate.year; y++) {
         var baseYear = getBase(city, y);
         var annualPay = baseYear * idx * 0.08 * 12;
         totalAcc = (totalAcc + annualPay) * (1 + getAccRate(y));
       }
-      // 退休年：1月至退休前一个月
       var lastMonths = retireDate.month - 1;
       if (lastMonths > 0) {
         var baseRetireAcc = getBase(city, retireDate.year);
@@ -706,7 +1195,6 @@ function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, pers
     }
   }
 
-  // 过渡性养老金
   var transPension = 0;
   var transDesc = '无视同年限';
   if (sightYears > 0) {
@@ -739,7 +1227,12 @@ function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, pers
 }
 
 function infoItem(label, value) {
-  return '<div class="info-item"><span class="label">' + label + '</span><span class="value">' + value + '</span></div>';
+  return '<div class="param-item"><span class="p-label">' + label + '</span><span class="p-value">' + value + '</span></div>';
+}
+
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '--';
+  return Math.round(n).toLocaleString();
 }
 
 function calculate() {
@@ -751,7 +1244,7 @@ function calculate() {
 
     var idx = parseFloat(document.getElementById('indexInput').value);
     if (isNaN(idx) || idx < 0.6 || idx > 3.0) {
-      document.getElementById('infoGrid').innerHTML = '<div style="color:red;padding:20px">缴费指数应在0.6-3.0之间</div>';
+      document.getElementById('infoGrid').innerHTML = '<div style="color:#B84040;padding:20px;font-size:13px">缴费指数应在 0.6 ~ 3.0 之间</div>';
       return;
     }
 
@@ -761,83 +1254,96 @@ function calculate() {
     var typeLabel = type === 'male' ? '男性' : (type === 'fc' ? '女性干部' : '女性工人');
     var cityLabel = city === 'cc' ? '长春市' : '全省其他地区';
 
-    // ===== 法定退休 =====
+    // 法定退休
     var legalTotalMonths = getRetireTotalMonths(birth.year, birth.month, type);
     var legalDate = getRetireDate(birth.year, birth.month, legalTotalMonths);
     var legal = calcPension(birth, work, legalDate, legalTotalMonths, city, idx, personalAcc);
 
-    // ===== 弹性提前退休 =====
+    // 弹性提前
     var originalAge = getOriginalRetireAge(type);
-    // 最多提前36个月，但不低于原法定退休年龄
     var flexTotalMonths = Math.max(originalAge * 12, legalTotalMonths - 36);
     var flexDate = getRetireDate(birth.year, birth.month, flexTotalMonths);
     var flex = calcPension(birth, work, flexDate, flexTotalMonths, city, idx, personalAcc);
 
-    // 弹性提前是否可用
     var canFlex = flexTotalMonths < legalTotalMonths;
     var flexAdvance = legalTotalMonths - flexTotalMonths;
 
-    // ===== 显示对比卡片 =====
+    // ---- Hero 大字区 ----
+    document.getElementById('heroAmount').textContent = fmt(legal.total);
+    document.getElementById('heroRate').textContent = legal.rate.toFixed(1) + '%';
+    // 替代率进度条（假设全国平均40%为基准，显示相对位置）
+    var barWidth = Math.min(100, Math.round(legal.rate / 80 * 100));
+    document.getElementById('heroRateBar').style.width = barWidth + '%';
+    document.getElementById('heroRateBar').style.height = '3px';
+    document.getElementById('heroRateBar').style.background = 'rgba(255,255,255,0.35)';
+    document.getElementById('heroRateBar').style.borderRadius = '20px';
+    document.getElementById('heroRateBar').style.display = 'block';
+    document.getElementById('heroRateBar').style.margin = '6px auto 0';
+    document.getElementById('heroRateBar').style.maxWidth = '160px';
+
+    document.getElementById('heroAge').textContent = getAgeStr(legalTotalMonths);
+    document.getElementById('heroDate').textContent = legalDate.year + '年' + legalDate.month + '月';
+    document.getElementById('heroMonths').textContent = legal.months + '月';
+    document.getElementById('heroYears').textContent = legal.totalYears.toFixed(1) + '年';
+
+    // ---- 对比卡片 ----
     if (canFlex) {
-      document.getElementById('flexCard').style.display = '';
-      document.getElementById('flexCard').className = 'compare-card';
+      document.getElementById('flexAmount').textContent = fmt(flex.total);
       document.getElementById('flexAge').textContent = getAgeStr(flexTotalMonths);
       document.getElementById('flexDate').textContent = flexDate.year + '年' + flexDate.month + '月';
-      document.getElementById('flexAmount').textContent = Math.round(flex.total).toLocaleString();
       document.getElementById('flexRate').textContent = '替代率 ' + flex.rate.toFixed(1) + '%';
-
-      document.getElementById('diffMonth').textContent = '-' + Math.round(legal.total - flex.total) + ' 元';
+      document.getElementById('legalAmount').textContent = fmt(legal.total);
+      document.getElementById('legalAge').textContent = getAgeStr(legalTotalMonths);
+      document.getElementById('legalDate').textContent = legalDate.year + '年' + legalDate.month + '月';
+      document.getElementById('legalRate').textContent = '替代率 ' + legal.rate.toFixed(1) + '%';
+      document.getElementById('diffMonth').textContent = '-' + fmt(legal.total - flex.total) + '元';
       document.getElementById('diffRate').textContent = '-' + (legal.rate - flex.rate).toFixed(1) + '%';
-      document.getElementById('diffMonths').textContent = flexAdvance + ' 个月';
+      document.getElementById('diffMonths').textContent = flexAdvance + '月';
+      document.getElementById('compareDiff').style.display = '';
 
-      // 弹性提前提示
       var noteEl = document.getElementById('flexNote');
       noteEl.style.display = '';
       if (!flex.meetMin) {
-        noteEl.style.background = '#fef2f2';
-        noteEl.style.color = '#991b1b';
+        noteEl.className = 'warn';
         noteEl.innerHTML = '⚠️ 弹性提前退休时缴费年限' + flex.totalYears.toFixed(2) + '年，不满足最低' + flex.minYears + '年要求，无法提前退休。';
       } else {
-        noteEl.innerHTML = '💡 弹性提前退休后，每月少领' + Math.round(legal.total - flex.total) + '元，但可提前' + flexAdvance + '个月开始领取养老金。';
+        noteEl.className = 'info';
+        noteEl.innerHTML = '💡 弹性提前退休后，每月少领' + fmt(legal.total - flex.total) + '元，但可提前' + flexAdvance + '个月开始领取。';
       }
 
-      // 弹性提前明细
       document.getElementById('flexDetailCard').style.display = '';
-      document.getElementById('flexBasic').textContent = Math.round(flex.basicPension).toLocaleString() + ' 元';
-      document.getElementById('flexExtra').textContent = (flex.extraPension > 0 ? Math.round(flex.extraPension).toLocaleString() : '0') + ' 元';
-      document.getElementById('flexPersonal').textContent = Math.round(flex.personalPension).toLocaleString() + ' 元';
-      document.getElementById('flexTrans').textContent = (flex.transPension > 0 ? Math.round(flex.transPension).toLocaleString() : '0') + ' 元';
-      document.getElementById('flexTotal').textContent = Math.round(flex.total).toLocaleString() + ' 元';
+      document.getElementById('flexBasic').textContent = fmt(flex.basicPension) + ' 元';
+      document.getElementById('flexExtra').textContent = (flex.extraPension > 0 ? fmt(flex.extraPension) : '0') + ' 元';
+      document.getElementById('flexPersonal').textContent = fmt(flex.personalPension) + ' 元';
+      document.getElementById('flexTrans').textContent = (flex.transPension > 0 ? fmt(flex.transPension) : '0') + ' 元';
+      document.getElementById('flexTotal').textContent = fmt(flex.total) + ' 元';
     } else {
-      // 无法弹性提前（比如已经没有延迟，或者提前后还是到原法定年龄）
-      document.getElementById('flexCard').style.display = '';
-      document.getElementById('flexCard').className = 'compare-card';
+      document.getElementById('flexAmount').textContent = '--';
       document.getElementById('flexAge').textContent = getAgeStr(flexTotalMonths);
       document.getElementById('flexDate').textContent = flexDate.year + '年' + flexDate.month + '月';
-      document.getElementById('flexAmount').textContent = '--';
       document.getElementById('flexRate').textContent = '不适用';
+      document.getElementById('legalAmount').textContent = fmt(legal.total);
+      document.getElementById('legalAge').textContent = getAgeStr(legalTotalMonths);
+      document.getElementById('legalDate').textContent = legalDate.year + '年' + legalDate.month + '月';
+      document.getElementById('legalRate').textContent = '替代率 ' + legal.rate.toFixed(1) + '%';
       document.getElementById('diffMonth').textContent = '--';
       document.getElementById('diffRate').textContent = '--';
       document.getElementById('diffMonths').textContent = '0';
+      document.getElementById('compareDiff').style.display = 'none';
       document.getElementById('flexNote').style.display = '';
+      document.getElementById('flexNote').className = 'info';
       document.getElementById('flexNote').innerHTML = '💡 你的法定退休年龄已等于或低于原法定年龄，弹性提前退休不适用。';
       document.getElementById('flexDetailCard').style.display = 'none';
     }
 
-    // ===== 法定退休卡片 =====
-    document.getElementById('legalAge').textContent = getAgeStr(legalTotalMonths);
-    document.getElementById('legalDate').textContent = legalDate.year + '年' + legalDate.month + '月';
-    document.getElementById('legalAmount').textContent = Math.round(legal.total).toLocaleString();
-    document.getElementById('legalRate').textContent = '替代率 ' + legal.rate.toFixed(1) + '%';
+    // ---- 法定明细 ----
+    document.getElementById('basicPension').textContent = fmt(legal.basicPension) + ' 元';
+    document.getElementById('extraPension').textContent = (legal.extraPension > 0 ? fmt(legal.extraPension) : '0') + ' 元';
+    document.getElementById('personalPension').textContent = fmt(legal.personalPension) + ' 元';
+    document.getElementById('transPension').textContent = (legal.transPension > 0 ? fmt(legal.transPension) : '0') + ' 元';
+    document.getElementById('totalPension2').textContent = fmt(legal.total) + ' 元';
 
-    // ===== 法定退休明细 =====
-    document.getElementById('basicPension').textContent = Math.round(legal.basicPension).toLocaleString() + ' 元';
-    document.getElementById('extraPension').textContent = (legal.extraPension > 0 ? Math.round(legal.extraPension).toLocaleString() : '0') + ' 元';
-    document.getElementById('personalPension').textContent = Math.round(legal.personalPension).toLocaleString() + ' 元';
-    document.getElementById('transPension').textContent = (legal.transPension > 0 ? Math.round(legal.transPension).toLocaleString() : '0') + ' 元';
-    document.getElementById('totalPension2').textContent = Math.round(legal.total).toLocaleString() + ' 元';
-
-    // ===== 参数明细 =====
+    // ---- 参数明细 ----
     var html = '';
     html += infoItem('参保地', cityLabel);
     html += infoItem('人员类型', typeLabel);
@@ -864,19 +1370,18 @@ function calculate() {
       html += infoItem('累计缴费（提前）', flex.totalYears.toFixed(2) + '年');
     }
     html += infoItem('最低缴费年限', legal.minYears + '年');
-    html += infoItem('是否满足（法定）', legal.meetMin ? '✅ 已满足' : '❌ 未满足');
-    html += infoItem('退休上一年计发基数（' + cityLabel + '）', getBase(city, legalDate.year - 1).toLocaleString() + '元/月');
-    html += infoItem('退休上一年全省计发基数', getBaseProv(legalDate.year - 1).toLocaleString() + '元/月');
+    html += infoItem('是否满足（法定）', legal.meetMin ? '已满足' : '未满足');
+    html += infoItem('退休上一年计发基数（' + cityLabel + '）', fmt(getBase(city, legalDate.year - 1)) + '元/月');
+    html += infoItem('退休上一年全省计发基数', fmt(getBaseProv(legalDate.year - 1)) + '元/月');
     html += infoItem('增发（法定）', legal.extraDesc);
     html += infoItem('个人账户', legal.accDesc);
     html += infoItem('过渡性', legal.transDesc);
     document.getElementById('infoGrid').innerHTML = html;
 
-    // 滚动到结果
     document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch(e) {
-    document.getElementById('infoGrid').innerHTML = '<div style="color:red;padding:20px">计算出错：' + e.message + '</div>';
+    document.getElementById('infoGrid').innerHTML = '<div style="color:#B84040;padding:20px;font-size:13px">计算出错：' + e.message + '</div>';
   }
 }
 
