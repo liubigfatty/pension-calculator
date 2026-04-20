@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吉林省养老金速算计算器</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+h1 {
+  text-align: center;
+  font-size: 22px;
+  color: #1a56db;
+  margin: 20px 0 6px;
+}
+.subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a56db;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #eef2ff;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.form-group {
+  flex: 1;
+  min-width: 180px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1a56db;
+  box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+}
+.form-group .hint {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+.btn-calc {
+  display: block;
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+.btn-calc:hover { opacity: 0.9; }
+.btn-calc:active { opacity: 0.8; }
+.idx-btn {
+  padding: 4px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.idx-btn:hover { border-color: #1a56db; color: #1a56db; }
+.idx-btn.active { background: #1a56db; color: #fff; border-color: #1a56db; }
+
+/* 结果区 */
+#result { display: block; }
+
+/* 对比卡片 */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.compare-card {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.compare-card.active {
+  border-color: #1a56db;
+  background: #eff6ff;
+}
+.compare-card .tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.compare-card.active .tag { background: #1a56db; color: #fff; }
+.compare-card .tag { background: #94a3b8; color: #fff; }
+.compare-card .c-age {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a56db;
+  margin: 4px 0;
+}
+.compare-card .c-date {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.compare-card .c-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a56db;
+}
+.compare-card .c-amount span { font-size: 14px; font-weight: 400; }
+.compare-card .c-rate {
+  font-size: 13px;
+  color: #3b82f6;
+  margin-top: 2px;
+}
+.compare-diff {
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  color: #92400e;
+}
+.compare-diff-item { text-align: center; }
+.compare-diff-item .num { font-size: 18px; font-weight: 700; color: #b45309; }
+
+/* 汇总表 */
+.result-summary {
+  text-align: center;
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.result-amount {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a56db;
+  line-height: 1.2;
+}
+.result-amount span { font-size: 18px; font-weight: 400; }
+.result-rate {
+  font-size: 15px;
+  color: #3b82f6;
+  margin-top: 6px;
+}
+.result-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+.result-detail-table th,
+.result-detail-table td {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.result-detail-table th {
+  color: #888;
+  font-weight: 500;
+  font-size: 13px;
+}
+.result-detail-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: #333;
+}
+.result-detail-table td:last-child.highlight {
+  color: #1a56db;
+  font-size: 16px;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.info-item .label { color: #888; }
+.info-item .value { font-weight: 500; }
+.note-box {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 12px;
+  color: #92400e;
+  margin-top: 12px;
+  line-height: 1.8;
+}
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 24px;
+}
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: #1a56db;
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧮 吉林省养老金速算计算器</h1>
+  <div class="subtitle">输入你的信息，一键算出大概能领多少养老金</div>
+
+  <div class="card">
+    <div class="card-title">📐 基本信息</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>参保地</label>
+        <select id="city">
+          <option value="cc">长春市</option>
+          <option value="qs">全省其他地区</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>人员类型</label>
+        <select id="genderType">
+          <option value="male">男性</option>
+          <option value="fc">女性干部</option>
+          <option value="fw">女性工人</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>出生年月</label>
+        <input type="month" id="birthMonth" value="1971-05">
+      </div>
+      <div class="form-group">
+        <label>参加工作时间</label>
+        <input type="month" id="workStart" value="1992-07">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 缴费信息</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>平均缴费指数</label>
+        <input type="number" id="indexInput" min="0.6" max="3.0" step="0.01" value="1.0" style="margin-bottom:6px">
+        <div class="hint">可直接输入（如1.34），或点选下方常用档次</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="indexBtns">
+      <button class="idx-btn" data-v="0.6">60%</button>
+      <button class="idx-btn" data-v="0.8">80%</button>
+      <button class="idx-btn active" data-v="1.0">100%</button>
+      <button class="idx-btn" data-v="1.5">150%</button>
+      <button class="idx-btn" data-v="2.0">200%</button>
+      <button class="idx-btn" data-v="3.0">300%</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>个人账户累计储存额（元）</label>
+        <input type="number" id="personalAcc" placeholder="不填则按简单累计估算" min="0">
+        <div class="hint">可在社保App或社保局查询，不填则按历年记账利率自动估算</div>
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calculate()">开始计算</button>
+  </div>
+
+  <div id="result">
+    <!-- 弹性提前 vs 法定退休 对比 -->
+    <div class="card">
+      <div class="card-title">📊 弹性提前退休 vs 法定退休</div>
+      <div class="compare-grid">
+        <div class="compare-card" id="flexCard">
+          <div class="tag">弹性提前</div>
+          <div class="c-age" id="flexAge">--</div>
+          <div class="c-date" id="flexDate">--</div>
+          <div class="c-amount"><span>约 </span><span id="flexAmount">0</span><span> 元/月</span></div>
+          <div class="c-rate" id="flexRate">替代率 --%</div>
+        </div>
+        <div class="compare-card active">
+          <div class="tag">法定退休</div>
+          <div class="c-age" id="legalAge">--</div>
+          <div class="c-date" id="legalDate">--</div>
+          <div class="c-amount"><span>约 </span><span id="legalAmount">0</span><span> 元/月</span></div>
+          <div class="c-rate" id="legalRate">替代率 --%</div>
+        </div>
+      </div>
+      <div class="compare-diff" id="compareDiff">
+        <div class="compare-diff-item">
+          <div>每月少领</div>
+          <div class="num" id="diffMonth">--</div>
+        </div>
+        <div class="compare-diff-item">
+          <div>替代率低</div>
+          <div class="num" id="diffRate">--</div>
+        </div>
+        <div class="compare-diff-item">
+          <div>提前月数</div>
+          <div class="num" id="diffMonths">--</div>
+        </div>
+      </div>
+      <div id="flexNote" style="font-size:12px;color:#666;margin-top:10px;padding:8px;background:#f0fdf4;border-radius:6px;display:none"></div>
+    </div>
+
+    <!-- 法定退休 养老金明细 -->
+    <div class="card">
+      <div class="section-label">法定退休 · 养老金明细</div>
+      <table class="result-detail-table">
+        <tr><th>构成部分</th><th>金额</th></tr>
+        <tr><td>基础养老金</td><td id="basicPension">0 元</td></tr>
+        <tr><td>基础养老金增发</td><td id="extraPension">0 元</td></tr>
+        <tr><td>个人账户养老金</td><td id="personalPension">0 元</td></tr>
+        <tr><td>过渡性养老金</td><td id="transPension">0 元</td></tr>
+        <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:600">合计</td><td class="highlight" id="totalPension2">0 元</td></tr>
+      </table>
+    </div>
+
+    <!-- 弹性提前 养老金明细 -->
+    <div class="card" id="flexDetailCard" style="display:none">
+      <div class="section-label">弹性提前退休 · 养老金明细</div>
+      <table class="result-detail-table">
+        <tr><th>构成部分</th><th>金额</th></tr>
+        <tr><td>基础养老金</td><td id="flexBasic">0 元</td></tr>
+        <tr><td>基础养老金增发</td><td id="flexExtra">0 元</td></tr>
+        <tr><td>个人账户养老金</td><td id="flexPersonal">0 元</td></tr>
+        <tr><td>过渡性养老金</td><td id="flexTrans">0 元</td></tr>
+        <tr style="border-top:2px solid #e5e7eb"><td style="font-weight:600">合计</td><td class="highlight" id="flexTotal">0 元</td></tr>
+      </table>
+    </div>
+
+    <!-- 计算参数明细 -->
+    <div class="card">
+      <div class="card-title">📋 计算参数明细</div>
+      <div class="info-grid" id="infoGrid"></div>
+      <div class="note-box">
+        ⚠️ <b>估算说明</b>：<br>
+        ① 个人账户从建账日期（1995年7月）开始累计，逐年用当年计发基数×缴费指数×8%计算缴入<br>
+        ② 记账利率：2016-2025年按人社部公布利率，2016年前按银行一年期定存约2.5%估算，2026年及以后按1.5%计算<br>
+        ③ 历年计发基数：1995-2019年全省统一，2020-2025年分长春/全省两档（官方数据），2026-2030年长春按2.6%增长、全省按4.38%增长（预计2030年追平），2031年起全省统一<br>
+        ④ 如有社保App查询的实际个人账户余额，手动输入更准确<br>
+        ⑤ 延迟退休按人社部发〔2024〕94号计算<br>
+        ⑥ 弹性提前退休最多提前36个月，且不低于原法定退休年龄<br>
+        ⑦ 弹性提前需满足最低缴费年限要求<br>
+        ⑧ 退休后每年有养老金正常调整（近年约3%-5%），未包含<br>
+        ⑨ 此结果仅供参考，实际金额以社保经办机构核定为准
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    公众号「那都正常」· 吉林省社保政策解读<br>
+    数据来源：吉人社联〔2025〕97号 · 人社部发〔2024〕94号
+  </div>
+</div>
+
+<script>
+// 缴费指数：快捷按钮 + 输入框联动
+document.querySelectorAll('.idx-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.getElementById('indexInput').value = this.getAttribute('data-v');
+    document.querySelectorAll('.idx-btn').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    calculate();
+  });
+});
+document.getElementById('indexInput').addEventListener('input', function() {
+  var v = parseFloat(this.value);
+  var found = false;
+  document.querySelectorAll('.idx-btn').forEach(function(b) {
+    if (parseFloat(b.getAttribute('data-v')) === v) {
+      b.classList.add('active'); found = true;
+    } else {
+      b.classList.remove('active');
+    }
+  });
+});
+
+// 计发月数表（精确到岁）
+var MONTHS_TABLE = {
+  50: 195, 51: 190, 52: 185, 53: 180, 54: 175, 55: 170,
+  56: 164, 57: 158, 58: 152, 59: 145, 60: 139, 61: 132,
+  62: 125, 63: 117, 64: 109, 65: 101, 66: 92
+};
+
+// 最低缴费年限相位表
+var MIN_YEARS = {
+  2025:15, 2026:15, 2027:15, 2028:15, 2029:15,
+  2030:15.5, 2031:16, 2032:16.5, 2033:17, 2034:17.5,
+  2035:18, 2036:18.5, 2037:19, 2038:19.5,
+  2039:20, 2040:20, 2041:20, 2042:20, 2043:20, 2044:20, 2045:20
+};
+
+// 历年个人账户记账利率
+// 2016年起全国统一公布（人社部发〔2015〕18号）
+var ACC_RATES = {
+  2016: 0.0831, 2017: 0.0712, 2018: 0.0829, 2019: 0.0761,
+  2020: 0.0604, 2021: 0.0669, 2022: 0.0397, 2023: 0.0397,
+  2024: 0.0262, 2025: 0.015
+};
+// 2016年前各省自行确定，吉林省无公开数据，按银行一年期定存利率估算（约2.5%-3%）
+var RATE_BEFORE_2016 = 0.025;
+// 2026年及以后，按1.5%计算
+var RATE_DEFAULT = 0.015;
+// 个人账户建账日期
+var ACC_START = { year: 1995, month: 7 };
+
+// 吉林省历年计发基数（月均，元/月）
+// 来源：系列一-历年计发基数汇总.md（官方文件）
+// 1995-2019年全省统一基数；2020年起分长春/全省两档
+var HIST_BASES_PROV = {
+  1995: 369, 1996: 448, 1997: 472, 1998: 546, 1999: 597,
+  2000: 660, 2001: 731, 2002: 833, 2003: 923, 2004: 1036,
+  2005: 1201, 2006: 1382, 2007: 1709, 2008: 1957, 2009: 2186,
+  2010: 2500, 2011: 2850, 2012: 3201, 2013: 3571, 2014: 3876,
+  2015: 4297, 2016: 4675, 2017: 5121, 2018: 5711, 2019: 6151,
+  2020: 5088, 2021: 6005, 2022: 6385, 2023: 6655, 2024: 7179,
+  2025: 7322
+};
+// 长春市历年计发基数（2020年起有独立数据）
+var HIST_BASES_CC = {
+  2020: 6928, 2021: 7298, 2022: 7604, 2023: 7727, 2024: 7853,
+  2025: 7978
+};
+// 2025年已知值
+var BASE_CC_2025 = 7978;
+var BASE_PROV_2025 = 7322;
+// 增长率预测：长春按2.6%，全省按4.38%，2030年追平，2031年起统一
+var CC_GROWTH = 0.026;
+var PROV_GROWTH = 0.0438;
+var MERGE_YEAR = 2031; // 2031年起全省统一基数
+
+// 获取某年的参保地计发基数
+function getBase(city, year) {
+  if (year <= 2019) {
+    // 1995-2019年全省统一，不分长春/全省
+    return HIST_BASES_PROV[year] || HIST_BASES_PROV[1995];
+  }
+  if (year <= 2025) {
+    if (city === 'cc') return HIST_BASES_CC[year] || BASE_CC_2025;
+    return HIST_BASES_PROV[year] || BASE_PROV_2025;
+  }
+  // 2026-2030年：长春按CC_GROWTH增长，全省按PROV_GROWTH增长
+  if (year < MERGE_YEAR) {
+    if (city === 'cc') return Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, year - 2025));
+    return Math.round(BASE_PROV_2025 * Math.pow(1 + PROV_GROWTH, year - 2025));
+  }
+  // 2031年起全省统一基数，按长春增长率继续增长
+  var mergeBase = Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, MERGE_YEAR - 2025));
+  return Math.round(mergeBase * Math.pow(1 + CC_GROWTH, year - MERGE_YEAR));
+}
+
+// 获取某年全省计发基数（用于基础养老金公式中的"全省基数"项）
+function getBaseProv(year) {
+  return getBase('prov', year);
+}
+
+function getAccRate(year) {
+  if (ACC_RATES[year] !== undefined) return ACC_RATES[year];
+  if (year < 2016) return RATE_BEFORE_2016;
+  return RATE_DEFAULT;
+}
+
+// 延迟退休月数（人社部发〔2024〕94号）
+function getDelayMonths(year, month, type) {
+  var baseYear, step, cap;
+  if (type === 'male') { baseYear = 1965; step = 4; cap = 36; }
+  else if (type === 'fc') { baseYear = 1970; step = 4; cap = 36; }
+  else { baseYear = 1975; step = 2; cap = 60; }
+
+  if (year < baseYear) return 0;
+  var diff = (year - baseYear) * 12 + (month - 1);
+  if (diff < 1) return 0;
+  var delay = Math.floor((diff - 1) / step) + 1;
+  return Math.min(delay, cap);
+}
+
+// 退休年龄（含延迟），返回总月数
+function getRetireTotalMonths(birthYear, birthMonth, type) {
+  var baseAge = type === 'male' ? 60 : (type === 'fc' ? 55 : 50);
+  var delay = getDelayMonths(birthYear, birthMonth, type);
+  return baseAge * 12 + delay;
+}
+
+// 原法定退休年龄（整岁，不含延迟）
+function getOriginalRetireAge(type) {
+  return type === 'male' ? 60 : (type === 'fc' ? 55 : 50);
+}
+
+// 计发月数
+function getMonths(age) {
+  if (MONTHS_TABLE[age] !== undefined) return MONTHS_TABLE[age];
+  var lo = Math.floor(age), hi = Math.ceil(age);
+  if (MONTHS_TABLE[lo] !== undefined && MONTHS_TABLE[hi] !== undefined) {
+    var frac = age - lo;
+    return Math.round(MONTHS_TABLE[lo] + (MONTHS_TABLE[hi] - MONTHS_TABLE[lo]) * frac);
+  }
+  return 139;
+}
+
+// 最低缴费年限
+function getMinYears(retireYear) {
+  if (MIN_YEARS[retireYear] !== undefined) return MIN_YEARS[retireYear];
+  if (retireYear < 2025) return 15;
+  if (retireYear > 2045) return 20;
+  return 20;
+}
+
+function parseMonth(s) {
+  var parts = s.split('-');
+  return { year: parseInt(parts[0]), month: parseInt(parts[1]) };
+}
+
+function calcYears(start, end) {
+  var totalMonths = (end.year - start.year) * 12 + (end.month - start.month);
+  return Math.max(0, totalMonths / 12);
+}
+
+// 计算退休年月（从出生年月 + 总退休月数）
+function getRetireDate(birthYear, birthMonth, totalMonths) {
+  var y = birthYear + Math.floor(totalMonths / 12);
+  var m = birthMonth + (totalMonths % 12);
+  if (m > 12) { y++; m -= 12; }
+  return { year: y, month: m };
+}
+
+// 计算退休年龄字符串
+function getAgeStr(totalMonths) {
+  var years = Math.floor(totalMonths / 12);
+  var remain = totalMonths % 12;
+  return years + '岁' + (remain > 0 ? remain + '个月' : '');
+}
+
+// 核心计算：给定退休时间，算养老金
+function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, personalAccInput) {
+  var baseRetire = getBase(city, retireDate.year);
+  var baseProv = getBaseProv(retireDate.year);
+  var cutoffDate = { year: 1995, month: 7 };
+
+  // 退休年龄（精确）
+  var retireAgeExact = totalRetireMonths / 12;
+  var months = getMonths(Math.round(retireAgeExact));
+
+  // 缴费年限拆分
+  var hasSight = work.year < 1995 || (work.year === 1995 && work.month < 7);
+  var actualStart = hasSight ? cutoffDate : work;
+  var actualYears = calcYears(actualStart, retireDate);
+  var sightYears = hasSight ? calcYears(work, cutoffDate) : 0;
+  var totalYears = actualYears + sightYears;
+
+  // 最低缴费年限
+  var minYears = getMinYears(retireDate.year);
+  var meetMin = totalYears >= minYears;
+
+  // 基础养老金
+  var avgBase = (baseRetire + baseProv * idx) / 2;
+  var basicPension = avgBase * totalYears * 0.01;
+
+  // 增发
+  var extraPension = 0;
+  var extraDesc = '未触发';
+  if (actualYears > 20) {
+    var e25 = Math.max(0, Math.min(totalYears, 25) - 20);
+    var e30 = Math.max(0, Math.min(totalYears, 30) - 25);
+    var e31 = Math.max(0, totalYears - 30);
+    var coef = e25 * 0.0015 + e30 * 0.0020 + e31 * 0.0025;
+    extraPension = avgBase * coef;
+    extraDesc = '实际缴费' + actualYears.toFixed(2) + '年>20年，系数' + (coef * 100).toFixed(2) + '%';
+  }
+
+  // 个人账户
+  var personalPension, accDesc;
+  if (personalAccInput && personalAccInput > 0) {
+    personalPension = personalAccInput / months;
+    accDesc = '用户输入 ' + personalAccInput.toLocaleString() + ' 元';
+  } else {
+    // 个人账户起始 = max(参加工作, 建账日期1995年7月)
+    // 建账前的视同年限不产生个人账户
+    var accStart = ACC_START; // 1995年7月
+    var accEffStart = work;   // 实际个人账户起始
+    if (work.year < accStart.year || (work.year === accStart.year && work.month < accStart.month)) {
+      accEffStart = accStart; // 参加工作早于建账日，从建账日开始
+    }
+
+    var accSpanMonths = (retireDate.year - accEffStart.year) * 12 + (retireDate.month - accEffStart.month);
+
+    if (accSpanMonths <= 0) {
+      personalPension = 0;
+      accDesc = '无个人账户缴费记录';
+    } else {
+      var totalAcc = 0;
+      var fY = accEffStart.year;
+      var fM = accEffStart.month;
+
+      // 逐年计算：每年用当年参保地计发基数×缴费指数×8%算月缴入额
+      // 第一年可能不满12个月
+      var firstMonths = 12 - fM + 1;
+      if (firstMonths > 0 && firstMonths < 12) {
+        var baseY = getBase(city, fY);
+        var monthPayY = baseY * idx * 0.08;
+        totalAcc = (totalAcc + monthPayY * firstMonths) * (1 + getAccRate(fY));
+      }
+      // 完整年度：逐年用当年参保地计发基数
+      for (var y = fY + 1; y < retireDate.year; y++) {
+        var baseYear = getBase(city, y);
+        var annualPay = baseYear * idx * 0.08 * 12;
+        totalAcc = (totalAcc + annualPay) * (1 + getAccRate(y));
+      }
+      // 退休年：1月至退休前一个月
+      var lastMonths = retireDate.month - 1;
+      if (lastMonths > 0) {
+        var baseRetireAcc = getBase(city, retireDate.year);
+        var monthPayRetire = baseRetireAcc * idx * 0.08;
+        var rLast = getAccRate(retireDate.year);
+        totalAcc = (totalAcc + monthPayRetire * lastMonths) * (1 + rLast) ** (lastMonths / 12);
+      }
+      personalPension = totalAcc / months;
+      accDesc = '按历年记账利率复利估算，' + fY + '.' + fM + '-' + retireDate.year + '.' + retireDate.month;
+    }
+  }
+
+  // 过渡性养老金
+  var transPension = 0;
+  var transDesc = '无视同年限';
+  if (sightYears > 0) {
+    var transCoef = actualYears > 20 ? 0.014 : 0.012;
+    transPension = baseProv * sightYears * idx * transCoef;
+    transDesc = '视同' + sightYears.toFixed(2) + '年 x 系数' + (transCoef * 100).toFixed(1) + '%';
+  }
+
+  var total = basicPension + extraPension + personalPension + transPension;
+  var rate = total / baseProv * 100;
+
+  return {
+    basicPension: basicPension,
+    extraPension: extraPension,
+    personalPension: personalPension,
+    transPension: transPension,
+    total: total,
+    rate: rate,
+    months: months,
+    actualYears: actualYears,
+    sightYears: sightYears,
+    totalYears: totalYears,
+    minYears: minYears,
+    meetMin: meetMin,
+    extraDesc: extraDesc,
+    accDesc: accDesc,
+    transDesc: transDesc,
+    retireAgeExact: retireAgeExact
+  };
+}
+
+function infoItem(label, value) {
+  return '<div class="info-item"><span class="label">' + label + '</span><span class="value">' + value + '</span></div>';
+}
+
+function calculate() {
+  try {
+    var city = document.getElementById('city').value;
+    var type = document.getElementById('genderType').value;
+    var birth = parseMonth(document.getElementById('birthMonth').value);
+    var work = parseMonth(document.getElementById('workStart').value);
+
+    var idx = parseFloat(document.getElementById('indexInput').value);
+    if (isNaN(idx) || idx < 0.6 || idx > 3.0) {
+      document.getElementById('infoGrid').innerHTML = '<div style="color:red;padding:20px">缴费指数应在0.6-3.0之间</div>';
+      return;
+    }
+
+    var accInput = document.getElementById('personalAcc').value;
+    var personalAcc = accInput !== '' && parseFloat(accInput) > 0 ? parseFloat(accInput) : 0;
+
+    var typeLabel = type === 'male' ? '男性' : (type === 'fc' ? '女性干部' : '女性工人');
+    var cityLabel = city === 'cc' ? '长春市' : '全省其他地区';
+
+    // ===== 法定退休 =====
+    var legalTotalMonths = getRetireTotalMonths(birth.year, birth.month, type);
+    var legalDate = getRetireDate(birth.year, birth.month, legalTotalMonths);
+    var legal = calcPension(birth, work, legalDate, legalTotalMonths, city, idx, personalAcc);
+
+    // ===== 弹性提前退休 =====
+    var originalAge = getOriginalRetireAge(type);
+    // 最多提前36个月，但不低于原法定退休年龄
+    var flexTotalMonths = Math.max(originalAge * 12, legalTotalMonths - 36);
+    var flexDate = getRetireDate(birth.year, birth.month, flexTotalMonths);
+    var flex = calcPension(birth, work, flexDate, flexTotalMonths, city, idx, personalAcc);
+
+    // 弹性提前是否可用
+    var canFlex = flexTotalMonths < legalTotalMonths;
+    var flexAdvance = legalTotalMonths - flexTotalMonths;
+
+    // ===== 显示对比卡片 =====
+    if (canFlex) {
+      document.getElementById('flexCard').style.display = '';
+      document.getElementById('flexCard').className = 'compare-card';
+      document.getElementById('flexAge').textContent = getAgeStr(flexTotalMonths);
+      document.getElementById('flexDate').textContent = flexDate.year + '年' + flexDate.month + '月';
+      document.getElementById('flexAmount').textContent = Math.round(flex.total).toLocaleString();
+      document.getElementById('flexRate').textContent = '替代率 ' + flex.rate.toFixed(1) + '%';
+
+      document.getElementById('diffMonth').textContent = '-' + Math.round(legal.total - flex.total) + ' 元';
+      document.getElementById('diffRate').textContent = '-' + (legal.rate - flex.rate).toFixed(1) + '%';
+      document.getElementById('diffMonths').textContent = flexAdvance + ' 个月';
+
+      // 弹性提前提示
+      var noteEl = document.getElementById('flexNote');
+      noteEl.style.display = '';
+      if (!flex.meetMin) {
+        noteEl.style.background = '#fef2f2';
+        noteEl.style.color = '#991b1b';
+        noteEl.innerHTML = '⚠️ 弹性提前退休时缴费年限' + flex.totalYears.toFixed(2) + '年，不满足最低' + flex.minYears + '年要求，无法提前退休。';
+      } else {
+        noteEl.innerHTML = '💡 弹性提前退休后，每月少领' + Math.round(legal.total - flex.total) + '元，但可提前' + flexAdvance + '个月开始领取养老金。';
+      }
+
+      // 弹性提前明细
+      document.getElementById('flexDetailCard').style.display = '';
+      document.getElementById('flexBasic').textContent = Math.round(flex.basicPension).toLocaleString() + ' 元';
+      document.getElementById('flexExtra').textContent = (flex.extraPension > 0 ? Math.round(flex.extraPension).toLocaleString() : '0') + ' 元';
+      document.getElementById('flexPersonal').textContent = Math.round(flex.personalPension).toLocaleString() + ' 元';
+      document.getElementById('flexTrans').textContent = (flex.transPension > 0 ? Math.round(flex.transPension).toLocaleString() : '0') + ' 元';
+      document.getElementById('flexTotal').textContent = Math.round(flex.total).toLocaleString() + ' 元';
+    } else {
+      // 无法弹性提前（比如已经没有延迟，或者提前后还是到原法定年龄）
+      document.getElementById('flexCard').style.display = '';
+      document.getElementById('flexCard').className = 'compare-card';
+      document.getElementById('flexAge').textContent = getAgeStr(flexTotalMonths);
+      document.getElementById('flexDate').textContent = flexDate.year + '年' + flexDate.month + '月';
+      document.getElementById('flexAmount').textContent = '--';
+      document.getElementById('flexRate').textContent = '不适用';
+      document.getElementById('diffMonth').textContent = '--';
+      document.getElementById('diffRate').textContent = '--';
+      document.getElementById('diffMonths').textContent = '0';
+      document.getElementById('flexNote').style.display = '';
+      document.getElementById('flexNote').innerHTML = '💡 你的法定退休年龄已等于或低于原法定年龄，弹性提前退休不适用。';
+      document.getElementById('flexDetailCard').style.display = 'none';
+    }
+
+    // ===== 法定退休卡片 =====
+    document.getElementById('legalAge').textContent = getAgeStr(legalTotalMonths);
+    document.getElementById('legalDate').textContent = legalDate.year + '年' + legalDate.month + '月';
+    document.getElementById('legalAmount').textContent = Math.round(legal.total).toLocaleString();
+    document.getElementById('legalRate').textContent = '替代率 ' + legal.rate.toFixed(1) + '%';
+
+    // ===== 法定退休明细 =====
+    document.getElementById('basicPension').textContent = Math.round(legal.basicPension).toLocaleString() + ' 元';
+    document.getElementById('extraPension').textContent = (legal.extraPension > 0 ? Math.round(legal.extraPension).toLocaleString() : '0') + ' 元';
+    document.getElementById('personalPension').textContent = Math.round(legal.personalPension).toLocaleString() + ' 元';
+    document.getElementById('transPension').textContent = (legal.transPension > 0 ? Math.round(legal.transPension).toLocaleString() : '0') + ' 元';
+    document.getElementById('totalPension2').textContent = Math.round(legal.total).toLocaleString() + ' 元';
+
+    // ===== 参数明细 =====
+    var html = '';
+    html += infoItem('参保地', cityLabel);
+    html += infoItem('人员类型', typeLabel);
+    html += infoItem('出生年月', birth.year + '年' + birth.month + '月');
+    html += infoItem('参加工作', work.year + '年' + work.month + '月');
+    html += infoItem('法定退休', legalDate.year + '年' + legalDate.month + '月');
+    html += infoItem('法定退休年龄', getAgeStr(legalTotalMonths));
+    if (canFlex) {
+      html += infoItem('最早弹性提前', flexDate.year + '年' + flexDate.month + '月');
+      html += infoItem('弹性提前年龄', getAgeStr(flexTotalMonths));
+    }
+    html += infoItem('计发月数（法定）', legal.months + '个月');
+    if (canFlex) {
+      html += infoItem('计发月数（提前）', flex.months + '个月');
+    }
+    html += infoItem('缴费指数', idx.toFixed(2));
+    html += infoItem('视同缴费', legal.sightYears.toFixed(2) + '年');
+    html += infoItem('实际缴费（法定）', legal.actualYears.toFixed(2) + '年');
+    if (canFlex) {
+      html += infoItem('实际缴费（提前）', flex.actualYears.toFixed(2) + '年');
+    }
+    html += infoItem('累计缴费（法定）', legal.totalYears.toFixed(2) + '年');
+    if (canFlex) {
+      html += infoItem('累计缴费（提前）', flex.totalYears.toFixed(2) + '年');
+    }
+    html += infoItem('最低缴费年限', legal.minYears + '年');
+    html += infoItem('是否满足（法定）', legal.meetMin ? '✅ 已满足' : '❌ 未满足');
+    html += infoItem('退休年计发基数（' + cityLabel + '）', getBase(city, legalDate.year).toLocaleString() + '元/月');
+    html += infoItem('退休年全省计发基数', getBaseProv(legalDate.year).toLocaleString() + '元/月');
+    html += infoItem('增发（法定）', legal.extraDesc);
+    html += infoItem('个人账户', legal.accDesc);
+    html += infoItem('过渡性', legal.transDesc);
+    document.getElementById('infoGrid').innerHTML = html;
+
+    // 滚动到结果
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) {
+    document.getElementById('infoGrid').innerHTML = '<div style="color:red;padding:20px">计算出错：' + e.message + '</div>';
+  }
+}
+
+// 页面加载时自动计算
+window.addEventListener('DOMContentLoaded', function() {
+  calculate();
+});
+</script>
+</body>
+</html>
