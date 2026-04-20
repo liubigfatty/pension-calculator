@@ -448,12 +448,38 @@ document.getElementById('indexInput').addEventListener('input', function() {
   });
 });
 
-// 计发月数表（精确到岁）
-var MONTHS_TABLE = {
+
+// 计发月数表（精确到岁，整数年龄）
+var MONTHS_TABLE_INT = {
   50: 195, 51: 190, 52: 185, 53: 180, 54: 175, 55: 170,
   56: 164, 57: 158, 58: 152, 59: 145, 60: 139, 61: 132,
   62: 125, 63: 117, 64: 109, 65: 101, 66: 92
 };
+
+// 精确计发月数表（按半年细分，来源：吉林省养老金计算规则§4.4.1）
+var MONTHS_TABLE_HALF = {
+  50.0: 195.0, 50.5: 192.5, 51.0: 190.0, 51.5: 187.5,
+  52.0: 185.0, 52.5: 182.5, 53.0: 180.0, 53.5: 177.5,
+  54.0: 175.0, 54.5: 172.5, 55.0: 170.0, 55.5: 167.5,
+  56.0: 164.0, 56.5: 161.5, 57.0: 158.0, 57.5: 155.5,
+  58.0: 152.0, 58.5: 149.5, 59.0: 145.0, 59.5: 142.5,
+  60.0: 139.0, 60.5: 136.1, 61.0: 132.0, 61.5: 128.6,
+  62.0: 125.0, 62.5: 121.4, 63.0: 117.0, 63.5: 113.4
+};
+
+// 计发月数：精确到月（按半年节点线性插值）
+function getMonths(ageExact) {
+  var age = Math.round(ageExact * 2) / 2; // 精确到0.5岁
+  if (MONTHS_TABLE_HALF[age] !== undefined) return MONTHS_TABLE_HALF[age];
+  // 在两个半年节点之间线性插值
+  var lo = Math.floor(age * 2) / 2;
+  var hi = lo + 0.5;
+  if (MONTHS_TABLE_HALF[lo] !== undefined && MONTHS_TABLE_HALF[hi] !== undefined) {
+    var frac = (ageExact - lo) / 0.5;
+    return Math.round((MONTHS_TABLE_HALF[lo] + (MONTHS_TABLE_HALF[hi] - MONTHS_TABLE_HALF[lo]) * frac) * 10) / 10;
+  }
+  return 139;
+}
 
 // 最低缴费年限相位表
 var MIN_YEARS = {
@@ -559,17 +585,6 @@ function getOriginalRetireAge(type) {
   return type === 'male' ? 60 : (type === 'fc' ? 55 : 50);
 }
 
-// 计发月数
-function getMonths(age) {
-  if (MONTHS_TABLE[age] !== undefined) return MONTHS_TABLE[age];
-  var lo = Math.floor(age), hi = Math.ceil(age);
-  if (MONTHS_TABLE[lo] !== undefined && MONTHS_TABLE[hi] !== undefined) {
-    var frac = age - lo;
-    return Math.round(MONTHS_TABLE[lo] + (MONTHS_TABLE[hi] - MONTHS_TABLE[lo]) * frac);
-  }
-  return 139;
-}
-
 // 最低缴费年限
 function getMinYears(retireYear) {
   if (MIN_YEARS[retireYear] !== undefined) return MIN_YEARS[retireYear];
@@ -605,13 +620,13 @@ function getAgeStr(totalMonths) {
 
 // 核心计算：给定退休时间，算养老金
 function calcPension(birth, work, retireDate, totalRetireMonths, city, idx, personalAccInput) {
-  var baseRetire = getBase(city, retireDate.year);
-  var baseProv = getBaseProv(retireDate.year);
+  var baseRetire = getBase(city, retireDate.year - 1);
+  var baseProv = getBaseProv(retireDate.year - 1);
   var cutoffDate = { year: 1995, month: 7 };
 
   // 退休年龄（精确）
   var retireAgeExact = totalRetireMonths / 12;
-  var months = getMonths(Math.round(retireAgeExact));
+  var months = getMonths(retireAgeExact);
 
   // 缴费年限拆分
   var hasSight = work.year < 1995 || (work.year === 1995 && work.month < 7);
@@ -850,8 +865,8 @@ function calculate() {
     }
     html += infoItem('最低缴费年限', legal.minYears + '年');
     html += infoItem('是否满足（法定）', legal.meetMin ? '✅ 已满足' : '❌ 未满足');
-    html += infoItem('退休年计发基数（' + cityLabel + '）', getBase(city, legalDate.year).toLocaleString() + '元/月');
-    html += infoItem('退休年全省计发基数', getBaseProv(legalDate.year).toLocaleString() + '元/月');
+    html += infoItem('退休上一年计发基数（' + cityLabel + '）', getBase(city, legalDate.year - 1).toLocaleString() + '元/月');
+    html += infoItem('退休上一年全省计发基数', getBaseProv(legalDate.year - 1).toLocaleString() + '元/月');
     html += infoItem('增发（法定）', legal.extraDesc);
     html += infoItem('个人账户', legal.accDesc);
     html += infoItem('过渡性', legal.transDesc);
