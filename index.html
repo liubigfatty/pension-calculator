@@ -897,7 +897,8 @@ function parseMonth(s) {
 }
 
 function calcYears(start, end) {
-  var totalMonths = (end.year - start.year) * 12 + (end.month - start.month);
+  // +1：起始月本身也是缴费月，采用闭区间 [start, end]
+  var totalMonths = (end.year - start.year) * 12 + (end.month - start.month) + 1;
   return Math.max(0, totalMonths / 12);
 }
 
