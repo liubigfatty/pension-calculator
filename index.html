@@ -818,20 +818,20 @@ var ACC_START = { year: 1995, month: 7 };
 
 // 吉林省历年计发基数（月均，元/月）
 var HIST_BASES_PROV = {
-  1995: 369, 1996: 448, 1997: 472, 1998: 546, 1999: 597,
-  2000: 660, 2001: 731, 2002: 833, 2003: 923, 2004: 1036,
-  2005: 1201, 2006: 1382, 2007: 1709, 2008: 1957, 2009: 2186,
-  2010: 2500, 2011: 2850, 2012: 3201, 2013: 3571, 2014: 3876,
-  2015: 4297, 2016: 4675, 2017: 5121, 2018: 5711, 2019: 6151,
-  2020: 5088, 2021: 6005, 2022: 6385, 2023: 6655, 2024: 7179,
-  2025: 7322
+  1995: 369.17, 1996: 447.50, 1997: 472.00, 1998: 545.92, 1999: 596.50,
+  2000: 660.33, 2001: 730.92, 2002: 832.50, 2003: 923.42, 2004: 1035.92,
+  2005: 1200.75, 2006: 1381.92, 2007: 1709.42, 2008: 1957.17, 2009: 2185.83,
+  2010: 2449.92, 2011: 2849.75, 2012: 3200.58, 2013: 3570.50, 2014: 3876.33,
+  2015: 4296.50, 2016: 4674.83, 2017: 5120.92, 2018: 5711.08, 2019: 6151.08,
+  2020: 5088.42, 2021: 6004.75, 2022: 6384.83, 2023: 6655.33, 2024: 7178.50,
+  2025: 7322.08
 };
 var HIST_BASES_CC = {
-  2020: 6928, 2021: 7298, 2022: 7604, 2023: 7727, 2024: 7853,
-  2025: 7978
+  2020: 6605.23, 2021: 6605.23, 2022: 7023.31, 2023: 7320.86, 2024: 7852.58,
+  2025: 7978.25
 };
-var BASE_CC_2025 = 7978;
-var BASE_PROV_2025 = 7322;
+var BASE_CC_2025 = 7978.25;
+var BASE_PROV_2025 = 7322.08;
 var CC_GROWTH = 0.026;
 var PROV_GROWTH = 0.0438;
 var MERGE_YEAR = 2031;
@@ -845,11 +845,11 @@ function getBase(city, year) {
     return HIST_BASES_PROV[year] || BASE_PROV_2025;
   }
   if (year < MERGE_YEAR) {
-    if (city === 'cc') return Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, year - 2025));
-    return Math.round(BASE_PROV_2025 * Math.pow(1 + PROV_GROWTH, year - 2025));
+    if (city === 'cc') return Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, year - 2025) * 100) / 100;
+    return Math.round(BASE_PROV_2025 * Math.pow(1 + PROV_GROWTH, year - 2025) * 100) / 100;
   }
-  var mergeBase = Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, MERGE_YEAR - 2025));
-  return Math.round(mergeBase * Math.pow(1 + CC_GROWTH, year - MERGE_YEAR));
+  var mergeBase = Math.round(BASE_CC_2025 * Math.pow(1 + CC_GROWTH, MERGE_YEAR - 2025) * 100) / 100;
+  return Math.round(mergeBase * Math.pow(1 + CC_GROWTH, year - MERGE_YEAR) * 100) / 100;
 }
 
 function getBaseProv(year) {
@@ -897,8 +897,7 @@ function parseMonth(s) {
 }
 
 function calcYears(start, end) {
-  // +1：起始月本身也是缴费月，采用闭区间 [start, end]
-  var totalMonths = (end.year - start.year) * 12 + (end.month - start.month) + 1;
+  var totalMonths = (end.year - start.year) * 12 + (end.month - start.month);
   return Math.max(0, totalMonths / 12);
 }
 
