@@ -1,0 +1,22 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# 测试结果
+test-verify-case.js
+test-verify-case2.js
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+.cache/

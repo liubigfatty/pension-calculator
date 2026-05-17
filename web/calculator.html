@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>吉林省养老金计算器</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #333; margin-bottom: 30px; }
+    h3 { color: #1976d2; margin: 20px 0 15px 0; border-bottom: 2px solid #1976d2; padding-bottom: 5px; }
+    .section { margin-bottom: 25px; }
+    label { display: inline-block; width: 160px; font-weight: bold; margin-bottom: 8px; }
+    input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 200px; }
+    .radio-group label { width: auto; margin-right: 20px; font-weight: normal; }
+    .mode-section { display: none; margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 6px; }
+    .btn-group { text-align: center; margin-top: 30px; }
+    button { padding: 12px 40px; margin: 0 15px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    #btn-calculate { background: #1976d2; color: #fff; }
+    #btn-calculate:hover { background: #1565c0; }
+    #btn-reset { background: #aaa; color: #fff; }
+    #btn-reset:hover { background: #888; }
+    #result { display: none; margin-top: 30px; }
+    .result-box table { width: 100%; border-collapse: collapse; }
+    .result-box th { background: #1976d2; color: #fff; padding: 10px; text-align: left; }
+    .result-box td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+    .tips { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🧮 吉林省城镇职工养老金计算器</h1>
+
+  <form id="calc-form">
+    <!-- 模式选择 -->
+    <div class="section">
+      <h3>① 输入模式</h3>
+      <div class="radio-group">
+        <label><input type="radio" name="mode" id="mode-simple" checked> 简单模式（选缴费档次自动算）</label>
+        <label><input type="radio" name="mode" id="mode-advanced"> 高级模式（逐年输入基数）</label>
+      </div>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="section">
+      <h3>② 基本信息</h3>
+      <div><label>退休地：</label><select id="city"><option value="changchun">长春市</option><option value="province">吉林省其他地市</option></select></div><br>
+      <div><label>人员类型：</label><select id="gender-type"><option value="male">男职工（60岁退）</option><option value="femaleWorker">女工人（50岁退）</option><option value="femaleCadre">女干部（55岁退）</option></select></div><br>
+      <div><label>出生年月：</label><input type="number" id="birth-year" value="1976" min="1940" max="2010" style="width:100px"> 年 <input type="number" id="birth-month" value="2" min="1" max="12" style="width:80px"> 月</div><br>
+      <div><label>参保时间：</label><input type="number" id="start-year" value="1998" min="1980" max="2030" style="width:100px"> 年 <input type="number" id="start-month" value="7" min="1" max="12" style="width:80px"> 月</div><br>
+      <div><label>退休时间：</label><input type="number" id="end-year" value="2036" min="1980" max="2050" style="width:100px"> 年 <input type="number" id="end-month" value="2" min="1" max="12" style="width:80px"> 月</div>
+    </div>
+
+    <!-- 简单模式：选档次 -->
+    <div id="simple-section" class="mode-section" style="display:block">
+      <h3>③ 缴费参数（简单模式）</h3>
+      <div class="tips">💡 系统将根据您选择的档次，自动生成历年缴费基数并计算。</div>
+      <div><label>平均缴费档次：</label><select id="payment-level"><option value="0.6">60%（最低档）</option><option value="0.7">70%</option><option value="0.8">80%</option><option value="1.0" selected>100%（社平）</option><option value="1.5">150%</option><option value="2.0">200%</option><option value="3.0">300%（最高档）</option></select></div><br>
+      <div><label>个人账户估算：</label><select id="account-estimate"><option value="auto">自动（按历年利率复利）</option><option value="simple">简化（按8%年化估算）</option></select></div>
+    </div>
+
+    <!-- 高级模式：逐年输入 -->
+    <div id="advanced-section" class="mode-section">
+      <h3>③ 缴费记录（高级模式）</h3>
+      <div class="tips">💡 点击"添加年度"按钮，逐年输入缴费基数。也可导入Excel/PDF（开发中）。</div>
+      <div id="contribution-list"></div>
+      <button type="button" onclick="addContributionRow()">+ 添加年度</button>
+    </div>
+
+    <!-- 其它加发 -->
+    <div class="section">
+      <h3>④ 其它加发（可选）</h3>
+      <div><label>劳动模范：</label><select id="model-worker"><option value="0">无</option><option value="1">市级劳模</option><option value="2">省级劳模</option><option value="3">国家级劳模</option></select></div><br>
+      <div><label>专业技术职称：</label><select id="tech-title"><option value="0">无</option><option value="1">高级职称</option><option value="2">正高级职称</option></select></div>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="btn-group">
+      <button type="button" id="btn-calculate">开始计算</button>
+      <button type="button" id="btn-reset">重置</button>
+    </div>
+  </form>
+
+  <!-- 结果展示 -->
+  <div id="result"></div>
+</div>
+
+<!-- 按正确顺序引入JS：数据 → 引擎 → 前端逻辑 -->
+<script src="../data/salary-history.js"></script>
+<script src="../data/interest-rates.js"></script>
+<script src="../data/payment-months.js"></script>
+<script src="../engine/core.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
