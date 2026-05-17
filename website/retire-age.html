@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法定退休年龄查询 - 养老金测算平台</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-content">
+      <a href="index.html" class="nav-brand">养老金测算</a>
+      <ul class="nav-menu">
+        <li><a href="pension.html" class="nav-link">基本养老金</a></li>
+        <li><a href="index.html" class="nav-link">缴费指数</a></li>
+        <li><a href="retire-age.html" class="nav-link active">退休年龄</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="container" style="max-width:600px;">
+      <div class="page-header">
+        <span class="back-link" onclick="history.back()">‹ 返回</span>
+        <h1 style="font-size:24px;font-weight:600;">法定退休年龄查询</h1>
+      </div>
+
+      <div class="form-card">
+        <div class="form-group">
+          <label class="label">性别</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="gender" value="male" checked> 男</label>
+            <label class="radio-label"><input type="radio" name="gender" value="female"> 女</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label">出生年月</label>
+          <input class="input" type="month" id="birthDate">
+        </div>
+
+        <button class="btn-primary" onclick="queryRetireAge()">查询退休年龄</button>
+      </div>
+
+      <div class="form-card" id="resultArea" style="display:none;">
+        <span class="section-title">查询结果</span>
+        <div class="param-row">
+          <span class="param-label">原法定退休年龄</span>
+          <span class="param-value" id="originalAge">-</span>
+        </div>
+        <div class="param-row">
+          <span class="param-label">延迟月数</span>
+          <span class="param-value" id="delayMonths">-</span>
+        </div>
+        <div class="param-row">
+          <span class="param-label">新法定退休年龄</span>
+          <span class="param-value highlight" id="newAge">-</span>
+        </div>
+        <div class="param-row">
+          <span class="param-label">法定退休日期</span>
+          <span class="param-value" id="retireDate">-</span>
+        </div>
+      </div>
+
+      <div class="form-card info-card">
+        <span class="info-title">政策依据</span>
+        <p style="font-size:14px;color:#4b5563;line-height:1.8;">
+          根据《全国人民代表大会常务委员会关于实施渐进式延迟法定退休年龄的决定》，从2025年1月1日起，用15年时间，逐步将男职工法定退休年龄延至63周岁，女职工法定退休年龄延至58周岁（女干部58周岁，女工人55周岁）。
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>本测算结果仅供参考，实际养老金以社保部门核定为准。</p>
+    </div>
+  </footer>
+
+  <script src="js/pension-engine-browser.js"></script>
+  <script>
+    function queryRetireAge() {
+      const birthDate = document.getElementById('birthDate').value;
+      if (!birthDate) { alert('请选择出生年月'); return; }
+      
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      const [birthY, birthM] = birthDate.split('-').map(Number);
+      const type = gender; // 'male' or 'fw' (female worker)
+      
+      const result = window.pensionEngine.getDelayResult(birthY, birthM, type);
+      
+      document.getElementById('originalAge').textContent = result.originalAgeStr;
+      document.getElementById('delayMonths').textContent = result.delayMonths + '个月';
+      document.getElementById('newAge').textContent = result.newAgeStr;
+      document.getElementById('retireDate').textContent = result.retireDate;
+      
+      document.getElementById('resultArea').style.display = 'block';
+      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
