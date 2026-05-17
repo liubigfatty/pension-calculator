@@ -1,0 +1,307 @@
+{
+  "province": "吉林省",
+  "province_code": "jl",
+  "region_type": "province",
+  "effective_date": "2015-01-01",
+  "policy_source": "吉政办明电〔2015〕11号",
+  "basic_pension": {
+    "formula": "(退休地上年计发基数 + 全省上年计发基数 × 本人平均缴费指数) / 2 × 累计缴费年限 × 1%",
+    "base_rate": 0.01
+  },
+  "excess_bonus": {
+    "trigger": "实际缴费年限 > 20年（不含视同年限）",
+    "calculation_basis": "累计缴费年限（视同+实际）",
+    "brackets": [
+      {
+        "start": 21,
+        "end": 25,
+        "rate": 0.0015,
+        "label": "第21—25年"
+      },
+      {
+        "start": 26,
+        "end": 30,
+        "rate": 0.002,
+        "label": "第26—30年"
+      },
+      {
+        "start": 31,
+        "end": null,
+        "rate": 0.0025,
+        "label": "31年及以上"
+      }
+    ]
+  },
+  "personal_account": {
+    "contribution_rate": 0.08,
+    "account_start": "1995-07-01",
+    "formula": "个人账户累计储存额 / 计发月数",
+    "balance_calculation": "历年缴入金额 × (1 + 当年记账利率) 的复利累计"
+  },
+  "transitional_pension": {
+    "formula": "全省上年计发基数 × 视同缴费年限 × 本人平均缴费指数 × 过渡系数",
+    "coefficient_threshold": "实际缴费年限 > 20年",
+    "coefficients": [
+      {
+        "if_actual_years_le_20": 0.012
+      },
+      {
+        "if_actual_years_gt_20": 0.014
+      }
+    ],
+    "default_viewed_start": "1995-07-01"
+  },
+  "base_rates": {
+    "note": "退休当年使用上一年度数据",
+    "city_specific": {
+      "enabled": true,
+      "city_name": "长春市",
+      "reason": "长春市有独立计发基数，其他地区用全省均值"
+    },
+    "historical": {
+      "1995": {
+        "province": 369.17,
+        "city": 406.09,
+        "source": "吉劳险字〔1995〕"
+      },
+      "1996": {
+        "province": 447.5,
+        "city": 492.25,
+        "source": "官方"
+      },
+      "1997": {
+        "province": 472,
+        "city": 519.2,
+        "source": "官方"
+      },
+      "1998": {
+        "province": 545.92,
+        "city": 600.51,
+        "source": "官方"
+      },
+      "1999": {
+        "province": 596.5,
+        "city": 656.15,
+        "source": "官方"
+      },
+      "2000": {
+        "province": 660.33,
+        "city": 726.36,
+        "source": "官方"
+      },
+      "2001": {
+        "province": 730.92,
+        "city": 804.01,
+        "source": "官方"
+      },
+      "2002": {
+        "province": 832.5,
+        "city": 915.75,
+        "source": "官方"
+      },
+      "2003": {
+        "province": 923.42,
+        "city": 1015.76,
+        "source": "官方"
+      },
+      "2004": {
+        "province": 1035.92,
+        "city": 1139.51,
+        "source": "吉劳社养字〔2005〕8号"
+      },
+      "2005": {
+        "province": 1200.75,
+        "city": 1320.83,
+        "source": "吉劳社养字〔2006〕12号"
+      },
+      "2006": {
+        "province": 1381.92,
+        "city": 1520.11,
+        "source": "吉劳社养字〔2007〕15号"
+      },
+      "2007": {
+        "province": 1709.42,
+        "city": 1880.36,
+        "source": "吉人社发〔2008〕18号"
+      },
+      "2008": {
+        "province": 1957.17,
+        "city": 2152.89,
+        "source": "吉人社发〔2009〕22号"
+      },
+      "2009": {
+        "province": 2185.83,
+        "city": 2404.41,
+        "source": "吉人社发〔2010〕30号"
+      },
+      "2010": {
+        "province": 2449.92,
+        "city": 2694.92,
+        "source": "吉人社发〔2011〕20号"
+      },
+      "2011": {
+        "province": 2849.75,
+        "city": 3134.73,
+        "source": "吉人社发〔2012〕25号"
+      },
+      "2012": {
+        "province": 3200.58,
+        "city": 3520.64,
+        "source": "吉人社发〔2013〕28号"
+      },
+      "2013": {
+        "province": 3570.5,
+        "city": 3927.55,
+        "source": "吉人社发〔2014〕32号"
+      },
+      "2014": {
+        "province": 3876.33,
+        "city": 4263.96,
+        "source": "吉人社联〔2015〕45号"
+      },
+      "2015": {
+        "province": 4296.5,
+        "city": 4726.15,
+        "source": "吉人社联〔2016〕50号"
+      },
+      "2016": {
+        "province": 4674.83,
+        "city": 5142.31,
+        "source": "吉人社联〔2017〕58号"
+      },
+      "2017": {
+        "province": 5120.92,
+        "city": 5633.01,
+        "source": "吉人社联〔2018〕65号"
+      },
+      "2018": {
+        "province": 5711.08,
+        "city": 6282.19,
+        "source": "吉人社联〔2019〕12号"
+      },
+      "2019": {
+        "province": 6151.08,
+        "city": 6766.19,
+        "source": "吉人社联〔2019〕89号"
+      },
+      "2020": {
+        "province": 5088.42,
+        "city": 6927.75,
+        "source": "吉人社联〔2020〕123号"
+      },
+      "2021": {
+        "province": 6004.75,
+        "city": 7297.75,
+        "source": "吉人社联〔2021〕209号"
+      },
+      "2022": {
+        "province": 6709.83,
+        "city": 7604.25,
+        "source": "吉人社联〔2022〕149号"
+      },
+      "2023": {
+        "province": 7058.67,
+        "city": 7726.67,
+        "source": "吉人社联〔2023〕158号"
+      },
+      "2024": {
+        "province": 7178.5,
+        "city": 7852.58,
+        "source": "吉人社联〔2024〕143号"
+      },
+      "2025": {
+        "province": 7322.08,
+        "city": 7978.25,
+        "source": "吉人社联〔2025〕97号"
+      }
+    }
+  },
+  "interest_rates": {
+    "2016_and_earlier": {
+      "2005": 0.0226,
+      "2008": 0.0393,
+      "2009": 0.0225,
+      "2010": 0.023,
+      "2013": 0.0325,
+      "2014": 0.05,
+      "2015": 0.05,
+      "1995_to_2004": 0.025,
+      "2006_to_2007": 0.025,
+      "2011_to_2012": 0.025
+    },
+    "2016_and_later": {
+      "2016": 0.0831,
+      "2017": 0.0712,
+      "2018": 0.0829,
+      "2019": 0.0761,
+      "2020": 0.0604,
+      "2021": 0.0669,
+      "2022": 0.0612,
+      "2023": 0.0397,
+      "2024": 0.0262,
+      "2025": 0.015
+    },
+    "2026_plus": 0.015,
+    "default_estimate": 0.025
+  },
+  "retirement_age": {
+    "male": {
+      "base_age": 60,
+      "delay_policy": "渐进式延迟",
+      "delay_source": "人社部发〔2024〕94号"
+    },
+    "female_cadre": {
+      "base_age": 55,
+      "delay_policy": "渐进式延迟"
+    },
+    "female_worker": {
+      "base_age": 50,
+      "delay_policy": "渐进式延迟"
+    },
+    "flexible_female": {
+      "base_age": 55,
+      "policy_source": "劳社部发〔2001〕20号第三条",
+      "note": "纯灵活就业女性55岁退休"
+    }
+  },
+  "special_additions": {
+    "model_worker": {
+      "provincial": 0.1,
+      "municipal": 0.05,
+      "base": "退休上年度市(州)全部职工月平均工资",
+      "condition": "退休时仍保持荣誉称号，1998年7月1日前获得"
+    },
+    "professional_title": {
+      "intermediate": 15,
+      "senior": 25,
+      "unit": "元/月",
+      "condition": "1998年7月1日前获得"
+    },
+    "special_hardship": {
+      "max_conversion": 5,
+      "note": "特殊工种工龄折算，最长不超过5年视同缴费年限"
+    }
+  },
+  "minimum_contribution_years": {
+    "2030": 15.5,
+    "2031": 16,
+    "2032": 16.5,
+    "2033": 17,
+    "2034": 17.5,
+    "2035": 18,
+    "2036": 18.5,
+    "2037": 19,
+    "2038": 19.5,
+    "2029_and_before": 15,
+    "2039_and_after": 20
+  },
+  "unit_contribution_rate": 0.16,
+  "flexible_contribution_rate": 0.2,
+  "flexible_personal_portion": 0.08,
+  "notes": {
+    "2020_base_switch": "全口径社平切换，年平均工资72057元/年",
+    "city_base_rule": "长春市用长春基数，其他地区用全省均值",
+    "uniform_province_base": "机关事业单位退休中人统一使用省直计发基数，不使用市县",
+    "cap_rule": "全省统一将退休前个人缴费工资基数的95%作为新老办法对比后基本养老金上限"
+  }
+}
