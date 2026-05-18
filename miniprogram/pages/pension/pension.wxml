@@ -73,7 +73,8 @@
         </radio-group>
       </view>
 
-      <view class="form-group" wx:if="{{gender === 'female'}}">
+      <!-- 企业职工显示女干部/女工人，灵活就业不显示 -->
+      <view class="form-group" wx:if="{{gender === 'female' && retireType === 'standard'}}">
         <text class="label">退休类型</text>
         <radio-group bindchange="onRetireTypeChange">
           <label class="radio-label">
@@ -104,7 +105,7 @@
         <input class="input" type="digit" placeholder="如 1.0 表示按100%缴费" bindinput="onIndexInput" value="{{avgIndex}}" />
       </view>
 
-      <view class="form-group" wx:if="{{hasSight}}">
+      <view class="form-group" wx:if="{{hasSight && retireType !== 'flexible'}}">
         <text class="label">视同缴费年限（年）</text>
         <input class="input" type="number" placeholder="如无视同缴费请输入0" bindinput="onSightInput" value="{{sightYears}}" />
       </view>

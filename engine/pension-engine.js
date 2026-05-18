@@ -542,69 +542,33 @@ function getMinYears(retireYear, config) {
  */
 function getBase(city, year, config) {
   const allRates = config.base_rates || {}
-  const isProvince = city === 'prov'
-
-  if (isProvince) {
-    const rates = allRates['prov']
-    if (rates && typeof rates === 'object') {
-      if (rates[year] !== undefined) return rates[year]
-      const keys = Object.keys(rates).map(Number).sort((a, b) => a - b)
-      for (let i = keys.length - 1; i >= 0; i--) {
-        if (keys[i] <= year) return rates[keys[i]]
-      }
-      // 2026+ 预测：全省年均增长 4.38%（至2030年），2031起年均增长 2.6%
-      const lastYear = keys[keys.length - 1]
-      const lastVal = rates[lastYear]
-      const growthRate = year <= 2030 ? 0.0438 : 0.026
-      return Math.round(lastVal * Math.pow(1 + growthRate, year - lastYear) * 100) / 100
-    }
-    return 0
-  }
-
-  // 城市基数：先查城市，城市没有再查全省
+  const provRates = allRates['prov'] || {}
   const cityRates = allRates[city]
-  if (cityRates && typeof cityRates === 'object') {
-    if (cityRates[year] !== undefined) return cityRates[year]
 
-    // 城市没有该年份数据 → 回退到全省基数
-    const provRates = allRates['prov']
-    if (provRates && typeof provRates === 'object') {
-      if (provRates[year] !== undefined) return provRates[year]
-      const keys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
-      for (let i = keys.length - 1; i >= 0; i--) {
-        if (keys[i] <= year) return provRates[keys[i]]
-      }
-      // 全省预测
-      const lastYear = keys[keys.length - 1]
-      const lastVal = provRates[lastYear] || 0
-      const growthRate = year <= 2030 ? 0.0438 : 0.026
-      return Math.round(lastVal * Math.pow(1 + growthRate, year - lastYear) * 100) / 100
-    }
-    // 城市有数据但无全省 → 城市最后一值
-    const keys = Object.keys(cityRates).map(Number).sort((a, b) => a - b)
-    const lastYear = keys[keys.length - 1]
-    const lastVal = cityRates[lastYear]
-    // 城市按年均2.6%增长
-    const growthRate = year <= 2030 ? 0.026 : 0.026
-    return Math.round(lastVal * Math.pow(1 + growthRate, year - lastYear) * 100) / 100
+  // 1. 精确年份匹配
+  if (cityRates && cityRates[year] !== undefined) return cityRates[year]
+  if (provRates[year] !== undefined) return provRates[year]
+
+  // 2. 向前回退到最近年份（城市表优先，再查全省）
+  const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
+  const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
+
+  // 从城市表向前找
+  for (let i = cityKeys.length - 1; i >= 0; i--) {
+    if (cityKeys[i] <= year) return cityRates[cityKeys[i]]
+  }
+  // 从全省向前找
+  for (let i = provKeys.length - 1; i >= 0; i--) {
+    if (provKeys[i] <= year) return provRates[provKeys[i]]
   }
 
-  // 城市代码不存在 → 直接回退全省
-  const provRates = allRates['prov']
-  if (provRates && typeof provRates === 'object') {
-    if (provRates[year] !== undefined) return provRates[year]
-    const keys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
-    for (let i = keys.length - 1; i >= 0; i--) {
-      if (keys[i] <= year) return provRates[keys[i]]
-    }
-    // 全省预测
-    const lastYear = keys[keys.length - 1]
-    const lastVal = provRates[lastYear] || 0
-    const growthRate = year <= 2030 ? 0.0438 : 0.026
-    return Math.round(lastVal * Math.pow(1 + growthRate, year - lastYear) * 100) / 100
+  // 3. 所有年份都大于查询年份 → 回退到最后已知年份
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  if (lastCityYear > lastProvYear) {
+    return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }
-
-  return 0
+  return provRates[lastProvYear] || 0
 }
 
 /**
@@ -716,8 +680,10 @@ function parseInput(inputData) {
     retireType,
     cityType,
     skipDelay,
-    // 性别映射到人员类型（支持中英文）
-    genderType: (gender === 'female' || gender === '女') ? 'fw' : 'male'
+    // 性别映射到人员类型（支持外部传入，支持中英文）
+    // 外部可传：male/fc/fw/fw55；未传入时按gender推断（female→fw）
+    genderType: inputData.genderType
+      || ((gender === 'female' || gender === '女') ? 'fw' : 'male')
   }
 }
 
@@ -1037,6 +1003,7 @@ function formatResult(result) {
 module.exports = {
   // 核心入口
   calculate,
+  calculateFlexible, // 灵活就业人员养老金计算
 
   // 计算模块
   calcBasicPension,
@@ -1063,5 +1030,62 @@ module.exports = {
   parseInput,
   formatMoney,
   getModuleName,
-  formatResult
+  formatResult,
+
+  // 灵活就业
+  calculateFlexible
 }
+
+// ============================================================
+// 灵活就业人员养老金计算
+// 核心公式与企业职工相同，差异：视同缴费=0，无干部/工人分类
+// ============================================================
+/**
+ * @param {Object} config - 省份配置
+ * @param {Object} input - 灵活就业人员输入
+ *   - name: 姓名
+ *   - gender: 'male' | 'female'
+ *   - birthDate: 'YYYY-MM'
+ *   - payDate: 'YYYY-MM' 开始缴费时间
+ *   - avgIndex: 平均缴费指数
+ *   - personalAcc: 个人账户余额
+ *   - province: 省份代码
+ * @returns {Object} 测算结果
+ */
+function calculateFlexible(config, input) {
+  const birthDate = input.birthDate || '';
+  const payDate = input.payDate || '';
+  
+  let birthYear, birthMonth;
+  if (birthDate && birthDate.indexOf('-') !== -1) {
+    const parts = birthDate.split('-');
+    birthYear = parseInt(parts[0]);
+    birthMonth = parseInt(parts[1]);
+  }
+  
+  let payYear, payMonth;
+  if (payDate && payDate.indexOf('-') !== -1) {
+    const parts = payDate.split('-');
+    payYear = parseInt(parts[0]);
+    payMonth = parseInt(parts[1]);
+  }
+  
+  // 构建引擎内部格式，强制视同缴费=0
+  const engineInput = {
+    name: input.name || '灵活就业人员',
+    gender: input.gender || 'female',
+    birthYear: birthYear || 0,
+    birthMonth: birthMonth || 1,
+    workYear: payYear || 0,
+    workMonth: payMonth || 1,
+    avgIndex: parseFloat(input.avgIndex) || 1.0,
+    cityType: input.cityType || 'prov',
+    retireType: 'flexible', // 灵活就业不区分干部/工人
+    personalAccInput: parseFloat(input.personalAcc) || null,
+    sightYears: 0, // 灵活就业无视同缴费
+    province: input.province || 'jilin'
+  };
+  
+  return calculate(config, engineInput);
+}
+

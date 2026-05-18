@@ -9,7 +9,8 @@
   <scroll-view scroll-y class="scroll-area">
     <!-- 主结果卡 -->
     <view class="main-card">
-      <text class="main-label">基本养老金总额</text>
+      <text class="main-label" wx:if="{{isFlexible}}">灵活就业人员基本养老金</text>
+      <text class="main-label" wx:else>基本养老金总额</text>
       <text class="main-amount">{{legalTotal}}</text>
       <text class="main-unit">元/月</text>
     </view>

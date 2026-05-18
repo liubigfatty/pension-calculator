@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>国家企业职工基本养老金测算平台</title>
+  <title>企业职工基本养老金测算平台</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -23,44 +23,143 @@
   <main class="main">
     <div class="container">
       <section class="hero">
-        <h1>养老金测算平台</h1>
-        <p class="hero-subtitle">国家企业职工基本养老金在线测算工具</p>
-        <p class="hero-desc">零门槛 · 无需注册 · 无需填报个人身份信息 · 即开即用</p>
+        <h1>企业职工基本养老金测算平台</h1>
+        <p class="hero-desc">无需注册打开即测，无需填报个人信息</p>
       </section>
 
       <section class="feature-grid">
-        <a href="pension.html" class="feature-card">
+        <a href="pension.html" class="feature-card" style="--card-bg:#8BA4BE;--card-light:#B8C9DB;">
           <div class="feature-icon">📊</div>
-          <h2>基本养老金测算</h2>
-          <p>四部分 + 弹性提前退休测算，覆盖全国各省份</p>
+          <div class="feature-text">
+            <h2>基本养老金测算</h2>
+            <p>已覆盖吉林省，其它省份逐步开放</p>
+          </div>
         </a>
-        <a href="pension.html" class="feature-card">
+        <a href="pension.html" class="feature-card" id="calcIndexCard" style="--card-bg:#A8C4A0;--card-light:#CDE0C7;">
           <div class="feature-icon">💰</div>
-          <h2>缴费水平测算</h2>
-          <p>计算平均缴费工资指数和个人账户累计储存额</p>
+          <div class="feature-text">
+            <h2>缴费水平测算</h2>
+            <p>平均缴费工资指数和个人账户累计储存额</p>
+          </div>
         </a>
-        <a href="retire-age.html" class="feature-card">
+        <a href="retire-age.html" class="feature-card" style="--card-bg:#C4A88A;--card-light:#DDD0C0;">
           <div class="feature-icon">📅</div>
-          <h2>法定退休年龄查询</h2>
-          <p>渐进式延迟法定退休年龄计算器</p>
+          <div class="feature-text">
+            <h2>法定退休年龄查询</h2>
+            <p>渐进式延迟法定退休年龄计算器</p>
+          </div>
         </a>
-      </section>
-
-      <section class="about-card">
-        <h2>关于平台</h2>
-        <p>本平台基于国办发〔2025〕5号《全国人民代表大会常务委员会关于实施渐进式延迟法定退休年龄的决定》，为Nation企业职工提供权威、准确的养老金测算服务。所有计算逻辑统一由参数化驱动引擎处理，确保不同平台结果一致。</p>
-        <ul class="about-list">
-          <li>✅ 覆盖全国各省份</li>
-          <li>✅ 支持渐进式延迟退休政策</li>
-          <li>✅ 计算结果与社保部门标准一致</li>
-        </ul>
       </section>
     </div>
   </main>
 
+  <!-- 缴费水平测算弹窗 -->
+  <div id="indexCalcModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="margin:0 0 16px;font-size:18px;">缴费水平测算</h3>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:14px;color:#666;display:block;margin-bottom:4px;">参保地区</label>
+        <select id="modalProvince" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+          <option value="jilin">吉林省</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:14px;color:#666;display:block;margin-bottom:4px;">月收入（元）</label>
+        <input id="modalIncome" type="number" placeholder="税前月工资收入" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+      </div>
+      <div id="modalResult" style="display:none;background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:16px;font-size:14px;line-height:1.6;">
+        <div>缴费指数：<strong id="modalIndex"></strong></div>
+        <div style="color:#666;font-size:12px;margin-top:4px;">（受社平工资60%~300%上下限约束）</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeModal()" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;">取消</button>
+        <button onclick="calcAndJump()" id="modalBtn" style="flex:1;padding:10px;border:none;border-radius:8px;background:#4A90E2;color:#fff;cursor:pointer;">去测算养老金</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    width: 340px;
+    max-width: 90vw;
+  }
+  </style>
+
+  <script>
+  document.getElementById('calcIndexCard').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('modalIncome').value = '';
+    document.getElementById('modalResult').style.display = 'none';
+    document.getElementById('modalBtn').disabled = false;
+    document.getElementById('modalBtn').textContent = '去测算养老金';
+    document.getElementById('indexCalcModal').classList.add('active');
+  });
+
+  function closeModal() {
+    document.getElementById('indexCalcModal').classList.remove('active');
+  }
+
+  async function calcAndJump() {
+    const income = parseFloat(document.getElementById('modalIncome').value);
+    const province = document.getElementById('modalProvince').value;
+    const resultDiv = document.getElementById('modalResult');
+    const btn = document.getElementById('modalBtn');
+    const indexEl = document.getElementById('modalIndex');
+
+    if (!income) {
+      alert('请输入月收入');
+      return;
+    }
+
+    // 获取省份配置，计算缴费指数
+    try {
+      btn.disabled = true;
+      btn.textContent = '计算中...';
+      const resp = await fetch(`js/provinces/${province}.json`);
+      const config = await resp.json();
+      const avgWage = config.base_salary_2025 || 8000;
+      const minBase = avgWage * 0.6;
+      const maxBase = avgWage * 3.0;
+      const contribBase = Math.min(Math.max(income, minBase), maxBase);
+      const avgIndex = contribBase / avgWage;
+
+      // 显示结果
+      indexEl.textContent = avgIndex.toFixed(4);
+      resultDiv.style.display = 'block';
+
+      // 跳转 pension.html，带上参数
+      const params = new URLSearchParams({ monthlyIncome: income, province: province });
+      btn.textContent = '跳转中...';
+      setTimeout(() => {
+        window.location.href = `pension.html?${params.toString()}`;
+      }, 500);
+    } catch(e) {
+      alert('计算失败，请重试');
+      btn.disabled = false;
+      btn.textContent = '去测算养老金';
+    }
+  }
+  </script>
+
   <footer class="footer">
     <div class="container">
-      <p>本测算结果仅供参考，实际养老金以社保部门核定为准。</p>
+      <p>测算结果仅供参考</p>
+      <p>以社保部门核定为准</p>
     </div>
   </footer>
 

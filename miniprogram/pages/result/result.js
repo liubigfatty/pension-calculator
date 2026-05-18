@@ -16,7 +16,8 @@ Page({
     flexDate: '',
     flexTotal: '0',
     flexAdvance: '0',
-    flexDiff: '0'
+    flexDiff: '0',
+    isFlexible: false  // 是否灵活就业人员
   },
 
   onLoad(options) {
@@ -24,6 +25,10 @@ Page({
     const r = JSON.parse(decodeURIComponent(options.result))
     const L = r.legal
     const F = r.flex
+    
+    // 判断是否为灵活就业人员
+    const userType = wx.getStorageSync('calc_userType') || 'standard'
+    const isFlexible = userType === 'flexible'
 
     this.setData({
       legalTotal: L.total?.toFixed(2) || '0',
@@ -41,7 +46,8 @@ Page({
       flexDate: `${F.date.year}年${F.date.month}月 (${F.ageStr})`,
       flexTotal: F.total?.toFixed(2) || '0',
       flexAdvance: r.comparison?.flexAdvance || 0,
-      flexDiff: Math.round(r.comparison?.amountDiff / (F.totalYears || 1) * 100) / 100
+      flexDiff: Math.round(r.comparison?.amountDiff / (F.totalYears || 1) * 100) / 100,
+      isFlexible: isFlexible
     })
   },
 
@@ -59,11 +65,14 @@ Page({
     const name = wx.getStorageSync('calc_name') || '-'
     const city = wx.getStorageSync('calc_city') || '全省'
     const province = wx.getStorageSync('calc_province') || '-'
+    const userType = wx.getStorageSync('calc_userType') || 'standard'
+    const userTypeText = userType === 'flexible' ? '灵活就业' : '企业职工'
     
     const report = `养老金测算报告
 
 ========== 基本信息 ==========
 参保人员：${name}
+参保类型：${userTypeText}
 参保地区：${province} - ${city}
 
 ========== 退休信息 ==========

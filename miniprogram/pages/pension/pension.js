@@ -13,7 +13,7 @@ Page({
     selectedProvince: null,
     cityList: [],
     selectedCity: null,
-    retireType: 'standard',
+    retireType: 'standard',  // 'standard' 企业职工 / 'flexible' 灵活就业
     femaleRetireType: 'standard',
     loading: false,
     hasSight: false
@@ -86,6 +86,12 @@ Page({
     const [birthY, birthM] = birthDate.split('-').map(Number)
     const [workY, workM] = workDate.split('-').map(Number)
 
+    // 灵活就业人员：视同缴费=0，无女干部/女工人分类
+    const isFlexible = retireType === 'flexible'
+    const effectiveSightYears = isFlexible ? 0 : (sightYears ? parseInt(sightYears) : 0)
+    const effectiveRetireType = isFlexible ? 'flexible' : 
+      (gender === 'female' ? femaleRetireType : 'standard')
+
     const input = {
       name,
       gender,
@@ -95,16 +101,21 @@ Page({
       workMonth: workM,
       avgIndex: parseFloat(avgIndex) || 1.0,
       cityType: selectedCity ? selectedCity.code : 'prov',
-      retireType: gender === 'female' ? femaleRetireType : retireType,
+      retireType: effectiveRetireType,
       personalAccInput: personalAccInput ? parseFloat(personalAccInput) : null,
-      sightYears: sightYears ? parseInt(sightYears) : 0
+      sightYears: effectiveSightYears
     }
 
     this.setData({ loading: true })
 
     // 调用引擎计算
     const engine = require('../../engine/pension-engine')
-    const result = engine.calculate(selectedProvince.config, input)
+    let result
+    if (isFlexible) {
+      result = engine.calculateFlexible(selectedProvince.config, input)
+    } else {
+      result = engine.calculate(selectedProvince.config, input)
+    }
 
     this.setData({ loading: false })
 
@@ -113,6 +124,7 @@ Page({
     wx.setStorageSync('calc_city', selectedCity ? selectedCity.name : '全省')
     wx.setStorageSync('calc_province', selectedProvince.name)
     wx.setStorageSync('calc_input', input)
+    wx.setStorageSync('calc_userType', retireType)
 
     // 跳转到结果页
     wx.navigateTo({

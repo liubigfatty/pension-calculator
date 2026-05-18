@@ -21,8 +21,8 @@
   <main class="main">
     <div class="container">
       <div class="page-header">
-        <span class="back-link" onclick="history.back()">‹ 返回</span>
-        <h1 style="font-size:24px;font-weight:600;">基本养老金测算</h1>
+        <a href="index.html" class="back-link">‹ 返回</a>
+        <h1>基本养老金测算</h1>
       </div>
 
       <div class="form-card">
@@ -35,11 +35,17 @@
           </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="cityGroup" style="display:none;">
           <label class="label">退休地</label>
           <select class="select" id="city">
-            <option value="prov">自动识别（默认全省）</option>
+            <option value="cc">长春市</option>
+            <option value="prov">其它地区</option>
           </select>
+        </div>
+
+        <div class="form-group">
+          <label class="label">参保时间</label>
+          <input class="input" type="month" id="workDate">
         </div>
       </div>
 
@@ -47,37 +53,20 @@
         <span class="section-title">人员信息</span>
 
         <div class="form-group">
-          <label class="label">姓名</label>
-          <input class="input" type="text" id="name" placeholder="请输入姓名">
-        </div>
-
-        <div class="form-group">
-          <label class="label">性别</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="gender" value="male" checked> 男</label>
-            <label class="radio-label"><input type="radio" name="gender" value="female"> 女</label>
-          </div>
+          <label class="label">人员类型</label>
+          <select class="select" id="personType">
+            <option value="">请选择人员类型</option>
+            <option value="male" data-insure="standard">企业职工·男</option>
+            <option value="fw" data-insure="standard">企业职工·女（原50岁）</option>
+            <option value="fc" data-insure="standard">企业职工·女（原55岁）</option>
+            <option value="eco_male" data-insure="flexible">灵活就业·男</option>
+            <option value="eco_female" data-insure="flexible">灵活就业·女</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label class="label">出生年月</label>
           <input class="input" type="month" id="birthDate">
-        </div>
-
-        <div class="form-group">
-          <label class="label">参保类型</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="type" value="standard" checked> 企业职工</label>
-            <label class="radio-label"><input type="radio" name="type" value="flexible"> 灵活就业人员</label>
-          </div>
-        </div>
-
-        <div class="form-group" id="femaleRetireType" style="display:none;">
-          <label class="label">退休类型</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="femaleType" value="fc" checked> 女干部</label>
-            <label class="radio-label"><input type="radio" name="femaleType" value="fw"> 女工人</label>
-          </div>
         </div>
       </div>
 
@@ -85,23 +74,19 @@
         <span class="section-title">缴费信息</span>
 
         <div class="form-group">
-          <label class="label">参加工作时间</label>
-          <input class="input" type="month" id="workDate">
-        </div>
-
-        <div class="form-group">
           <label class="label">平均缴费指数</label>
-          <input class="input" type="number" step="0.01" id="avgIndex" value="1.0" placeholder="如 1.0 表示按100%缴费">
+          <input class="input" type="number" step="0.01" id="avgIndex" value="1.0" placeholder="直接填写则优先使用">
         </div>
 
         <div class="form-group">
-          <label class="label">视同缴费年限（年）</label>
-          <input class="input" type="number" id="sightYears" value="0" placeholder="如无视同缴费请输入0">
+          <label class="label">月收入（元）</label>
+          <input class="input" type="number" id="monthlyIncome" placeholder="填写后自动换算缴费指数">
         </div>
 
         <div class="form-group">
           <label class="label">个人账户余额（元）</label>
-          <input class="input" type="number" id="personalAcc" placeholder="可查询社保APP获取，留空自动估算">
+          <input class="input" type="number" id="personalAcc" placeholder="留空自动估算">
+          <div style="font-size:12px;color:#9ca3af;margin-top:4px;">可在社保APP"养老保险"页面查询，留空则根据缴费年限估算</div>
         </div>
       </div>
 
@@ -114,7 +99,7 @@
     <div class="container" style="padding-bottom:40px;">
       <div class="page-header">
         <span class="back-link" onclick="document.getElementById('resultArea').style.display='none'; document.getElementById('formArea').style.display='block';">‹ 返回修改</span>
-        <h1 style="font-size:24px;font-weight:600;">测算结果</h1>
+        <h1>测算结果</h1>
       </div>
 
       <div class="main-result">

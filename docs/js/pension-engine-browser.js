@@ -257,7 +257,8 @@ function parseInput(inputData) {
     cityType: inputData.cityType || 'prov',
     retireType: inputData.retireType || 'standard'
   };
-  data.genderType = data.gender === 'male' ? 'male' : data.retireType === 'fc' ? 'fc' : 'fw';
+  data.genderType = inputData.genderType
+    || (data.gender === 'male' ? 'male' : data.retireType === 'fc' ? 'fc' : 'fw');
   return data;
 }
 
@@ -366,4 +367,4 @@ function getDelayResult(birthYear, birthMonth, type) {
 }
 
 // ==================== 导出 ====================
-window.pensionEngine = { calculate, getDelayMonths, getDelayResult };
+window.pensionEngine = { calculate, calculateFlexible, getDelayMonths, getDelayResult };

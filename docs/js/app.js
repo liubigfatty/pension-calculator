@@ -11,11 +11,183 @@ const PROVINCES = {
   'jiangsu': { name: '江苏省' }
 };
 
+// 表单字段配置
+const FIELD_CONFIG = {
+  birthDate: {
+    label: '出生年月',
+    validate: (v) => {
+      if (!v) return '请选择出生年月';
+      const [y, m] = v.split('-').map(Number);
+      const now = new Date();
+      if (y < 1960 || y > now.getFullYear() - 18) return '出生年份应在1960年至今';
+      return null;
+    }
+  },
+  workDate: {
+    label: '参保时间',
+    validate: (v, all) => {
+      if (!v) return '请选择参保时间';
+      const birth = all.birthDate;
+      if (birth) {
+        const [wy, wm] = v.split('-').map(Number);
+        const [by] = birth.split('-').map(Number);
+        if (wy < by + 16) return '参保时间不能早于16岁';
+      }
+      return null;
+    }
+  },
+  avgIndex: {
+    label: '平均缴费指数',
+    validate: (v) => {
+      const num = parseFloat(v);
+      if (!v || isNaN(num)) return '请输入平均缴费指数';
+      if (num < 0.6 || num > 3) return '缴费指数应在0.6~3.0之间';
+      return null;
+    }
+  },
+  personalAcc: {
+    label: '个人账户余额',
+    validate: (v) => {
+      if (!v) return null; // 可为空，自动估算
+      const num = parseFloat(v);
+      if (isNaN(num) || num < 0) return '个人账户余额不能为负数';
+      if (num > 200000) return '个人账户余额一般不超过20万';
+      return null;
+    }
+  },
+  monthlyIncome: {
+    label: '月收入',
+    validate: (v) => {
+      if (!v) return null; // 可为空
+      const num = parseFloat(v);
+      if (isNaN(num) || num < 0) return '月收入不能为负数';
+      return null;
+    }
+  }
+};
+
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
   initProvinceSelect();
   initGenderWatch();
+  initFormValidation();
+  initFromUrlParams();
 });
+
+// 从 URL 参数填充表单（首页跳转过来时自动带入月收入和省份）
+function initFromUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const monthlyIncome = params.get('monthlyIncome');
+  const province = params.get('province');
+  const avgIndex = params.get('avgIndex');
+
+  if (monthlyIncome) {
+    const el = document.getElementById('monthlyIncome');
+    if (el) el.value = monthlyIncome;
+  }
+  if (province) {
+    const el = document.getElementById('province');
+    if (el) {
+      el.value = province;
+      el.dispatchEvent(new Event('change')); // 触发省份变更事件
+    }
+  }
+  if (avgIndex) {
+    const el = document.getElementById('avgIndex');
+    if (el) el.value = avgIndex;
+  }
+
+  // 清除 URL 参数（不影响浏览器历史）
+  if (monthlyIncome || province || avgIndex) {
+    const cleanUrl = window.location.pathname;
+    history.replaceState(null, '', cleanUrl);
+  }
+}
+
+// 初始化表单实时校验
+function initFormValidation() {
+  Object.keys(FIELD_CONFIG).forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    
+    // 添加错误提示元素
+    const parent = el.closest('.form-group');
+    if (parent && !parent.querySelector('.form-error')) {
+      const errorEl = document.createElement('div');
+      errorEl.className = 'form-error';
+      parent.appendChild(errorEl);
+    }
+    
+    // 实时校验
+    el.addEventListener('blur', () => validateField(fieldId));
+    el.addEventListener('input', () => {
+      const parent = el.closest('.form-group');
+      if (parent?.classList.contains('error')) {
+        validateField(fieldId);
+      }
+    });
+  });
+}
+
+// 校验单个字段
+function validateField(fieldId) {
+  const config = FIELD_CONFIG[fieldId];
+  if (!config) return true;
+  
+  const el = document.getElementById(fieldId);
+  const parent = el.closest('.form-group');
+  const errorEl = parent?.querySelector('.form-error');
+  const value = el.value;
+  
+  // 收集其他字段值（用于交叉校验）
+  const allValues = {};
+  Object.keys(FIELD_CONFIG).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) allValues[id] = el.value;
+  });
+  
+  const error = config.validate(value, allValues);
+  
+  if (parent) {
+    parent.classList.remove('error', 'success');
+    if (error) {
+      parent.classList.add('error');
+      if (errorEl) errorEl.textContent = error;
+    } else if (value) {
+      parent.classList.add('success');
+    }
+  }
+  
+  return !error;
+}
+
+// 校验所有必填字段
+function validateForm() {
+  let isValid = true;
+  const values = {};
+  
+  // 收集所有字段值
+  Object.keys(FIELD_CONFIG).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) values[id] = el.value;
+  });
+  
+  // 校验每个字段
+  Object.keys(FIELD_CONFIG).forEach(fieldId => {
+    if (!validateField(fieldId)) {
+      isValid = false;
+    }
+  });
+  
+  // 省份必选
+  const provinceEl = document.getElementById('province');
+  if (!provinceEl?.value) {
+    isValid = false;
+    alert('请选择参保地区');
+  }
+  
+  return isValid;
+}
 
 // 初始化省份下拉框
 function initProvinceSelect() {
@@ -30,91 +202,129 @@ function initProvinceSelect() {
   });
 }
 
-// 监听性别变化，显示/隐藏女性退休类型
-function initGenderWatch() {
-  const radios = document.querySelectorAll('input[name="gender"]');
-  const femaleDiv = document.getElementById('femaleRetireType');
-  
-  radios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      if (femaleDiv) {
-        femaleDiv.style.display = this.value === 'female' ? 'block' : 'none';
-      }
-    });
-  });
-}
+// 监听人员类型变化（灵活就业无视同缴费年限，由引擎自动处理）
 
 // 省份变化时更新城市列表
 function onProvinceChange() {
   const select = document.getElementById('province');
+  const cityGroup = document.getElementById('cityGroup');
   const citySelect = document.getElementById('city');
   const code = select.value;
   
-  if (!code || !PROVINCES[code]) {
-    citySelect.innerHTML = '<option value="prov">自动识别（默认全省）</option>';
-    return;
+  // 只有吉林省才显示城市选项（长春单列基数）
+  if (code === 'jilin') {
+    cityGroup.style.display = 'block';
+    citySelect.value = 'cc';
+  } else {
+    cityGroup.style.display = 'none';
+    citySelect.value = 'prov';
   }
-  
-  // 默认所有省份只显示"全省"选项
-  citySelect.innerHTML = '<option value="prov">自动识别（默认全省）</option>';
 }
 
 // 计算养老金
 function calculate() {
+  // 校验表单
+  if (!validateForm()) return;
+
+  // 人员类型
+  const personType = document.getElementById('personType').value;
+  if (!personType) {
+    alert('请选择人员类型');
+    return;
+  }
+
   const province = document.getElementById('province').value;
-  if (!province) { alert('请选择参保地区'); return; }
-  
   const birthDate = document.getElementById('birthDate').value;
-  if (!birthDate) { alert('请选择出生年月'); return; }
-  
   const workDate = document.getElementById('workDate').value;
-  if (!workDate) { alert('请选择参加工作时间'); return; }
-  
-  const name = document.getElementById('name').value || '参保人员';
-  const gender = document.querySelector('input[name="gender"]:checked').value;
   const [birthY, birthM] = birthDate.split('-').map(Number);
   const [workY, workM] = workDate.split('-').map(Number);
   
-  const avgIndex = parseFloat(document.getElementById('avgIndex').value) || 1.0;
-  const sightYears = parseInt(document.getElementById('sightYears').value) || 0;
+  // 缴费指数：优先使用手动填写的指数，否则从月收入计算
+  const avgIndexInput = document.getElementById('avgIndex').value;
+  const monthlyIncome = document.getElementById('monthlyIncome').value ? 
+    parseFloat(document.getElementById('monthlyIncome').value) : null;
   const personalAcc = document.getElementById('personalAcc').value ? 
     parseFloat(document.getElementById('personalAcc').value) : null;
-  
-  const retireType = gender === 'female' ? 
-    (document.querySelector('input[name="femaleType"]:checked')?.value || 'fc') :
-    document.querySelector('input[name="type"]:checked').value;
-  
   const cityType = document.getElementById('city').value || 'prov';
-  
-  const input = {
-    name, gender,
+
+  // personType → 引擎参数映射
+  const PERSON_TYPE_MAP = {
+    'male':       { gender: 'male',   type: 'standard', genderType: 'male' },
+    'fw':         { gender: 'female', type: 'standard', genderType: 'fw'   },
+    'fc':         { gender: 'female', type: 'standard', genderType: 'fc'   },
+    'eco_male':   { gender: 'male',   type: 'flexible', genderType: 'male' },
+    'eco_female': { gender: 'female', type: 'flexible', genderType: 'fw55' },
+  };
+  const typeMap = PERSON_TYPE_MAP[personType] || PERSON_TYPE_MAP['male'];
+
+  // 视同缴费年限：灵活就业=0，企业职工=个人账户建立时间-参保时间（吉林省1995年7月）
+  let sightYears = 0;
+  if (typeMap.type !== 'flexible') {
+    const accountStart = { year: 1995, month: 7 }; // 吉林省企业职工养老保险个人账户建立时间
+    const monthsDiff = (accountStart.year - workY) * 12 + (accountStart.month - workM);
+    sightYears = Math.max(0, monthsDiff / 12);
+  }
+
+  // 原始数据传给 loadAndCalculate，在获取省份配置后计算缴费指数
+  loadAndCalculate(province, {
     birthYear: birthY, birthMonth: birthM,
     workYear: workY, workMonth: workM,
-    avgIndex, cityType,
-    retireType,
-    personalAccInput: personalAcc,
-    sightYears
-  };
-  
-  // 加载省份配置并计算
-  loadAndCalculate(province, input);
+    cityType,
+    userType: typeMap.type,
+    gender: typeMap.gender,
+    genderType: typeMap.genderType,
+    sightYears,
+    avgIndexInput,       // 可能是空字符串，由引擎决定默认值
+    monthlyIncome,
+    personalAccInput: personalAcc
+  }, typeMap.type);
 }
 
-async function loadAndCalculate(provinceCode, input) {
+async function loadAndCalculate(provinceCode, formData, userType) {
   const btn = document.getElementById('calcBtn');
   btn.disabled = true;
-  btn.textContent = '计算中...';
+  btn.innerHTML = '<span>计算中...</span>';
   
   try {
     const response = await fetch(`js/provinces/${provinceCode}.json`);
+    if (!response.ok) throw new Error('省份配置加载失败');
     const config = await response.json();
     
-    // 使用引擎计算（从 pension-engine.min.js 加载）
-    const result = window.pensionEngine.calculate(config, input);
+    // 缴费指数计算：优先使用手动填写的指数，否则从月收入计算
+    let avgIndex = parseFloat(formData.avgIndexInput);
+    if (isNaN(avgIndex) && formData.monthlyIncome) {
+      // 月收入 → 缴费基数（受社平60%~300%上下限约束）→ 缴费指数
+      const avgWage = config.base_salary_2025 || 8000; // 默认值
+      const minBase = avgWage * 0.6;
+      const maxBase = avgWage * 3.0;
+      const contribBase = Math.min(Math.max(formData.monthlyIncome, minBase), maxBase);
+      avgIndex = contribBase / avgWage;
+    }
+    if (isNaN(avgIndex)) avgIndex = 1.0; // 默认指数
+
+    const input = {
+      gender: formData.gender,
+      genderType: formData.genderType,
+      birthYear: formData.birthYear, birthMonth: formData.birthMonth,
+      workYear: formData.workYear, workMonth: formData.workMonth,
+      cityType: formData.cityType,
+      userType: formData.userType,
+      sightYears: formData.sightYears,
+      avgIndex,
+      personalAccInput: formData.personalAccInput
+    };
+    
+    // 根据参保类型选择引擎入口
+    let result;
+    if (userType === 'flexible') {
+      result = window.pensionEngine.calculateFlexible(config, input);
+    } else {
+      result = window.pensionEngine.calculate(config, input);
+    }
     displayResult(result);
   } catch(e) {
     console.error('计算失败:', e);
-    alert('计算失败，请稍后重试');
+    alert('计算失败：' + (e.message || '请稍后重试'));
   } finally {
     btn.disabled = false;
     btn.textContent = '重新测算';
@@ -197,7 +407,6 @@ function exportReport() {
 ========================================
 
 一、基本信息
-  参保人员：${window._lastResult?.metaData?.name || '-'}
   参保地区：${window._lastResult?.metaData?.city || '全省'}
   平均缴费指数：${window._lastResult?.metaData?.avgIndex || '-'}
 
