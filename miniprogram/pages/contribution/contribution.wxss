@@ -25,6 +25,29 @@
 
 .radio-label { margin-right: 24rpx; font-size: 28rpx; color: #374151; }
 
+.import-section {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0 24rpx;
+  gap: 16rpx;
+}
+.import-btn {
+  background: #10b981;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  padding: 8rpx 24rpx;
+  margin: 0;
+}
+.import-hint {
+  font-size: 22rpx;
+  color: #10b981;
+}
+.import-note {
+  font-size: 22rpx;
+  color: #6b7280;
+}
+
 .submit-section { padding: 20rpx 24rpx; }
 .submit-btn {
   background: #2563eb; color: #fff; border-radius: 12rpx; font-size: 32rpx; padding: 20rpx 0;

@@ -54,9 +54,28 @@
           <view class="picker-value">{{workDate || '请选择参加工作时间'}}</view>
         </picker>
       </view>
+      <!-- 导入方式选择 -->
+      <view class="import-section">
+        <button
+          class="import-btn"
+          size="mini"
+          bindtap="onImportExcel"
+          loading="{{excelImporting}}"
+        >
+          📄 导入Excel
+        </button>
+        <text class="import-hint" wx:if="{{importSource === 'excel'}}">✓ 数据已从Excel导入，可手动修改</text>
+        <text class="import-note" wx:if="{{importSource !== 'excel'}}">支持社保网站导出格式（缴费所属期+缴费基数），无需处理</text>
+      </view>
+
       <view class="form-group">
         <text class="label">平均缴费指数</text>
         <input class="input" type="digit" placeholder="如 1.0 表示按100%缴费" bindinput="onIndexInput" value="{{avgIndex}}" />
+      </view>
+
+      <view class="form-group">
+        <text class="label">个人账户余额（元）</text>
+        <input class="input" type="digit" placeholder="从Excel解析或手动填写" bindinput="onPersonalAccInput" value="{{personalAcc}}" />
       </view>
     </view>
 
