@@ -60,7 +60,7 @@
           <text class="breakdown-value">¥{{item.valueText}}</text>
         </view>
         <view class="breakdown-bar-track">
-          <view class="breakdown-bar-fill" style="width:{{item.pct}}%;background:{{item.color}}"></view>
+          <view class="breakdown-bar-fill" style="width: {{item.pct}}%; background: {{item.color}}"></view>
         </view>
         <text class="breakdown-formula">{{item.formula}}</text>
       </view>
