@@ -304,6 +304,20 @@
     <view class="action-row">
       <button class="btn-ghost" bindtap="onRestart">重新测算</button>
     </view>
+
+    <!-- 分享图预览弹窗 -->
+    <view class="share-overlay" wx:if="{{showSharePreview}}" bindtap="onCloseSharePreview">
+      <view class="share-preview-box" catchtap="">
+        <image class="share-preview-img" src="{{shareImagePath}}" mode="widthFix" />
+        <view class="share-preview-actions">
+          <button class="btn-ghost" bindtap="onCloseSharePreview">取消</button>
+          <button class="btn-primary" bindtap="onSaveShareImage">保存到相册</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- Canvas 2D（离屏，用于生成分享图） -->
+    <canvas type="2d" id="shareCanvas" class="share-canvas-offscreen"></canvas>
   </view>
 
 </view>

@@ -1,6 +1,25 @@
 // miniprogram/pages/pension/pension.js
 // 养老金测算 — 引导式流程 v4（同步 WorkBuddy 项目 index.js 改动）
 // 引用完整引擎 ../../../engine/pension-engine
+
+// ===== 辅助函数（Canvas 绘制用）=====
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+}
+
+function formatDate(d) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return y + '-' + m + '-' + day
+}
+
 const { calculatePension } = require('../../../engine/pension-engine')
 
 // 吉林省历年社平基数
@@ -144,7 +163,8 @@ Page({
 
     _yearData: {},
     _calcResult: null,
-  },
+    showSharePreview: false,
+    shareImagePath: '',
 
   onLoad() {
     this.setData({ provinceIndex: 0 })
@@ -656,13 +676,186 @@ Page({
 
   // ── Step 4 行动卡片 ──
   onShareImage() {
-    wx.showToast({ title: '分享图开发中', icon: 'none' })
+    this._drawShareImage()
   },
-  onExportReport() {
-    wx.showToast({ title: '报告导出开发中', icon: 'none' })
+  onCloseSharePreview() {
+    this.setData({ showSharePreview: false, shareImagePath: '' })
   },
-  onCustomConsult() {
-    wx.showToast({ title: '定制咨询开发中', icon: 'none' })
+  onSaveShareImage() {
+    const that = this
+    const path = this.data.shareImagePath
+    if (!path) return
+    wx.saveImageToPhotosAlbum({
+      filePath: path,
+      success() {
+        wx.showToast({ title: '已保存到相册', icon: 'success' })
+        that.setData({ showSharePreview: false })
+      },
+      fail(err) {
+        if (err.errMsg.indexOf('auth deny') !== -1) {
+          wx.showModal({
+            title: '提示',
+            content: '需要您授权保存图片到相册',
+            confirmText: '去授权',
+            success(mres) {
+              if (mres.confirm) wx.openSetting()
+            }
+          })
+        } else {
+          wx.showToast({ title: '保存失败', icon: 'none' })
+        }
+      }
+    })
+  },
+
+  _drawShareImage() {
+    const that = this
+    const d = this.data
+    const result = d._calcResult
+    if (!result) return
+
+    wx.showLoading({ title: '生成分享图...' })
+
+    const query = wx.createSelectorQuery()
+    query.select('#shareCanvas')
+      .fields({ node: true, size: true })
+      .exec((res) => {
+        if (!res[0]) {
+          wx.hideLoading()
+          wx.showToast({ title: 'Canvas 初始化失败', icon: 'none' })
+          return
+        }
+
+        const canvas = res[0].node
+        const ctx = canvas.getContext('2d')
+        const dpr = wx.getWindowInfo().pixelRatio || 2
+
+        // 分享图尺寸：750×1000
+        const W = 375
+        const H = 500
+        canvas.width = W * dpr
+        canvas.height = H * dpr
+        ctx.scale(dpr, dpr)
+
+        // ── 背景：顶部渐变蓝，底部白色 ──
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H)
+        bgGrad.addColorStop(0, '#1e3a5f')
+        bgGrad.addColorStop(0.35, '#2563eb')
+        bgGrad.addColorStop(1, '#ffffff')
+        ctx.fillStyle = bgGrad
+        ctx.fillRect(0, 0, W, H)
+
+        // ── 顶部品牌区 ──
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 11px PingFang SC, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('现实调音师', W / 2, 32)
+
+        ctx.font = '10px PingFang SC, sans-serif'
+        ctx.fillStyle = 'rgba(255,255,255,0.75)'
+        ctx.fillText('吉林省社保/养老金政策解读', W / 2, 48)
+
+        // ── 养老金总额卡片 ──
+        const cardY = 62
+        ctx.fillStyle = '#ffffff'
+        roundRect(ctx, 20, cardY, W - 40, 100, 12)
+        ctx.fill()
+
+        ctx.shadowColor = 'rgba(0,0,0,0.08)'
+        ctx.shadowBlur = 8
+        ctx.fillStyle = '#ffffff'
+        roundRect(ctx, 20, cardY, W - 40, 100, 12)
+        ctx.fill()
+        ctx.shadowBlur = 0
+
+        ctx.fillStyle = '#64748b'
+        ctx.font = '10px PingFang SC, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('每月可领取养老金（估算）', W / 2, cardY + 24)
+
+        ctx.fillStyle = '#1e3a5f'
+        ctx.font = 'bold 28px PingFang SC, sans-serif'
+        const totalText = '¥' + (d.totalPensionText || '0.00')
+        ctx.fillText(totalText, W / 2, cardY + 62)
+
+        ctx.fillStyle = '#94a3b8'
+        ctx.font = '8px PingFang SC, sans-serif'
+        ctx.fillText('实际金额以社保局核定为准', W / 2, cardY + 82)
+
+        // ── 分项明细 ──
+        const listY = cardY + 112
+        ctx.textAlign = 'left'
+        ctx.fillStyle = '#1e293b'
+        ctx.font = 'bold 11px PingFang SC, sans-serif'
+        ctx.fillText('养老金分项明细', 28, listY)
+
+        const items = d.breakdownList.filter(it => it.value > 0)
+        const barColors = ['#3b82f6','#8b5cf6','#059669','#f59e0b','#ec4899']
+        const barLabels = ['基础养老金', '个人账户', '过渡性', '其它加发', '增发养老金']
+
+        let barY = listY + 12
+        const maxVal = Math.max(...items.map(it => it.value), 1)
+
+        items.forEach((it, i) => {
+          // 标签
+          ctx.fillStyle = '#475569'
+          ctx.font = '9px PingFang SC, sans-serif'
+          ctx.fillText(barLabels[i] || it.label, 28, barY + 10)
+
+          // 金额
+          ctx.fillStyle = '#1e293b'
+          ctx.font = 'bold 9px PingFang SC, sans-serif'
+          ctx.textAlign = 'right'
+          ctx.fillText('¥' + it.valueText, W - 28, barY + 10)
+          ctx.textAlign = 'left'
+
+          // 条形图
+          const barX = 28
+          const barW = W - 56
+          const barH = 10
+          ctx.fillStyle = '#f1f5f9'
+          roundRect(ctx, barX, barY + 16, barW, barH, 5)
+          ctx.fill()
+
+          const fillW = Math.max(4, (it.value / maxVal) * barW)
+          ctx.fillStyle = barColors[i] || '#3b82f6'
+          roundRect(ctx, barX, barY + 16, fillW, barH, 5)
+          ctx.fill()
+
+          barY += 36
+        })
+
+        // ── 底部信息 ──
+        const footerY = H - 40
+        ctx.fillStyle = '#94a3b8'
+        ctx.font = '8px PingFang SC, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('养老金计算平台 · 数据仅供参考', W / 2, footerY)
+        ctx.fillText('测算时间：' + formatDate(new Date()), W / 2, footerY + 14)
+
+        // ── 导出图片 ──
+        wx.canvasToTempFilePath({
+          canvas,
+          x: 0,
+          y: 0,
+          width: W * dpr,
+          height: H * dpr,
+          destWidth: W * 2,
+          destHeight: H * 2,
+          fileType: 'png',
+          success(res) {
+            wx.hideLoading()
+            that.setData({
+              showSharePreview: true,
+              shareImagePath: res.tempFilePath,
+            })
+          },
+          fail() {
+            wx.hideLoading()
+            wx.showToast({ title: '生成图片失败', icon: 'none' })
+          }
+        })
+      })
   },
 
   _saveDraft() {
