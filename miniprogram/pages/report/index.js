@@ -1,362 +1,355 @@
 // pages/report/index.js
-// 养老金测算报告页 — 按用户10条要求重构
+// 变量名严格对齐 index.wxml 绑定字段（2026-05-23 重写版）
+
+const { PROV_BASE, CC_BASE } = require('../../data/pension')
 
 const PERSON_TYPE_LABELS = {
   male:      '企业职工·男',
-  fw:        '企业职工·女（原50岁）',
-  fc:        '企业职工·女（原55岁）',
+  fw:        '企业职工·女（原50岁退休）',
+  fc:        '企业职工·女（原55岁退休）',
   eco_male:  '灵活就业·男',
-  eco_female: '灵活就业·女',
+  eco_female:'灵活就业·女',
 }
-
-const CITY_MAP = {
-  cc:   '长春市',
-  prov: '吉林省其他地区',
-}
+const CITY_LABELS = { cc: '长春市', prov: '吉林省其他地区' }
 
 Page({
   data: {
-    reportDate: '',
-    // 人员信息（8项）
-    personTypeLabel: '',
-    birthDate: '',
-    workDate: '',
-    retireDate: '',
-    retireAge: '',
-    retireAgeMonths: '',
-    flexDate: '',
-    flexAge: '',
-    flexAgeMonths: '',
-    cityLabel: '',
-    totalYearsText: '',
-    // 缴费信息
+    // 一、人员信息
+    personTypeText: '',
+    inputCity: '',
+    inputBirth: '',
+    inputWork: '',
+    inputRetireDate: '',
+    inputRetireAge: '',
+    showFlex: false,
+    flexRetireDate: '',
+    flexRetireAge: '',
+
+    // 二、缴费信息
+    inputTotalYears: '',
+    inputSightYears: '',
+    inputActualYears: '',
     avgIndexText: '',
     avgIndexClass: '',
-    personalAccText: '',
-    // 法定退休计算结果
-    legalTotalText: '',
-    // 基础养老金
-    basicFormula: '',
-    basicSubstitute: '',
+    inputAcc: '',
+
+    // 三、法定退休养老金计算
+    baseRetireText: '',
+    baseProvText: '',
+    inputTotalYearsCalc: '',
+    avgIndexTextCalc: '',
     basicAmountText: '',
-    // 个人账户养老金
-    personalFormula: '',
-    personalSubstitute: '',
+    monthsText: '',
     personalAmountText: '',
-    // 过渡性养老金
-    transFormula: '',
-    transSubstitute: '',
+    sightYearsText: '',
     transAmountText: '',
-    // 增发养老金
-    extraFormula: '',
-    extraAmountText: '',
-    // 其它加发
-    bonusDesc: '',
-    bonusAmountText: '',
-    // 合计
-    totalFormula: '',
-    totalAmountText: '',
-    // 弹性提前退休
-    showFlex: false,
-    flexBasicFormula: '',
-    flexBasicSubstitute: '',
+    extraAmountText: '0.00',
+    extraFormulaText: '',
+    extraSubstitute: '',
+    bonusAmountText: '0.00',
+    bonusDescText: '',
+    totalPensionText: '',
+
+    // 四、弹性提前退休
+    flexBaseRetireText: '',
+    flexBaseProvText: '',
+    flexMonthsText: '',
     flexBasicAmountText: '',
-    flexPersonalFormula: '',
-    flexPersonalSubstitute: '',
     flexPersonalAmountText: '',
-    flexTransFormula: '',
-    flexTransSubstitute: '',
+    flexAccText: '',
+    flexSightYearsText: '',
     flexTransAmountText: '',
-    flexExtraAmountText: '',
-    flexBonusAmountText: '',
+    flexExtraAmountText: '0.00',
+    flexExtraFormulaText: '',
+    flexExtraSubstitute: '',
+    flexTotalYearsText: '',
+    flexTotalYearsCalc: '',
     flexTotalAmountText: '',
-    // 历年缴费明细
-    yearDetailList: [],
-    // 计发基数预测说明
-    basePredictText: '',
-    unifyYear: '',
-    // 免责
-    dataVersion: '',
+    diffText: '',
+
+    // 五、历年缴费明细
+    yearlyList: [],
+
+    // 六、重要说明
+    baseYearText: '',
+    baseSourceText: '',
+    hasPrediction: false,
+
+    // 七、免责
+    reportDate: '',
   },
 
   onLoad() {
-    this.setData({ reportDate: this._formatDate(new Date()) })
-
     const app = getApp()
-    const calcResult  = app.globalData.calcResult
-    const pensionInput = app.globalData.pensionInput
+    const result = app.globalData.calcResult || {}
+    const input  = app.globalData.pensionInput || {}
 
-    if (calcResult && pensionInput) {
-      this._fillReport(calcResult, pensionInput)
+    if (!result.legal) {
+      this._pendingFill = true
     } else {
-      wx.showToast({ title: '无测算数据，请重新测算', icon: 'none' })
+      this._doFill(result, input)
+      this._pendingFill = false
     }
   },
 
-  _fillReport(result, input) {
-    const legal = result.legal || {}
-    const flex  = result.flex  || null
-    const PROV_BASE = getApp().globalData.PROV_BASE || {}
+  onShow() {
+    if (!this._pendingFill) return
+    const app = getApp()
+    const result = app.globalData.calcResult || {}
+    const input  = app.globalData.pensionInput || {}
+    if (result.legal) {
+      this._doFill(result, input)
+      this._pendingFill = false
+    }
+  },
 
-    // ── 人员信息（8项）────
-    const personTypeLabel = PERSON_TYPE_LABELS[input.personType] || ''
-    const cityKey = input.city || 'prov'
-    const cityLabel = CITY_MAP[cityKey] || input.city || ''
+  // ──────────────────────────────────────────────
+  // 核心填充逻辑（只写一次，onLoad/onShow 共用）
+  // ──────────────────────────────────────────────
+  _doFill(result, input) {
+    const legal = result.legal || result
+    const flex  = result.flex || null
+    const showFlex = result.canFlex || !!(flex && flex.total > 0)
 
-    const birthDate = this._joinDate(input.birthYear, input.birthMonth)
+    const birthDate  = input.birthDate || '1970-01'
+    const workDate   = input.workDate  || '1995-01'
+    const bp = birthDate.split('-')
+    const wp = workDate.split('-')
+    const birthYear  = parseInt(bp[0]) || 1970
+    const birthMonth = parseInt(bp[1]) || 1
+    const workYear   = parseInt(wp[0]) || 1995
+    const workMonth  = parseInt(wp[1]) || 1
 
-    // 参加工作日期
-    const workDate = this._joinDate(input.workYear, input.workMonth)
+    // ── 一、人员信息 ────────────────────────
+    const personTypeText = PERSON_TYPE_LABELS[input.personType] || input.personType || ''
+    const inputCity     = input.cityLabel || CITY_LABELS[input.city] || input.city || ''
 
-    // 法定退休日期 & 年龄
-    const legalDate = legal.date || {}
-    const retireDate = legalDate.year ? legalDate.year + '.' + String(legalDate.month).padStart(2, '0') : '--'
-    const retireAge = legal.ageStr || (legal.age ? Math.floor(legal.age) + '岁' : '--')
+    const inputBirth   = birthYear + '年' + String(birthMonth).padStart(2, '0') + '月'
+    const inputWork    = workYear + '年' + String(workMonth).padStart(2, '0') + '月'
 
-    // 弹性提前退休日期 & 年龄
-    let flexDate = ''
-    let flexAge  = ''
-    let showFlex = false
-    if (flex && flex.date) {
-      showFlex = true
-      flexDate = flex.date.year ? flex.date.year + '.' + String(flex.date.month).padStart(2, '0') : '--'
-      flexAge  = flex.ageStr || (flex.age ? Math.floor(flex.age) + '岁' : '--')
+    // 退休时间（优先用引擎返回的 legalDate / legalTotalMonths）
+    const legalDate       = result.legalDate || {}
+    const legalTotalMonths = result.legalTotalMonths || 0
+    const retireYear  = legalDate.year  || (birthYear + this._calcRetireAge(input.personType))
+    const retireMonth = legalDate.month || birthMonth
+    const inputRetireDate = retireYear + '年' + String(retireMonth).padStart(2, '0') + '月'
+
+    const retireAgeYears  = legalTotalMonths > 0 ? Math.floor(legalTotalMonths / 12) : this._calcRetireAge(input.personType)
+    const retireAgeMonths = legalTotalMonths > 0 ? (legalTotalMonths % 12) : 0
+    const inputRetireAge = retireAgeMonths > 0
+      ? retireAgeYears + '岁' + retireAgeMonths + '个月'
+      : retireAgeYears + '岁'
+
+    // 弹性退休时间
+    let flexRetireDate = ''
+    let flexRetireAge  = ''
+    if (showFlex) {
+      const fd = result.flexDate || {}
+      const fm = result.flexTotalMonths || 0
+      if (fd.year) {
+        flexRetireDate = fd.year + '年' + String(fd.month || 1).padStart(2, '0') + '月'
+        const fAgeYears  = fm > 0 ? Math.floor(fm / 12) : (fd.year - birthYear)
+        const fAgeMonths = fm > 0 ? (fm % 12) : (fd.month >= birthMonth ? fd.month - birthMonth : 12 - birthMonth + fd.month)
+        flexRetireAge = fAgeMonths > 0
+          ? fAgeYears + '岁' + fAgeMonths + '个月'
+          : fAgeYears + '岁'
+      }
     }
 
-    // ── 缴费信息 ────
-    const avgIndex = legal.avgIndex || 0
-    const avgIndexText = avgIndex > 0 ? avgIndex.toFixed(4) : '--'
-    const avgIndexClass = this._indexClass(avgIndex)
+    // ── 二、缴费信息 ────────────────────────
+    const totalYearsNum  = legal.totalYears || 0
+    const sightYearsNum  = legal.sightYears || 0
+    const actualYearsNum = Math.max(0, totalYearsNum - sightYearsNum)
+    const inputTotalYears   = totalYearsNum.toFixed(2) + '年'
+    const inputSightYears  = sightYearsNum.toFixed(2) + '年'
+    const inputActualYears = actualYearsNum.toFixed(2) + '年'
 
-    // 个人账户储存额：从 yearData 逐年累加得出
-    const personalAcc = this._calcPersonalAcc(input.yearData, PROV_BASE)
-    const personalAccText = personalAcc > 0 ? '¥' + personalAcc.toLocaleString() : '--'
+    const avgIndexNum   = result.avgIndex || input.avgIndex || 0
+    const avgIndexText  = avgIndexNum.toFixed(4)
+    const avgIndexClass = avgIndexNum < 0.6 ? 'idx-red' : avgIndexNum < 1.0 ? 'idx-blue' : 'idx-green'
 
-    // ── 分项公式 & 代入数值（法定）────
+    const personalAcc = result.personalAcc || 0
+    const inputAcc = '¥' + personalAcc.toFixed(2)
+
+    // ── 三、法定退休养老金计算 ──────────────
+    const retireYear4Calc = retireYear
+    const baseRetireNum = legal.baseRetire || PROV_BASE[retireYear4Calc] || PROV_BASE[2025] || 0
+    const baseProvNum    = legal.baseProv   || PROV_BASE[retireYear4Calc] || PROV_BASE[2025] || 0
+
+    const baseRetireText = '¥' + baseRetireNum
+    const baseProvText   = '¥' + baseProvNum
+    const inputTotalYearsCalc = totalYearsNum.toFixed(2)
+    const avgIndexTextCalc  = avgIndexNum.toFixed(4)
+
     // 基础养老金
-    const baseRetire = legal.baseRetire || 0
-    const baseProv   = legal.baseProv   || 0
-    const totalYears = legal.totalYears || 0
-    const basicFormula      = '(退休地计发基数 + 全省计发基数 × 平均缴费指数) ÷ 2 × 累计缴费年限 × 1%'
-    const basicSubstitute  = '(' + baseRetire.toFixed(2) + ' + ' + baseProv.toFixed(2) + ' × ' + avgIndexText + ') ÷ 2 × ' + totalYears.toFixed(1) + '年 × 1%'
-    const basicAmountText  = (legal.basicPension && legal.basicPension.amount != null) ? legal.basicPension.amount.toFixed(2) : '0.00'
+    const basicAmountText = '¥' + ((legal.basicPension || 0).toFixed(2))
 
     // 个人账户养老金
-    const personalAccAmt   = (legal.personalAccount && legal.personalAccount.amount != null) ? legal.personalAccount.amount : 0
-    const personalMonths    = legal.months || 139
-    const personalFormula   = '个人账户储存额 ÷ 计发月数'
-    const personalSubstitute = personalAcc + ' ÷ ' + personalMonths
-    const personalAmountText = personalAccAmt.toFixed(2)
+    const monthsNum = legal.months || 139
+    const personalAmountText = '¥' + ((legal.personalPension || 0).toFixed(2))
+    const monthsText = String(monthsNum)
 
     // 过渡性养老金
-    const sightYears = legal.sightYears || 0
-    const transCoeff = 0.014
-    const transFormula     = '全省计发基数 × 视同缴费年限 × 平均缴费指数 × 过渡系数'
-    const transSubstitute  = baseProv.toFixed(2) + ' × ' + sightYears.toFixed(2) + '年 × ' + avgIndexText + ' × ' + (transCoeff * 100).toFixed(1) + '%'
-    const transAmountText  = (legal.transitionalPension && legal.transitionalPension.amount != null) ? legal.transitionalPension.amount.toFixed(2) : '0.00'
+    const sightYearsText  = sightYearsNum.toFixed(2) + '年'
+    const transAmountText = '¥' + ((legal.transPension || 0).toFixed(2))
 
-    // 增发养老金
-    const extraAmount     = (legal.extraPension && legal.extraPension.amount != null) ? legal.extraPension.amount : 0
-    const extraAmountText = extraAmount.toFixed(2)
-    const extraFormula    = extraAmount > 0 ? '按劳模/职称规则增发' : '无'
+    // 增发养老金（公式 + 代入过程）
+    const extraNum = legal.extraPension || 0
+    const extraAmountText = extraNum.toFixed(2)
+    let extraSubstitute = ''
+    if (extraNum > 0) {
+      const seg1 = Math.min(5, Math.max(0, totalYearsNum - 20))
+      const seg2 = Math.min(5, Math.max(0, totalYearsNum - 25))
+      const seg3 = Math.max(0, totalYearsNum - 30)
+      extraSubstitute = '代入：'
+      if (seg1 > 0) extraSubstitute += baseProvNum + ' × ' + seg1.toFixed(2) + '年 × ' + avgIndexText + ' × 0.15%'
+      if (seg2 > 0) extraSubstitute += (seg1 > 0 ? ' + ' : '') + baseProvNum + ' × ' + seg2.toFixed(2) + '年 × ' + avgIndexText + ' × 0.20%'
+      if (seg3 > 0) extraSubstitute += ((seg1 + seg2) > 0 ? ' + ' : '') + baseProvNum + ' × ' + seg3.toFixed(2) + '年 × ' + avgIndexText + ' × 0.25%'
+    }
+    const extraFormulaText = extraNum > 0
+      ? '实际缴费>20年部分，分段增发（0.15%/0.20%/0.25%）'
+      : '无'
 
-    // 其它加发
-    const bonusAmount     = (legal.specialAddition && legal.specialAddition.amount != null) ? legal.specialAddition.amount : 0
-    const bonusAmountText = bonusAmount.toFixed(2)
-    const bonusDesc      = legal.specialAddition && legal.specialAddition.desc ? legal.specialAddition.desc : '无'
+    // 其它加发（劳模/职称）
+    const bonusNum     = legal.bonusPension || 0
+    const bonusAmountText = bonusNum.toFixed(2)
+    const bonusDescText   = legal.bonusDesc || (bonusNum > 0 ? '按劳模/职称规则计算' : '无')
 
     // 合计
-    const total = legal.total || 0
-    const totalAmountText = total.toFixed(2)
+    const totalPensionText = '¥' + ((legal.total || 0).toFixed(2))
 
-    // 弹性提前退休差额
+    // ── 四、弹性提前退休（所有变量先给默认值）──
+    let flexBaseRetireText = ''
+    let flexBaseProvText   = ''
+    let flexMonthsText     = ''
+    let flexBasicAmountText   = ''
+    let flexPersonalAmountText = ''
+    let flexAccText         = ''
+    let flexSightYearsText   = ''
+    let flexTransAmountText   = ''
+    let flexExtraAmountText   = '0.00'
+    let flexExtraFormulaText  = ''
+    let flexExtraSubstitute   = ''
+    let flexTotalYearsText  = ''
+    let flexTotalYearsCalc  = ''
+    let flexTotalAmountText = ''
     let diffText = ''
+
     if (showFlex && flex) {
-      const fTotal = flex.total || 0
-      const diff = Math.round((total - fTotal) * 100) / 100
+      const fBaseRetireNum = flex.baseRetire || baseRetireNum
+      const fBaseProvNum   = flex.baseProv   || baseProvNum
+      flexBaseRetireText = '¥' + fBaseRetireNum
+      flexBaseProvText   = '¥' + fBaseProvNum
+      flexMonthsText     = String(flex.months || 170)
+      flexBasicAmountText   = '¥' + ((flex.basicPension || 0).toFixed(2))
+
+      // 个人账户（直接用引擎结果）
+      const fAcc = flex.personalAcc || 0
+      flexPersonalAmountText = '¥' + ((flex.personalPension || 0).toFixed(2))
+      flexAccText           = '¥' + fAcc.toFixed(2)
+
+      flexSightYearsText   = (flex.sightYears || sightYearsNum).toFixed(2) + '年'
+      flexTransAmountText   = '¥' + ((flex.transPension || 0).toFixed(2))
+
+      // 弹性缴费年限（用引擎返回的 flex.totalYears）
+      const fTotalYearsNum   = flex.totalYears || totalYearsNum
+      flexTotalYearsCalc  = fTotalYearsNum.toFixed(2)
+      flexTotalYearsText  = fTotalYearsNum.toFixed(2) + '年'
+
+      // 弹性增发（分段代入）
+      const fExtraNum = flex.extraPension || 0
+      flexExtraAmountText = fExtraNum.toFixed(2)
+      if (fExtraNum > 0) {
+        const fSeg1 = Math.min(5, Math.max(0, fTotalYearsNum - 20))
+        const fSeg2 = Math.min(5, Math.max(0, fTotalYearsNum - 25))
+        const fSeg3 = Math.max(0, fTotalYearsNum - 30)
+        flexExtraSubstitute = '代入：'
+        if (fSeg1 > 0) flexExtraSubstitute += fBaseProvNum + ' × ' + fSeg1.toFixed(2) + '年 × ' + avgIndexText + ' × 0.15%'
+        if (fSeg2 > 0) flexExtraSubstitute += (fSeg1 > 0 ? ' + ' : '') + fBaseProvNum + ' × ' + fSeg2.toFixed(2) + '年 × ' + avgIndexText + ' × 0.20%'
+        if (fSeg3 > 0) flexExtraSubstitute += ((fSeg1 + fSeg2) > 0 ? ' + ' : '') + fBaseProvNum + ' × ' + fSeg3.toFixed(2) + '年 × ' + avgIndexText + ' × 0.25%'
+      }
+
+      flexTotalAmountText = '¥' + ((flex.total || 0).toFixed(2))
+      const diff = Math.round(((legal.total || 0) - (flex.total || 0)) * 100) / 100
       diffText = (diff >= 0 ? '+' : '') + diff.toFixed(2)
     }
 
-    // 计发月数（用于代入公式展示）
-    const personalMonths = legal.months || 139
+    // ── 五、历年缴费明细 ─────────────────────
+    const PROV_BASE = app.globalData.PROV_BASE || {}
+    const CC_BASE   = app.globalData.CC_BASE   || {}
+    const yearlyList = this._buildYearlyList(input.yearData, PROV_BASE, CC_BASE, input.city)
 
-    // ── 弹性提前退休（如果可提前）────
-    let flexBasicFormula     = ''
-    let flexBasicSubstitute  = ''
-    let flexBasicAmountText  = ''
-    let flexPersonalFormula  = ''
-    let flexPersonalSubstitute = ''
-    let flexPersonalAmountText = ''
-    let flexTransFormula     = ''
-    let flexTransSubstitute  = ''
-    let flexTransAmountText  = ''
-    let flexExtraAmountText  = ''
-    let flexBonusAmountText  = ''
-    let flexTotalAmountText  = ''
+    // ── 六、重要说明 ────────────────────────
+    const baseYearText  = retireYear4Calc >= 2026 ? retireYear4Calc + '年（预测）' : retireYear4Calc + '年（已公布）'
+    const baseSourceText = retireYear4Calc >= 2026 ? '预测值（统一规则）' : '人社厅正式公布'
+    const hasPrediction = retireYear4Calc >= 2026
 
-    if (showFlex && flex) {
-      const fBaseRetire = flex.baseRetire || 0
-      const fBaseProv   = flex.baseProv   || 0
-      flexBasicFormula     = '(退休地计发基数 + 全省计发基数 × 平均缴费指数) ÷ 2 × 累计缴费年限 × 1%'
-      flexBasicSubstitute  = '(' + fBaseRetire.toFixed(2) + ' + ' + fBaseProv.toFixed(2) + ' × ' + avgIndexText + ') ÷ 2 × ' + totalYears.toFixed(1) + '年 × 1%'
-      flexBasicAmountText  = (flex.basicPension && flex.basicPension.amount != null) ? flex.basicPension.amount.toFixed(2) : '0.00'
+    // ── 七、免责 ──────────────────────────
+    const now = new Date()
+    const reportDate = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日'
 
-      const fPersonalAccAmt   = (flex.personalAccount && flex.personalAccount.amount != null) ? flex.personalAccount.amount : 0
-      const fPersonalMonths    = flex.months || personalMonths
-      flexPersonalFormula     = '个人账户储存额 ÷ 计发月数'
-      flexPersonalSubstitute  = personalAcc + ' ÷ ' + fPersonalMonths
-      flexPersonalAmountText = fPersonalAccAmt.toFixed(2)
-
-      const fSightYears = flex.sightYears || sightYears
-      flexTransFormula     = '全省计发基数 × 视同缴费年限 × 平均缴费指数 × 过渡系数'
-      flexTransSubstitute  = fBaseProv.toFixed(2) + ' × ' + fSightYears.toFixed(2) + '年 × ' + avgIndexText + ' × ' + (transCoeff * 100).toFixed(1) + '%'
-      flexTransAmountText  = (flex.transitionalPension && flex.transitionalPension.amount != null) ? flex.transitionalPension.amount.toFixed(2) : '0.00'
-
-      const fExtraAmount = (flex.extraPension && flex.extraPension.amount != null) ? flex.extraPension.amount : 0
-      flexExtraAmountText = fExtraAmount.toFixed(2)
-
-      const fBonusAmount = (flex.specialAddition && flex.specialAddition.amount != null) ? flex.specialAddition.amount : 0
-      flexBonusAmountText = fBonusAmount.toFixed(2)
-
-      const fTotal = flex.total || 0
-      flexTotalAmountText = fTotal.toFixed(2)
-    }
-
-    // ── 历年缴费明细 ────
-    const yearDetailList = this._buildYearDetails(input.yearData, PROV_BASE, avgIndex)
-
-    // ── 计发基数预测说明 ────
-    const basePredictText = this._buildBasePredictText(cityKey, PROV_BASE)
-
+    // ── setData（所有变量都在上面定义好了）──
     this.setData({
-      personTypeLabel,
-      birthDate,
-      workDate,
-      retireDate,
-      retireAge,
-      flexDate,
-      flexAge,
-      showFlex,
-      cityLabel,
-      totalYearsText: totalYears.toFixed(1) + '年',
-      avgIndexText,
-      avgIndexClass,
-      personalAccText,
-      personalMonths,
-      legalTotalText: totalAmountText,
-      diffText,
-      basicFormula,
-      basicSubstitute,
+      // 一
+      personTypeText, inputCity, inputBirth, inputWork,
+      inputRetireDate, inputRetireAge, showFlex, flexRetireDate, flexRetireAge,
+      // 二
+      inputTotalYears, inputSightYears, inputActualYears,
+      avgIndexText, avgIndexClass, inputAcc,
+      // 三
+      baseRetireText, baseProvText, inputTotalYearsCalc, avgIndexTextCalc,
       basicAmountText,
-      personalFormula,
-      personalSubstitute,
-      personalAmountText,
-      transFormula,
-      transSubstitute,
-      transAmountText,
-      extraFormula,
-      extraAmountText,
-      bonusDesc,
-      bonusAmountText,
-      totalAmountText,
-      showFlex,
-      flexBasicFormula,
-      flexBasicSubstitute,
-      flexBasicAmountText,
-      flexPersonalFormula,
-      flexPersonalSubstitute,
-      flexPersonalAmountText,
-      flexTransFormula,
-      flexTransSubstitute,
-      flexTransAmountText,
-      flexExtraAmountText,
-      flexBonusAmountText,
-      flexTotalAmountText,
-      yearDetailList,
-      basePredictText,
-      dataVersion: '数据版本：2025年计发基数（吉人社发〔2025〕XX号）',
+      monthsText, personalAmountText,
+      sightYearsText, transAmountText,
+      extraAmountText, extraFormulaText, extraSubstitute,
+      bonusAmountText, bonusDescText,
+      totalPensionText,
+      // 四
+      flexBaseRetireText, flexBaseProvText, flexMonthsText,
+      flexBasicAmountText, flexPersonalAmountText,
+      flexAccText, flexSightYearsText, flexTransAmountText,
+      flexExtraAmountText, flexExtraFormulaText, flexExtraSubstitute,
+      flexTotalYearsText, flexTotalYearsCalc,
+      flexTotalAmountText, diffText,
+      // 五
+      yearlyList,
+      // 六
+      baseYearText, baseSourceText, hasPrediction,
+      // 七
+      reportDate,
     })
   },
 
-  // 逐年计算个人账户储存额
-  _calcPersonalAcc(yearData, PROV_BASE) {
-    let acc = 0
-    const years = Object.keys(yearData || {}).map(Number).sort()
-    for (const y of years) {
+  // ── 历年缴费明细 ──────────────────────────
+  _buildYearlyList(yearData, PROV_BASE, CC_BASE, cityType) {
+    if (!yearData) return []
+    const years = Object.keys(yearData).map(Number).sort((a, b) => a - b)
+    return years.map(y => {
       const base = yearData[y] || 0
-      if (base <= 0) continue
-      const months = (y === 2025) ? 6 : 12
-      acc += base * 0.08 * months
-      const rate = PROV_BASE[y] ? 0.025 : 0.025
-      if (y < 2025) {
-        acc = Math.round(acc * (1 + rate))
+      const provBase = (cityType === 'cc' ? (CC_BASE[y] || 0) : (PROV_BASE[y] || 0))
+      const idx = provBase > 0 ? (base / provBase) : 0
+      const idxClass = idx < 0.6 ? 'idx-red' : idx < 1.0 ? 'idx-blue' : 'idx-green'
+      const months = (y === (new Date()).getFullYear()) ? 6 : 12
+      const deposit = Math.round(base * 0.08 * months * 100) / 100
+      return {
+        year: String(y),
+        baseText: String(base),
+        provBaseText: String(provBase),
+        indexText: idx.toFixed(4),
+        indexClass: idxClass,
+        depositText: '¥' + deposit.toFixed(2),
       }
-    }
-    return Math.round(acc)
+    })
   },
 
-  _buildYearDetails(yearData, PROV_BASE) {
-    const list = []
-    const years = Object.keys(yearData || {}).map(Number).sort()
-    for (const y of years) {
-      const base     = yearData[y] || 0
-      const avgWage  = PROV_BASE[y] || 0
-      const index    = avgWage > 0 ? base / avgWage : 0
-      list.push({
-        year:         y,
-        baseText:     base > 0 ? '¥' + base.toLocaleString() : '--',
-        avgWageText:  avgWage > 0 ? '¥' + avgWage.toLocaleString() : '--',
-        indexText:    index > 0 ? index.toFixed(4) : '--',
-        indexClass:   index > 0 ? this._indexClass(index) : '',
-        accText:      '', // 逐年个人账户累计（可选）
-      })
-    }
-    return list
+  // ── 估算退休年龄（备用）──────────────────
+  _calcRetireAge(personType) {
+    const map = { male: 60, fw: 50, fc: 55, eco_male: 60, eco_female: 55 }
+    return map[personType] || 60
   },
 
-  _indexClass(idx) {
-    if (idx < 1)  return 'index-low'
-    if (idx > 2)  return 'index-high'
-    return 'index-mid'
+  onSaveReport() {
+    wx.showToast({ title: '保存功能开发中', icon: 'none' })
   },
-
-  _joinDate(year, month) {
-    if (!year) return '--'
-    return year + '.' + String(month || 1).padStart(2, '0')
-  },
-
-  _formatDate(d) {
-    const y   = d.getFullYear()
-    const m   = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    return y + '-' + m + '-' + day
-  },
-
-  // 计发基数预测说明
-  _buildBasePredictText(cityKey, PROV_BASE) {
-    if (cityKey === 'cc') {
-      return '长春市计发基数与全省计发基数预计于2030年左右趋于一致，此后全省统一使用一个计发基数。预测规则：长春市年均增长约2.6%，全省其他地区年均增长约4.38%（预计2030年追平）。'
-    }
-    return '全省计发基数每年按约2.6%增长率预测（参考近5年平均涨幅）。'
-  },
-
-  // ── 事件 ──
-  onPayReport() {
-    wx.showToast({ title: '支付功能评估中，敬请期待', icon: 'none' })
-  },
-
-  onShareReport() {
-    wx.showShareMenu({ withShareTicket: true })
-  },
-
-  onCustomConsult() {
-    wx.showToast({ title: '定制咨询功能评估中，敬请期待', icon: 'none' })
-  },
-
-  onShareAppMessage() {
-    return {
-      title: '我的养老金测算报告 — 现实调音师',
-      path: '/pages/pension/index',
-    }
-  },
+  onBack() { wx.navigateBack() },
 })
