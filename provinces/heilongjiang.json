@@ -92,7 +92,10 @@
       "formula": "全省上年度月平均工资 × 视同缴费年限 × 指数 × 1.2%"
     },
     "special_addition": {
-      "enabled": false
+      "enabled": true,
+      "type": "fixed",
+      "amount": 45,
+      "label": "御寒津贴"
     }
   },
   "monthly_payment_months": {

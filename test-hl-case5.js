@@ -34,7 +34,7 @@ const official = {
   personal: 278.45,
   transitional: 263.88,
   other: 45.00,
-  total: 2047.59,
+  total: 2092.59,  // 官方"发放金额合计"含御寒津贴45元
   payout: 2092.59,
 };
 
