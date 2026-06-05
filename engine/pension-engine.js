@@ -265,17 +265,22 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
  * @returns {Object} 计算结果 { amount, description }
  */
 function calcTransitionalPension(params) {
-  const { provBase, sightYears, avgIndex, actualYears, totalYears, mod } = params
+  const { provBase, sightYears, avgIndex, actualYears, totalYears, mod, preAccountYears } = params
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
-  if (!sightYears || sightYears <= 0) return { amount: 0, description: '无视同缴费年限' }
+  // 云南特色：用建账前缴费年限替代视同缴费年限
+  const effectiveYears = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
+  if (!effectiveYears || effectiveYears <= 0) return { amount: 0, description: '无视同缴费年限' }
 
   // 选择系数：实际缴费年限 > 20年用较高系数
   const coef = actualYears > 20 ? mod.coefficient_over_20 : mod.coefficient_under_20
-  const amount = Math.round(provBase * sightYears * avgIndex * coef * 100) / 100
+  const amount = Math.round(provBase * effectiveYears * avgIndex * coef * 100) / 100
+
+  const yearsLabel = (preAccountYears != null && preAccountYears > 0) ? '建账前' : '视同'
+  const yearsValue = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
 
   return {
     amount,
-    description: `视同${sightYears.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × 指数${avgIndex.toFixed(2)} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    description: `${yearsLabel}${yearsValue.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × 指数${avgIndex.toFixed(2)} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
   }
 }
 
@@ -316,6 +321,23 @@ function calcSpecialAddition(params) {
     return {
       amount: amount,
       description: `${label}：月增 ${amount} 元`
+    }
+  } else if (mod.type === 'manual') {
+    // 手动选择增发项目（如黑龙江御寒津贴、吉林劳模/职称、各省独生子女等）
+    const selectedItems = params?.context?.items || []
+    let totalAmount = 0
+    const descParts = []
+    selectedItems.forEach(sel => {
+      const found = mod.items?.find(i => i.id === sel.id)
+      if (found) {
+        const amt = sel.amount != null ? sel.amount : found.defaultAmount || 0
+        totalAmount += amt
+        descParts.push(`${found.name}：${amt}元`)
+      }
+    })
+    return {
+      amount: totalAmount,
+      description: descParts.length > 0 ? `特殊增发：${descParts.join('，')}` : '未选择增发项目'
     }
   }
 
@@ -759,6 +781,17 @@ function calculate(config, inputData) {
   // 累计年限确定后，重新推算actualYears（用于增发分段计算）
   const actualYears = totalYears - sightYears
 
+  // 云南特色：建账前缴费年限（用于过渡性养老金）
+  // 如果配置中启用了 usePreAccountYears，则计算建账前缴费年限
+  let preAccountYears = null
+  if (config.usePreAccountYears === true) {
+    preAccountYears = calcYears(data.work, accountStartConfigured)
+  }
+  // 也支持用户显式指定（用于官方核定表验证场景）
+  if (data.preAccountYearsInput != null) {
+    preAccountYears = parseFloat(data.preAccountYearsInput)
+  }
+
   // ===== 计算各模块 =====
   // 计发基数查询逻辑：
   // 1. 优先使用用户显式传入的基数（官方核定表验证场景）
@@ -823,7 +856,8 @@ function calculate(config, inputData) {
     avgIndex: data.avgIndex,
     actualYears,
     totalYears,
-    mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 }
+    mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
+    preAccountYears
   })
 
   // 特殊增发
@@ -872,7 +906,8 @@ function calculate(config, inputData) {
     provBase: flexProvBase, sightYears, avgIndex: data.avgIndex,
     actualYears,
     totalYears,
-    mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 }
+    mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
+    preAccountYears
   })
 
   const flexTotal = Math.round((flexBasic.amount + flexExtra.amount + flexPersonal.amount + flexTrans.amount + specialAddition.amount) * 100) / 100
