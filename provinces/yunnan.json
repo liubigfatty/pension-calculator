@@ -331,6 +331,8 @@
     "transitional_pension": {
       "enabled": true,
       "coefficient": 0.013,
+      "coefficient_over_20": 0.013,
+      "coefficient_under_20": 0.013,
       "formula": "全省计发基数 × 视同缴费年限 × 指数 × 1.3%"
     },
     "special_addition": {
@@ -374,7 +376,7 @@
         "retireYear": 2025,
         "retireMonth": 9,
         "cityType": "prov",
-        "sightYears": 10.8333,
+        "sightYears": 10.0,
         "totalYears": 35.8333,
         "personalAcc": 83946.23,
         "avgIndex": 0.6757,
@@ -388,7 +390,7 @@
           "finalPension": 3988.99
         },
         "officialDocument": "云人社发〔2025〕?号（2025-09-19发布）",
-        "note": "视同缴费年限10.8333年（10年10个月），累计缴费年限35.8333年（35年10个月）；指数化月平均工资=8265×0.6757=5584.69元"
+        "note": "视同缴费年限10.0年（10年0月），累计缴费年限35.8333年（35年10个月）；指数化月平均工资=8265×0.6757=5584.81元；个人账户养老金截图写403.93应为印刷错误，正确值603.93=83946.23/139"
       },
       {
         "name": "云南案例2（2025年退休，男，60岁，预核定表）",
