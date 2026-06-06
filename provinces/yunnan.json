@@ -445,6 +445,33 @@
         },
         "officialDocument": "云人社发〔2024〕?号（2024年度计发基数8183元/月，预核定）",
         "note": "此案例来源为网友整理说明，非官方核定表截图；说明文字中过渡性养老金写726元（8183×0.6925×10×1.3%=726），但实际计算应为736.67元，说明文字有误；独生子女补贴按全省人均养老金3553元×5%=177元；引擎计算结果与正确公式一致"
+      },
+      {
+        "name": "云南案例5（2023年退休，女，50岁，楚雄州）",
+        "birthYear": 1973,
+        "birthMonth": 12,
+        "workYear": 1992,
+        "workMonth": 7,
+        "retireYear": 2023,
+        "retireMonth": 12,
+        "cityType": "prov",
+        "sightYears": 0.5,
+        "preAccountYears": 3.25,
+        "totalYears": 31.5,
+        "personalAcc": 127070.82,
+        "avgIndex": 0.9726,
+        "baseRetire": 8023,
+        "isPreApproval": false,
+        "results": {
+          "basePension": 2492.62,
+          "personalPension": 651.65,
+          "transitionalPension": 329.68,
+          "totalPension": 3473.95,
+          "oneChildSubsidy": 164.65,
+          "finalPension": 3638.6
+        },
+        "officialDocument": "云人社发〔2023〕41号（2023年度计发基数8023元/月）；云人社发〔2023〕41号（2022年度企业退休人员人均养老金3293元/月）",
+        "note": "楚雄彝族自治州审批；视同缴费年限仅0.5年极短，建账前缴费年限3.25年（1992-07至1995-10）；平均缴费指数0.9726由公式反推；待遇从2024-01起享受"
       }
     ],
     "special_notes": [
