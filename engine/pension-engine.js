@@ -718,7 +718,7 @@ function parseInput(inputData) {
   const skipDelay = inputData.skipDelay === true
 
   // monthsInput: 用户可显式指定计发月数（覆盖自动计算，用于提前退休验证场景）
-  const monthsInput = inputData.months != null ? parseInt(inputData.months) : null
+  const monthsInput = inputData.months != null ? parseFloat(inputData.months) : null
 
   return {
     name,
