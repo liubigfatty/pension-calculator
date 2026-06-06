@@ -1,0 +1,42 @@
+{
+  "case_id": "67",
+  "region": "甘肃省",
+  "province": "gansu",
+  "city": "全省",
+  "verified": true,
+  "note": "甘肃案例1（2025-05退休，男，60岁），来源于官方核定表",
+  "basic_info": {
+    "name": "匿名",
+    "gender": "男",
+    "birth_date": "1965-05",
+    "employment_start_date": "1989-07",
+    "retirement_date": "2025-05",
+    "retirement_age": 60,
+    "person_type": "企业职工",
+    "city_type": "prov"
+  },
+  "work_history": {
+    "sight_years": 6.42,
+    "actual_years": 29.42,
+    "total_years": 35.83,
+    "account_start": "1996-01"
+  },
+  "insurance_data": {
+    "personal_account_balance": 167590.39,
+    "avg_index": 1.2458,
+    "base_retire": 7594,
+    "base_prov": 7594
+  },
+  "pension_breakdown": {
+    "base_pension": 3055.33,
+    "personal_pension": 1205.69,
+    "transitional_pension": 728.85,
+    "total_pension": 4989.87
+  },
+  "reference": {
+    "source": "官方核定表截图",
+    "official_document": "甘肃省企业职工退休基本养老金领取资格认定表",
+    "calculation_date": "2025-05",
+    "remarks": "过渡系数1.2%（不分档）；无增发基础养老金；2025-05退休用2024年基数7594（2025年基数尚未公布）"
+  }
+}

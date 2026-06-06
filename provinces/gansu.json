@@ -40,9 +40,9 @@
       "2021": 4775.82,
       "2022": 5089.86,
       "2023": 5089.86,
-      "2024": 5089.86,
-      "2025": 5220,
-      "2026": 5364
+      "2024": 7594,
+      "2025": 7850,
+      "2026": 8100
     }
   },
   "interest_rates": {
@@ -146,32 +146,7 @@
       "formula": "(退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%"
     },
     "extra_pension": {
-      "enabled": true,
-      "trigger": {
-        "type": "total_years",
-        "threshold": 20
-      },
-      "brackets": [
-        {
-          "from": 21,
-          "to": 25,
-          "years": 5,
-          "rate": 0.0015
-        },
-        {
-          "from": 26,
-          "to": 30,
-          "years": 5,
-          "rate": 0.002
-        },
-        {
-          "from": 31,
-          "to": null,
-          "years": null,
-          "rate": 0.0025
-        }
-      ],
-      "formula": "累计缴费年限超20年部分分段累加计算"
+      "enabled": false
     },
     "personal_account": {
       "enabled": true,
@@ -179,9 +154,9 @@
     },
     "transitional_pension": {
       "enabled": true,
-      "coefficient_over_20": 0.014,
+      "coefficient_over_20": 0.012,
       "coefficient_under_20": 0.012,
-      "formula": "全省计发基数 × 视同缴费年限 × 指数 × 系数(>20年:1.4%,≤20年:1.2%)"
+      "formula": "全省计发基数 × 视同缴费年限 × 指数 × 1.2%"
     },
     "special_addition": {
       "enabled": false
@@ -193,9 +168,35 @@
       "name": "全省（默认）"
     }
   ],
+  "cases": [
+    {
+      "name": "甘肃案例1（2025年退休，男，60岁）",
+      "birthYear": 1965,
+      "birthMonth": 5,
+      "workYear": 1989,
+      "workMonth": 7,
+      "retireYear": 2025,
+      "retireMonth": 5,
+      "cityType": "prov",
+      "sightYears": 6.42,
+      "totalYears": 35.83,
+      "personalAcc": 167590.39,
+      "avgIndex": 1.2458,
+      "baseRetire": 7594,
+      "isPreApproval": false,
+      "results": {
+        "basePension": 3055.33,
+        "personalPension": 1205.69,
+        "transitionalPension": 728.85,
+        "totalPension": 4989.87
+      },
+      "officialDocument": "甘肃省企业职工退休基本养老金领取资格认定表（2025-05）",
+      "note": "2025-05退休用2024年基数7594（2025年基数尚未公布）；过渡系数统一1.2%（不分档）；无增发基础养老金；建账时间1996-01"
+    }
+  ],
   "notes": {
-    "policy": "甘肃省养老金计发基数基于估算数据（参考山东省社平工资×0.72系数），实际数据请向当地社保部门核实。",
-    "data_source": "估算数据，仅供参考",
-    "special_notes": "此配置文件为估算数据，正式使用前请核实当地真实计发基数。"
+    "policy": "甘肃省养老金计发基数基于官方核定表验证（2024年基数7594元），其他年份数据为估算。",
+    "data_source": "2024年基数来自官方核定表，其他年份为估算",
+    "special_notes": "甘肃过渡系数统一1.2%（不分档）；无增发基础养老金；建账时间1996-01"
   }
 }
