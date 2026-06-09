@@ -271,7 +271,22 @@ function calcTransitionalPension(params) {
   const effectiveYears = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
   if (!effectiveYears || effectiveYears <= 0) return { amount: 0, description: '无视同缴费年限' }
 
-  // 选择系数：实际缴费年限 > 20年用较高系数
+  // 北京特殊公式：过渡性养老金 = G同 + G实（京劳社养发〔1998〕21号）
+  if (mod.formula_type === "beijing") {
+    const coef = mod.coefficient || 0.01
+    // G同 = 全省基数 × 视同年限 × 1.0 × 系数
+    const G_tong = provBase * effectiveYears * 1.0 * coef
+    // G实 = 全省基数 × 建账前实际缴费年限 × Z实指数 × 系数
+    const preAcct = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : 0
+    const G_shi  = provBase * preAcct * avgIndex * coef
+    const amount  = Math.round((G_tong + G_shi) * 100) / 100
+    const desc   = 'G同' + effectiveYears.toFixed(2) + '年×1.0+' + G_tong.toFixed(2)
+                    + ' + G实' + preAcct.toFixed(2) + '年×指数' + avgIndex.toFixed(4) + '+' + G_shi.toFixed(2)
+                    + '，系数' + (coef * 100).toFixed(1) + '%'
+    return { amount, description: desc }
+  }
+
+  // 通用公式：全省计发基数 × 缴费年限 × 指数 × 系数
   const coef = actualYears > 20 ? mod.coefficient_over_20 : mod.coefficient_under_20
   const amount = Math.round(provBase * effectiveYears * avgIndex * coef * 100) / 100
 
