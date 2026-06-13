@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-06-12T13:45:59.176Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2024",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5222.63
+      },
+      "expected": {
+        "basic": 2636.89,
+        "extra": null,
+        "personal": 358.72,
+        "transitional": null,
+        "total": 5222.63
+      }
+    },
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2024-10",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 8.550000000000182,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3711.78,
+          "actual": 3709.97,
+          "diff": 1.8100000000004002
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 6898.6,
+          "actual": 6890.05,
+          "diff": 8.550000000000182
+        }
+      ],
+      "actual": {
+        "total": 6890.05
+      },
+      "expected": {
+        "basic": 3711.78,
+        "extra": null,
+        "personal": 1932.58,
+        "transitional": null,
+        "total": 6898.6
+      }
+    }
+  ]
+}

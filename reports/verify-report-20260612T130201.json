@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T13:02:01.946Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2024",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 250.25,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 1609.23,
+          "actual": 1370.72,
+          "diff": 238.51
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 2030.12,
+          "actual": 1779.87,
+          "diff": 250.25
+        }
+      ],
+      "actual": {
+        "total": 1779.87
+      },
+      "expected": {
+        "basic": 1609.23,
+        "extra": null,
+        "personal": 342.57,
+        "transitional": null,
+        "total": 2030.12
+      }
+    }
+  ]
+}

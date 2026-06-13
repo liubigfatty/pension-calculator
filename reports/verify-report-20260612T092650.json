@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T09:26:50.246Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "liaoning",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.05999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 5502.36
+      },
+      "expected": {
+        "basic": 2800.1,
+        "extra": 306.55,
+        "personal": 934.33,
+        "transitional": null,
+        "total": 5502.36
+      }
+    }
+  ]
+}

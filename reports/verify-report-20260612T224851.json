@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-06-12T22:48:51.771Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 4,
+  "results": [
+    {
+      "province": "hubei",
+      "caseId": "hubei-huangshi-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3061.83
+      },
+      "expected": {
+        "basic": 1703.36,
+        "extra": null,
+        "personal": 185.92,
+        "transitional": null,
+        "total": 3061.83
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-wuhan-2022",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 2808.37
+      },
+      "expected": {
+        "basic": 2086,
+        "extra": null,
+        "personal": 722.38,
+        "transitional": null,
+        "total": 2808.38
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-jingzhou-2024",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2440.57
+      },
+      "expected": {
+        "basic": 1813.33,
+        "extra": null,
+        "personal": 344.62,
+        "transitional": null,
+        "total": 2440.57
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-wuhan-2024-male",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4806.75
+      },
+      "expected": {
+        "basic": 3067.7,
+        "extra": null,
+        "personal": 629.06,
+        "transitional": null,
+        "total": 4806.75
+      }
+    }
+  ]
+}

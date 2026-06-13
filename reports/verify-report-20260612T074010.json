@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T07:40:10.333Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jiangsu",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 6.2800000000002,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2650.16,
+          "actual": 2656.44,
+          "diff": 6.2800000000002
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4124.36,
+          "actual": 4130.59,
+          "diff": 6.230000000000473
+        }
+      ],
+      "actual": {
+        "total": 4130.59
+      },
+      "expected": {
+        "basic": 2650.16,
+        "extra": null,
+        "personal": 635.47,
+        "transitional": null,
+        "total": 4124.36
+      }
+    }
+  ]
+}

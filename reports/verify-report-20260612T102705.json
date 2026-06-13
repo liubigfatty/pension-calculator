@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T10:27:05.221Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "henan",
+      "caseId": "henan-yuyu-2026",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 369.90999999999985,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2525.58,
+          "actual": 2470.13,
+          "diff": 55.44999999999982
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3715.96,
+          "actual": 3346.05,
+          "diff": 369.90999999999985
+        }
+      ],
+      "actual": {
+        "total": 3346.05
+      },
+      "expected": {
+        "basic": 2525.58,
+        "extra": null,
+        "personal": 511,
+        "transitional": null,
+        "total": 3715.96
+      }
+    }
+  ]
+}

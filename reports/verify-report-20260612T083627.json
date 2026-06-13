@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T08:36:27.999Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "heilongjiang",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.7399999999997817,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3888.02,
+          "actual": 3887.28,
+          "diff": 0.7399999999997817
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 7005.5,
+          "actual": 7004.93,
+          "diff": 0.569999999999709
+        }
+      ],
+      "actual": {
+        "total": 7004.93
+      },
+      "expected": {
+        "basic": 3888.02,
+        "extra": null,
+        "personal": 1512.3,
+        "transitional": null,
+        "total": 7005.5
+      }
+    }
+  ]
+}

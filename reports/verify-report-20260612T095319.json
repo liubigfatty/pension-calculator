@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-12T09:53:19.074Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "shandong",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 31,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 3314.9,
+          "actual": 3283.9,
+          "diff": 31
+        }
+      ],
+      "actual": {
+        "total": 3283.9
+      },
+      "expected": {
+        "basic": 2101.96,
+        "extra": null,
+        "personal": 572.79,
+        "transitional": null,
+        "total": 3314.9
+      }
+    }
+  ]
+}

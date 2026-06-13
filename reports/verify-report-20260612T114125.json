@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-12T11:41:25.676Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5519.31
+      },
+      "expected": {
+        "basic": 3064.27,
+        "extra": null,
+        "personal": 695.53,
+        "transitional": null,
+        "total": 5519.31
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2024",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 6384.25
+      },
+      "expected": {
+        "basic": 3345.84,
+        "extra": null,
+        "personal": 811.39,
+        "transitional": null,
+        "total": 6384.25
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-female-2025",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2335.17
+      },
+      "expected": {
+        "basic": 1769.13,
+        "extra": null,
+        "personal": 566.04,
+        "transitional": null,
+        "total": 2335.17
+      }
+    }
+  ]
+}

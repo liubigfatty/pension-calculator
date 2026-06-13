@@ -1,0 +1,25 @@
+{
+  "case_id": "hainan-2025-male-low-index",
+  "province": "hainan",
+  "city": "海南",
+  "gender": "男",
+  "birth": "1965年11月",
+  "work_start": "1988年9月",
+  "retire_year": 2025,
+  "retire_month": 11,
+  "total_years": 36.25,
+  "sight_years": 6.33,
+  "pre_account_years": 9.33,
+  "personal_account": 94318.99,
+  "baseRetire": 8188,
+  "baseProv": 8188,
+  "months": 139,
+  "avgIndex": 0.7703,
+  "expected": {
+    "basic_pension": 2627.26,
+    "personal_pension": 678.55,
+    "transitional_pension": 824.14,
+    "total": 4129.95
+  },
+  "notes": "海南2025年11月退休男职工，1965-11生，1988-09参工。视同6.33年+建账前实际3年=9.33年建账前年限。低指数0.7703。上年度全省在岗年均98256→月均8188。无补贴。琼府〔2022〕40号。"
+}

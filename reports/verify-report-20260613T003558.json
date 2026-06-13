@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-13T00:35:58.582Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "guizhou",
+      "caseId": "guizhou-2023-male",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3900000000003274,
+      "diffs": null,
+      "actual": {
+        "total": 6219.83
+      },
+      "expected": {
+        "basic": 3216.48,
+        "extra": null,
+        "personal": 1003.84,
+        "transitional": null,
+        "total": 6219.44
+      }
+    },
+    {
+      "province": "guizhou",
+      "caseId": "guizhou-2024-female",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.11999999999989086,
+      "diffs": null,
+      "actual": {
+        "total": 2268.77
+      },
+      "expected": {
+        "basic": 1666.24,
+        "extra": null,
+        "personal": 360.33,
+        "transitional": null,
+        "total": 2268.65
+      }
+    },
+    {
+      "province": "guizhou",
+      "caseId": "guizhou-2023-female",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.13999999999987267,
+      "diffs": null,
+      "actual": {
+        "total": 2567.43
+      },
+      "expected": {
+        "basic": 1806.69,
+        "extra": null,
+        "personal": 456.01,
+        "transitional": null,
+        "total": 2567.29
+      }
+    }
+  ]
+}

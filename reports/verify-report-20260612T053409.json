@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-06-12T05:34:09.536Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 1,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "hunan",
+      "file": "1.json",
+      "status": "skip",
+      "reason": "省份配置缺失: hunan"
+    }
+  ]
+}

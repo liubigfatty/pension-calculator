@@ -1,0 +1,34 @@
+{
+  "case_id": "1",
+  "province": "sichuan",
+  "city": "成都",
+  "gender": "女",
+  "birth_year": 1974,
+  "birth_month": 3,
+  "work_year": 2007,
+  "work_month": 1,
+  "retire_year": 2024,
+  "retire_month": 4,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 2007,
+    "month": 1
+  },
+  "sight_years": 0,
+  "actual_years": 17.33,
+  "total_years": 17.33,
+  "avg_index": 0.84,
+  "base_number": 8079,
+  "personal_account": 91147.87,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1288.08,
+    "personal_pension": 467.42,
+    "transition_pension": 0,
+    "extra_pension": 117.61,
+    "total": 1873.11
+  },
+  "verified": true,
+  "notes": "四川案例1，女性50岁正常退休（非工薪人员）。2007年1月参加工作，建账时间2007年1月。无视同缴费年限，无过渡性养老金。实际缴费17年4个月（208个月）。平均缴费指数0.84，指数化月平均工资6786.36元。基础养老金1288.08，个人账户养老金467.42，月增发养老金117.61（四川特色：指数化工资×0.1%×年限），合计1873.11元。",
+  "data_source": "四川省社会保险业务办理结果通知单（企业养老退休待遇核定），川劳社发〔2006〕17号，2024年04月退休"
+}

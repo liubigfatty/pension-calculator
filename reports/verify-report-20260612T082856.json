@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T08:28:56.992Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "yunnan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3000000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 5075.85
+      },
+      "expected": {
+        "basic": 3087.42,
+        "extra": 177.65,
+        "personal": 736.87,
+        "transitional": null,
+        "total": 5075.55
+      }
+    }
+  ]
+}

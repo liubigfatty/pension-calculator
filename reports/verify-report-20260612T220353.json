@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T22:03:53.970Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.27999999999974534,
+      "diffs": null,
+      "actual": {
+        "total": 4186.08
+      },
+      "expected": {
+        "basic": 2633.36,
+        "extra": null,
+        "personal": 695.02,
+        "transitional": null,
+        "total": 4185.8
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "5",
+  "province": "sichuan",
+  "city": "全省",
+  "gender": "男",
+  "birth_year": 1960,
+  "birth_month": 8,
+  "work_year": 1979,
+  "work_month": 11,
+  "retire_year": 2020,
+  "retire_month": 8,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "pre_account_months": 194,
+  "pre_account_years": 16.17,
+  "sight_years": 13.67,
+  "actual_years": 27.17,
+  "total_years": 40.83,
+  "avg_index": 0.7,
+  "base_number": 7041,
+  "personal_account": 52139.03,
+  "months": 139,
+  "expected": {
+    "basic_pension": 2443.81,
+    "personal_pension": 375.10,
+    "transition_pension": 1257.82,
+    "extra_pension": 201.30,
+    "total": 4278.03
+  },
+  "verified": true,
+  "notes": "四川案例5，男性60岁正常退休（2020年案例，核定表未列增发养老金）。1979年11月参加工作，建账1996年1月，1995年底前未建账缴费194个月（16.17年）。视同缴费13.67年（164个月），实际缴费27.17年（326个月），累计40.83年（490个月）。平均缴费指数0.7。个人账户52139.03元。基础养老金2443.81，个人账户养老金375.10，过渡性养老金1257.82，引擎计算增发201.30，合计4278.03元。核定表合计4076.73（未含增发，可能2020年增发政策未完全实施）。",
+  "data_source": "四川省社会保险业务办理结果通知单（企业养老退休待遇核定），川劳社发〔2006〕17号，2020年08月退休"
+}

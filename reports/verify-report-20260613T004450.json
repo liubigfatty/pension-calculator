@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-13T00:44:50.629Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2023-female",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000023647,
+      "diffs": null,
+      "actual": {
+        "total": 2430.31
+      },
+      "expected": {
+        "basic": 1793.01,
+        "extra": null,
+        "personal": 446.67,
+        "transitional": null,
+        "total": 2430.55
+      }
+    },
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2026-male",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2300000000000182,
+      "diffs": null,
+      "actual": {
+        "total": 3963.83
+      },
+      "expected": {
+        "basic": 2655.44,
+        "extra": null,
+        "personal": 757.29,
+        "transitional": null,
+        "total": 3964.06
+      }
+    }
+  ]
+}

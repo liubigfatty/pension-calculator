@@ -1,0 +1,28 @@
+{
+  "case_id": "4",
+  "province": "beijing",
+  "city": "朝阳区",
+  "gender": "female",
+  "birth_year": 1972,
+  "birth_month": 11,
+  "work_year": 1990,
+  "work_month": 3,
+  "retire_year": 2022,
+  "retire_month": 11,
+  "actual_years": 25.03,
+  "sight_years": 2.58,
+  "total_years": 30.05,
+  "pre_account_years": 5.67,
+  "avg_index": 1.82595,
+  "transIndex": 1.035,
+  "base_number": 11082,
+  "personal_account": 413932.35,
+  "months": 195,
+  "expected": {
+    "basic_pension": 4705.61,
+    "personal_pension": 2122.73,
+    "transitional_pension": 936.30,
+    "total": 7764.64
+  },
+  "notes": "女工人50岁退休2022.11，参工1990.03。G同=285.92(2.58年×11082×1%)，G实=650.38(5.67年×Z实1.035×1%)。表上视同5.02年含建账后视同。"
+}

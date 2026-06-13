@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T13:02:21.002Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2024",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.15999999999985448,
+      "diffs": null,
+      "actual": {
+        "total": 2029.96
+      },
+      "expected": {
+        "basic": 1609.23,
+        "extra": null,
+        "personal": 342.57,
+        "transitional": null,
+        "total": 2030.12
+      }
+    }
+  ]
+}

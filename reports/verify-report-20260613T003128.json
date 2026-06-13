@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-13T00:31:28.066Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "guizhou",
+      "caseId": "guizhou-2023-male",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3900000000003274,
+      "diffs": null,
+      "actual": {
+        "total": 6219.83
+      },
+      "expected": {
+        "basic": 3216.48,
+        "extra": null,
+        "personal": 1003.84,
+        "transitional": null,
+        "total": 6219.44
+      }
+    }
+  ]
+}

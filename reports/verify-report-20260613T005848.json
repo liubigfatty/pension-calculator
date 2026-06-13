@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-13T00:58:48.595Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "xizang",
+      "caseId": "xizang-2026-female-45",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2400.77
+      },
+      "expected": {
+        "basic": 1766.55,
+        "extra": null,
+        "personal": 634.22,
+        "transitional": null,
+        "total": 2400.77
+      }
+    }
+  ]
+}

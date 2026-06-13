@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T08:36:43.385Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "heilongjiang",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3000000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 7005.66
+      },
+      "expected": {
+        "basic": 3888.02,
+        "extra": null,
+        "personal": 1512.3,
+        "transitional": null,
+        "total": 7005.5
+      }
+    }
+  ]
+}

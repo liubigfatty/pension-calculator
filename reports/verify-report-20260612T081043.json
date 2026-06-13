@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-06-12T08:10:43.646Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 0,
+    "error": 1
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "yunnan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "error",
+      "reason": "Cannot access 'rate' before initialization",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 2492.62,
+        "extra": 164.65,
+        "personal": 651.65,
+        "transitional": null,
+        "total": 3638.6
+      }
+    }
+  ]
+}

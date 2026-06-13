@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-06-12T23:58:56.126Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 2,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "ningxia",
+      "caseId": "ningxia-2024-male",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 2.930000000000291,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2828.37,
+          "actual": 2830,
+          "diff": 1.6300000000001091
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4477.36,
+          "actual": 4480.29,
+          "diff": 2.930000000000291
+        }
+      ],
+      "actual": {
+        "total": 4480.29
+      },
+      "expected": {
+        "basic": 2828.37,
+        "extra": null,
+        "personal": 688.86,
+        "transitional": null,
+        "total": 4477.36
+      }
+    },
+    {
+      "province": "ningxia",
+      "caseId": "ningxia-2026-male",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 61.86999999999989,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 4331.58,
+          "actual": 4269.71,
+          "diff": 61.86999999999989
+        }
+      ],
+      "actual": {
+        "total": 4269.71
+      },
+      "expected": {
+        "basic": 2771.13,
+        "extra": null,
+        "personal": 879.95,
+        "transitional": null,
+        "total": 4331.58
+      }
+    }
+  ]
+}

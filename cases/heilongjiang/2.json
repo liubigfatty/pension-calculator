@@ -1,0 +1,27 @@
+{
+  "case_id": "2",
+  "province": "heilongjiang",
+  "city": "哈尔滨市",
+  "gender": "female",
+  "birth_year": 1976,
+  "birth_month": 5,
+  "work_year": 2005,
+  "work_month": 5,
+  "retire_year": 2026,
+  "retire_month": 5,
+  "actual_years": 19.58,
+  "sight_years": 0,
+  "total_years": 19.58,
+  "avg_index": 2.2977,
+  "base_number": 7705,
+  "personal_account": 236263.93,
+  "months": 195,
+  "early_retire_months": 9,
+  "expected": {
+    "basic_pension": 2487.94,
+    "personal_pension": 1211.61,
+    "transitional_pension": 0,
+    "total": 3699.55
+  },
+  "notes": "黑龙江女工人50岁2026.05提前退休（因病/破产提前9个月）。参工2005.05（建账后），纯新人无过渡。高指数2.30，高个账23.6万。提前退休减发比例待确认"
+}

@@ -1,0 +1,28 @@
+{
+  "case_id": "1",
+  "province": "jilin",
+  "city": "通化市",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 8,
+  "work_year": 1981,
+  "work_month": 4,
+  "retire_year": 2025,
+  "retire_month": 8,
+  "actual_years": 29.17,
+  "sight_years": 15.25,
+  "total_years": 44.42,
+  "avg_index": 0.46,
+  "base_number": 7322.08,
+  "base_prov": 7322.08,
+  "personal_account": 69844.83,
+  "months": 139,
+  "expected": {
+    "basic_pension": 2374.3,
+    "extra_pension": 286.23,
+    "personal_pension": 502.48,
+    "transitional_pension": 719.1,
+    "total": 3882.11
+  },
+  "notes": "吉林通化男60岁2025.08退休。累计44.42年（实际29.17+视同16.25）。通化用全省基数7322.08。分段增发：21-25年0.15%=40.09，26-30年0.2%=53.45，31年+0.25%=192.69，合计286.23。过渡系数1.4%（实际>20年）。"
+}

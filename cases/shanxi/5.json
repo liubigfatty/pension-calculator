@@ -1,0 +1,22 @@
+{
+  "case_id": "shanxi-taiyuan-2023-female",
+  "province": "shanxi",
+  "gender": "女",
+  "birth": "1973年04月",
+  "work_start": "1992年08月",
+  "retire_year": 2023,
+  "retire_month": 4,
+  "total_years": 20.75,
+  "sight_years": 4.92,
+  "personal_account": 48083.07,
+  "baseRetire": 6897,
+  "months": 195,
+  "avgIndex": 0.6392,
+  "expected": {
+    "basic_pension": 1172.94,
+    "personal_pension": 246.58,
+    "transitional_pension": 281.78,
+    "total": 1701.30
+  },
+  "notes": "山西太原，女1973-04生，1992-08参工，2023-04退休(50岁)。视同4年11月=4.92年(1992-08至1998-07=5年11月，表写4.91667)。累计20.75年。单指数0.6392。个人=48083.07/195=246.58精确。过渡=4408.49×4.91667×1.3%=281.78。2023年基数6897。"
+}

@@ -1,0 +1,22 @@
+{
+  "case_id": "anhui-hefei-2025-female",
+  "province": "anhui",
+  "gender": "女",
+  "birth": "1975年02月",
+  "work_start": "1994年03月",
+  "retire_year": 2025,
+  "retire_month": 2,
+  "total_years": 31,
+  "sight_years": 1.9,
+  "personal_account": 80355.67,
+  "baseRetire": 7842,
+  "months": 195,
+  "avgIndex": 0.5952,
+  "expected": {
+    "basic_pension": 1938.98,
+    "personal_pension": 412.08,
+    "transitional_pension": 115.29,
+    "total": 2466.35
+  },
+  "notes": "安徽合肥，女1975-02生(档案)，1994-03参工，2025-02退休(50岁)。视同1年10月=1.9年，累计31年。2024年基数7842。过渡=7842×0.5952×1.3%×1.9=115.29。皖政2006〔59〕号文。"
+}

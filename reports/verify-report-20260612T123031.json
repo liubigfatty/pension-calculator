@@ -1,0 +1,1533 @@
+{
+  "timestamp": "2026-06-12T12:30:31.304Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 80,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 80,
+  "results": [
+    {
+      "province": "jilin",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3882.11
+      },
+      "expected": {
+        "basic": 2374.3,
+        "extra": 286.23,
+        "personal": 502.48,
+        "transitional": null,
+        "total": 3882.11
+      }
+    },
+    {
+      "province": "jilin",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.38999999999987267,
+      "diffs": null,
+      "actual": {
+        "total": 3294.59
+      },
+      "expected": {
+        "basic": 2004.29,
+        "extra": 199.77,
+        "personal": 560.07,
+        "transitional": null,
+        "total": 3294.22
+      }
+    },
+    {
+      "province": "jilin",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.009999999999990905,
+      "diffs": null,
+      "actual": {
+        "total": 5556.33
+      },
+      "expected": {
+        "basic": 3035.54,
+        "extra": 345.77,
+        "personal": 810.75,
+        "transitional": null,
+        "total": 5556.33
+      }
+    },
+    {
+      "province": "jilin",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.01999999999998181,
+      "diffs": null,
+      "actual": {
+        "total": 2356.14
+      },
+      "expected": {
+        "basic": 1849.49,
+        "extra": 119.33,
+        "personal": 359.66,
+        "transitional": null,
+        "total": 2356.16
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.25,
+      "diffs": null,
+      "actual": {
+        "total": 5195.7
+      },
+      "expected": {
+        "basic": 3176.01,
+        "extra": null,
+        "personal": 792.75,
+        "transitional": null,
+        "total": 5195.66
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.42000000000007276,
+      "diffs": null,
+      "actual": {
+        "total": 3699.13
+      },
+      "expected": {
+        "basic": 2487.94,
+        "extra": null,
+        "personal": 1211.61,
+        "transitional": null,
+        "total": 3699.55
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.27999999999974534,
+      "diffs": null,
+      "actual": {
+        "total": 4287.33
+      },
+      "expected": {
+        "basic": 2875.55,
+        "extra": null,
+        "personal": 840.75,
+        "transitional": null,
+        "total": 4287.05
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3000000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 7005.66
+      },
+      "expected": {
+        "basic": 3888.02,
+        "extra": null,
+        "personal": 1512.3,
+        "transitional": null,
+        "total": 7005.5
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.18000000000029104,
+      "diffs": null,
+      "actual": {
+        "total": 2280.86
+      },
+      "expected": {
+        "basic": 1771.77,
+        "extra": null,
+        "personal": 350.93,
+        "transitional": null,
+        "total": 2280.68
+      }
+    },
+    {
+      "province": "heilongjiang",
+      "caseId": "6",
+      "file": "6.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.17000000000007276,
+      "diffs": null,
+      "actual": {
+        "total": 1578.53
+      },
+      "expected": {
+        "basic": 1322.28,
+        "extra": null,
+        "personal": 256.42,
+        "transitional": null,
+        "total": 1578.7
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4800000000000182,
+      "diffs": null,
+      "actual": {
+        "total": 3638.12
+      },
+      "expected": {
+        "basic": 2492.62,
+        "extra": 164.65,
+        "personal": 651.65,
+        "transitional": null,
+        "total": 3638.6
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.33999999999969077,
+      "diffs": null,
+      "actual": {
+        "total": 2977.8
+      },
+      "expected": {
+        "basic": 2123.45,
+        "extra": 164.65,
+        "personal": 446.27,
+        "transitional": null,
+        "total": 2978.14
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.38999999999987267,
+      "diffs": null,
+      "actual": {
+        "total": 3988.62
+      },
+      "expected": {
+        "basic": 2481.4,
+        "extra": 177.65,
+        "personal": 603.93,
+        "transitional": null,
+        "total": 3988.99
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3000000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 5075.85
+      },
+      "expected": {
+        "basic": 3087.42,
+        "extra": 177.65,
+        "personal": 736.87,
+        "transitional": null,
+        "total": 5075.55
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 10988.47
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": null,
+        "total": 10988.47
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 7589.81
+      },
+      "expected": {
+        "basic": 4328.21,
+        "extra": 0,
+        "personal": 1696.29,
+        "transitional": null,
+        "total": 7589.81
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4463.91
+      },
+      "expected": {
+        "basic": 2965.47,
+        "extra": 0,
+        "personal": 1157.15,
+        "transitional": null,
+        "total": 4463.91
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1852.9
+      },
+      "expected": {
+        "basic": 1453.45,
+        "extra": null,
+        "personal": 399.45,
+        "transitional": null,
+        "total": 1852.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4099999999998545,
+      "diffs": null,
+      "actual": {
+        "total": 5427.21
+      },
+      "expected": {
+        "basic": 3629.4,
+        "extra": 0,
+        "personal": 1101.9,
+        "transitional": 695.5,
+        "total": 5426.8
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4899999999997817,
+      "diffs": null,
+      "actual": {
+        "total": 9422.66
+      },
+      "expected": {
+        "basic": 5500.7,
+        "extra": 0,
+        "personal": 2981,
+        "transitional": 940.6,
+        "total": 9422.3
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.6500000000005457,
+      "diffs": null,
+      "actual": {
+        "total": 6305.55
+      },
+      "expected": {
+        "basic": 4175,
+        "extra": 0,
+        "personal": 628.5,
+        "transitional": 1501.4,
+        "total": 6304.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 8572.85
+      },
+      "expected": {
+        "basic": 5823.6,
+        "extra": 0,
+        "personal": 2749.3,
+        "transitional": 0,
+        "total": 8572.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.8499999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 7190.4
+      },
+      "expected": {
+        "basic": 4689.6,
+        "extra": 0,
+        "personal": 1742.6,
+        "transitional": 757.4,
+        "total": 7189.6
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.330000000000382,
+      "diffs": null,
+      "actual": {
+        "total": 2849.93
+      },
+      "expected": {
+        "basic": 2101.89,
+        "extra": null,
+        "personal": 596.73,
+        "transitional": null,
+        "total": 2850.26
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.22000000000025466,
+      "diffs": null,
+      "actual": {
+        "total": 4383.85
+      },
+      "expected": {
+        "basic": 2788.19,
+        "extra": null,
+        "personal": 705.18,
+        "transitional": null,
+        "total": 4383.63
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4000000000005457,
+      "diffs": null,
+      "actual": {
+        "total": 8143.44
+      },
+      "expected": {
+        "basic": 4683.41,
+        "extra": null,
+        "personal": 1587.1,
+        "transitional": null,
+        "total": 8143.76
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000069122,
+      "diffs": null,
+      "actual": {
+        "total": 7764.4
+      },
+      "expected": {
+        "basic": 4705.61,
+        "extra": null,
+        "personal": 2122.73,
+        "transitional": null,
+        "total": 7764.64
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.18000000000029104,
+      "diffs": null,
+      "actual": {
+        "total": 9384.3
+      },
+      "expected": {
+        "basic": 5475.93,
+        "extra": null,
+        "personal": 1970.93,
+        "transitional": null,
+        "total": 9384.48
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.36999999999989086,
+      "diffs": null,
+      "actual": {
+        "total": 3763
+      },
+      "expected": {
+        "basic": 2457.64,
+        "extra": null,
+        "personal": 488.3,
+        "transitional": null,
+        "total": 3763.37
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2600000000002183,
+      "diffs": null,
+      "actual": {
+        "total": 2986.93
+      },
+      "expected": {
+        "basic": 2185.42,
+        "extra": null,
+        "personal": 801.77,
+        "transitional": null,
+        "total": 2987.19
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.32999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 3462
+      },
+      "expected": {
+        "basic": 2483.29,
+        "extra": null,
+        "personal": 979.04,
+        "transitional": null,
+        "total": 3462.33
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.30999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 3945.33
+      },
+      "expected": {
+        "basic": 2557.07,
+        "extra": null,
+        "personal": 539.37,
+        "transitional": null,
+        "total": 3945.64
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2899999999999636,
+      "diffs": null,
+      "actual": {
+        "total": 4124.07
+      },
+      "expected": {
+        "basic": 2650.16,
+        "extra": null,
+        "personal": 635.47,
+        "transitional": null,
+        "total": 4124.36
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1873.11
+      },
+      "expected": {
+        "basic": 1288.08,
+        "extra": 117.61,
+        "personal": 467.42,
+        "transitional": 0,
+        "total": 1873.11
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5074
+      },
+      "expected": {
+        "basic": 3037.24,
+        "extra": 298.16,
+        "personal": 880.29,
+        "transitional": 858.31,
+        "total": 5074
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2875.33
+      },
+      "expected": {
+        "basic": 1660.94,
+        "extra": 126.24,
+        "personal": 521.08,
+        "transitional": 567.07,
+        "total": 2875.33
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5883.44
+      },
+      "expected": {
+        "basic": 3412.12,
+        "extra": 317.88,
+        "personal": 806.65,
+        "transitional": 1346.79,
+        "total": 5883.44
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2599999999999909,
+      "diffs": null,
+      "actual": {
+        "total": 4278.03
+      },
+      "expected": {
+        "basic": 2443.81,
+        "extra": 201.3,
+        "personal": 375.1,
+        "transitional": 1257.82,
+        "total": 4278.03
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3906.9
+      },
+      "expected": {
+        "basic": 2449.58,
+        "extra": 0,
+        "personal": 613.66,
+        "transitional": 843.66,
+        "total": 3906.9
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2585.8
+      },
+      "expected": {
+        "basic": 2002.18,
+        "extra": 0,
+        "personal": 418.02,
+        "transitional": 165.6,
+        "total": 2585.8
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4409.43
+      },
+      "expected": {
+        "basic": 2844.2,
+        "extra": 0,
+        "personal": 501.31,
+        "transitional": 1063.92,
+        "total": 4409.43
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1701.7
+      },
+      "expected": {
+        "basic": 1178.95,
+        "extra": 0,
+        "personal": 522.75,
+        "transitional": 0,
+        "total": 1701.7
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2182.34
+      },
+      "expected": {
+        "basic": 1725.86,
+        "extra": 0,
+        "personal": 372.21,
+        "transitional": 84.27,
+        "total": 2182.34
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5479.87
+      },
+      "expected": {
+        "basic": 3116.32,
+        "extra": 0,
+        "personal": 1244.92,
+        "transitional": 1118.63,
+        "total": 5479.87
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3431.16
+      },
+      "expected": {
+        "basic": 2481.88,
+        "extra": 0,
+        "personal": 629.16,
+        "transitional": 320.12,
+        "total": 3431.16
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2757.18
+      },
+      "expected": {
+        "basic": 2282.26,
+        "extra": 0,
+        "personal": 474.92,
+        "transitional": 0,
+        "total": 2757.18
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4204.66
+      },
+      "expected": {
+        "basic": 2753.94,
+        "extra": 0,
+        "personal": 746.3,
+        "transitional": 704.42,
+        "total": 4204.66
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2092.53
+      },
+      "expected": {
+        "basic": 1705.97,
+        "extra": 0,
+        "personal": 386.56,
+        "transitional": 0,
+        "total": 2092.53
+      }
+    },
+    {
+      "province": "liaoning",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.07999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 4103.75
+      },
+      "expected": {
+        "basic": 2803.02,
+        "extra": 207.41,
+        "personal": 872.85,
+        "transitional": null,
+        "total": 4103.75
+      }
+    },
+    {
+      "province": "liaoning",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4816.11
+      },
+      "expected": {
+        "basic": 2825.35,
+        "extra": 311.73,
+        "personal": 719.56,
+        "transitional": null,
+        "total": 4816.11
+      }
+    },
+    {
+      "province": "liaoning",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 6161
+      },
+      "expected": {
+        "basic": 3667.1,
+        "extra": 422.61,
+        "personal": 735.83,
+        "transitional": null,
+        "total": 6161
+      }
+    },
+    {
+      "province": "liaoning",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.05999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 5502.36
+      },
+      "expected": {
+        "basic": 2800.1,
+        "extra": 306.55,
+        "personal": 934.33,
+        "transitional": null,
+        "total": 5502.36
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4295.77
+      },
+      "expected": {
+        "basic": 2647.45,
+        "extra": null,
+        "personal": 689.85,
+        "transitional": null,
+        "total": 4295.77
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2260.77
+      },
+      "expected": {
+        "basic": 1742.81,
+        "extra": null,
+        "personal": 517.96,
+        "transitional": null,
+        "total": 2260.77
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 3956.66
+      },
+      "expected": {
+        "basic": 2549.73,
+        "extra": null,
+        "personal": 579.96,
+        "transitional": null,
+        "total": 3956.67
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.38999999999987267,
+      "diffs": null,
+      "actual": {
+        "total": 2520.06
+      },
+      "expected": {
+        "basic": 1878.56,
+        "extra": null,
+        "personal": 420.56,
+        "transitional": null,
+        "total": 2519.67
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3283.9
+      },
+      "expected": {
+        "basic": 2101.96,
+        "extra": null,
+        "personal": 572.79,
+        "transitional": null,
+        "total": 3283.9
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-yuyu-2026",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 3716
+      },
+      "expected": {
+        "basic": 2525.58,
+        "extra": null,
+        "personal": 511,
+        "transitional": null,
+        "total": 3715.96
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-xinyang-2025",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.05999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 3141.08
+      },
+      "expected": {
+        "basic": 2246.77,
+        "extra": null,
+        "personal": 399.55,
+        "transitional": null,
+        "total": 3141.11
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-zhengzhou-2024",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.06999999999970896,
+      "diffs": null,
+      "actual": {
+        "total": 3948.24
+      },
+      "expected": {
+        "basic": 2506.83,
+        "extra": null,
+        "personal": 511.31,
+        "transitional": null,
+        "total": 3948.17
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-female-2025",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.049999999999954525,
+      "diffs": null,
+      "actual": {
+        "total": 1850.36
+      },
+      "expected": {
+        "basic": 1537.56,
+        "extra": null,
+        "personal": 312.75,
+        "transitional": null,
+        "total": 1850.31
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-luoyang-2026",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.03999999999996362,
+      "diffs": null,
+      "actual": {
+        "total": 4863.88
+      },
+      "expected": {
+        "basic": 2856.82,
+        "extra": null,
+        "personal": 1049.53,
+        "transitional": null,
+        "total": 4863.92
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-zhengzhou-2026b",
+      "file": "6.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.1999999999998181,
+      "diffs": null,
+      "actual": {
+        "total": 2558.29
+      },
+      "expected": {
+        "basic": 1865.48,
+        "extra": null,
+        "personal": 655.21,
+        "transitional": null,
+        "total": 2558.49
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-female-2024",
+      "file": "7.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.01999999999998181,
+      "diffs": null,
+      "actual": {
+        "total": 1777.32
+      },
+      "expected": {
+        "basic": 1435.42,
+        "extra": null,
+        "personal": 257.9,
+        "transitional": null,
+        "total": 1777.31
+      }
+    },
+    {
+      "province": "hebei",
+      "caseId": "hebei-female-2023",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2462.85
+      },
+      "expected": {
+        "basic": 1811.82,
+        "extra": null,
+        "personal": 437.18,
+        "transitional": null,
+        "total": 2462.85
+      }
+    },
+    {
+      "province": "hebei",
+      "caseId": "hebei-male-2025",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4087.86
+      },
+      "expected": {
+        "basic": 2631.71,
+        "extra": null,
+        "personal": 575.64,
+        "transitional": null,
+        "total": 4087.86
+      }
+    },
+    {
+      "province": "hebei",
+      "caseId": "hebei-male-2025b",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3468.6
+      },
+      "expected": {
+        "basic": 2296.43,
+        "extra": null,
+        "personal": 613.52,
+        "transitional": null,
+        "total": 3468.6
+      }
+    },
+    {
+      "province": "hebei",
+      "caseId": "hebei-male-2024-high",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 7299.32
+      },
+      "expected": {
+        "basic": 4016.27,
+        "extra": null,
+        "personal": 1608.01,
+        "transitional": null,
+        "total": 7299.32
+      }
+    },
+    {
+      "province": "hebei",
+      "caseId": "hebei-male-2023-high",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5464.09
+      },
+      "expected": {
+        "basic": 3128.15,
+        "extra": null,
+        "personal": 1000.61,
+        "transitional": null,
+        "total": 5464.09
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5519.31
+      },
+      "expected": {
+        "basic": 3064.27,
+        "extra": null,
+        "personal": 695.53,
+        "transitional": null,
+        "total": 5519.31
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2024",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 6384.25
+      },
+      "expected": {
+        "basic": 3345.84,
+        "extra": null,
+        "personal": 811.39,
+        "transitional": null,
+        "total": 6384.25
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-female-2025",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2335.17
+      },
+      "expected": {
+        "basic": 1769.13,
+        "extra": null,
+        "personal": 566.04,
+        "transitional": null,
+        "total": 2335.17
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-female-2025b",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2152.42
+      },
+      "expected": {
+        "basic": 1696.14,
+        "extra": null,
+        "personal": 397.09,
+        "transitional": null,
+        "total": 2152.42
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-female-2025-high",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.08000000000038199,
+      "diffs": null,
+      "actual": {
+        "total": 3325.53
+      },
+      "expected": {
+        "basic": 2336.5,
+        "extra": null,
+        "personal": 988.95,
+        "transitional": null,
+        "total": 3325.45
+      }
+    },
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2025b",
+      "file": "6.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5302.63
+      },
+      "expected": {
+        "basic": 2992.55,
+        "extra": null,
+        "personal": 696.38,
+        "transitional": null,
+        "total": 5302.63
+      }
+    },
+    {
+      "province": "guangdong",
+      "caseId": "guangdong-shaoguan-2026",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.32999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 5500.52
+      },
+      "expected": {
+        "basic": 2732.4,
+        "extra": null,
+        "personal": 516.07,
+        "transitional": null,
+        "total": 5500.58
+      }
+    },
+    {
+      "province": "guangdong",
+      "caseId": "guangdong-dongguan-2026",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2899999999999636,
+      "diffs": null,
+      "actual": {
+        "total": 1763.52
+      },
+      "expected": {
+        "basic": 1074.61,
+        "extra": null,
+        "personal": 372.22,
+        "transitional": null,
+        "total": 1763.23
+      }
+    },
+    {
+      "province": "guangdong",
+      "caseId": "guangdong-guangzhou-2026",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.3500000000003638,
+      "diffs": null,
+      "actual": {
+        "total": 4230.29
+      },
+      "expected": {
+        "basic": 2817.42,
+        "extra": null,
+        "personal": 905.61,
+        "transitional": null,
+        "total": 4230.64
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-huangshi-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3061.83
+      },
+      "expected": {
+        "basic": 1703.36,
+        "extra": null,
+        "personal": 185.92,
+        "transitional": null,
+        "total": 3061.83
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-wuhan-2022",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 2808.37
+      },
+      "expected": {
+        "basic": 2086,
+        "extra": null,
+        "personal": 722.38,
+        "transitional": null,
+        "total": 2808.38
+      }
+    }
+  ]
+}

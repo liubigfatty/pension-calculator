@@ -1,0 +1,29 @@
+{
+  "case_id": "5",
+  "province": "jiangsu",
+  "city": "南京市",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1986,
+  "work_month": 7,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "actual_years": 27.17,
+  "sight_years": 9.50,
+  "total_years": 36.58,
+  "pre_1996_years": 9.50,
+  "avg_index": 0.6248,
+  "transIndex": 0.9996,
+  "base_number": 8917,
+  "personal_account": 88329.74,
+  "months": 139,
+  "trans_pension_old": 424.63,
+  "expected": {
+    "basic_pension": 2650.16,
+    "personal_pension": 635.47,
+    "transitional_pension": 838.73,
+    "total": 4124.36
+  },
+  "notes": "南京男60岁2025.10退休。双指数分离：基础0.6248，过渡0.9996。1996年底前9.5年(1986.07-1996.01)。2025年过渡期70%，新办法1014.83，原办法424.63，差额70%发放。"
+}

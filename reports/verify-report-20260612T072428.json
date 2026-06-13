@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T07:24:28.939Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "beijing",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000069122,
+      "diffs": null,
+      "actual": {
+        "total": 7764.4
+      },
+      "expected": {
+        "basic": 4705.61,
+        "extra": null,
+        "personal": 2122.73,
+        "transitional": null,
+        "total": 7764.64
+      }
+    }
+  ]
+}

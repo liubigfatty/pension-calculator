@@ -1,0 +1,169 @@
+{
+  "timestamp": "2026-06-12T04:17:18.522Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 2,
+    "skip": 4,
+    "error": 0
+  },
+  "total": 6,
+  "results": [
+    {
+      "province": "yunnan",
+      "caseId": "64",
+      "file": "64.json",
+      "status": "skip",
+      "reason": "期望值缺少 total 字段",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 3087.42,
+        "extra": 0,
+        "personal": 736.87,
+        "transitional": 1073.61,
+        "total": 0
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "65",
+      "file": "65.json",
+      "status": "skip",
+      "reason": "期望值缺少 total 字段",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 2492.62,
+        "extra": 0,
+        "personal": 651.65,
+        "transitional": 329.68,
+        "total": 0
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "66",
+      "file": "66.json",
+      "status": "skip",
+      "reason": "期望值缺少 total 字段",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 2123.45,
+        "extra": 0,
+        "personal": 446.27,
+        "transitional": 243.77,
+        "total": 0
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "72",
+      "file": "72.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 686.25,
+      "diffs": [
+        {
+          "label": "增发养老金",
+          "expect": 177.65,
+          "actual": 0,
+          "diff": 177.65
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 695.93,
+          "actual": 603.93,
+          "diff": 92
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 726.01,
+          "actual": 1089.38,
+          "diff": 363.3700000000001
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3988.99,
+          "actual": 4675.24,
+          "diff": 686.25
+        }
+      ],
+      "actual": {
+        "total": 4675.24
+      },
+      "expected": {
+        "basic": 2981.4,
+        "extra": 177.65,
+        "personal": 695.93,
+        "transitional": 726.01,
+        "total": 3988.99
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "yunnan-1",
+      "file": "yunnan-1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 3385.06,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2981.4,
+          "actual": 0,
+          "diff": 2981.4
+        },
+        {
+          "label": "增发养老金",
+          "expect": 177.65,
+          "actual": 0,
+          "diff": 177.65
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 695.93,
+          "actual": 603.93,
+          "diff": 92
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 726.01,
+          "actual": 0,
+          "diff": 726.01
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3988.99,
+          "actual": 603.93,
+          "diff": 3385.06
+        }
+      ],
+      "actual": {
+        "total": 603.93
+      },
+      "expected": {
+        "basic": 2981.4,
+        "extra": 177.65,
+        "personal": 695.93,
+        "transitional": 726.01,
+        "total": 3988.99
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "?",
+      "file": "云南.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": null
+    }
+  ]
+}

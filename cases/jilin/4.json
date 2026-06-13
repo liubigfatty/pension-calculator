@@ -1,0 +1,28 @@
+{
+  "case_id": "4",
+  "province": "jilin",
+  "city": "吉林市",
+  "gender": "female",
+  "birth_year": 1975,
+  "birth_month": 12,
+  "work_year": 1994,
+  "work_month": 12,
+  "retire_year": 2025,
+  "retire_month": 12,
+  "actual_years": 30.50,
+  "sight_years": 0.50,
+  "total_years": 31.00,
+  "avg_index": 0.54,
+  "base_number": 7978.25,
+  "base_prov": 7322.08,
+  "personal_account": 70132.51,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1849.49,
+    "extra_pension": 119.33,
+    "personal_pension": 359.66,
+    "transitional_pension": 27.68,
+    "total": 2356.16
+  },
+  "notes": "吉林女工人50岁2025.12退休。双基数：市县7978.25+全省7322.08。累计31年（实际30.5+视同0.5）。分段增发：21-25年44.75，26-30年59.66，31年+14.92，合计119.33。过渡=7322.08×0.54×0.5×1.4%=27.68"
+}

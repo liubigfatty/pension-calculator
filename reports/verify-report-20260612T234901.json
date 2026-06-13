@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-12T23:49:01.374Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "hainan",
+      "caseId": "hainan-2025-male",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.38000000000010914,
+      "diffs": null,
+      "actual": {
+        "total": 9554.41
+      },
+      "expected": {
+        "basic": 4847.21,
+        "extra": null,
+        "personal": 1609.98,
+        "transitional": null,
+        "total": 9554.03
+      }
+    },
+    {
+      "province": "hainan",
+      "caseId": "hainan-2025-female-high-index",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.42000000000007276,
+      "diffs": null,
+      "actual": {
+        "total": 8988.59
+      },
+      "expected": {
+        "basic": 4711.6,
+        "extra": null,
+        "personal": 1975.79,
+        "transitional": null,
+        "total": 8988.2
+      }
+    },
+    {
+      "province": "hainan",
+      "caseId": "hainan-2025-male-low-index",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2899999999999636,
+      "diffs": null,
+      "actual": {
+        "total": 4129.66
+      },
+      "expected": {
+        "basic": 2627.26,
+        "extra": null,
+        "personal": 678.55,
+        "transitional": null,
+        "total": 4129.95
+      }
+    }
+  ]
+}

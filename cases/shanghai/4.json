@@ -1,0 +1,29 @@
+{
+  "case_id": "4",
+  "province": "shanghai",
+  "city": "全市",
+  "gender": "男",
+  "birth_year": 1963,
+  "birth_month": 10,
+  "work_year": 1999,
+  "work_month": 10,
+  "retire_year": 2023,
+  "retire_month": 10,
+  "retire_type": "normal",
+  "pre_1992_years": 0,
+  "sight_years": 0,
+  "total_years": 23.83,
+  "avg_index": 3.0118,
+  "base_number": 12183,
+  "personal_account": 382153,
+  "xuzhang": 0,
+  "months": 139,
+  "expected": {
+    "basic_pension": 5823.60,
+    "personal_pension": 2749.30,
+    "transition_pension": 0,
+    "extra_pension": 0,
+    "total": 8572.90
+  },
+  "notes": "上海案例4，男60岁新人。1999.10参工，无视同无过渡。23.83年，指数3.0118。个账382153，计发139。基数12183。"
+}

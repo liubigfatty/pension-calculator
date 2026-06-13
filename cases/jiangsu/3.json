@@ -1,0 +1,27 @@
+{
+  "case_id": "3",
+  "province": "jiangsu",
+  "city": "南京市",
+  "gender": "female",
+  "birth_year": 1974,
+  "birth_month": 1,
+  "work_year": 1998,
+  "work_month": 7,
+  "retire_year": 2024,
+  "retire_month": 1,
+  "actual_years": 25.33,
+  "sight_years": 0,
+  "total_years": 25.33,
+  "pre_1996_years": 0,
+  "avg_index": 1.2762,
+  "base_number": 8613,
+  "personal_account": 190912.85,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2483.29,
+    "personal_pension": 979.04,
+    "transitional_pension": 0,
+    "total": 3462.33
+  },
+  "notes": "南京女工人50岁2024.01退休。参工1998.07（建账1996-01之后），1991年底前无工龄，无视同缴费年限。高指数1.2762，高个账19万。"
+}

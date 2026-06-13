@@ -1,0 +1,96 @@
+{
+  "timestamp": "2026-06-12T13:49:06.052Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 4,
+  "results": [
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2024",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5222.63
+      },
+      "expected": {
+        "basic": 2636.89,
+        "extra": null,
+        "personal": 358.72,
+        "transitional": null,
+        "total": 5222.63
+      }
+    },
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2024-10",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 6.740000000000691,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 6898.6,
+          "actual": 6891.86,
+          "diff": 6.740000000000691
+        }
+      ],
+      "actual": {
+        "total": 6891.86
+      },
+      "expected": {
+        "basic": 3711.78,
+        "extra": null,
+        "personal": 1932.58,
+        "transitional": null,
+        "total": 6898.6
+      }
+    },
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2025-female",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2466.35
+      },
+      "expected": {
+        "basic": 1938.98,
+        "extra": null,
+        "personal": 412.08,
+        "transitional": null,
+        "total": 2466.35
+      }
+    },
+    {
+      "province": "anhui",
+      "caseId": "anhui-hefei-2025-female-delay",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3224.36
+      },
+      "expected": {
+        "basic": 2357.44,
+        "extra": null,
+        "personal": 608.9,
+        "transitional": null,
+        "total": 3224.36
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "case_id": "shanxi-taiyuan-2025",
+  "province": "shanxi",
+  "gender": "男",
+  "birth": "1965年10月",
+  "work_start": "1984年08月",
+  "retire_year": 2025,
+  "retire_month": 10,
+  "total_years": 41.25,
+  "sight_years": 12.92,
+  "personal_account": 96607.26,
+  "baseRetire": 7253,
+  "months": 139,
+  "avgIndex": 0.7604,
+  "transIndex": 0.704,
+  "expected": {
+    "basic_pension": 2633.36,
+    "personal_pension": 695.02,
+    "transitional_pension": 857.36,
+    "total": 4185.8
+  },
+  "notes": "山西太原，男1965-10生，1984-08参工，2025-10退休(60岁)。视同12年11月=12.92年≈12.91667年(官方)。累计41.25年。2025年基数7253。双指数：基础0.7604，过渡0.704。过渡=7253×0.704×1.3%×12.91667=857.36。晋政发〔1998〕2号/〔2006〕3号。"
+}

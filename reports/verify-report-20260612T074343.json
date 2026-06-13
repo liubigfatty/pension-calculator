@@ -1,0 +1,920 @@
+{
+  "timestamp": "2026-06-12T07:43:43.021Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 41,
+    "fail": 4,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 45,
+  "results": [
+    {
+      "province": "shanghai",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4099999999998545,
+      "diffs": null,
+      "actual": {
+        "total": 5427.21
+      },
+      "expected": {
+        "basic": 3629.4,
+        "extra": 0,
+        "personal": 1101.9,
+        "transitional": 695.5,
+        "total": 5426.8
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4899999999997817,
+      "diffs": null,
+      "actual": {
+        "total": 9422.66
+      },
+      "expected": {
+        "basic": 5500.7,
+        "extra": 0,
+        "personal": 2981,
+        "transitional": 940.6,
+        "total": 9422.3
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.6500000000005457,
+      "diffs": [
+        {
+          "label": "过渡性养老金",
+          "expect": 1501.4,
+          "actual": 1501.95,
+          "diff": 0.5499999999999545
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 6304.9,
+          "actual": 6305.55,
+          "diff": 0.6500000000005457
+        }
+      ],
+      "actual": {
+        "total": 6305.55
+      },
+      "expected": {
+        "basic": 4175,
+        "extra": 0,
+        "personal": 628.5,
+        "transitional": 1501.4,
+        "total": 6304.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 8572.85
+      },
+      "expected": {
+        "basic": 5823.6,
+        "extra": 0,
+        "personal": 2749.3,
+        "transitional": 0,
+        "total": 8572.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.8499999999994543,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 4689.6,
+          "actual": 4690.45,
+          "diff": 0.8499999999994543
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 7189.6,
+          "actual": 7190.4,
+          "diff": 0.7999999999992724
+        }
+      ],
+      "actual": {
+        "total": 7190.4
+      },
+      "expected": {
+        "basic": 4689.6,
+        "extra": 0,
+        "personal": 1742.6,
+        "transitional": 757.4,
+        "total": 7189.6
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.330000000000382,
+      "diffs": null,
+      "actual": {
+        "total": 2849.93
+      },
+      "expected": {
+        "basic": 2101.89,
+        "extra": null,
+        "personal": 596.73,
+        "transitional": null,
+        "total": 2850.26
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.22000000000025466,
+      "diffs": null,
+      "actual": {
+        "total": 4383.85
+      },
+      "expected": {
+        "basic": 2788.19,
+        "extra": null,
+        "personal": 705.18,
+        "transitional": null,
+        "total": 4383.63
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4000000000005457,
+      "diffs": null,
+      "actual": {
+        "total": 8143.44
+      },
+      "expected": {
+        "basic": 4683.41,
+        "extra": null,
+        "personal": 1587.1,
+        "transitional": null,
+        "total": 8143.76
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000069122,
+      "diffs": null,
+      "actual": {
+        "total": 7764.4
+      },
+      "expected": {
+        "basic": 4705.61,
+        "extra": null,
+        "personal": 2122.73,
+        "transitional": null,
+        "total": 7764.64
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.18000000000029104,
+      "diffs": null,
+      "actual": {
+        "total": 9384.3
+      },
+      "expected": {
+        "basic": 5475.93,
+        "extra": null,
+        "personal": 1970.93,
+        "transitional": null,
+        "total": 9384.48
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.36999999999989086,
+      "diffs": null,
+      "actual": {
+        "total": 3763
+      },
+      "expected": {
+        "basic": 2457.64,
+        "extra": null,
+        "personal": 488.3,
+        "transitional": null,
+        "total": 3763.37
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2600000000002183,
+      "diffs": null,
+      "actual": {
+        "total": 2986.93
+      },
+      "expected": {
+        "basic": 2185.42,
+        "extra": null,
+        "personal": 801.77,
+        "transitional": null,
+        "total": 2987.19
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.32999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 3462
+      },
+      "expected": {
+        "basic": 2483.29,
+        "extra": null,
+        "personal": 979.04,
+        "transitional": null,
+        "total": 3462.33
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.30999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 3945.33
+      },
+      "expected": {
+        "basic": 2557.07,
+        "extra": null,
+        "personal": 539.37,
+        "transitional": null,
+        "total": 3945.64
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2899999999999636,
+      "diffs": null,
+      "actual": {
+        "total": 4124.07
+      },
+      "expected": {
+        "basic": 2650.16,
+        "extra": null,
+        "personal": 635.47,
+        "transitional": null,
+        "total": 4124.36
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1873.11
+      },
+      "expected": {
+        "basic": 1288.08,
+        "extra": 117.61,
+        "personal": 467.42,
+        "transitional": 0,
+        "total": 1873.11
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5074
+      },
+      "expected": {
+        "basic": 3037.24,
+        "extra": 298.16,
+        "personal": 880.29,
+        "transitional": 858.31,
+        "total": 5074
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2875.33
+      },
+      "expected": {
+        "basic": 1660.94,
+        "extra": 126.24,
+        "personal": 521.08,
+        "transitional": 567.07,
+        "total": 2875.33
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5883.44
+      },
+      "expected": {
+        "basic": 3412.12,
+        "extra": 317.88,
+        "personal": 806.65,
+        "transitional": 1346.79,
+        "total": 5883.44
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2599999999999909,
+      "diffs": null,
+      "actual": {
+        "total": 4278.03
+      },
+      "expected": {
+        "basic": 2443.81,
+        "extra": 201.3,
+        "personal": 375.1,
+        "transitional": 1257.82,
+        "total": 4278.03
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3906.9
+      },
+      "expected": {
+        "basic": 2449.58,
+        "extra": 0,
+        "personal": 613.66,
+        "transitional": 843.66,
+        "total": 3906.9
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2585.8
+      },
+      "expected": {
+        "basic": 2002.18,
+        "extra": 0,
+        "personal": 418.02,
+        "transitional": 165.6,
+        "total": 2585.8
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4409.43
+      },
+      "expected": {
+        "basic": 2844.2,
+        "extra": 0,
+        "personal": 501.31,
+        "transitional": 1063.92,
+        "total": 4409.43
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1701.7
+      },
+      "expected": {
+        "basic": 1178.95,
+        "extra": 0,
+        "personal": 522.75,
+        "transitional": 0,
+        "total": 1701.7
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2182.34
+      },
+      "expected": {
+        "basic": 1725.86,
+        "extra": 0,
+        "personal": 372.21,
+        "transitional": 84.27,
+        "total": 2182.34
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5479.87
+      },
+      "expected": {
+        "basic": 3116.32,
+        "extra": 0,
+        "personal": 1244.92,
+        "transitional": 1118.63,
+        "total": 5479.87
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3431.16
+      },
+      "expected": {
+        "basic": 2481.88,
+        "extra": 0,
+        "personal": 629.16,
+        "transitional": 320.12,
+        "total": 3431.16
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2757.18
+      },
+      "expected": {
+        "basic": 2282.26,
+        "extra": 0,
+        "personal": 474.92,
+        "transitional": 0,
+        "total": 2757.18
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4204.66
+      },
+      "expected": {
+        "basic": 2753.94,
+        "extra": 0,
+        "personal": 746.3,
+        "transitional": 704.42,
+        "total": 4204.66
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2092.53
+      },
+      "expected": {
+        "basic": 1705.97,
+        "extra": 0,
+        "personal": 386.56,
+        "transitional": 0,
+        "total": 2092.53
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1873.11
+      },
+      "expected": {
+        "basic": 1288.08,
+        "extra": 117.61,
+        "personal": 467.42,
+        "transitional": 0,
+        "total": 1873.11
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5074
+      },
+      "expected": {
+        "basic": 3037.24,
+        "extra": 298.16,
+        "personal": 880.29,
+        "transitional": 858.31,
+        "total": 5074
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2875.33
+      },
+      "expected": {
+        "basic": 1660.94,
+        "extra": 126.24,
+        "personal": 521.08,
+        "transitional": 567.07,
+        "total": 2875.33
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5883.44
+      },
+      "expected": {
+        "basic": 3412.12,
+        "extra": 317.88,
+        "personal": 806.65,
+        "transitional": 1346.79,
+        "total": 5883.44
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2599999999999909,
+      "diffs": null,
+      "actual": {
+        "total": 4278.03
+      },
+      "expected": {
+        "basic": 2443.81,
+        "extra": 201.3,
+        "personal": 375.1,
+        "transitional": 1257.82,
+        "total": 4278.03
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4099999999998545,
+      "diffs": null,
+      "actual": {
+        "total": 5427.21
+      },
+      "expected": {
+        "basic": 3629.4,
+        "extra": 0,
+        "personal": 1101.9,
+        "transitional": 695.5,
+        "total": 5426.8
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4899999999997817,
+      "diffs": null,
+      "actual": {
+        "total": 9422.66
+      },
+      "expected": {
+        "basic": 5500.7,
+        "extra": 0,
+        "personal": 2981,
+        "transitional": 940.6,
+        "total": 9422.3
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.6500000000005457,
+      "diffs": [
+        {
+          "label": "过渡性养老金",
+          "expect": 1501.4,
+          "actual": 1501.95,
+          "diff": 0.5499999999999545
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 6304.9,
+          "actual": 6305.55,
+          "diff": 0.6500000000005457
+        }
+      ],
+      "actual": {
+        "total": 6305.55
+      },
+      "expected": {
+        "basic": 4175,
+        "extra": 0,
+        "personal": 628.5,
+        "transitional": 1501.4,
+        "total": 6304.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 8572.85
+      },
+      "expected": {
+        "basic": 5823.6,
+        "extra": 0,
+        "personal": 2749.3,
+        "transitional": 0,
+        "total": 8572.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.8499999999994543,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 4689.6,
+          "actual": 4690.45,
+          "diff": 0.8499999999994543
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 7189.6,
+          "actual": 7190.4,
+          "diff": 0.7999999999992724
+        }
+      ],
+      "actual": {
+        "total": 7190.4
+      },
+      "expected": {
+        "basic": 4689.6,
+        "extra": 0,
+        "personal": 1742.6,
+        "transitional": 757.4,
+        "total": 7189.6
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.330000000000382,
+      "diffs": null,
+      "actual": {
+        "total": 2849.93
+      },
+      "expected": {
+        "basic": 2101.89,
+        "extra": null,
+        "personal": 596.73,
+        "transitional": null,
+        "total": 2850.26
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.22000000000025466,
+      "diffs": null,
+      "actual": {
+        "total": 4383.85
+      },
+      "expected": {
+        "basic": 2788.19,
+        "extra": null,
+        "personal": 705.18,
+        "transitional": null,
+        "total": 4383.63
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4000000000005457,
+      "diffs": null,
+      "actual": {
+        "total": 8143.44
+      },
+      "expected": {
+        "basic": 4683.41,
+        "extra": null,
+        "personal": 1587.1,
+        "transitional": null,
+        "total": 8143.76
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000069122,
+      "diffs": null,
+      "actual": {
+        "total": 7764.4
+      },
+      "expected": {
+        "basic": 4705.61,
+        "extra": null,
+        "personal": 2122.73,
+        "transitional": null,
+        "total": 7764.64
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.18000000000029104,
+      "diffs": null,
+      "actual": {
+        "total": 9384.3
+      },
+      "expected": {
+        "basic": 5475.93,
+        "extra": null,
+        "personal": 1970.93,
+        "transitional": null,
+        "total": 9384.48
+      }
+    }
+  ]
+}

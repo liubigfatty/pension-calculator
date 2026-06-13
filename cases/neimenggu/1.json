@@ -1,0 +1,25 @@
+{
+  "case_id": "neimenggu-2025-male",
+  "province": "neimenggu",
+  "city": "内蒙古",
+  "gender": "男",
+  "birth": "1965年9月",
+  "work_start": "1984年9月",
+  "retire_year": 2025,
+  "retire_month": 9,
+  "total_years": 41.08,
+  "sight_years": 7.33,
+  "pre_account_years": 11.33,
+  "personal_account": 93577.20,
+  "baseRetire": 8179,
+  "baseProv": 8179,
+  "months": 139,
+  "avgIndex": 0.6111,
+  "expected": {
+    "basic_pension": 2706.81,
+    "personal_pension": 673.22,
+    "transitional_pension": 1112.34,
+    "total": 4492.37
+  },
+  "notes": "内蒙古2025年9月退休男，1965-09生，1984-09参工。建账1996-01，视同7.33年(1984-09至1992-01)+建账前实际4年=11.33年建账前年限。指数0.6111。过渡公式疑似=(A+A×Q)/2×M1×1.5%(待确认)。"
+}

@@ -1,0 +1,29 @@
+{
+  "case_id": "3",
+  "province": "liaoning",
+  "city": "鞍山市",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1983,
+  "work_month": 11,
+  "retire_year": 2025,
+  "retire_month": 8,
+  "actual_years": 32.75,
+  "sight_years": 9.92,
+  "total_years": 42.67,
+  "avg_index": 1.3398,
+  "transIndex": 1.309,
+  "base_number": 7346,
+  "base_prov": 7346,
+  "personal_account": 102280.37,
+  "months": 139,
+  "expected": {
+    "basic_pension": 3667.1,
+    "extra_pension": 422.61,
+    "personal_pension": 735.83,
+    "transitional_pension": 1334.69,
+    "total": 6161
+  },
+  "notes": "辽宁鞍山男60岁2025.08退休。双指数：基础1.34/过渡1.31。累计42.67年（实际32.75+视同9.92）。过渡=7346×1.31×9.92×1.4%。增发405.65未在表上显示"
+}

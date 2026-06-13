@@ -1,0 +1,21 @@
+{
+  "case_id": "hubei-wuhan-2022",
+  "province": "hubei",
+  "gender": "女",
+  "birth": "1972年11月",
+  "work_start": "1993年08月",
+  "retire_year": 2022,
+  "retire_month": 11,
+  "total_years": 29.25,
+  "sight_years": 0,
+  "personal_account": 140863.26,
+  "baseRetire": 7753,
+  "months": 195,
+  "avgIndex": 0.8397,
+  "expected": {
+    "basic_pension": 2086.00,
+    "personal_pension": 722.38,
+    "total": 2808.38
+  },
+  "notes": "湖北武汉，女性1972年生，1993年参工（1996年建账前参工），2022年11月50岁退休。无视同年限。武汉2022年计发基数7753（确认）。计发月数195。"
+}

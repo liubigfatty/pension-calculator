@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-12T22:32:01.170Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "guangxi",
+      "caseId": "guangxi-liuzhou-2023",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.08999999999969077,
+      "diffs": null,
+      "actual": {
+        "total": 3990.01
+      },
+      "expected": {
+        "basic": 2410.8,
+        "extra": null,
+        "personal": 483.4,
+        "transitional": null,
+        "total": 3990.1
+      }
+    },
+    {
+      "province": "guangxi",
+      "caseId": "guangxi-nanning-2025-female",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.07999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 2359.12
+      },
+      "expected": {
+        "basic": 1788.1,
+        "extra": null,
+        "personal": 498.2,
+        "transitional": null,
+        "total": 2359.2
+      }
+    },
+    {
+      "province": "guangxi",
+      "caseId": "guangxi-beiliu-2025-male",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.15999999999985448,
+      "diffs": null,
+      "actual": {
+        "total": 3114.94
+      },
+      "expected": {
+        "basic": 2122.4,
+        "extra": null,
+        "personal": 552.7,
+        "transitional": null,
+        "total": 3115.1
+      }
+    }
+  ]
+}

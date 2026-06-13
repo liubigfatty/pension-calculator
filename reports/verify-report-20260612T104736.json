@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-12T10:47:36.281Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 3,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "henan",
+      "caseId": "henan-yuyu-2026",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 3716
+      },
+      "expected": {
+        "basic": 2525.58,
+        "extra": null,
+        "personal": 511,
+        "transitional": null,
+        "total": 3715.96
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-xinyang-2025",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.05999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 3141.08
+      },
+      "expected": {
+        "basic": 2246.77,
+        "extra": null,
+        "personal": 399.55,
+        "transitional": null,
+        "total": 3141.11
+      }
+    },
+    {
+      "province": "henan",
+      "caseId": "henan-zhengzhou-2024",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.06999999999970896,
+      "diffs": null,
+      "actual": {
+        "total": 3948.24
+      },
+      "expected": {
+        "basic": 2506.83,
+        "extra": null,
+        "personal": 511.31,
+        "transitional": null,
+        "total": 3948.17
+      }
+    }
+  ]
+}

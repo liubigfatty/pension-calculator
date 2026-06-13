@@ -1,0 +1,24 @@
+{
+  "case_id": "xinjiang-2023-female",
+  "province": "xinjiang",
+  "city": "新疆",
+  "gender": "女",
+  "birth": "1968年5月",
+  "work_start": "1992年11月",
+  "retire_year": 2023,
+  "retire_month": 5,
+  "total_years": 30.58,
+  "sight_years": 3.17,
+  "personal_account": 75934,
+  "baseRetire": 7089,
+  "baseProv": 7089,
+  "months": 170,
+  "avgIndex": 0.654,
+  "expected": {
+    "basic_pension": 1793.01,
+    "personal_pension": 446.67,
+    "transitional_pension": 190.87,
+    "total": 2430.55
+  },
+  "notes": "新疆2023年5月退休女工，1968-05生，1992-11参工。视同3.17年(38月)。过渡系数1.3%确认！指数化月均4636.42，上年度在岗月均7089。新政发〔2006〕59号。"
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T11:37:20.355Z",
+  "tolerance": 2,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5519.31
+      },
+      "expected": {
+        "basic": 3064.27,
+        "extra": null,
+        "personal": 695.53,
+        "transitional": null,
+        "total": 5519.31
+      }
+    }
+  ]
+}

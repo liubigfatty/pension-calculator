@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-13T00:15:51.864Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "qinghai",
+      "caseId": "qinghai-2024-female",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 185.86000000000013,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2390.7,
+          "actual": 2576.56,
+          "diff": 185.86000000000013
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3577.5,
+          "actual": 3719.01,
+          "diff": 141.51000000000022
+        }
+      ],
+      "actual": {
+        "total": 3719.01
+      },
+      "expected": {
+        "basic": 2390.7,
+        "extra": null,
+        "personal": 552.9,
+        "transitional": null,
+        "total": 3577.5
+      }
+    }
+  ]
+}

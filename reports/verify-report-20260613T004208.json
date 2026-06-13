@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-13T00:42:08.486Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2023-female",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 47.20000000000027,
+      "diffs": [
+        {
+          "label": "个人账户养老金",
+          "expect": 446.67,
+          "actual": 399.51,
+          "diff": 47.160000000000025
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 2430.55,
+          "actual": 2383.35,
+          "diff": 47.20000000000027
+        }
+      ],
+      "actual": {
+        "total": 2383.35
+      },
+      "expected": {
+        "basic": 1793.01,
+        "extra": null,
+        "personal": 446.67,
+        "transitional": null,
+        "total": 2430.55
+      }
+    }
+  ]
+}

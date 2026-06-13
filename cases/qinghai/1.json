@@ -1,0 +1,25 @@
+{
+  "case_id": "qinghai-2024-female",
+  "province": "qinghai",
+  "city": "青海",
+  "gender": "女",
+  "birth": "1974年9月",
+  "work_start": "1991年10月",
+  "retire_year": 2024,
+  "retire_month": 9,
+  "total_years": 33.0,
+  "sight_years": 0,
+  "pre_account_years": 6.25,
+  "personal_account": 107818.74,
+  "baseRetire": 8878,
+  "baseProv": 8878,
+  "months": 195,
+  "avgIndex": 0.632,
+  "expected": {
+    "basic_pension": 2390.7,
+    "personal_pension": 552.9,
+    "transitional_pension": 633.9,
+    "total": 3577.5
+  },
+  "notes": "青海2024年9月退休女工，1974-09生，1991-10参工。建账前6年3月(1991-10至1997-12)，建账时间=1998-01！过渡系数1.4%(表上明确标注)。调节金2006年150元递减15元/年至2024年为0。取暖费3900元/年。"
+}

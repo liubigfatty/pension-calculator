@@ -1,0 +1,203 @@
+{
+  "timestamp": "2026-06-12T04:13:24.788Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 5,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 5,
+  "results": [
+    {
+      "province": "gansu",
+      "caseId": "67",
+      "file": "67.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 6.539999999999964,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3055.33,
+          "actual": 3048.79,
+          "diff": 6.539999999999964
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4989.87,
+          "actual": 4983.33,
+          "diff": 6.539999999999964
+        }
+      ],
+      "actual": {
+        "total": 4983.33
+      },
+      "expected": {
+        "basic": 3055.33,
+        "extra": 0,
+        "personal": 1205.69,
+        "transitional": 728.85,
+        "total": 4989.87
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "68",
+      "file": "68.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 928.8299999999999,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 5222.01,
+          "actual": 6150.84,
+          "diff": 928.8299999999999
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 2287.54,
+          "actual": 2259.56,
+          "diff": 27.980000000000018
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 10988.47,
+          "actual": 11889.32,
+          "diff": 900.8500000000004
+        }
+      ],
+      "actual": {
+        "total": 11889.32
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": 3478.92,
+        "total": 10988.47
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "69",
+      "file": "69.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 960.4399999999996,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 4328.21,
+          "actual": 4910.35,
+          "diff": 582.1400000000003
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 1696.29,
+          "actual": 2074.59,
+          "diff": 378.3000000000002
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 7589.81,
+          "actual": 8550.25,
+          "diff": 960.4399999999996
+        }
+      ],
+      "actual": {
+        "total": 8550.25
+      },
+      "expected": {
+        "basic": 4328.21,
+        "extra": 0,
+        "personal": 1696.29,
+        "transitional": 1565.31,
+        "total": 7589.81
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "70",
+      "file": "70.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 1444.1599999999999,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2965.47,
+          "actual": 3943.45,
+          "diff": 977.98
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 1157.15,
+          "actual": 1623.33,
+          "diff": 466.17999999999984
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4463.91,
+          "actual": 5908.07,
+          "diff": 1444.1599999999999
+        }
+      ],
+      "actual": {
+        "total": 5908.07
+      },
+      "expected": {
+        "basic": 2965.47,
+        "extra": 0,
+        "personal": 1157.15,
+        "transitional": 341.29,
+        "total": 4463.91
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "unknown",
+      "file": "unknown.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 9940.859999999999,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 5222.01,
+          "actual": 0,
+          "diff": 5222.01
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 2287.54,
+          "actual": 1047.61,
+          "diff": 1239.93
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 3478.92,
+          "actual": 0,
+          "diff": 3478.92
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 10988.47,
+          "actual": 1047.61,
+          "diff": 9940.859999999999
+        }
+      ],
+      "actual": {
+        "total": 1047.61
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": 3478.92,
+        "total": 10988.47
+      }
+    }
+  ]
+}

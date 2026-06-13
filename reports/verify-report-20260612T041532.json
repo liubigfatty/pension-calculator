@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-06-12T04:15:32.710Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 4,
+  "results": [
+    {
+      "province": "gansu",
+      "caseId": "67",
+      "file": "67.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4989.87
+      },
+      "expected": {
+        "basic": 3055.33,
+        "extra": 0,
+        "personal": 1205.69,
+        "transitional": 728.85,
+        "total": 4989.87
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "68",
+      "file": "68.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 10988.47
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": 3478.92,
+        "total": 10988.47
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "69",
+      "file": "69.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 7589.81
+      },
+      "expected": {
+        "basic": 4328.21,
+        "extra": 0,
+        "personal": 1696.29,
+        "transitional": 1565.31,
+        "total": 7589.81
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "70",
+      "file": "70.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4463.91
+      },
+      "expected": {
+        "basic": 2965.47,
+        "extra": 0,
+        "personal": 1157.15,
+        "transitional": 341.29,
+        "total": 4463.91
+      }
+    }
+  ]
+}

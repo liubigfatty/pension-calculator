@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-06-12T23:38:54.545Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 5,
+  "results": [
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2023-male",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.75,
+      "diffs": null,
+      "actual": {
+        "total": 6606.05
+      },
+      "expected": {
+        "basic": 3982.52,
+        "extra": null,
+        "personal": 786.17,
+        "transitional": null,
+        "total": 6605.3
+      }
+    },
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2025-male",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4499999999998181,
+      "diffs": null,
+      "actual": {
+        "total": 4587.37
+      },
+      "expected": {
+        "basic": 2653.45,
+        "extra": null,
+        "personal": 617.19,
+        "transitional": null,
+        "total": 4586.92
+      }
+    },
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2023-female",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.30999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 4579.92
+      },
+      "expected": {
+        "basic": 2971.95,
+        "extra": null,
+        "personal": 777.91,
+        "transitional": null,
+        "total": 4580.23
+      }
+    },
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2025-female-new",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000023647,
+      "diffs": null,
+      "actual": {
+        "total": 2473.6
+      },
+      "expected": {
+        "basic": 2016.37,
+        "extra": null,
+        "personal": 457.47,
+        "transitional": null,
+        "total": 2473.84
+      }
+    },
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2025-female-low-index",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2300000000000182,
+      "diffs": null,
+      "actual": {
+        "total": 2568.17
+      },
+      "expected": {
+        "basic": 2075.84,
+        "extra": null,
+        "personal": 468.02,
+        "transitional": null,
+        "total": 2567.94
+      }
+    }
+  ]
+}

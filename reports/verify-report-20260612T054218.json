@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T05:42:18.473Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "hunan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3906.9
+      },
+      "expected": {
+        "basic": 2449.58,
+        "extra": 0,
+        "personal": 613.66,
+        "transitional": 843.66,
+        "total": 3906.9
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2585.8
+      },
+      "expected": {
+        "basic": 2002.18,
+        "extra": 0,
+        "personal": 418.02,
+        "transitional": 165.6,
+        "total": 2585.8
+      }
+    }
+  ]
+}

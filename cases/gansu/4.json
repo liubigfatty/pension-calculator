@@ -1,0 +1,30 @@
+{
+  "case_id": "4",
+  "province": "gansu",
+  "city": "兰州市",
+  "gender": "female",
+  "birth_year": 1974,
+  "birth_month": 6,
+  "work_year": 2002,
+  "work_month": 7,
+  "retire_year": 2024,
+  "retire_month": 6,
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "actual_years": 22.00,
+  "sight_years": 0,
+  "total_years": 22.00,
+  "avg_index": 0.5341,
+  "base_number": 8613,
+  "personal_account": 77892.16,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1453.45,
+    "personal_pension": 399.45,
+    "transitional_pension": 0,
+    "total": 1852.90
+  },
+  "notes": "甘肃女工人50岁2024.06退休，纯新人案例。参工2002.07（建账1996-01之后），无视同/无过渡性养老金。低指数0.5341，个账7.8万。"
+}

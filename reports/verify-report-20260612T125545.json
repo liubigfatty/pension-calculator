@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-06-12T12:55:45.758Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "fujian",
+      "caseId": "fujian-nanping-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3699.23
+      },
+      "expected": {
+        "basic": 2587.34,
+        "extra": null,
+        "personal": 433.59,
+        "transitional": null,
+        "total": 3699.23
+      }
+    },
+    {
+      "province": "fujian",
+      "caseId": "fujian-youxi-2024",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 16.839999999999236,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 5290.73,
+          "actual": 5273.89,
+          "diff": 16.839999999999236
+        }
+      ],
+      "actual": {
+        "total": 5273.89
+      },
+      "expected": {
+        "basic": 3105,
+        "extra": null,
+        "personal": 947.75,
+        "transitional": null,
+        "total": 5290.73
+      }
+    }
+  ]
+}

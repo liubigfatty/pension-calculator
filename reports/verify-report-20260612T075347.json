@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T07:53:47.081Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "gansu",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 10988.47
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": null,
+        "total": 10988.47
+      }
+    }
+  ]
+}

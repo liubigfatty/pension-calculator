@@ -1,0 +1,28 @@
+{
+  "case_id": "1",
+  "province": "yunnan",
+  "city": "楚雄州",
+  "gender": "female",
+  "birth_year": 1973,
+  "birth_month": 12,
+  "work_year": 1992,
+  "work_month": 7,
+  "retire_year": 2023,
+  "retire_month": 12,
+  "actual_years": 31.00,
+  "sight_years": 0.50,
+  "total_years": 31.50,
+  "pre_account_years": 3.25,
+  "avg_index": 0.9723,
+  "base_number": 8023,
+  "personal_account": 127070.82,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2492.62,
+    "personal_pension": 651.65,
+    "transitional_pension": 329.68,
+    "extra_pension": 164.65,
+    "total": 3638.60
+  },
+  "notes": "云南女工人50岁2023.12退休。建账前缴费年限3.25年(1992.07-1995.10)。过渡性=8023×0.9723×3.25×1.3%=329.68。独生子女补贴164.65=3293×5%。计发基数8023(2023年)，双基数体系。"
+}

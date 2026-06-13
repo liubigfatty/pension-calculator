@@ -1,0 +1,24 @@
+{
+  "case_id": "xizang-2026-female-45",
+  "province": "xizang",
+  "city": "西藏",
+  "gender": "女",
+  "birth": "1981年",
+  "work_start": "2011年1月",
+  "retire_year": 2026,
+  "retire_month": 1,
+  "total_years": 15,
+  "sight_years": 0,
+  "personal_account": 136800.55,
+  "baseRetire": 11777,
+  "baseProv": 11777,
+  "months": 215.7,
+  "avgIndex": 1.0,
+  "expected": {
+    "basic_pension": 1766.55,
+    "personal_pension": 634.22,
+    "transitional_pension": 0,
+    "total": 2400.77
+  },
+  "notes": "西藏2026年灵活就业女工45岁退休（新人），2011年参工。无视同。高原补贴1177.70未计入。藏政发〔2006〕37号。"
+}

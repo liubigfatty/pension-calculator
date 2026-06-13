@@ -1,0 +1,34 @@
+{
+  "case_id": "4",
+  "province": "hunan",
+  "city": "雨花区",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 2007,
+  "work_month": 7,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 2007,
+    "month": 7
+  },
+  "sight_years": 0,
+  "actual_years": 18.33,
+  "total_years": 18.33,
+  "avg_index": 0.6719,
+  "base_number": 7694,
+  "personal_account": 72662.86,
+  "months": 139,
+  "expected": {
+    "basic_pension": 1178.95,
+    "personal_pension": 522.75,
+    "transition_pension": 0,
+    "extra_pension": 0,
+    "total": 1701.70
+  },
+  "verified": true,
+  "notes": "湖南案例4，灵活就业人员，男性60岁正常退休。2007年7月参加工作（很晚参保），建账时间2007年7月。无视同年限，无过渡性养老金。实际缴费18.33年，刚超过最低15年。平均缴费指数0.6719，指数化月平均工资5169.60元。基础养老金=(7694+5169.60)/2*18.33*1%=1178.95，个人账户养老金=72662.86/139=522.75，合计1701.70元。",
+  "data_source": "湖南省企业职工基本养老保险退休人员基本养老金核定表（预发核定表），雨花区灵活就业人员，2025年10月01日退休"
+}

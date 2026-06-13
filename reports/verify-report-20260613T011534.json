@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-06-13T01:15:34.786Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 5,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 5,
+  "results": [
+    {
+      "province": "shanghai",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4099999999998545,
+      "diffs": null,
+      "actual": {
+        "total": 5427.21
+      },
+      "expected": {
+        "basic": 3629.4,
+        "extra": 0,
+        "personal": 1101.9,
+        "transitional": 695.5,
+        "total": 5426.8
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.4899999999997817,
+      "diffs": null,
+      "actual": {
+        "total": 9422.66
+      },
+      "expected": {
+        "basic": 5500.7,
+        "extra": 0,
+        "personal": 2981,
+        "transitional": 940.6,
+        "total": 9422.3
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.6500000000005457,
+      "diffs": null,
+      "actual": {
+        "total": 6305.55
+      },
+      "expected": {
+        "basic": 4175,
+        "extra": 0,
+        "personal": 628.5,
+        "transitional": 1501.4,
+        "total": 6304.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.0500000000001819,
+      "diffs": null,
+      "actual": {
+        "total": 8572.85
+      },
+      "expected": {
+        "basic": 5823.6,
+        "extra": 0,
+        "personal": 2749.3,
+        "transitional": 0,
+        "total": 8572.9
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.8499999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 7190.4
+      },
+      "expected": {
+        "basic": 4689.6,
+        "extra": 0,
+        "personal": 1742.6,
+        "transitional": 757.4,
+        "total": 7189.6
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "case_id": "guangdong-dongguan-2026",
+  "province": "guangdong",
+  "gender": "男",
+  "birth": "1966年01月",
+  "work_start": "1985年10月",
+  "retire_year": 2026,
+  "retire_month": 2,
+  "total_years": 17.75,
+  "sight_years": 3.42,
+  "pre_account_years": 5.00,
+  "personal_account": 51738.87,
+  "baseRetire": 9493,
+  "months": 139,
+  "avgIndex": 0.2755,
+  "transIndex": 0.556,
+  "expected": {
+    "basic_pension": 1074.61,
+    "transitional_pension": 316.40,
+    "personal_pension": 372.22,
+    "total": 1763.23
+  },
+  "notes": "广东东莞，1966年生，1985年参工，2026年2月退休。过渡系数1.2%确认。过渡年限=视同3.42+1998年6月前实际1.58=5.00年。⚠️ avgIndex需确认：核定表显示0.4783但标准公式算出1245.47≠1074.61，用0.2755才匹配，待验证。"
+}

@@ -1,0 +1,22 @@
+{
+  "case_id": "hubei-huangshi-2025",
+  "province": "hubei",
+  "gender": "男",
+  "birth": "1965年05月",
+  "work_start": "1981年10月",
+  "retire_year": 2025,
+  "retire_month": 5,
+  "total_years": 24.50,
+  "sight_years": 14.25,
+  "personal_account": 25843.25,
+  "baseRetire": 7048,
+  "months": 139,
+  "avgIndex": 0.9729,
+  "expected": {
+    "basic_pension": 1703.36,
+    "transitional_pension": 1172.55,
+    "personal_pension": 185.92,
+    "total": 3061.83
+  },
+  "notes": "湖北黄石（三档城市），1965年生，1981年参工，2025年5月60岁退休。过渡系数1.2%确认！计发基数7048（三档）。建账1996-01。标准公式，零引擎改动。"
+}

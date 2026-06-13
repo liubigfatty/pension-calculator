@@ -1,0 +1,22 @@
+{
+  "case_id": "hubei-wuhan-2024-male",
+  "province": "hubei",
+  "gender": "男",
+  "birth": "1964年03月",
+  "work_start": "1982年07月",
+  "retire_year": 2024,
+  "retire_month": 3,
+  "total_years": 39.0,
+  "sight_years": 13.5,
+  "personal_account": 87439.45,
+  "baseRetire": 8880,
+  "months": 139,
+  "avgIndex": 0.7716,
+  "expected": {
+    "basic_pension": 3067.70,
+    "transitional_pension": 1109.99,
+    "personal_pension": 629.06,
+    "total": 4806.75
+  },
+  "notes": "湖北武汉（一档），男性1964年生，1982年参工，2024年3月60岁退休。视同13.5年，过渡系数1.2%确认！计发基数8880（与配置9022有差异，以核定表为准）。男60岁计发月数139。标准公式，零引擎改动。"
+}

@@ -1,0 +1,26 @@
+{
+  "case_id": "ningxia-2026-male",
+  "province": "ningxia",
+  "city": "宁夏",
+  "gender": "男",
+  "birth": "1966年1月",
+  "work_start": "1988年8月",
+  "retire_year": 2026,
+  "retire_month": 1,
+  "total_years": 37.5,
+  "sight_years": 2.42,
+  "pre_account_years": 7.42,
+  "personal_account": 122313.73,
+  "baseRetire": 8366,
+  "baseProv": 8366,
+  "months": 139,
+  "avgIndex": 0.7666,
+  "expected": {
+    "basic_pension": 2771.13,
+    "personal_pension": 879.95,
+    "transitional_pension": 680.5,
+    "total": 4331.58
+  },
+  "notes": "宁夏2026年1月退休男职工(知识分子)，1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。低指数0.7666。知识分子过渡系数1.43%(+0.13%)+地区津贴10元+工龄补贴8.5元。计发基数8366。",
+  "intellectual": true
+}

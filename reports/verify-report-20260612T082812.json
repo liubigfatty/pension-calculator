@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T08:28:12.777Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "yunnan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 200.80000000000018,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3087.42,
+          "actual": 3204.75,
+          "diff": 117.32999999999993
+        },
+        {
+          "label": "增发养老金",
+          "expect": 171.55,
+          "actual": 177.65,
+          "diff": 6.099999999999994
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 5069.45,
+          "actual": 5270.25,
+          "diff": 200.80000000000018
+        }
+      ],
+      "actual": {
+        "total": 5270.25
+      },
+      "expected": {
+        "basic": 3087.42,
+        "extra": 171.55,
+        "personal": 736.87,
+        "transitional": null,
+        "total": 5069.45
+      }
+    }
+  ]
+}

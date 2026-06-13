@@ -1,0 +1,24 @@
+{
+  "case_id": "guangdong-guangzhou-2026",
+  "province": "guangdong",
+  "gender": "女",
+  "birth": "1975年01月",
+  "work_start": "1993年12月",
+  "retire_year": 2026,
+  "retire_month": 1,
+  "total_years": 31.08,
+  "sight_years": 3.42,
+  "pre_account_years": 8.01,
+  "personal_account": 176591.43,
+  "baseRetire": 9493,
+  "months": 195,
+  "avgIndex": 0.9098,
+  "transIndex": 0.556,
+  "expected": {
+    "basic_pension": 2817.42,
+    "transitional_pension": 507.61,
+    "personal_pension": 905.61,
+    "total": 4230.64
+  },
+  "notes": "广东广州，女性1975年生，1993年参工，2026年1月50岁退休。过渡年限=视同3.42+1998年6月前实际4.60=8.01年。⚠️ avgIndex异常：核定表显示指数化工资11028.07(avgIdx≈1.16)但标准公式算3188≠2817，用0.9098才匹配。广东可能是双基数(市级基数≠省级计发基数)。核定表另有地方养老金30.24元(未含此total)。"
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T22:17:53.128Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "shaanxi",
+      "caseId": "shaanxi-xian-2023-female",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2991.95
+      },
+      "expected": {
+        "basic": 2078.91,
+        "extra": null,
+        "personal": 774.33,
+        "transitional": null,
+        "total": 2991.95
+      }
+    }
+  ]
+}

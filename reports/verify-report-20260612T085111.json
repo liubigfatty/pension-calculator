@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T08:51:11.568Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jilin",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.009999999999990905,
+      "diffs": null,
+      "actual": {
+        "total": 5556.33
+      },
+      "expected": {
+        "basic": 3035.54,
+        "extra": 345.77,
+        "personal": 810.75,
+        "transitional": null,
+        "total": 5556.33
+      }
+    }
+  ]
+}

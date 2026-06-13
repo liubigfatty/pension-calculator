@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-12T11:36:49.547Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "zhejiang",
+      "caseId": "zhejiang-male-2025",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 216.55000000000018,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 5519.31,
+          "actual": 5302.76,
+          "diff": 216.55000000000018
+        }
+      ],
+      "actual": {
+        "total": 5302.76
+      },
+      "expected": {
+        "basic": 3064.27,
+        "extra": null,
+        "personal": 695.53,
+        "transitional": null,
+        "total": 5519.31
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "case_id": "henan-zhengzhou-2024",
+  "province": "henan",
+  "gender": "男",
+  "birth": "1964年01月",
+  "work_start": "1981年07月",
+  "retire_year": 2024,
+  "retire_month": 1,
+  "total_years": 40.00,
+  "sight_years": 13.50,
+  "personal_account": 71072.37,
+  "baseRetire": 6401,
+  "months": 139,
+  "avgIndex": 0.9582,
+  "transIndex": 0.8279,
+  "expected": {
+    "basic_pension": 2506.83,
+    "transitional_pension": 930.03,
+    "personal_pension": 511.31,
+    "total": 3948.17
+  },
+  "notes": "河南省郑州市，2024年1月退休（预核定，用2023年基数6401）。郑州基数7800。视同162月=13.50年。核定表另有'过渡性补贴'419.9元（郑州特色），此案例total不含补贴，待引擎单独支持。"
+}

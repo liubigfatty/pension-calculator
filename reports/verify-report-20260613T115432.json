@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-13T11:54:32.646Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "neimenggu",
+      "caseId": "neimenggu-2025-male",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 7.170000000000073,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 4492.37,
+          "actual": 4499.54,
+          "diff": 7.170000000000073
+        }
+      ],
+      "actual": {
+        "total": 4499.54
+      },
+      "expected": {
+        "basic": 2706.81,
+        "extra": null,
+        "personal": 673.22,
+        "transitional": null,
+        "total": 4492.37
+      }
+    }
+  ]
+}

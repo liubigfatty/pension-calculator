@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T23:19:41.065Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "chongqing",
+      "caseId": "chongqing-2023-male",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 66.28999999999996,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3982.52,
+          "actual": 4048.43,
+          "diff": 65.90999999999985
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 6605.3,
+          "actual": 6671.59,
+          "diff": 66.28999999999996
+        }
+      ],
+      "actual": {
+        "total": 6671.59
+      },
+      "expected": {
+        "basic": 3982.52,
+        "extra": null,
+        "personal": 786.17,
+        "transitional": null,
+        "total": 6605.3
+      }
+    }
+  ]
+}

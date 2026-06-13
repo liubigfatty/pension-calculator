@@ -1,0 +1,30 @@
+{
+  "case_id": "6",
+  "province": "heilongjiang",
+  "city": "哈尔滨市",
+  "gender": "female",
+  "birth_year": 1973,
+  "birth_month": 12,
+  "work_year": 1991,
+  "work_month": 9,
+  "retire_year": 2023,
+  "retire_month": 12,
+  "account_start": {
+    "year": 1994,
+    "month": 9
+  },
+  "actual_years": 25.33,
+  "sight_years": 0,
+  "total_years": 25.33,
+  "avg_index": 0.6235,
+  "base_number": 6430,
+  "personal_account": 50001.51,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1322.28,
+    "personal_pension": 256.42,
+    "transitional_pension": 0,
+    "total": 1578.70
+  },
+  "notes": "黑龙江女工人50岁2023.12退休。建账时间1994-09（地区差异），参工1991.09在建账前但视同年限为0（档案缺失）。低指数0.62，低个账5万。"
+}

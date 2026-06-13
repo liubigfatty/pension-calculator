@@ -1,0 +1,22 @@
+{
+  "case_id": "shaanxi-hanbin-2025-male",
+  "province": "shaanxi",
+  "gender": "男",
+  "birth": "1965年06月",
+  "work_start": "1982年03月",
+  "retire_year": 2025,
+  "retire_month": 8,
+  "total_years": 43.25,
+  "sight_years": 10.83,
+  "personal_account": 107495.72,
+  "baseRetire": 7727,
+  "months": 137.8,
+  "avgIndex": 0.735,
+  "expected": {
+    "basic_pension": 2917.56,
+    "personal_pension": 780.02,
+    "transitional_pension": 802.54,
+    "total": 4500.12
+  },
+  "notes": "陕西安康汉滨，男1965-06生，1982-03参工，2025-08退休(60岁2月，延迟)。视同10年10月=10.83年(1982-03至1996-07)。累计43年3月=43.25年。2025年基数7881(表中写7727可能是预发用2024基数)。过渡系数1.4%验证。"
+}

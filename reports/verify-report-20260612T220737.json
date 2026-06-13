@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T22:07:37.520Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.27999999999974534,
+      "diffs": null,
+      "actual": {
+        "total": 4186.08
+      },
+      "expected": {
+        "basic": 2633.36,
+        "extra": null,
+        "personal": 695.02,
+        "transitional": null,
+        "total": 4185.8
+      }
+    },
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2024-female",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.25,
+      "diffs": null,
+      "actual": {
+        "total": 2294.09
+      },
+      "expected": {
+        "basic": 1726.91,
+        "extra": null,
+        "personal": 369.54,
+        "transitional": null,
+        "total": 2293.84
+      }
+    }
+  ]
+}

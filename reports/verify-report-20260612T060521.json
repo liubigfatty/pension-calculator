@@ -1,0 +1,146 @@
+{
+  "timestamp": "2026-06-12T06:05:21.939Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 7,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 7,
+  "results": [
+    {
+      "province": "hunan",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3906.9
+      },
+      "expected": {
+        "basic": 2449.58,
+        "extra": 0,
+        "personal": 613.66,
+        "transitional": 843.66,
+        "total": 3906.9
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2585.8
+      },
+      "expected": {
+        "basic": 2002.18,
+        "extra": 0,
+        "personal": 418.02,
+        "transitional": 165.6,
+        "total": 2585.8
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4409.43
+      },
+      "expected": {
+        "basic": 2844.2,
+        "extra": 0,
+        "personal": 501.31,
+        "transitional": 1063.92,
+        "total": 4409.43
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 1701.7
+      },
+      "expected": {
+        "basic": 1178.95,
+        "extra": 0,
+        "personal": 522.75,
+        "transitional": 0,
+        "total": 1701.7
+      }
+    },
+    {
+      "province": "hunan",
+      "caseId": "5",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2182.34
+      },
+      "expected": {
+        "basic": 1725.86,
+        "extra": 0,
+        "personal": 372.21,
+        "transitional": 84.27,
+        "total": 2182.34
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 5479.87
+      },
+      "expected": {
+        "basic": 3116.32,
+        "extra": 0,
+        "personal": 1244.92,
+        "transitional": 1118.63,
+        "total": 5479.87
+      }
+    },
+    {
+      "province": "tianjin",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3431.16
+      },
+      "expected": {
+        "basic": 2481.88,
+        "extra": 0,
+        "personal": 629.16,
+        "transitional": 320.12,
+        "total": 3431.16
+      }
+    }
+  ]
+}

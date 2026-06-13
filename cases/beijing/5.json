@@ -1,0 +1,28 @@
+{
+  "case_id": "5",
+  "province": "beijing",
+  "city": "西城区",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1982,
+  "work_month": 12,
+  "retire_year": 2026,
+  "retire_month": 1,
+  "actual_years": 32.04,
+  "sight_years": 9.92,
+  "total_years": 42.06,
+  "pre_account_years": 5.67,
+  "avg_index": 1.161,
+  "transIndex": 1.0866,
+  "base_number": 12049,
+  "personal_account": 270608.22,
+  "months": 137.3,
+  "expected": {
+    "basic_pension": 5475.93,
+    "personal_pension": 1970.93,
+    "transitional_pension": 1937.62,
+    "total": 9384.48
+  },
+  "notes": "男60岁3个月延迟退休，参工1982.12，视同年限9.92年(1982.12-1992.10)，建账前实际8.08年(1992.10-2000.10)。2026基数未公布用2025年预发。G同=1195.26，G实=742.36"
+}

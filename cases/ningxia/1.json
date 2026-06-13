@@ -1,0 +1,25 @@
+{
+  "case_id": "ningxia-2024-male",
+  "province": "ningxia",
+  "city": "宁夏",
+  "gender": "男",
+  "birth": "1964年4月",
+  "work_start": "1983年6月",
+  "retire_year": 2024,
+  "retire_month": 4,
+  "total_years": 40.92,
+  "sight_years": 7.58,
+  "pre_account_years": 12.58,
+  "personal_account": 95751.34,
+  "baseRetire": 7953,
+  "baseProv": 7953,
+  "months": 139,
+  "avgIndex": 0.7392,
+  "expected": {
+    "basic_pension": 2828.37,
+    "personal_pension": 688.86,
+    "transitional_pension": 960.13,
+    "total": 4477.36
+  },
+  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。"
+}

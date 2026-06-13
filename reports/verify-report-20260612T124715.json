@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-12T12:47:15.176Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "fujian",
+      "caseId": "fujian-nanping-2025",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 10.600000000000364,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2587.34,
+          "actual": 2576.74,
+          "diff": 10.600000000000364
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3699.23,
+          "actual": 3688.63,
+          "diff": 10.599999999999909
+        }
+      ],
+      "actual": {
+        "total": 3688.63
+      },
+      "expected": {
+        "basic": 2587.34,
+        "extra": null,
+        "personal": 433.59,
+        "transitional": null,
+        "total": 3699.23
+      }
+    }
+  ]
+}

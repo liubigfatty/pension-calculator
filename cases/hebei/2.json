@@ -1,0 +1,23 @@
+{
+  "case_id": "hebei-male-2025",
+  "province": "hebei",
+  "gender": "男",
+  "birth": "1965年03月",
+  "work_start": "1982年11月",
+  "retire_year": 2025,
+  "retire_month": 3,
+  "total_years": 42.42,
+  "sight_years": 10.17,
+  "pre_account_years": 13.17,
+  "personal_account": 80013.77,
+  "baseRetire": 7265,
+  "months": 139,
+  "avgIndex": 0.7079,
+  "expected": {
+    "basic_pension": 2631.71,
+    "transitional_pension": 880.51,
+    "personal_pension": 575.64,
+    "total": 4087.86
+  },
+  "notes": "河北省，男性1965年生，1982年参工，2025年3月60岁退休。过渡性养老金用建账前缴费年限=视同10.17+建账前实际3=13.17年（类似云南模式）。计发基数7265（2024年省级基数）。"
+}

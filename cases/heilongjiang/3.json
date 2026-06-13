@@ -1,0 +1,26 @@
+{
+  "case_id": "3",
+  "province": "heilongjiang",
+  "city": "哈尔滨市",
+  "gender": "male",
+  "birth_year": 1970,
+  "birth_month": 1,
+  "work_year": 1991,
+  "work_month": 7,
+  "retire_year": 2025,
+  "retire_month": 2,
+  "actual_years": 28.67,
+  "sight_years": 5.00,
+  "total_years": 33.67,
+  "avg_index": 1.2566,
+  "base_number": 7570,
+  "personal_account": 142506.60,
+  "months": 169.5,
+  "expected": {
+    "basic_pension": 2875.55,
+    "personal_pension": 840.75,
+    "transitional_pension": 570.75,
+    "total": 4287.05
+  },
+  "notes": "黑龙江男55岁2025.02特殊工种提前退休。参工1991.07，建账1996-07。视同5年(60月)，过渡=7570×5×1.2566×1.2%=570.75"
+}

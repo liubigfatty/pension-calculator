@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T12:28:18.156Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "hubei",
+      "caseId": "hubei-huangshi-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3061.83
+      },
+      "expected": {
+        "basic": 1703.36,
+        "extra": null,
+        "personal": 185.92,
+        "transitional": null,
+        "total": 3061.83
+      }
+    },
+    {
+      "province": "hubei",
+      "caseId": "hubei-wuhan-2022",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 2808.37
+      },
+      "expected": {
+        "basic": 2086,
+        "extra": null,
+        "personal": 722.38,
+        "transitional": null,
+        "total": 2808.38
+      }
+    }
+  ]
+}

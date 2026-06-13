@@ -1,0 +1,639 @@
+{
+  "timestamp": "2026-06-12T04:55:04.118Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 5,
+    "fail": 8,
+    "skip": 13,
+    "error": 0
+  },
+  "total": 26,
+  "results": [
+    {
+      "province": "jilin",
+      "caseId": "29",
+      "file": "29.skip.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 0,
+        "extra": 0,
+        "personal": 0,
+        "transitional": 0,
+        "total": 0
+      }
+    },
+    {
+      "province": "jilin",
+      "caseId": "jilin-pension-case",
+      "file": "jilin-pension-case.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 2323.91,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3916.59,
+          "actual": 3152.56,
+          "diff": 764.0300000000002
+        },
+        {
+          "label": "增发养老金",
+          "expect": 467.32,
+          "actual": 375.38,
+          "diff": 91.94
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 1365.39,
+          "actual": 972.29,
+          "diff": 393.10000000000014
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 2540.45,
+          "actual": 1465.61,
+          "diff": 1074.84
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 8289.75,
+          "actual": 5965.84,
+          "diff": 2323.91
+        }
+      ],
+      "actual": {
+        "total": 5965.84
+      },
+      "expected": {
+        "basic": 3916.59,
+        "extra": 467.32,
+        "personal": 1365.39,
+        "transitional": 2540.45,
+        "total": 8289.75
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "64",
+      "file": "64.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 4332.58,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 3087.42,
+          "actual": 0,
+          "diff": 3087.42
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 1073.61,
+          "actual": 0,
+          "diff": 1073.61
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 5069.45,
+          "actual": 736.87,
+          "diff": 4332.58
+        }
+      ],
+      "actual": {
+        "total": 736.87
+      },
+      "expected": {
+        "basic": 3087.42,
+        "extra": 0,
+        "personal": 736.87,
+        "transitional": 1073.61,
+        "total": 5069.45
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "65",
+      "file": "65.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 120.73000000000002,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2492.62,
+          "actual": 2527.25,
+          "diff": 34.63000000000011
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 329.68,
+          "actual": 338.97,
+          "diff": 9.29000000000002
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3638.6,
+          "actual": 3517.87,
+          "diff": 120.73000000000002
+        }
+      ],
+      "actual": {
+        "total": 3517.87
+      },
+      "expected": {
+        "basic": 2492.62,
+        "extra": 0,
+        "personal": 651.65,
+        "transitional": 329.68,
+        "total": 3638.6
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "66",
+      "file": "66.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 258.69000000000005,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2123.45,
+          "actual": 2382.14,
+          "diff": 258.69000000000005
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 243.77,
+          "actual": 311.33,
+          "diff": 67.55999999999997
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 2971.39,
+          "actual": 3139.74,
+          "diff": 168.3499999999999
+        }
+      ],
+      "actual": {
+        "total": 3139.74
+      },
+      "expected": {
+        "basic": 2123.45,
+        "extra": 0,
+        "personal": 446.27,
+        "transitional": 243.77,
+        "total": 2971.39
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "72",
+      "file": "72.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 2981.4,
+        "extra": 0,
+        "personal": 695.93,
+        "transitional": 726.01,
+        "total": 3988.99
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "yunnan-1",
+      "file": "yunnan-1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 3385.06,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2981.4,
+          "actual": 0,
+          "diff": 2981.4
+        },
+        {
+          "label": "增发养老金",
+          "expect": 177.65,
+          "actual": 0,
+          "diff": 177.65
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 695.93,
+          "actual": 603.93,
+          "diff": 92
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 726.01,
+          "actual": 0,
+          "diff": 726.01
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3988.99,
+          "actual": 603.93,
+          "diff": 3385.06
+        }
+      ],
+      "actual": {
+        "total": 603.93
+      },
+      "expected": {
+        "basic": 2981.4,
+        "extra": 177.65,
+        "personal": 695.93,
+        "transitional": 726.01,
+        "total": 3988.99
+      }
+    },
+    {
+      "province": "yunnan",
+      "caseId": "?",
+      "file": "云南.json",
+      "status": "skip",
+      "reason": "无法提取期望值",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "province": "gansu",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 10988.47
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": 3478.92,
+        "total": 10988.47
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "67",
+      "file": "67.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4989.87
+      },
+      "expected": {
+        "basic": 3055.33,
+        "extra": 0,
+        "personal": 1205.69,
+        "transitional": 728.85,
+        "total": 4989.87
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "68",
+      "file": "68.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 10988.47
+      },
+      "expected": {
+        "basic": 5222.01,
+        "extra": 0,
+        "personal": 2287.54,
+        "transitional": 3478.92,
+        "total": 10988.47
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "69",
+      "file": "69.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 7589.81
+      },
+      "expected": {
+        "basic": 4328.21,
+        "extra": 0,
+        "personal": 1696.29,
+        "transitional": 1565.31,
+        "total": 7589.81
+      }
+    },
+    {
+      "province": "gansu",
+      "caseId": "70",
+      "file": "70.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4463.91
+      },
+      "expected": {
+        "basic": 2965.47,
+        "extra": 0,
+        "personal": 1157.15,
+        "transitional": 341.29,
+        "total": 4463.91
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "25",
+      "file": "25.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 226.29999999999995,
+      "diffs": [
+        {
+          "label": "个人账户养老金",
+          "expect": 1558.4,
+          "actual": 1673.37,
+          "diff": 114.9699999999998
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 1922.6,
+          "actual": 1696.3,
+          "diff": 226.29999999999995
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 8630.2,
+          "actual": 8518.92,
+          "diff": 111.28000000000065
+        }
+      ],
+      "actual": {
+        "total": 8518.92
+      },
+      "expected": {
+        "basic": 5149.2,
+        "extra": 0,
+        "personal": 1558.4,
+        "transitional": 1922.6,
+        "total": 8630.2
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "46",
+      "file": "46.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 3908,
+        "extra": 0,
+        "personal": 1474.7,
+        "transitional": 1447.1,
+        "total": 6829.8
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "?",
+      "file": "56f2c742-76e2-44fb-8739-7c7102ec65ba.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "province": "shanghai",
+      "caseId": "57",
+      "file": "57.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 5149.2,
+        "extra": 0,
+        "personal": 1558.4,
+        "transitional": 1922.6,
+        "total": 8630.2
+      }
+    },
+    {
+      "province": "shanghai",
+      "caseId": "?",
+      "file": "c217f5fe-a876-49d0-8782-0fed6a05a8f7.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "province": "beijing",
+      "caseId": "27",
+      "file": "27.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 343.55999999999995,
+      "diffs": [
+        {
+          "label": "个人账户养老金",
+          "expect": 479.26,
+          "actual": 422.22,
+          "diff": 57.039999999999964
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 307.45,
+          "actual": 20.08,
+          "diff": 287.37
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 3434.68,
+          "actual": 3091.12,
+          "diff": 343.55999999999995
+        }
+      ],
+      "actual": {
+        "total": 3091.12
+      },
+      "expected": {
+        "basic": 2647.97,
+        "extra": null,
+        "personal": 479.26,
+        "transitional": 307.45,
+        "total": 3434.68
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "28",
+      "file": "28.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 476.64999999999964,
+      "diffs": [
+        {
+          "label": "个人账户养老金",
+          "expect": 2615.84,
+          "actual": 2402.22,
+          "diff": 213.62000000000035
+        },
+        {
+          "label": "过渡性养老金",
+          "expect": 263.03,
+          "actual": 0,
+          "diff": 263.03
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 8528.97,
+          "actual": 8052.32,
+          "diff": 476.64999999999964
+        }
+      ],
+      "actual": {
+        "total": 8052.32
+      },
+      "expected": {
+        "basic": 5650.1,
+        "extra": null,
+        "personal": 2615.84,
+        "transitional": 263.03,
+        "total": 8528.97
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "63",
+      "file": "63.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 5987.94,
+        "extra": null,
+        "personal": 2997.53,
+        "transitional": 602.75,
+        "total": null
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "beijing-27",
+      "file": "beijing-27-standard.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 0,
+        "extra": 0,
+        "personal": 0,
+        "transitional": 0,
+        "total": 0
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "beijing-pension-case",
+      "file": "beijing-pension-case.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 2351.32,
+        "extra": null,
+        "personal": 578.87,
+        "transitional": 51.68,
+        "total": null
+      }
+    },
+    {
+      "province": "beijing",
+      "caseId": "beijing-xicheng-low-index-case",
+      "file": "beijing-xicheng-low-index-case.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 1401.57,
+        "extra": null,
+        "personal": 472.86,
+        "transitional": 0,
+        "total": null
+      }
+    },
+    {
+      "province": "jiangsu",
+      "caseId": "?",
+      "file": "江苏省.json",
+      "status": "skip",
+      "reason": "无法解析输入日期",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": null,
+        "extra": null,
+        "personal": null,
+        "transitional": null,
+        "total": null
+      }
+    },
+    {
+      "province": "sichuan",
+      "caseId": "30",
+      "file": "30.json",
+      "status": "skip",
+      "reason": "期望值缺少 total 字段",
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": null,
+      "expected": {
+        "basic": 0,
+        "extra": 0,
+        "personal": 0,
+        "transitional": 0,
+        "total": 0
+      }
+    }
+  ]
+}

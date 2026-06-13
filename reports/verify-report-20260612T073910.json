@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T07:39:10.302Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jiangsu",
+      "caseId": "4",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.30999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 3945.33
+      },
+      "expected": {
+        "basic": 2557.07,
+        "extra": null,
+        "personal": 539.37,
+        "transitional": null,
+        "total": 3945.64
+      }
+    }
+  ]
+}

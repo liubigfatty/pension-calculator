@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-12T08:49:04.811Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "jilin",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 1.0700000000001637,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 3294.22,
+          "actual": 3295.29,
+          "diff": 1.0700000000001637
+        }
+      ],
+      "actual": {
+        "total": 3295.29
+      },
+      "expected": {
+        "basic": 2004.29,
+        "extra": 199.77,
+        "personal": 560.07,
+        "transitional": null,
+        "total": 3294.22
+      }
+    }
+  ]
+}

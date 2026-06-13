@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-12T07:20:25.810Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "beijing",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 0.5500000000001819,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 8143.76,
+          "actual": 8143.21,
+          "diff": 0.5500000000001819
+        }
+      ],
+      "actual": {
+        "total": 8143.21
+      },
+      "expected": {
+        "basic": 4683.41,
+        "extra": null,
+        "personal": 1587.1,
+        "transitional": null,
+        "total": 8143.76
+      }
+    }
+  ]
+}

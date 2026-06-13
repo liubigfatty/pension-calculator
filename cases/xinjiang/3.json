@@ -1,0 +1,25 @@
+{
+  "case_id": "xinjiang-urumqi-2024-female",
+  "province": "xinjiang",
+  "city": "乌鲁木齐",
+  "gender": "女",
+  "birth": "1974年11月",
+  "work_start": "1996年1月",
+  "retire_year": 2024,
+  "retire_month": 11,
+  "total_years": 28.92,
+  "sight_years": 0,
+  "pre_account_years": 0.91,
+  "personal_account": 59718.96,
+  "baseRetire": 6402,
+  "baseProv": 6402,
+  "months": 195,
+  "avgIndex": 0.704,
+  "expected": {
+    "basic_pension": 1577.36,
+    "personal_pension": 306.25,
+    "transitional_pension": 69.15,
+    "total": 1952.76
+  },
+  "notes": "新疆乌鲁木齐2024年11月退休女工，1974-11生，1996-01参工。指数0.704。过渡69.15=8332×0.704×0.91×1.3%。"
+}

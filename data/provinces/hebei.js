@@ -1,0 +1,103 @@
+// 数据来源：⚠️ 搜索结果（待官方文件确认）
+// 2024年计发基数：7265元/月
+// 更新时间：2026-06-10
+
+// data/provinces/hebei.js
+// 河北省养老金计算数据模块（框架版，待补充官方数据）
+// TODO：补充官方计发基数、过渡系数、建账时间等
+
+const PROV_BASE = {
+  1978: 770,
+  1979: 809,
+  1980: 849,
+  1981: 891,
+  1982: 936,
+  1983: 983,
+  1984: 1032,
+  1985: 1084,
+  1986: 1138,
+  1987: 1195,
+  1988: 1254,
+  1989: 1317,
+  1990: 1383,
+  1991: 1452,
+  1992: 1525,
+  1993: 1601,
+  1994: 1681,
+  1995: 1765,
+  1996: 1853,
+  1997: 1946,
+  1998: 2043,
+  1999: 2145,
+  2000: 2253,
+  2001: 2365,
+  2002: 2484,
+  2003: 2608,
+  2004: 2738,
+  2005: 2875,
+  2006: 3019,
+  2007: 3170,
+  2008: 3328,
+  2009: 3495,
+  2010: 3669,
+  2011: 3853,
+  2012: 4045,
+  2013: 4248,
+  2014: 4460,
+  2015: 4683,
+  2016: 4917,
+  2017: 5163,
+  2018: 5421,
+  2019: 5692,
+  2020: 5977,
+  2021: 6276,
+  2022: 6590,
+  2023: 6919,
+  2024: 7265,
+  2025: 7483,
+};
+
+const BASE_PARAMS = {
+  PROV_2025: 7300,
+  PROV_GROWTH: 0.03,
+  MERGE_YEAR: 2031
+}
+
+const CITY_LIST = [
+  '石家庄市', '唐山市', '秦皇岛市', '邯郸市', '邢台市',
+  '保定市', '张家口市', '承德市', '沧州市', '廊坊市',
+  '衡水市',
+]
+
+const ACCOUNT_START = { year: 1998, month: 1 }
+const CUTOFF_DATE   = { year: 1997, month: 12 }
+const TRANS_COEF = 0.012
+const PROV_TAG = 'hebei'
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+const cases = []
+
+function getEngineConfig() {
+  return {
+    province: PROV_TAG,
+    name: '河北省',
+    base_rates: { prov: PROV_BASE },
+    modules: {},
+  }
+}
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}

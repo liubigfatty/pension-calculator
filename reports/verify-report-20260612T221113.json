@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-06-12T22:11:13.823Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 4,
+  "results": [
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.27999999999974534,
+      "diffs": null,
+      "actual": {
+        "total": 4186.08
+      },
+      "expected": {
+        "basic": 2633.36,
+        "extra": null,
+        "personal": 695.02,
+        "transitional": null,
+        "total": 4185.8
+      }
+    },
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2024-female",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.25,
+      "diffs": null,
+      "actual": {
+        "total": 2294.09
+      },
+      "expected": {
+        "basic": 1726.91,
+        "extra": null,
+        "personal": 369.54,
+        "transitional": null,
+        "total": 2293.84
+      }
+    },
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2024-male-high",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.06999999999970896,
+      "diffs": null,
+      "actual": {
+        "total": 8097.8
+      },
+      "expected": {
+        "basic": 3998.32,
+        "extra": null,
+        "personal": 2164.98,
+        "transitional": null,
+        "total": 8097.76
+      }
+    },
+    {
+      "province": "shanxi",
+      "caseId": "shanxi-taiyuan-2023",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.25,
+      "diffs": null,
+      "actual": {
+        "total": 3993.66
+      },
+      "expected": {
+        "basic": 2515.75,
+        "extra": null,
+        "personal": 522.03,
+        "transitional": null,
+        "total": 3993.88
+      }
+    }
+  ]
+}

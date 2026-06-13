@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-06-12T09:22:08.742Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "liaoning",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 544.5199999999995,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2826.13,
+          "actual": 3234.79,
+          "diff": 408.65999999999985
+        },
+        {
+          "label": "增发养老金",
+          "expect": 339.55,
+          "actual": 356.91,
+          "diff": 17.360000000000014
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 719.56,
+          "actual": 749.56,
+          "diff": 30
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4845.09,
+          "actual": 5389.61,
+          "diff": 544.5199999999995
+        }
+      ],
+      "actual": {
+        "total": 5389.61
+      },
+      "expected": {
+        "basic": 2826.13,
+        "extra": 339.55,
+        "personal": 719.56,
+        "transitional": null,
+        "total": 4845.09
+      }
+    }
+  ]
+}

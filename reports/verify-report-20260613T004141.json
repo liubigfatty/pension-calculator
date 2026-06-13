@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-06-13T00:41:41.607Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 1,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "xinjiang",
+      "file": "1.json",
+      "status": "skip",
+      "reason": "省份配置缺失: xinjiang"
+    }
+  ]
+}

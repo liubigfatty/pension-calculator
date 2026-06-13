@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T23:45:50.798Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "hainan",
+      "caseId": "hainan-2025-male",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.38000000000010914,
+      "diffs": null,
+      "actual": {
+        "total": 9554.41
+      },
+      "expected": {
+        "basic": 4847.21,
+        "extra": null,
+        "personal": 1609.98,
+        "transitional": null,
+        "total": 9554.03
+      }
+    }
+  ]
+}

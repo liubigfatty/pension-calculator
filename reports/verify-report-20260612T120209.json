@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T12:02:09.725Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "guangdong",
+      "caseId": "guangdong-shaoguan-2026",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.32999999999992724,
+      "diffs": null,
+      "actual": {
+        "total": 5500.52
+      },
+      "expected": {
+        "basic": 2732.4,
+        "extra": null,
+        "personal": 516.07,
+        "transitional": null,
+        "total": 5500.58
+      }
+    },
+    {
+      "province": "guangdong",
+      "caseId": "guangdong-dongguan-2026",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2899999999999636,
+      "diffs": null,
+      "actual": {
+        "total": 1763.52
+      },
+      "expected": {
+        "basic": 1074.61,
+        "extra": null,
+        "personal": 372.22,
+        "transitional": null,
+        "total": 1763.23
+      }
+    }
+  ]
+}

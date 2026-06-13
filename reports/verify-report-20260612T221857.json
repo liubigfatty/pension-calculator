@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T22:18:57.178Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "shaanxi",
+      "caseId": "shaanxi-xian-2023-female",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2991.95
+      },
+      "expected": {
+        "basic": 2078.91,
+        "extra": null,
+        "personal": 774.33,
+        "transitional": null,
+        "total": 2991.95
+      }
+    },
+    {
+      "province": "shaanxi",
+      "caseId": "shaanxi-hanyin-2025-female",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2300000000000182,
+      "diffs": null,
+      "actual": {
+        "total": 2967.93
+      },
+      "expected": {
+        "basic": 2237.66,
+        "extra": null,
+        "personal": 730.04,
+        "transitional": null,
+        "total": 2967.7
+      }
+    }
+  ]
+}

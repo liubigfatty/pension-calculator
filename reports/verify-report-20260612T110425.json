@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T11:04:25.662Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "henan",
+      "caseId": "henan-luoyang-2026",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.03999999999996362,
+      "diffs": null,
+      "actual": {
+        "total": 4863.88
+      },
+      "expected": {
+        "basic": 2856.82,
+        "extra": null,
+        "personal": 1049.53,
+        "transitional": null,
+        "total": 4863.92
+      }
+    }
+  ]
+}

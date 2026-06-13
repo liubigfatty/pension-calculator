@@ -1,0 +1,22 @@
+{
+  "case_id": "jiangxi-nanchang-2023-male-high",
+  "province": "jiangxi",
+  "gender": "男",
+  "birth": "1963年04月",
+  "work_start": "1981年12月",
+  "retire_year": 2023,
+  "retire_month": 4,
+  "total_years": 41.42,
+  "sight_years": 13.83,
+  "personal_account": 270296.65,
+  "baseRetire": 6569,
+  "months": 139,
+  "avgIndex": 1.874,
+  "expected": {
+    "basic_pension": 3909.59,
+    "personal_pension": 1944.58,
+    "transitional_pension": 2213.8,
+    "total": 8067.97
+  },
+  "notes": "江西南昌，男1963-04生，1981-12参工，2023-04退休(60岁)。高指数1.874，个人账户27万。视同166月(13.83年，1995-10前)，累计视同169月。过渡=6569×1.874×13.83×1.3%=2213.8，确认用1995-10前视同年限。"
+}

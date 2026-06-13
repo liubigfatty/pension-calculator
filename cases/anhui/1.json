@@ -1,0 +1,22 @@
+{
+  "case_id": "anhui-hefei-2024",
+  "province": "anhui",
+  "gender": "男",
+  "birth": "1964年06月",
+  "work_start": "1981年11月",
+  "retire_year": 2024,
+  "retire_month": 6,
+  "total_years": 26.7,
+  "sight_years": 14.2,
+  "personal_account": 49861.54,
+  "baseRetire": 7688,
+  "months": 139,
+  "avgIndex": 1.5692,
+  "expected": {
+    "basic_pension": 2636.89,
+    "personal_pension": 358.72,
+    "transitional_pension": 2227.02,
+    "total": 5222.63
+  },
+  "notes": "安徽合肥，男1964-06生，1981-11参工，2024-06退休(60岁)。视同14年2月=14.17年，实际12年6月，累计26年8月=26.67年。2023年基数7688。过渡系数1.3%确认，公式：7688×1.5692×1.3%×14.2=2227.02。皖政2006〔59〕号文标准公式，零引擎改动预期。"
+}

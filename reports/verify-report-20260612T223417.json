@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T22:34:17.002Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "guangxi",
+      "caseId": "?",
+      "file": "4.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 1949.6000000000004,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 2979.1,
+          "actual": 1815.58,
+          "diff": 1163.52
+        },
+        {
+          "label": "个人账户养老金",
+          "expect": 1627.5,
+          "actual": 1162.87,
+          "diff": 464.6300000000001
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 5319.1,
+          "actual": 3369.5,
+          "diff": 1949.6000000000004
+        }
+      ],
+      "actual": {
+        "total": 3369.5
+      },
+      "expected": {
+        "basic": 2979.1,
+        "extra": null,
+        "personal": 1627.5,
+        "transitional": null,
+        "total": 5319.1
+      }
+    }
+  ]
+}

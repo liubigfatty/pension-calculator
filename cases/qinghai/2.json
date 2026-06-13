@@ -1,0 +1,25 @@
+{
+  "case_id": "qinghai-2023-male",
+  "province": "qinghai",
+  "city": "青海",
+  "gender": "男",
+  "birth": "1968年1月",
+  "work_start": "1986年8月",
+  "retire_year": 2023,
+  "retire_month": 1,
+  "total_years": 36.5,
+  "sight_years": 0,
+  "pre_account_years": 11.42,
+  "personal_account": 95625,
+  "baseRetire": 8591,
+  "baseProv": 8591,
+  "months": 170,
+  "avgIndex": 0.692,
+  "expected": {
+    "basic_pension": 2652.8,
+    "personal_pension": 562.5,
+    "transitional_pension": 1162.0,
+    "total": 4377.3
+  },
+  "notes": "青海2023年1月退休男职工(特殊工种55岁)，1968-01生，1986-08参工。建账前11年5月=11.42年(1986-08至1998-01)。过渡=(A+A×Q)/2×M1×1.4%。公式同重庆。"
+}

@@ -1,0 +1,36 @@
+{
+  "case_id": "2",
+  "province": "sichuan",
+  "city": "成都",
+  "gender": "女",
+  "birth_year": 1970,
+  "birth_month": 1,
+  "work_year": 1987,
+  "work_month": 12,
+  "retire_year": 2025,
+  "retire_month": 1,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "pre_account_months": 97,
+  "pre_account_years": 8.08,
+  "sight_years": 4.58,
+  "actual_years": 32.58,
+  "total_years": 37.17,
+  "avg_index": 0.964,
+  "base_number": 8321,
+  "personal_account": 149649.55,
+  "months": 170,
+  "expected": {
+    "basic_pension": 3037.24,
+    "personal_pension": 880.29,
+    "transition_pension": 858.31,
+    "extra_pension": 298.16,
+    "total": 5074.00
+  },
+  "verified": true,
+  "notes": "四川案例2，女性55岁正常退休（女干部）。1987年12月参加工作，建账1996年1月，1995年底前未建账缴费97个月（8.08年）。视同缴费4.58年，实际缴费32.58年，累计37.17年（446个月）。平均缴费指数0.964，指数化月平均工资8021.44元。基础养老金3037.24，个人账户养老金880.29，过渡性养老金858.31（四川公式：(基数+指数工资)/2×建账前年限×1.3%），月增发养老金298.16（8021.44×0.1%×37.17），合计5074.00元。",
+  "data_source": "四川省社会保险业务办理结果通知单（企业养老退休待遇核定），川劳社发〔2006〕17号，2025年01月退休"
+}

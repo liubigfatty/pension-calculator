@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-12T09:46:40.742Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "shandong",
+      "caseId": "1",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 4295.77
+      },
+      "expected": {
+        "basic": 2647.45,
+        "extra": null,
+        "personal": 689.85,
+        "transitional": null,
+        "total": 4295.77
+      }
+    },
+    {
+      "province": "shandong",
+      "caseId": "2",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2260.77
+      },
+      "expected": {
+        "basic": 1742.81,
+        "extra": null,
+        "personal": 517.96,
+        "transitional": null,
+        "total": 2260.77
+      }
+    }
+  ]
+}

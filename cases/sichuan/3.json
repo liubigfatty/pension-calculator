@@ -1,0 +1,36 @@
+{
+  "case_id": "3",
+  "province": "sichuan",
+  "city": "全省",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 9,
+  "work_year": 1984,
+  "work_month": 7,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "pre_account_months": 78,
+  "pre_account_years": 6.5,
+  "sight_years": 2.67,
+  "actual_years": 22.08,
+  "total_years": 24.75,
+  "avg_index": 0.613,
+  "base_number": 8321,
+  "personal_account": 72117.51,
+  "months": 138.4,
+  "expected": {
+    "basic_pension": 1660.94,
+    "personal_pension": 521.08,
+    "transition_pension": 567.07,
+    "extra_pension": 126.24,
+    "total": 2875.33
+  },
+  "verified": true,
+  "notes": "四川案例3，男性60岁1个月延迟退休。1984年7月参加工作，建账1996年1月，1995年底前未建账缴费78个月（6.5年）。视同缴费2.67年（32个月），实际缴费22.08年（265个月），累计24.75年（297个月）。平均缴费指数0.613，指数化月平均工资5100.77元。个人账户72117.51元，计发月数138.4（延迟退休）。基础养老金1560.94，个人账户养老金521.08，过渡性养老金567.07，月增发养老金126.24，合计2875.33元。",
+  "data_source": "四川省社会保险业务办理结果通知单（企业养老退休待遇核定），川劳社发〔2006〕17号，2025年10月退休"
+}

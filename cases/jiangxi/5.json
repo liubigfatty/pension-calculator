@@ -1,0 +1,22 @@
+{
+  "case_id": "jiangxi-nanchang-2026-female",
+  "province": "jiangxi",
+  "gender": "女",
+  "birth": "1976年02月",
+  "work_start": "1997年12月",
+  "retire_year": 2026,
+  "retire_month": 2,
+  "total_years": 28.25,
+  "sight_years": 0,
+  "personal_account": 99186.33,
+  "baseRetire": 7054,
+  "months": 195,
+  "avgIndex": 0.744,
+  "expected": {
+    "basic_pension": 1737.68,
+    "personal_pension": 508.65,
+    "transitional_pension": 0,
+    "total": 2246.33
+  },
+  "notes": "江西南昌，女1976-02生，1997-12参工(1995-10后)，2026-02退休(50岁，延迟2月)。无视同年限。累计339月=28.25年。2026年退休用2025年基数7054。个人=99186.33/195=508.65精确。基础=(7054+7054×0.744)/2×28.25×1%=1737.68精确。零引擎改动。"
+}

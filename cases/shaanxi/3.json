@@ -1,0 +1,22 @@
+{
+  "case_id": "shaanxi-xian-2024-male",
+  "province": "shaanxi",
+  "gender": "男",
+  "birth": "1964年12月",
+  "work_start": "1984年11月",
+  "retire_year": 2024,
+  "retire_month": 12,
+  "total_years": 40.17,
+  "sight_years": 8.17,
+  "personal_account": 118079.42,
+  "baseRetire": 7727,
+  "months": 139,
+  "avgIndex": 0.718,
+  "expected": {
+    "basic_pension": 2666.06,
+    "personal_pension": 849.49,
+    "transitional_pension": 634.32,
+    "total": 4149.87
+  },
+  "notes": "陕西西安，男1964-12生，1984-11参工，2024-12退休(60岁)。视同8年2月=8.17年(1984-11至1996-07建账)。累计40年2月=40.17年。2024年基数7727。过渡系数1.4%：7727×0.718×8.17×1.4%=634.32。陕政发〔2006〕20号。"
+}

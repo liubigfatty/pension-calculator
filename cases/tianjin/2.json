@@ -1,0 +1,35 @@
+{
+  "case_id": "2",
+  "province": "tianjin",
+  "city": "全市",
+  "gender": "女",
+  "birth_year": 1973,
+  "birth_month": 11,
+  "work_year": 1994,
+  "work_month": 1,
+  "retire_year": 2023,
+  "retire_month": 11,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1998,
+    "month": 1
+  },
+  "sight_years": 4.33,
+  "actual_years": 25.92,
+  "total_years": 30.25,
+  "avg_index": 0.82,
+  "transIndex": 0.82,
+  "base_number": 9016,
+  "personal_account": 122686.43,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2481.88,
+    "personal_pension": 629.16,
+    "transition_pension": 320.12,
+    "extra_pension": 0,
+    "total": 3431.16
+  },
+  "verified": true,
+  "notes": "天津案例2，女性50岁正常退休。累计缴费30年3个月，其中1997年底前（视同缴费）4年4个月。平均缴费指数0.82，个人账户122686.43元。基础养老金2481.88，个人账户养老金629.16，过渡性养老金320.12，合计3431.16元。",
+  "data_source": "天津市企业职工基本养老保险待遇核定表，2023年11月退休"
+}

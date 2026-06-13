@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T12:26:10.391Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "hubei",
+      "caseId": "hubei-huangshi-2025",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 3061.83
+      },
+      "expected": {
+        "basic": 1703.36,
+        "extra": null,
+        "personal": 185.92,
+        "transitional": null,
+        "total": 3061.83
+      }
+    }
+  ]
+}

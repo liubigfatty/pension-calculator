@@ -1,0 +1,22 @@
+{
+  "case_id": "hubei-jingzhou-2024",
+  "province": "hubei",
+  "gender": "女",
+  "birth": "1974年01月",
+  "work_start": "1990年10月",
+  "retire_year": 2024,
+  "retire_month": 1,
+  "total_years": 33.33,
+  "sight_years": 5.25,
+  "personal_account": 67200.23,
+  "baseRetire": 6395,
+  "months": 195,
+  "avgIndex": 0.7015,
+  "expected": {
+    "basic_pension": 1813.33,
+    "transitional_pension": 282.62,
+    "personal_pension": 344.62,
+    "total": 2440.57
+  },
+  "notes": "湖北荆州（三档城市），女性1974年生，1990年参工，2024年1月50岁退休。视同5.25年。过渡系数1.2%确认！计发基数6395（三档荆州）。标准公式，零引擎改动。"
+}

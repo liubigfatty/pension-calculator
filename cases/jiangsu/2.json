@@ -1,0 +1,27 @@
+{
+  "case_id": "2",
+  "province": "jiangsu",
+  "city": "苏州市",
+  "gender": "female",
+  "birth_year": 1974,
+  "birth_month": 4,
+  "work_year": 1996,
+  "work_month": 9,
+  "retire_year": 2024,
+  "retire_month": 4,
+  "actual_years": 27.33,
+  "sight_years": 0,
+  "total_years": 27.33,
+  "pre_1996_years": 0,
+  "avg_index": 0.8566,
+  "base_number": 8613,
+  "personal_account": 156346.02,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2185.42,
+    "personal_pension": 801.77,
+    "transitional_pension": 0,
+    "total": 2987.19
+  },
+  "notes": "苏州女工人50岁2024.04退休。参工1996.09（建账1996-01之后），1991年底前无工龄，故过渡性养老金为0。合计2987.19，表上显示2987.2。"
+}

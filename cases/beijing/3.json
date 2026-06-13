@@ -1,0 +1,28 @@
+{
+  "case_id": "3",
+  "province": "beijing",
+  "city": "房山区",
+  "gender": "male",
+  "birth_year": 1963,
+  "birth_month": 5,
+  "work_year": 1981,
+  "work_month": 9,
+  "retire_year": 2023,
+  "retire_month": 5,
+  "actual_years": 27.11,
+  "sight_years": 13.66,
+  "total_years": 41.09,
+  "pre_account_years": 2.96,
+  "avg_index": 1.0323,
+  "transIndex": 1.0245,
+  "base_number": 11217.75,
+  "personal_account": 220606.75,
+  "months": 139,
+  "expected": {
+    "basic_pension": 4683.41,
+    "personal_pension": 1587.10,
+    "transitional_pension": 1873.25,
+    "total": 8143.76
+  },
+  "notes": "男60岁退休，参工1981.09（建账1992.10前），视同年限13.98年(1981.09-1995.07)，建账前实际2.85年。G视同=1532.64，G实际=340.61。计发基数11217.75=11082×1.0245（假设）"
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T22:47:28.459Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "guangxi",
+      "caseId": "guangxi-liuzhou-2025-male",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.17000000000007276,
+      "diffs": null,
+      "actual": {
+        "total": 7745.33
+      },
+      "expected": {
+        "basic": 3898.2,
+        "extra": null,
+        "personal": 1553.8,
+        "transitional": null,
+        "total": 7745.5
+      }
+    }
+  ]
+}

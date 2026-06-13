@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-06-12T23:58:18.990Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 2,
+    "error": 0
+  },
+  "total": 2,
+  "results": [
+    {
+      "province": "ningxia",
+      "file": "1.json",
+      "status": "skip",
+      "reason": "省份配置缺失: ningxia"
+    },
+    {
+      "province": "ningxia",
+      "file": "2.json",
+      "status": "skip",
+      "reason": "省份配置缺失: ningxia"
+    }
+  ]
+}

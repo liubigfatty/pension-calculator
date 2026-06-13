@@ -1,0 +1,30 @@
+{
+  "case_id": "5",
+  "province": "shandong",
+  "city": "济南市",
+  "gender": "female",
+  "birth_year": 1974,
+  "birth_month": 4,
+  "work_year": 1994,
+  "work_month": 1,
+  "retire_year": 2024,
+  "retire_month": 4,
+  "account_start": {
+    "year": 2001,
+    "month": 5
+  },
+  "actual_years": 23.00,
+  "sight_years": 7.33,
+  "total_years": 30.33,
+  "avg_index": 0.8560,
+  "base_number": 7468,
+  "personal_account": 111694.39,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2101.96,
+    "personal_pension": 572.79,
+    "transitional_pension": 609.15,
+    "total": 3283.90
+  },
+  "notes": "山东济南女工人50岁2024.04退休。建账2001-05（非常晚），建账前7.33年(1994.01-2001.05)。视同7.33年。过渡=7468×0.8560×7.3333×1.3%=609.15"
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-13T00:34:24.383Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "guizhou",
+      "caseId": "guizhou-2024-female",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.11999999999989086,
+      "diffs": null,
+      "actual": {
+        "total": 2268.77
+      },
+      "expected": {
+        "basic": 1666.24,
+        "extra": null,
+        "personal": 360.33,
+        "transitional": null,
+        "total": 2268.65
+      }
+    }
+  ]
+}

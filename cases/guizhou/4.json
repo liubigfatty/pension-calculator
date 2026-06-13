@@ -1,0 +1,25 @@
+{
+  "case_id": "guizhou-2023-female",
+  "province": "guizhou",
+  "city": "贵州",
+  "gender": "女",
+  "birth": "1973年8月",
+  "work_start": "1993年10月",
+  "retire_year": 2023,
+  "retire_month": 12,
+  "total_years": 30.17,
+  "sight_years": 0,
+  "pre_account_years": 4.25,
+  "personal_account": 88922.06,
+  "baseRetire": 6858,
+  "baseProv": 6858,
+  "months": 195,
+  "avgIndex": 0.7465,
+  "expected": {
+    "basic_pension": 1806.69,
+    "personal_pension": 456.01,
+    "transitional_pension": 304.59,
+    "total": 2567.29
+  },
+  "notes": "贵州2023年12月退休女工，1973-08生，1993-10参工。建账1998-01，过渡年限4.25年(1993-10至1997-12)。过渡1.4%确认。独子128.36未计入。"
+}

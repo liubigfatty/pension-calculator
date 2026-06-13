@@ -1,0 +1,21 @@
+{
+  "case_id": "zhejiang-female-2025",
+  "province": "zhejiang",
+  "gender": "女",
+  "birth": "1975年08月",
+  "work_start": "2000年08月",
+  "retire_year": 2025,
+  "retire_month": 8,
+  "total_years": 25.08,
+  "sight_years": 0,
+  "personal_account": 110378.42,
+  "baseRetire": 8310,
+  "months": 195,
+  "avgIndex": 0.6977,
+  "expected": {
+    "basic_pension": 1769.13,
+    "personal_pension": 566.04,
+    "total": 2335.17
+  },
+  "notes": "浙江省女性'新人'，1975年生，2000年参工（建账1997年后），2025年8月50岁退休。无视同年限、无过渡性养老金。计发基数8310（2025年预核算用2024年基数）。此案例total不含调节金/补贴。"
+}

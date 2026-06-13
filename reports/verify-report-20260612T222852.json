@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-12T22:28:52.294Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "guangxi",
+      "caseId": "guangxi-liuzhou-2023",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 313.1999999999998,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 3990.1,
+          "actual": 3676.9,
+          "diff": 313.1999999999998
+        }
+      ],
+      "actual": {
+        "total": 3676.9
+      },
+      "expected": {
+        "basic": 2410.8,
+        "extra": null,
+        "personal": 483.4,
+        "transitional": null,
+        "total": 3990.1
+      }
+    }
+  ]
+}

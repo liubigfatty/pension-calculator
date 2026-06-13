@@ -54,12 +54,28 @@ function calcBasicPension(params) {
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
 
   const rate = mod.rate_per_year || 0.01
-  const amount = Math.round((retireBase + provBase * avgIndex) / 2 * totalYears * rate * 100) / 100
+  let amount
+  let description
 
-  return {
-    amount,
-    description: `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  if (mod.formula_type === 'henan') {
+    // 河南特殊：指数化工资 = 退休地计发基数 × 平均缴费指数
+    // 公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    const indexSalary = retireBase * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'chongqing') {
+    // 重庆特殊（渝办发〔2006〕205号）：基础 = (社平 + 社平×Q) / 2 × 年限 × 1%
+    // A = 上年度全市在岗职工月平均工资，非计发基数；由 params.socialAvgBase 传入
+    const socialAvg = params.socialAvgBase || retireBase
+    amount = Math.round((socialAvg + socialAvg * avgIndex) / 2 * totalYears * rate * 100) / 100
+    description = `(¥${socialAvg.toLocaleString()} + ¥${socialAvg.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else {
+    // 默认公式：(退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    amount = Math.round((retireBase + provBase * avgIndex) / 2 * totalYears * rate * 100) / 100
+    description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
   }
+
+  return { amount, description }
 }
 
 /**
@@ -75,8 +91,25 @@ function calcBasicPension(params) {
  * @returns {Object} 计算结果 { amount, description, bracketDetails }
  */
 function calcExtraPension(params) {
-  const { avgBase, actualYears, totalYears, mod } = params
+  const { avgBase, actualYears, totalYears, mod, retireBase, avgIndex } = params
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用', bracketDetails: [] }
+
+  // 四川增发养老金（川劳社发〔2006〕17号）：
+  // 月增发养老金 = 指数化月平均缴费工资 × 增发比例 × 累计缴费年限
+  // 增发比例因人而异：独生子女0.1%、2005年底前工作0.1%、艰苦边远地区0.1%等，合计0.1%~0.4%+
+  if (mod.formula_type === "sichuan") {
+    const rBase = retireBase || 0
+    const idx = avgIndex || 0
+    const indexSalary = rBase * idx
+    const calcYears = totalYears || actualYears
+    // 支持通过 params.extraRate 传入自定义比例（如0.004），否则用配置默认值
+    const rate = params?.extraRate != null ? params.extraRate : (mod.rate || 0.001)
+    const amount = Math.round(indexSalary * rate * calcYears * 100) / 100
+
+    const desc = '四川增发养老金: ' + indexSalary.toFixed(2) + ' × ' + (rate * 100).toFixed(1)
+               + '% × ' + calcYears.toFixed(2) + '年 = ' + amount.toFixed(2) + '元'
+    return { amount, description: desc, bracketDetails: [] }
+  }
 
   // 检查触发条件（看实际缴费年限）
   let triggerType = mod.trigger?.type || 'actual_years'
@@ -265,37 +298,165 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
  * @returns {Object} 计算结果 { amount, description }
  */
 function calcTransitionalPension(params) {
-  const { provBase, sightYears, avgIndex, actualYears, totalYears, mod, preAccountYears } = params
+  const { provBase, sightYears, avgIndex, actualYears, totalYears, mod, preAccountYears, transIndex } = params
+  // 天津/江苏等双指数省份：过渡性养老金使用 transIndex（如天津的"全部平均工资指数"）
+  const transIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
   // 云南特色：用建账前缴费年限替代视同缴费年限
   const effectiveYears = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
   if (!effectiveYears || effectiveYears <= 0) return { amount: 0, description: '无视同缴费年限' }
 
   // 北京特殊公式：过渡性养老金 = G同 + G实（京劳社养发〔1998〕21号）
+  // G同：1992年10月前的视同缴费年限 → 用 sightYears
+  // G实：1992年10月~1998年6月（cutoff）的实际缴费年限 → 用 preAccountYears（建账前实际缴费年限）
   if (mod.formula_type === "beijing") {
     const coef = mod.coefficient || 0.01
-    // G同 = 全省基数 × 视同年限 × 1.0 × 系数
-    const G_tong = provBase * effectiveYears * 1.0 * coef
-    // G实 = 全省基数 × 建账前实际缴费年限 × Z实指数 × 系数
+    // G同 = 全省基数 × 建账前视同年限 × 1.0 × 系数（1992.10前工龄）
+    const G_tong = provBase * (sightYears || 0) * 1.0 * coef
+    // G实 = 全省基数 × 建账前实际缴费年限（建账后~cutoff） × Z实指数 × 系数
     const preAcct = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : 0
-    const G_shi  = provBase * preAcct * avgIndex * coef
+    // G实用 Z实指数（transIndex），可能与基础养老金指数不同
+    const zshiIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
+    const G_shi  = provBase * preAcct * zshiIdx * coef
     const amount  = Math.round((G_tong + G_shi) * 100) / 100
-    const desc   = 'G同' + effectiveYears.toFixed(2) + '年×1.0+' + G_tong.toFixed(2)
-                    + ' + G实' + preAcct.toFixed(2) + '年×指数' + avgIndex.toFixed(4) + '+' + G_shi.toFixed(2)
+    const desc   = 'G同' + (sightYears || 0).toFixed(2) + '年×1.0=' + G_tong.toFixed(2)
+                    + ' + G实' + preAcct.toFixed(2) + '年×指数' + avgIndex.toFixed(4) + '=' + G_shi.toFixed(2)
                     + '，系数' + (coef * 100).toFixed(1) + '%'
     return { amount, description: desc }
   }
 
+  // 上海特殊公式（沪人社规〔2021〕32号）：
+  // 过渡性养老金 = 上年度全市月平均工资 × 1.0 × 1992年底前视同缴费年限 × 1.2% + 虚账实记总额 ÷ 120
+  if (mod.formula_type === "shanghai") {
+    const retireBase = params?.retireBase || provBase
+    const sight = params?.sightYears || effectiveYears
+    const coefSH = mod.coefficient || 0.012
+    const xuzhang = params?.xuzhang || 0
+
+    const basePart = retireBase * sight * 1.0 * coefSH
+    const xuzhangPart = xuzhang > 0 ? xuzhang / 120 : 0
+    const amount = Math.round((basePart + xuzhangPart) * 100) / 100
+
+    let desc = '上海过渡性养老金: ' + retireBase.toFixed(2) + ' × 1.0 × ' + sight.toFixed(2) + '年 × 1.2%'
+    if (xuzhang > 0) {
+      desc += ' + ' + xuzhang.toFixed(2) + ' ÷ 120'
+    }
+    desc += ' = ' + amount.toFixed(2) + '元'
+    return { amount, description: desc }
+  }
+
+  // 江苏特殊公式（苏政发〔2023〕?号）：
+  // 过渡性养老金 = 退休时上年度全省在岗职工月平均工资 × 1996年底前平均缴费工资指数 × 1996年底前缴费年限 × 1.2%
+  // 过渡期政策（2024-2026年）：新老办法差额按比例逐年发放
+  if (mod.formula_type === "jiangsu") {
+    const retireBase = params?.retireBase || provBase
+    const transIdx = params?.transIndex || avgIndex
+    const pre96 = params?.pre1996Years || 0
+    const coefJS = mod.coefficient || 0.012
+    const retireYear = params?.retireYear || new Date().getFullYear()
+
+    if (pre96 <= 0) return { amount: 0, description: '1996年底前无缴费年限' }
+
+    const amountNew = Math.round(retireBase * transIdx * pre96 * coefJS * 100) / 100
+
+    // 新老办法并存，过渡期政策
+    const oldMethod = params?.transPensionOld || 0
+    let finalAmount
+
+    if (amountNew > oldMethod) {
+      // 新办法高于原办法，按过渡期比例发放差额
+      let ratio
+      if (retireYear === 2024) {
+        ratio = 0.40  // 2024年：40%
+      } else if (retireYear === 2025) {
+        ratio = 0.70  // 2025年：70%
+      } else {
+        ratio = 1.00  // 2026年及以后：100%
+      }
+      const diff = amountNew - oldMethod
+      finalAmount = Math.round((oldMethod + diff * ratio) * 100) / 100
+
+      let desc = '江苏过渡性养老金: 新办法=' + amountNew.toFixed(2) + '元，原办法=' + oldMethod.toFixed(2) + '元'
+      desc += '，差额=' + diff.toFixed(2) + '元，' + retireYear + '年发放比例' + (ratio * 100).toFixed(0) + '%'
+      desc += '，实际=' + finalAmount.toFixed(2) + '元'
+      return { amount: finalAmount, description: desc }
+    } else {
+      // 原办法高于或等于新办法，按原办法发放
+      finalAmount = oldMethod
+      return {
+        amount: finalAmount,
+        description: '江苏过渡性养老金: 新办法=' + amountNew.toFixed(2) + '元，原办法=' + oldMethod.toFixed(2) + '元，取原办法=' + finalAmount.toFixed(2) + '元'
+      }
+    }
+  }
+
+  // 四川特殊公式（川劳社发〔2006〕17号）：
+  // 过渡性养老金 = (月计发基数 + 指数化月平均缴费工资) ÷ 2 × 1995年底前未建账缴费年限 × 1.3%
+  if (mod.formula_type === "sichuan") {
+    const retireBase = params?.retireBase || provBase
+    const indexSalary = retireBase * avgIndex
+    const pre95Years = (params?.preAccountYears != null && params.preAccountYears > 0) ? params.preAccountYears : 0
+    const coefSC = mod.coefficient || 0.013
+
+    if (pre95Years <= 0) return { amount: 0, description: '1995年底前无未建账缴费年限' }
+
+    const avgBase = (retireBase + indexSalary) / 2
+    const amount = Math.round(avgBase * pre95Years * coefSC * 100) / 100
+
+    const desc = '四川过渡性养老金: (' + retireBase.toFixed(2) + ' + ' + indexSalary.toFixed(2) + ') ÷ 2 × '
+               + pre95Years.toFixed(2) + '年 × ' + (coefSC * 100).toFixed(1) + '% = ' + amount.toFixed(2) + '元'
+    return { amount, description: desc }
+  }
+
+  // 河南特殊公式：指数化工资 = 退休地计发基数 × 过渡性指数（非全省基数）
+  // 公式：退休地计发基数 × 过渡性指数 × 视同缴费年限 × 系数
+  if (mod.formula_type === "henan") {
+    const retireBase = params?.retireBase || provBase
+    const indexSalary = retireBase * transIdx
+    const amount = Math.round(indexSalary * effectiveYears * mod.coefficient * 100) / 100
+    const desc = `指数化工资${indexSalary.toFixed(2)} × 视同${effectiveYears.toFixed(2)}年 × ${(mod.coefficient * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    return { amount, description: desc }
+  }
+
+  // 重庆特殊公式（渝办发〔2006〕205号）：
+  // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
+  // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
+  if (mod.formula_type === "chongqing") {
+    const retireBase = params?.retireBase || provBase
+    const avgBase = (retireBase + retireBase * transIdx) / 2
+    const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
+    const desc = `过渡: (${retireBase.toLocaleString()} + ${retireBase.toLocaleString()}×${transIdx.toFixed(4)})÷2 × ${effectiveYears.toFixed(2)}年 × ${(mod.coefficient * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    return { amount, description: desc }
+  }
+
   // 通用公式：全省计发基数 × 缴费年限 × 指数 × 系数
-  const coef = actualYears > 20 ? mod.coefficient_over_20 : mod.coefficient_under_20
-  const amount = Math.round(provBase * effectiveYears * avgIndex * coef * 100) / 100
+  // 兼容三种格式：
+  // 1. 新格式（固定系数）：mod.coefficient
+  // 2. 新格式（JS模块）：mod.get（函数），或 mod.base, mod.alt
+  // 3. 旧格式（JSON）：mod.coefficient_over_20, mod.coefficient_under_20
+  let coef;
+  if (mod.coefficient !== undefined) {
+    // 固定系数；宁夏知识分子加0.13%
+    coef = (params?.intellectual && mod.coefficient_intellectual)
+      ? mod.coefficient_intellectual : mod.coefficient;
+  } else if (typeof mod.get === 'function') {
+    // 新格式：调用 get() 方法
+    coef = mod.get(actualYears);
+  } else if (mod.base !== undefined && mod.alt !== undefined) {
+    // 新格式：使用 base/alt 属性
+    coef = actualYears > 20 ? mod.base : mod.alt;
+  } else {
+    // 旧格式：使用 coefficient_over_20 / coefficient_under_20
+    coef = actualYears > 20 ? mod.coefficient_over_20 : mod.coefficient_under_20;
+  }
+  const amount = Math.round(provBase * effectiveYears * transIdx * coef * 100) / 100;
 
   const yearsLabel = (preAccountYears != null && preAccountYears > 0) ? '建账前' : '视同'
   const yearsValue = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
 
   return {
     amount,
-    description: `${yearsLabel}${yearsValue.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × 指数${avgIndex.toFixed(2)} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    description: `${yearsLabel}${yearsValue.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × 指数${transIdx.toFixed(2)} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
   }
 }
 
@@ -353,6 +514,18 @@ function calcSpecialAddition(params) {
     return {
       amount: totalAmount,
       description: descParts.length > 0 ? `特殊增发：${descParts.join('，')}` : '未选择增发项目'
+    }
+  } else if (mod.type === 'one_child') {
+    // 独生子女补贴：全省退休人员人均养老金 × 比例
+    // 云南：云人社发〔2023〕41号，比例 5%
+    const retireYear = params?.context?.retireYear || 2025;
+    const avgPensionData = mod.avgPensionData || {};
+    const avgPension = avgPensionData[retireYear] || avgPensionData[2023] || 0;
+    const rate = mod.rate || 0.05;
+    const amount = Math.round(avgPension * rate * 100) / 100;
+    return {
+      amount,
+      description: `独生子女补贴：全省人均养老金${avgPension}元(${retireYear}年) × ${(rate * 100)}% = ${amount.toFixed(2)}元`
     }
   }
 
@@ -607,10 +780,29 @@ function getMinYears(retireYear, config) {
  * @param {Object} config - 省份配置
  * @returns {number} 计发基数
  */
-function getBase(city, year, config) {
-  const allRates = config.base_rates || {}
-  const provRates = allRates['prov'] || {}
-  const cityRates = allRates[city]
+function getBase(city, year, config, sourceField = 'base_rates') {
+  // 兼容两种配置格式：
+  // 1. 旧格式（JSON）：config.base_rates = { prov: {...}, cc: {...} } 或 config.avg_salary_history = { year: value }
+  // 2. 新格式（JS模块）：config.PROV_BASE, config.CC_BASE
+  let allRates = config[sourceField] || {};
+  
+  // 如果是新格式，构建base_rates对象
+  if (config.PROV_BASE || config.CC_BASE) {
+    allRates = {
+      prov: config.PROV_BASE || {},
+    };
+    // 如果有城市计发基数（如吉林省的CC_BASE），也加入
+    if (config.CC_BASE) {
+      allRates.cc = config.CC_BASE;
+    }
+    // 其他城市基数（如有）
+    if (config.CITY_BASE) {
+      Object.assign(allRates, config.CITY_BASE);
+    }
+  }
+  
+  const provRates = allRates['prov'] || (sourceField === 'avg_salary_history' ? allRates : {});
+  const cityRates = allRates[city];
 
   // 1. 精确年份匹配
   if (cityRates && cityRates[year] !== undefined) return cityRates[year]
@@ -735,6 +927,27 @@ function parseInput(inputData) {
   // monthsInput: 用户可显式指定计发月数（覆盖自动计算，用于提前退休验证场景）
   const monthsInput = inputData.months != null ? parseFloat(inputData.months) : null
 
+  // 江苏特殊参数：过渡性养老金平均缴费指数（与基础养老金指数可能不同）
+  const transIndex = parseFloat(inputData.transIndex) || null
+
+  // 江苏特殊参数：1996年底前的缴费年限（用于过渡性养老金计算）
+  const pre1996Years = parseFloat(inputData.pre1996Years) || null
+
+  // 江苏特殊参数：原办法过渡性养老金（新老办法并存，取高值）
+  const transPensionOld = parseFloat(inputData.transPensionOld) || null
+
+  // 四川特殊参数：增发养老金合计比例（因人而异，0.001~0.004+）
+  // 如：独生子女0.1%、2005年底前工作0.1%、艰苦边远地区0.1%等，合计0.1%~0.4%+
+  const extraRate = inputData.extraRate != null ? parseFloat(inputData.extraRate) : null
+
+  // preAccountYearsInput: 用户显式指定建账前缴费年限（覆盖自动计算）
+  // 用于四川等省份验证官方核定表中的精确数值
+  const preAccountYearsInput = inputData.preAccountYears != null ? parseFloat(inputData.preAccountYears)
+    : inputData.preAccountYearsInput != null ? parseFloat(inputData.preAccountYearsInput) : null
+
+  // 上海特殊参数：虚账实记总额（用于过渡性养老金计算）
+  const xuzhang = parseFloat(inputData.xuzhang) || null
+
   return {
     name,
     gender,
@@ -751,6 +964,16 @@ function parseInput(inputData) {
     cityType,
     skipDelay,
     monthsInput,     // 用户显式指定的计发月数（可为null，覆盖自动计算）
+    transIndex,       // 过渡性养老金平均缴费指数（可为null）
+    pre1996Years,    // 1996年底前的缴费年限（可为null）
+    transPensionOld, // 原办法过渡性养老金（可为null）
+    extraRate,       // 四川增发养老金合计比例（可为null，默认0.1%）
+    preAccountYearsInput, // 建账前缴费年限用户指定值（可为null）
+    xuzhang,               // 虚账实记总额（可为null，上海特殊）
+    socialAvgBaseInput: inputData.socialAvgBaseInput != null ? parseFloat(inputData.socialAvgBaseInput) : null, // 重庆社平覆盖（可为null）
+    oneChild: inputData.oneChild === true, // 重庆独生子女标记
+    intellectual: inputData.intellectual === true, // 宁夏知识分子标记
+
     // 性别映射到人员类型（支持外部传入，支持中英文）
     // 外部可传：male/fc/fw/fw55；未传入时按gender推断（female→fw）
     genderType: inputData.genderType
@@ -779,6 +1002,60 @@ function parseInput(inputData) {
 function calculate(config, inputData) {
   // 解析输入
   const data = parseInput(inputData)
+
+  // ============ 兼容 MODULES 数组格式（JS模块使用）============
+  if (!config.modules && config.MODULES) {
+    config.modules = {};
+    
+    // 基础养老金（总是启用）
+    if (config.MODULES.includes('base')) {
+      config.modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+    }
+    
+    // 增发养老金
+    if (config.MODULES.includes('extra')) {
+      config.modules.extra_pension = { enabled: true };
+      // 使用省份配置的增发参数（如有）
+      if (config.EXTRA_PARAMS) {
+        Object.assign(config.modules.extra_pension, config.EXTRA_PARAMS);
+      }
+    }
+    
+    // 个人账户养老金（总是启用）
+    if (config.MODULES.includes('personal')) {
+      config.modules.personal_account = { enabled: true };
+    }
+    
+    // 过渡性养老金
+    if (config.MODULES.includes('transition')) {
+      config.modules.transitional_pension = { enabled: true };
+      // 使用省份配置的过渡系数（如有）
+      if (config.TRANS_COEF) {
+        // 兼容 TRABS_COEF 的三种格式
+        if (typeof config.TRANS_COEF === 'number') {
+          // 新格式：TRANS_COEF是数字（固定系数）
+          config.modules.transitional_pension.coefficient = config.TRANS_COEF;
+        } else if (typeof config.TRANS_COEF.get === 'function') {
+          // 新格式：有get()方法
+          config.modules.transitional_pension.get = config.TRANS_COEF.get;
+        } else if (config.TRANS_COEF.base !== undefined) {
+          // 新格式：有base/alt属性
+          config.modules.transitional_pension.base = config.TRANS_COEF.base;
+          config.modules.transitional_pension.alt = config.TRANS_COEF.alt;
+        }
+        // 也复制 formula_type（如有）
+        if (config.TRANS_COEF.formula_type) {
+          config.modules.transitional_pension.formula_type = config.TRANS_COEF.formula_type;
+        }
+      }
+    }
+    
+    // 特殊加发
+    if (config.MODULES.includes('other')) {
+      config.modules.special_addition = { enabled: true };
+    }
+  }
+  // ============ 兼容结束 ============
 
   // ===== 法定退休年龄 =====
   const legalTotalMonths = getRetireTotalMonths(data.birth.year, data.birth.month, data.genderType, config, data.skipDelay)
@@ -862,10 +1139,21 @@ function calculate(config, inputData) {
   const retireAgeExact = legalTotalMonths / 12
   const months = data.monthsInput || getRetireMonths(retireAgeExact, config)
 
+  // 重庆特殊：基础养老金用上年度社平工资（非计发基数）
+  // config.base_rates.social_avg_{上年度} 存储人社公布的养老金计发用社平
+  // 也支持用户通过 socialAvgBaseInput 显式传入（如预核表使用计发基数代替社平）
+  const socialAvgBaseKey = 'social_avg_' + (legalDate.year - 1)
+  const socialAvgBase = (config.modules?.basic_pension?.formula_type === 'chongqing')
+    ? (data.socialAvgBaseInput != null ? data.socialAvgBaseInput
+       : config.base_rates?.[socialAvgBaseKey]
+       || getBase('prov', legalDate.year - 1, config, 'avg_salary_history'))
+    : null
+
   // 基础养老金
   const basicPension = calcBasicPension({
     retireBase: retBase,
     provBase: provBase,
+    socialAvgBase,
     avgIndex: data.avgIndex,
     totalYears,
     mod: config.modules?.basic_pension || { enabled: true, rate_per_year: 0.01 }
@@ -876,7 +1164,10 @@ function calculate(config, inputData) {
     avgBase: Math.round((retBase + provBase * data.avgIndex) / 2 * 100) / 100,
     actualYears,
     totalYears,
-    mod: config.modules?.extra_pension || { enabled: false }
+    mod: config.modules?.extra_pension || { enabled: false },
+    retireBase: retBase,
+    avgIndex: data.avgIndex,
+    extraRate: data.extraRate
   })
 
   // 个人账户养老金
@@ -889,19 +1180,37 @@ function calculate(config, inputData) {
   // 过渡性养老金
   const transPension = calcTransitionalPension({
     provBase: provBase,
+    retireBase: retBase,
     sightYears,
     avgIndex: data.avgIndex,
     actualYears,
     totalYears,
     mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
-    preAccountYears
+    preAccountYears,
+    transIndex: data.transIndex,
+    pre1996Years: data.pre1996Years,
+    transPensionOld: data.transPensionOld,
+    retireYear: legalDate.year,
+    xuzhang: data.xuzhang,
+    intellectual: data.intellectual
   })
 
   // 特殊增发
-  const specialAddition = calcSpecialAddition({
+  let specialAddition = calcSpecialAddition({
     mod: config.modules?.special_addition || { enabled: false },
-    context: { retireAge: retireAgeExact, location: data.cityType }
+    context: { retireAge: retireAgeExact, location: data.cityType, retireYear: legalDate.year }
   })
+
+  // 重庆独生子女增发：3% × (基础+个人+过渡)
+  // 由 case 的 oneChild 字段控制，而非 province 全局开关
+  if (config.province === 'chongqing' && data.oneChild) {
+    const oneChildBase = basicPension.amount + personalAccount.amount + transPension.amount
+    const oneChildAmount = Math.round(oneChildBase * 0.03 * 100) / 100
+    specialAddition = {
+      amount: oneChildAmount,
+      description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 3% = ${oneChildAmount.toFixed(2)}元`
+    }
+  }
 
   // 调节金（如甘肃省：建账前视同缴费年限≥15年，+15元/月）
   const adjustmentFund = calcAdjustmentFund({
@@ -938,7 +1247,10 @@ function calculate(config, inputData) {
     avgBase: Math.round((flexRetBase + flexProvBase * data.avgIndex) / 2 * 100) / 100,
     actualYears,
     totalYears,
-    mod: config.modules?.extra_pension || { enabled: false }
+    mod: config.modules?.extra_pension || { enabled: false },
+    retireBase: flexRetBase,
+    avgIndex: data.avgIndex,
+    extraRate: data.extraRate
   })
   const flexPersonal = calcPersonalAccountPension(
     city, data.avgIndex, flexDate,
@@ -946,11 +1258,18 @@ function calculate(config, inputData) {
     data.personalAccInput
   )
   const flexTrans = calcTransitionalPension({
-    provBase: flexProvBase, sightYears, avgIndex: data.avgIndex,
+    provBase: flexProvBase,
+    retireBase: flexRetBase,
+    sightYears, avgIndex: data.avgIndex,
     actualYears,
     totalYears,
     mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
-    preAccountYears
+    preAccountYears,
+    transIndex: data.transIndex,
+    pre1996Years: data.pre1996Years,
+    transPensionOld: data.transPensionOld,
+    retireYear: flexDate.year,
+    xuzhang: data.xuzhang
   })
 
   const flexTotal = Math.round((flexBasic.amount + flexExtra.amount + flexPersonal.amount + flexTrans.amount + specialAddition.amount + adjustmentFund.amount) * 100) / 100

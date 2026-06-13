@@ -1,0 +1,23 @@
+{
+  "case_id": "guangxi-nanning-2023",
+  "province": "guangxi",
+  "gender": "女",
+  "birth": "1968年7月",
+  "work_start": "1992年7月",
+  "retire_year": 2023,
+  "retire_month": 7,
+  "total_years": 31.09,
+  "sight_years": 0,
+  "pre_account_years": 4,
+  "personal_account": 276661.55,
+  "baseRetire": 6442,
+  "months": 170,
+  "avgIndex": 1.9749,
+  "expected": {
+    "basic_pension": 2979.1,
+    "personal_pension": 1627.5,
+    "transitional_pension": 712.5,
+    "total": 5319.1
+  },
+  "notes": "广西南宁烟草系统女工，1968-07生，1992-07参工，2023-07退休(55岁)。无视同(0年)，建账前1992-07至1996-07=4年。累计31年1月=31.09年。高指数1.9749，高账户27.6万。过渡=6442×1.9749×4×1.4%=712.5。桂人社规〔2019〕26号。"
+}

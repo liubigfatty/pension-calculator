@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-12T09:49:30.212Z",
+  "tolerance": 0.5,
+  "summary": {
+    "pass": 1,
+    "fail": 0,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 1,
+  "results": [
+    {
+      "province": "shandong",
+      "caseId": "3",
+      "file": "3.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 3956.66
+      },
+      "expected": {
+        "basic": 2549.73,
+        "extra": null,
+        "personal": 579.96,
+        "transitional": null,
+        "total": 3956.67
+      }
+    }
+  ]
+}
