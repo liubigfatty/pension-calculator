@@ -1,1 +1,203 @@
-{"province":"jiangsu","name":"江苏省","account_start":{"year":1996,"month":1},"cutoff_date":"1995-12-31","base_rates":{"2022":8309,"2023":8613,"2024":8785,"2025":8917},"avg_salary_history":{"1995":7016,"1996":8012,"1997":8848,"1998":9452,"1999":10296,"2000":11900,"2001":14104,"2002":14104,"2003":17056,"2004":18816,"2005":29340,"2006":32460,"2007":32460,"2008":36168,"2009":43620,"2010":48780,"2011":54712,"2012":54712,"2013":64800,"2014":64800,"2015":67200,"2016":72684,"2017":79740,"2018":67368,"2019":77340,"2020":82344,"2021":87284,"2022":96168,"2023":97584,"2024":99048},"interest_rates":{"comment":"江苏省2015年及以前的记账利率，待补充"},"modules":{"basic_pension":{"enabled":true,"rate_per_year":0.01},"personal_account":{"enabled":true},"transitional_pension":{"enabled":true,"formula_type":"jiangsu","coefficient":0.012},"extra_pension":{"enabled":false},"special_addition":{"enabled":false}},"city_list":["南京市","无锡市","徐州市","常州市","苏州市","南通市","连云港市","淮安市","盐城市","扬州市","镇江市","泰州市","宿迁市"],"policy_references":[{"name":"《江苏省企业职工基本养老保险实施办法》","url":"https://www.jiangsu.gov.cn/art/2025/2/26/art_64797_11500401.html","date":"2025-02-26","clauses":["第七条（建账时间）","第十一条（视同缴费cutoff）","第二十四条（过渡性养老金计算）"]},{"name":"苏人社发〔2023〕62号","description":"关于2023年度养老金计发基数"},{"name":"苏人社发〔2024〕28号","description":"关于2024年度养老金计发基数"},{"name":"苏人社发〔2025〕33号","description":"关于2025年度养老金计发基数"}],"test_cases":[{"name":"江苏-女-1974-01（正式核定·无视同缴费·50岁退休）","birthDate":"1974-01","workDate":"1998-07","retireDate":"2024-01","personType":"fw","totalYears":25.33,"avgIndex":1.2762,"personalAcc":190912.85,"basePension":2483.29,"personalPension":979.04,"transPension":0,"total":3462.4,"source":"用户2026-06-09提供·官方核定表"},{"name":"江苏-男-1964-03（淮安·正式核定·60岁退休·有视同缴费）","birthDate":"1964-03","workDate":"1981-03","retireDate":"2024-03","personType":"male","city":"淮安市","totalYears":43.08,"sightYears":14.83,"avgIndex":0.3246,"transIndex":0.8634,"pre1996Years":14.83,"transPensionOld":479.83,"personalAcc":67874.03,"basePension":2457.64,"personalPension":488.3,"transPension":817.43,"total":3763.4,"source":"用户2026-06-09提供·官方核定表（淮安）·截图确认","note":"过渡期政策：新办法=1323.39元，原办法=479.83元，2024年发放比例40%，实际=817.43元"},{"name":"江苏-张家港-女-1974-01（正式核定·无视同缴费·50岁退休·低指数）","birthDate":"1974-01","workDate":"1997-05","retireDate":"2024-01","personType":"fw","city":"苏州市","totalYears":26.75,"avgIndex":0.61,"personalAcc":88596.22,"basePension":1854.7,"personalPension":454.34,"transPension":0,"total":2309.1,"source":"用户2026-06-09提供·官方核定表（张家港）","note":"无视同缴费（1997-05参工，建账1996-01之后），低指数0.6100"},{"name":"江苏-南京-女-1976-01（正式核定·有过渡性·50岁退休·指数分段）","birthDate":"1976-01","workDate":"1995-09","retireDate":"2026-01","personType":"fw","city":"南京市","totalYears":30,"sightYears":0.33,"avgIndex":0.8608,"personalAcc":57722.76,"basePension":2488.91,"personalPension":296.01,"transPension":2042.01,"total":4827,"source":"用户2026-06-09提供·官方核定表（南京江宁）","note":"⚠️ 过渡性养老金分段计算：95年底前(0年4个月,指数1.0) + 96年后(18年9个月,指数1.0)，合计19.0833年；原办法过渡性养老金1066.61元"},{"name":"江苏-淮安洪泽-男-1965-09（正式核定·有过渡性·60岁退休·延迟3个月）","birthDate":"1965-09","workDate":"1982-09","retireDate":"2025-12","personType":"male","city":"淮安市","totalYears":43.33,"sightYears":13.33,"avgIndex":0.4787,"personalAcc":87722.18,"basePension":2856.87,"personalPension":638.91,"transPension":1053.5,"transIndex":0.9107,"total":4549.3,"source":"用户2026-06-09提供·官方核定表（淮安洪泽）","note":"⚠️ 过渡性养老金新老办法并存：原办法479.5元，新办法1053.5元；基础养老金指数0.4787，过渡性养老金指数0.9107（两个指数不同）；2026年1月实际领取4795.2元（含增发245.9元）；计发月数137.3（60岁3个月延迟退休）"}]}
+{
+  "province": "jiangsu",
+  "name": "江苏省",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "cutoff_date": "1995-12-31",
+  "base_rates": {
+    "prov": {
+      "2022": 8309,
+      "2023": 8613,
+      "2024": 8785,
+      "2025": 8917
+    }
+  },
+  "avg_salary_history": {
+    "1995": 7016,
+    "1996": 8012,
+    "1997": 8848,
+    "1998": 9452,
+    "1999": 10296,
+    "2000": 11900,
+    "2001": 14104,
+    "2002": 14104,
+    "2003": 17056,
+    "2004": 18816,
+    "2005": 29340,
+    "2006": 32460,
+    "2007": 32460,
+    "2008": 36168,
+    "2009": 43620,
+    "2010": 48780,
+    "2011": 54712,
+    "2012": 54712,
+    "2013": 64800,
+    "2014": 64800,
+    "2015": 67200,
+    "2016": 72684,
+    "2017": 79740,
+    "2018": 67368,
+    "2019": 77340,
+    "2020": 82344,
+    "2021": 87284,
+    "2022": 96168,
+    "2023": 97584,
+    "2024": 99048
+  },
+  "interest_rates": {
+    "comment": "江苏省2015年及以前的记账利率，待补充"
+  },
+  "modules": {
+    "basic_pension": {
+      "enabled": true,
+      "rate_per_year": 0.01
+    },
+    "personal_account": {
+      "enabled": true
+    },
+    "transitional_pension": {
+      "enabled": true,
+      "formula_type": "jiangsu",
+      "coefficient": 0.012
+    },
+    "extra_pension": {
+      "enabled": false
+    },
+    "special_addition": {
+      "enabled": false
+    }
+  },
+  "city_list": [
+    "南京市",
+    "无锡市",
+    "徐州市",
+    "常州市",
+    "苏州市",
+    "南通市",
+    "连云港市",
+    "淮安市",
+    "盐城市",
+    "扬州市",
+    "镇江市",
+    "泰州市",
+    "宿迁市"
+  ],
+  "policy_references": [
+    {
+      "name": "《江苏省企业职工基本养老保险实施办法》",
+      "url": "https://www.jiangsu.gov.cn/art/2025/2/26/art_64797_11500401.html",
+      "date": "2025-02-26",
+      "clauses": [
+        "第七条（建账时间）",
+        "第十一条（视同缴费cutoff）",
+        "第二十四条（过渡性养老金计算）"
+      ]
+    },
+    {
+      "name": "苏人社发〔2023〕62号",
+      "description": "关于2023年度养老金计发基数"
+    },
+    {
+      "name": "苏人社发〔2024〕28号",
+      "description": "关于2024年度养老金计发基数"
+    },
+    {
+      "name": "苏人社发〔2025〕33号",
+      "description": "关于2025年度养老金计发基数"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "江苏-女-1974-01（正式核定·无视同缴费·50岁退休）",
+      "birthDate": "1974-01",
+      "workDate": "1998-07",
+      "retireDate": "2024-01",
+      "personType": "fw",
+      "totalYears": 25.33,
+      "avgIndex": 1.2762,
+      "personalAcc": 190912.85,
+      "basePension": 2483.29,
+      "personalPension": 979.04,
+      "transPension": 0,
+      "total": 3462.4,
+      "source": "用户2026-06-09提供·官方核定表"
+    },
+    {
+      "name": "江苏-男-1964-03（淮安·正式核定·60岁退休·有视同缴费）",
+      "birthDate": "1964-03",
+      "workDate": "1981-03",
+      "retireDate": "2024-03",
+      "personType": "male",
+      "city": "淮安市",
+      "totalYears": 43.08,
+      "sightYears": 14.83,
+      "avgIndex": 0.3246,
+      "transIndex": 0.8634,
+      "pre1996Years": 14.83,
+      "transPensionOld": 479.83,
+      "personalAcc": 67874.03,
+      "basePension": 2457.64,
+      "personalPension": 488.3,
+      "transPension": 817.43,
+      "total": 3763.4,
+      "source": "用户2026-06-09提供·官方核定表（淮安）·截图确认",
+      "note": "过渡期政策：新办法=1323.39元，原办法=479.83元，2024年发放比例40%，实际=817.43元"
+    },
+    {
+      "name": "江苏-张家港-女-1974-01（正式核定·无视同缴费·50岁退休·低指数）",
+      "birthDate": "1974-01",
+      "workDate": "1997-05",
+      "retireDate": "2024-01",
+      "personType": "fw",
+      "city": "苏州市",
+      "totalYears": 26.75,
+      "avgIndex": 0.61,
+      "personalAcc": 88596.22,
+      "basePension": 1854.7,
+      "personalPension": 454.34,
+      "transPension": 0,
+      "total": 2309.1,
+      "source": "用户2026-06-09提供·官方核定表（张家港）",
+      "note": "无视同缴费（1997-05参工，建账1996-01之后），低指数0.6100"
+    },
+    {
+      "name": "江苏-南京-女-1976-01（正式核定·有过渡性·50岁退休·指数分段）",
+      "birthDate": "1976-01",
+      "workDate": "1995-09",
+      "retireDate": "2026-01",
+      "personType": "fw",
+      "city": "南京市",
+      "totalYears": 30,
+      "sightYears": 0.33,
+      "avgIndex": 0.8608,
+      "personalAcc": 57722.76,
+      "basePension": 2488.91,
+      "personalPension": 296.01,
+      "transPension": 2042.01,
+      "total": 4827,
+      "source": "用户2026-06-09提供·官方核定表（南京江宁）",
+      "note": "⚠️ 过渡性养老金分段计算：95年底前(0年4个月,指数1.0) + 96年后(18年9个月,指数1.0)，合计19.0833年；原办法过渡性养老金1066.61元"
+    },
+    {
+      "name": "江苏-淮安洪泽-男-1965-09（正式核定·有过渡性·60岁退休·延迟3个月）",
+      "birthDate": "1965-09",
+      "workDate": "1982-09",
+      "retireDate": "2025-12",
+      "personType": "male",
+      "city": "淮安市",
+      "totalYears": 43.33,
+      "sightYears": 13.33,
+      "avgIndex": 0.4787,
+      "personalAcc": 87722.18,
+      "basePension": 2856.87,
+      "personalPension": 638.91,
+      "transPension": 1053.5,
+      "transIndex": 0.9107,
+      "total": 4549.3,
+      "source": "用户2026-06-09提供·官方核定表（淮安洪泽）",
+      "note": "⚠️ 过渡性养老金新老办法并存：原办法479.5元，新办法1053.5元；基础养老金指数0.4787，过渡性养老金指数0.9107（两个指数不同）；2026年1月实际领取4795.2元（含增发245.9元）；计发月数137.3（60岁3个月延迟退休）"
+    }
+  ]
+}
