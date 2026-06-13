@@ -128,7 +128,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 </div>
 
-<script src="js/pension-engine-browser.js"></script>
+<script src="pension-engine-browser.js"></script>
 <script>
 // === 全局状态 ===
 var currentConfig = null;
@@ -158,7 +158,7 @@ async function init() {
 
 async function loadProvince(id) {
   try {
-    var resp = await fetch("js/provinces/" + id + ".json");
+    var resp = await fetch("provinces/" + id + ".json");
     currentConfig = await resp.json();
     var citySel = document.getElementById("city");
     var cities = currentConfig.cities || [{code:"prov",name:"全省默认"}];
