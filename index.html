@@ -247,7 +247,10 @@ function displayResult(result) {
     var d = i.desc ? " <span style='font-size:11px;color:#86868b'>("+i.desc+")</span>" : "";
     return "<div class='item'><div class='label'>"+i.label+d+"</div><div class='val'>¥"+i.val.toLocaleString("zh-CN",{minimumFractionDigits:2})+"</div></div>";
   }).join("");
-  var transCoef = Math.round((currentConfig.modules&&currentConfig.modules.transitional_pension?currentConfig.modules.transitional_pension.coefficient:0)*1000)/10;
+  var tm=currentConfig.modules&&currentConfig.modules.transitional_pension;
+  var c0=tm?(tm.coefficient||tm.coefficient_over_20||0):0;
+  var transCoef = Math.round(c0*1000)/10;
+  if (isNaN(transCoef)) transCoef = 0;
   var d = r.date || {};
   var dateStr = d.year ? d.year + '/' + String(d.month).padStart(2,'0') : '--';
   document.getElementById("info-bar").innerHTML = [

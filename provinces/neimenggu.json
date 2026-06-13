@@ -74,8 +74,9 @@
     },
     "transitional_pension": {
       "enabled": true,
-      "coefficient": 0.012,
-      "notes": "内蒙古过渡系数1.2%。建账1995-01，视同截止1994-12。标准公式。"
+      "coefficient": 0.0149,
+      "formula_type": "chongqing",
+      "notes": "内蒙古过渡=(A+A×Q)/2×M1×1.5%。建账1996-01，usePreAccountYears=true。案例1确认。"
     },
     "special_addition": {
       "enabled": false
