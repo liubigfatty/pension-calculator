@@ -248,8 +248,10 @@ function displayResult(result) {
     return "<div class='item'><div class='label'>"+i.label+d+"</div><div class='val'>¥"+i.val.toLocaleString("zh-CN",{minimumFractionDigits:2})+"</div></div>";
   }).join("");
   var transCoef = Math.round((currentConfig.modules&&currentConfig.modules.transitional_pension?currentConfig.modules.transitional_pension.coefficient:0)*1000)/10;
+  var d = r.date || {};
+  var dateStr = d.year ? d.year + '/' + String(d.month).padStart(2,'0') : '--';
   document.getElementById("info-bar").innerHTML = [
-    "退休日期: " + (result.legalDate||"--"),
+    "退休日期: " + dateStr,
     "退休年龄: " + (r.ageStr||"--"),
     "计发月数: " + (r.months||"--"),
     "累计年限: " + (r.totalYears||0).toFixed(2) + "年",
