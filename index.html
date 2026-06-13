@@ -105,7 +105,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="field"><label>全省计发基数</label><input type="number" id="baseProv" placeholder="自动查询" step="0.01"></div>
 <div class="field"><label>过渡指数</label><input type="number" id="transIndex" placeholder="=avgIndex" step="0.0001"></div>
 <div class="field"><label>特殊标记</label>
-<select id="specialFlags"><option value="">无</option><option value="oneChild">独生子女</option><option value="intellectual">知识分子</option><option value="both">独生+知识分子</option></select>
+  <select id="specialFlags"><option value="">根据省份自动判断</option></select>
+  <small style="color:var(--sub)">选省份后自动显示该省支持的特殊增发</small>
 </div>
 </div>
 </div>
@@ -163,7 +164,24 @@ async function loadProvince(id) {
     var citySel = document.getElementById("city");
     var cities = currentConfig.cities || [{code:"prov",name:"全省默认"}];
     citySel.innerHTML = cities.map(function(c){return "<option value="+c.code+">"+c.name+"</option>";}).join("");
+    updateSpecialFlags(currentConfig);
   } catch(e) { console.error("Load province error:", e); currentConfig = null; }
+}
+
+function updateSpecialFlags(config) {
+  var sel = document.getElementById("specialFlags");
+  var opts = [{v:"",t:"无"}];
+  var hasOneChild = config.modules && config.modules.special_addition && config.modules.special_addition.enabled;
+  var hasTrans = config.modules && config.modules.transitional_pension && config.modules.transitional_pension.enabled;
+  var notes = (config.modules && config.modules.transitional_pension && config.modules.transitional_pension.notes) || "";
+  var hasIntellectual = notes.indexOf("知识分子") > -1 || notes.indexOf("intellectual") > -1;
+  // Check notes for oneChild capability
+  var allNotes = typeof config.notes === "string" ? config.notes : JSON.stringify(config.notes || {});
+  hasOneChild = hasOneChild || allNotes.indexOf("独子") > -1 || allNotes.indexOf("oneChild") > -1;
+  if (hasOneChild) opts.push({v:"oneChild",t:"独生子女"});
+  if (hasIntellectual) opts.push({v:"intellectual",t:"知识分子"});
+  if (hasOneChild && hasIntellectual) opts.push({v:"both",t:"独生+知识分子"});
+  sel.innerHTML = opts.map(function(o){return "<option value="+o.v+">"+o.t+"</option>";}).join("");
 }
 
 function onProvinceChange() {
