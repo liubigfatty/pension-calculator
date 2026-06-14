@@ -191,7 +191,7 @@ function displayResult(result) {
     {label:"基础养老金",val:r.basicPension.amount,desc:r.basicPension.description},
     {label:"个人账户养老金",val:r.personalAccount.amount,desc:r.personalAccount.description}
   ];
-  if (r.extraPension && r.extraPension.amount > 0) items.push({label:"增发基础养老金",val:r.extraPension.amount});
+  if (r.extraPension && r.extraPension.amount > 0) items.push({label:"增发基础养老金",val:r.extraPension.amount,desc:r.extraPension.description});
   if (r.transitionalPension && r.transitionalPension.amount > 0) items.push({label:"过渡性养老金",val:r.transitionalPension.amount,desc:r.transitionalPension.description});
   if (r.specialAddition && r.specialAddition.amount > 0) items.push({label:"特殊增发",val:r.specialAddition.amount,desc:r.specialAddition.description});
   if (r.adjustmentFund && r.adjustmentFund.amount > 0) items.push({label:"调节金",val:r.adjustmentFund.amount});
