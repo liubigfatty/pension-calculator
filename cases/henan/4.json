@@ -6,16 +6,20 @@
   "work_start": "1995年09月",
   "retire_year": 2025,
   "retire_month": 11,
-  "total_years": 28.50,
+  "total_years": 28.5,
   "sight_years": 0,
   "personal_account": 60986.73,
-  "baseRetire": 6738,
   "months": 195,
-  "avgIndex": 0.6014,
   "expected": {
     "basic_pension": 1537.56,
     "personal_pension": 312.75,
     "total": 1850.31
   },
-  "notes": "河南省女性，1975年出生，1995年参工，2025年11月50岁退休。无视同缴费年限（0月），指数化工资4051.92。个人账户计发月数195。"
+  "notes": "河南省女性，1975年出生，1995年参工，2025年11月50岁退休。无视同缴费年限（0月），指数化工资4051.92。个人账户计发月数195。",
+  "birth_year": 1975,
+  "birth_month": 11,
+  "work_year": 1995,
+  "work_month": 9,
+  "avg_index": 0.6014,
+  "base_number": 6738
 }

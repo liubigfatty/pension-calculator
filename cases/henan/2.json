@@ -6,18 +6,22 @@
   "work_start": "1985年10月",
   "retire_year": 2025,
   "retire_month": 10,
-  "total_years": 39.50,
+  "total_years": 39.5,
   "sight_years": 9.25,
   "personal_account": 55537.81,
-  "baseRetire": 6738,
   "months": 139,
-  "avgIndex": 0.6883,
-  "transIndex": 0.6107,
   "expected": {
     "basic_pension": 2246.77,
     "transitional_pension": 494.79,
     "personal_pension": 399.55,
     "total": 3141.11
   },
-  "notes": "河南省信阳市，2025年10月退休。全省基数6738，信阳当地基数6260。视同111月=9.25年。"
+  "notes": "河南省信阳市，2025年10月退休。全省基数6738，信阳当地基数6260。视同111月=9.25年。",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1985,
+  "work_month": 10,
+  "avg_index": 0.6883,
+  "trans_index": 0.6107,
+  "base_number": 6738
 }

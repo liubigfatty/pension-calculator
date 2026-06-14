@@ -11,16 +11,20 @@
   "sight_years": 0,
   "pre_account_years": 8.25,
   "personal_account": 105263.37,
-  "baseRetire": 8448,
-  "baseProv": 8448,
   "months": 139,
-  "avgIndex": 0.6085,
   "expected": {
     "basic_pension": 2655.44,
     "personal_pension": 757.29,
     "transitional_pension": 551.33,
-    "special_addition": 120.0,
+    "special_addition": 120,
     "total": 4084.06
   },
-  "notes": "新疆2026年10月退休男职工，1966-10生，1987-10参工，乌鲁木齐。建账前8.25年(99月)。过渡系数1.3%确认！基础用计发基数8448。新政发〔2006〕59号。新政办发[2010]167号冬季采暖补贴120元/月。"
+  "notes": "新疆2026年10月退休男职工，1966-10生，1987-10参工，乌鲁木齐。建账前8.25年(99月)。过渡系数1.3%确认！基础用计发基数8448。新政发〔2006〕59号。新政办发[2010]167号冬季采暖补贴120元/月。",
+  "birth_year": 1966,
+  "birth_month": 10,
+  "work_year": 1987,
+  "work_month": 10,
+  "avg_index": 0.6085,
+  "base_number": 8448,
+  "base_prov": 8448
 }

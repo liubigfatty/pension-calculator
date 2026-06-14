@@ -10,14 +10,18 @@
   "sight_years": 10.17,
   "pre_account_years": 13.17,
   "personal_account": 80013.77,
-  "baseRetire": 7265,
   "months": 139,
-  "avgIndex": 0.7079,
   "expected": {
     "basic_pension": 2631.71,
     "transitional_pension": 880.51,
     "personal_pension": 575.64,
     "total": 4087.86
   },
-  "notes": "河北省，男性1965年生，1982年参工，2025年3月60岁退休。过渡性养老金用建账前缴费年限=视同10.17+建账前实际3=13.17年（类似云南模式）。计发基数7265（2024年省级基数）。"
+  "notes": "河北省，男性1965年生，1982年参工，2025年3月60岁退休。过渡性养老金用建账前缴费年限=视同10.17+建账前实际3=13.17年（类似云南模式）。计发基数7265（2024年省级基数）。",
+  "birth_year": 1965,
+  "birth_month": 3,
+  "work_year": 1982,
+  "work_month": 11,
+  "avg_index": 0.7079,
+  "base_number": 7265
 }

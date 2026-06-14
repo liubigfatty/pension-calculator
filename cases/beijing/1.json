@@ -9,12 +9,11 @@
   "work_month": 11,
   "retire_year": 2023,
   "retire_month": 10,
-  "actual_years": 21.00,
+  "actual_years": 21,
   "sight_years": 0,
   "total_years": 25.01,
   "pre_account_years": 2.58,
   "avg_index": 0.4584,
-  "transIndex": 0.509,
   "base_number": 11525,
   "personal_account": 116362.74,
   "months": 195,
@@ -24,5 +23,6 @@
     "transitional_pension": 151.64,
     "total": 2850.26
   },
-  "notes": "女工人50岁退休，参工1995.11在建账(1992.10)之后，G同=0。G实=11525×2.58×Z实×1.0%。个账含补贴1568.72"
+  "notes": "女工人50岁退休，参工1995.11在建账(1992.10)之后，G同=0。G实=11525×2.58×Z实×1.0%。个账含补贴1568.72",
+  "trans_index": 0.509
 }

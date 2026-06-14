@@ -18,18 +18,18 @@
   "actual_years": 23.92,
   "total_years": 33.33,
   "avg_index": 0.79,
-  "transIndex": 0.81,
   "base_number": 9232,
   "personal_account": 103735.84,
   "months": 139,
   "expected": {
     "basic_pension": 2753.94,
-    "personal_pension": 746.30,
+    "personal_pension": 746.3,
     "transition_pension": 704.42,
     "extra_pension": 0,
     "total": 4204.66
   },
   "verified": true,
   "notes": "天津案例4，男性60岁正常退休。累计缴费33年4个月，其中1997年底前（视同缴费）9年5个月。平均缴费指数0.79，全部平均工资指数0.81。个人账户103735.84元。基础养老金2753.94，个人账户养老金746.30，过渡性养老金704.42，合计4204.66元。",
-  "data_source": "天津市企业职工基本养老保险待遇核定表，2025年04月退休"
+  "data_source": "天津市企业职工基本养老保险待遇核定表，2025年04月退休",
+  "trans_index": 0.81
 }

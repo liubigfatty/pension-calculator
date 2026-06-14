@@ -6,18 +6,22 @@
   "work_start": "1984年06月",
   "retire_year": 2026,
   "retire_month": 3,
-  "total_years": 41.50,
+  "total_years": 41.5,
   "sight_years": 10.25,
   "personal_account": 145885.34,
-  "baseRetire": 6738,
   "months": 139,
-  "avgIndex": 1.0433,
-  "transIndex": 1.0665,
   "expected": {
     "basic_pension": 2856.82,
     "transitional_pension": 957.57,
     "personal_pension": 1049.53,
     "total": 4863.92
   },
-  "notes": "河南省洛阳市，1966年出生，1984年参工，2026年3月60岁退休。高指数（>1.0）。视同123月=10.25年。洛阳当地基数6573。"
+  "notes": "河南省洛阳市，1966年出生，1984年参工，2026年3月60岁退休。高指数（>1.0）。视同123月=10.25年。洛阳当地基数6573。",
+  "birth_year": 1966,
+  "birth_month": 3,
+  "work_year": 1984,
+  "work_month": 6,
+  "avg_index": 1.0433,
+  "trans_index": 1.0665,
+  "base_number": 6738
 }

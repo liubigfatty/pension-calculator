@@ -11,15 +11,19 @@
   "sight_years": 7.58,
   "pre_account_years": 12.58,
   "personal_account": 95751.34,
-  "baseRetire": 7953,
-  "baseProv": 7953,
   "months": 139,
-  "avgIndex": 0.7392,
   "expected": {
     "basic_pension": 2830,
     "personal_pension": 688.86,
     "transitional_pension": 960.13,
     "total": 4480.29
   },
-  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。"
+  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
+  "birth_year": 1964,
+  "birth_month": 4,
+  "work_year": 1983,
+  "work_month": 6,
+  "avg_index": 0.7392,
+  "base_number": 7953,
+  "base_prov": 7953
 }

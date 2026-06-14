@@ -10,14 +10,18 @@
   "sight_years": 0.71,
   "pre_account_years": 12.13,
   "personal_account": 139085.41,
-  "baseRetire": 7122,
   "months": 139,
-  "avgIndex": 1.1890,
   "expected": {
     "basic_pension": 3128.15,
     "transitional_pension": 1335.33,
     "personal_pension": 1000.61,
     "total": 5464.09
   },
-  "notes": "河北省，男性1963年生，1983年参工，2023年12月60岁退休。指数1.19，计发基数7122（2023年省级）。建账前年限=视同8.5月+建账前实际11年5月=12.13年。注意：sight_years以月为单位(8.5月)，pre_account_years以年为单位(12.13)。"
+  "notes": "河北省，男性1963年生，1983年参工，2023年12月60岁退休。指数1.19，计发基数7122（2023年省级）。建账前年限=视同8.5月+建账前实际11年5月=12.13年。注意：sight_years以月为单位(8.5月)，pre_account_years以年为单位(12.13)。",
+  "birth_year": 1963,
+  "birth_month": 12,
+  "work_year": 1983,
+  "work_month": 11,
+  "avg_index": 1.189,
+  "base_number": 7122
 }

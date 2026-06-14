@@ -9,15 +9,19 @@
   "total_years": 31.58,
   "sight_years": 0.58,
   "personal_account": 91074.68,
-  "baseRetire": 6738,
   "months": 139,
-  "avgIndex": 0.7534,
-  "transIndex": 0.7397,
   "expected": {
     "basic_pension": 1865.48,
-    "transitional_pension": 37.80,
+    "transitional_pension": 37.8,
     "personal_pension": 655.21,
     "total": 2558.49
   },
-  "notes": "河南省郑州市，1966年出生，2026年1月60岁退休。视同仅7月=0.58年。核定表另有'过渡性补贴'453.51元（郑州特色），此案例total不含补贴。"
+  "notes": "河南省郑州市，1966年出生，2026年1月60岁退休。视同仅7月=0.58年。核定表另有'过渡性补贴'453.51元（郑州特色），此案例total不含补贴。",
+  "birth_year": 1966,
+  "birth_month": 1,
+  "work_year": 1995,
+  "work_month": 1,
+  "avg_index": 0.7534,
+  "trans_index": 0.7397,
+  "base_number": 6738
 }

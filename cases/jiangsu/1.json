@@ -14,16 +14,16 @@
   "total_years": 43.08,
   "pre_1996_years": 14.83,
   "avg_index": 0.3246,
-  "transIndex": 0.8634,
   "base_number": 8613,
   "personal_account": 67874.03,
   "months": 139,
   "trans_pension_old": 479.83,
   "expected": {
     "basic_pension": 2457.64,
-    "personal_pension": 488.30,
+    "personal_pension": 488.3,
     "transitional_pension": 817.43,
     "total": 3763.37
   },
-  "notes": "淮安男60岁2024.03退休，43年工龄。基础养老金指数0.3246，过渡性养老金指数0.8634（双指数分离）。1996年底前14.83年，新办法1323.39，原办法479.83，2024年差额40%发放。"
+  "notes": "淮安男60岁2024.03退休，43年工龄。基础养老金指数0.3246，过渡性养老金指数0.8634（双指数分离）。1996年底前14.83年，新办法1323.39，原办法479.83，2024年差额40%发放。",
+  "trans_index": 0.8634
 }

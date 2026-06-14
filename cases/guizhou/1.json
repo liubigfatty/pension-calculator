@@ -9,17 +9,21 @@
   "retire_month": 4,
   "total_years": 42.33,
   "sight_years": 11.25,
-  "pre_account_years": 17.0,
+  "pre_account_years": 17,
   "personal_account": 139534.42,
-  "baseRetire": 6798,
-  "baseProv": 6798,
   "months": 139,
-  "avgIndex": 1.2357,
   "expected": {
     "basic_pension": 3216.48,
     "personal_pension": 1003.84,
     "transitional_pension": 1999.12,
     "total": 6219.44
   },
-  "notes": "贵州2023年4月退休男职工，1963-04生，1981-10参工。首次缴费1992-04，建账1996-01。视同11.25年(135月)，过渡年限17年(1997-12-31前)。过渡系数1.4%确认！指数分段：1992-12-31前=1，之后=1.3289。独子5%未计入expected。黔劳社厅发〔2006〕20号。"
+  "notes": "贵州2023年4月退休男职工，1963-04生，1981-10参工。首次缴费1992-04，建账1996-01。视同11.25年(135月)，过渡年限17年(1997-12-31前)。过渡系数1.4%确认！指数分段：1992-12-31前=1，之后=1.3289。独子5%未计入expected。黔劳社厅发〔2006〕20号。",
+  "birth_year": 1963,
+  "birth_month": 4,
+  "work_year": 1981,
+  "work_month": 10,
+  "avg_index": 1.2357,
+  "base_number": 6798,
+  "base_prov": 6798
 }

@@ -10,20 +10,20 @@
   "retire_year": 2024,
   "retire_month": 4,
   "actual_years": 24.17,
-  "sight_years": 10.50,
+  "sight_years": 10.5,
   "total_years": 34.83,
-  "pre_1996_years": 10.50,
+  "pre_1996_years": 10.5,
   "avg_index": 0.7046,
-  "transIndex": 1.1995,
   "base_number": 8613,
-  "personal_account": 74972.90,
+  "personal_account": 74972.9,
   "months": 139,
-  "trans_pension_old": 547.40,
+  "trans_pension_old": 547.4,
   "expected": {
     "basic_pension": 2557.07,
     "personal_pension": 539.37,
-    "transitional_pension": 849.20,
+    "transitional_pension": 849.2,
     "total": 3945.64
   },
-  "notes": "淮安男60岁2024.04退休。参工1985.07，1991年底前无工龄。双指数：基础0.7046，过渡1.1995。过渡性10.5年(1985.07-1996.01)。新办法1323.5，原办法547.4，2024年差额40%发放。"
+  "notes": "淮安男60岁2024.04退休。参工1985.07，1991年底前无工龄。双指数：基础0.7046，过渡1.1995。过渡性10.5年(1985.07-1996.01)。新办法1323.5，原办法547.4，2024年差额40%发放。",
+  "trans_index": 1.1995
 }
