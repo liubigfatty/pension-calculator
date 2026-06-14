@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-06-14T07:45:20.823Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 0,
+    "fail": 3,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "qinghai",
+      "caseId": "qinghai-2024-female",
+      "file": "1.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 12.980000000000018,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 3577.5,
+          "actual": 3590.48,
+          "diff": 12.980000000000018
+        }
+      ],
+      "actual": {
+        "total": 3590.48
+      },
+      "expected": {
+        "basic": 2390.7,
+        "extra": null,
+        "personal": 552.9,
+        "transitional": null,
+        "total": 3577.5
+      }
+    },
+    {
+      "province": "qinghai",
+      "caseId": "qinghai-2023-male",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 13.050000000000182,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 4377.3,
+          "actual": 4390.35,
+          "diff": 13.050000000000182
+        }
+      ],
+      "actual": {
+        "total": 4390.35
+      },
+      "expected": {
+        "basic": 2652.8,
+        "extra": null,
+        "personal": 562.5,
+        "transitional": null,
+        "total": 4377.3
+      }
+    },
+    {
+      "province": "qinghai",
+      "caseId": "qinghai-2023-male-recalc",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 1.050000000000182,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 4389.3,
+          "actual": 4390.35,
+          "diff": 1.050000000000182
+        }
+      ],
+      "actual": {
+        "total": 4390.35
+      },
+      "expected": {
+        "basic": 2652.8,
+        "extra": null,
+        "personal": 562.5,
+        "transitional": null,
+        "total": 4389.3
+      }
+    }
+  ]
+}

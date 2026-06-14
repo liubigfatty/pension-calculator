@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-06-14T08:27:38.811Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 1,
+    "fail": 2,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2023-female",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000023647,
+      "diffs": null,
+      "actual": {
+        "total": 2550.31
+      },
+      "expected": {
+        "basic": 1793.01,
+        "extra": null,
+        "personal": 446.67,
+        "transitional": null,
+        "total": 2550.55
+      }
+    },
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2026-male",
+      "file": "2.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 119.76999999999998,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 3964.06,
+          "actual": 4083.83,
+          "diff": 119.76999999999998
+        }
+      ],
+      "actual": {
+        "total": 4083.83
+      },
+      "expected": {
+        "basic": 2655.44,
+        "extra": null,
+        "personal": 757.29,
+        "transitional": null,
+        "total": 3964.06
+      }
+    },
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-urumqi-2024-female",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 104.25000000000023,
+      "diffs": [
+        {
+          "label": "月养老金合计",
+          "expect": 1952.76,
+          "actual": 2057.01,
+          "diff": 104.25000000000023
+        }
+      ],
+      "actual": {
+        "total": 2057.01
+      },
+      "expected": {
+        "basic": 1577.36,
+        "extra": null,
+        "personal": 306.25,
+        "transitional": null,
+        "total": 1952.76
+      }
+    }
+  ]
+}

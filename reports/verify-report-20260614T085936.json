@@ -1,0 +1,191 @@
+{
+  "timestamp": "2026-06-14T08:59:36.957Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 6,
+    "fail": 2,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 8,
+  "results": [
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2024",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 2030.13
+      },
+      "expected": {
+        "basic": 1609.23,
+        "extra": null,
+        "personal": 342.57,
+        "transitional": null,
+        "total": 2030.12
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2025",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.1999999999998181,
+      "diffs": null,
+      "actual": {
+        "total": 1965.62
+      },
+      "expected": {
+        "basic": 1239.91,
+        "extra": null,
+        "personal": 340.73,
+        "transitional": null,
+        "total": 1965.42
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2024-male",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 51.61000000000058,
+      "diffs": [
+        {
+          "label": "个人账户养老金",
+          "expect": 815.09,
+          "actual": 801.05,
+          "diff": 14.040000000000077
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 4145.03,
+          "actual": 4196.64,
+          "diff": 51.61000000000058
+        }
+      ],
+      "actual": {
+        "total": 4196.64
+      },
+      "expected": {
+        "basic": 2461.33,
+        "extra": null,
+        "personal": 815.09,
+        "transitional": null,
+        "total": 4145.03
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2025-female",
+      "file": "4.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.010000000000218279,
+      "diffs": null,
+      "actual": {
+        "total": 2529.35
+      },
+      "expected": {
+        "basic": 1965.86,
+        "extra": null,
+        "personal": 405.04,
+        "transitional": null,
+        "total": 2529.36
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2026-female",
+      "file": "5.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0,
+      "diffs": null,
+      "actual": {
+        "total": 2246.33
+      },
+      "expected": {
+        "basic": 1737.68,
+        "extra": null,
+        "personal": 508.65,
+        "transitional": null,
+        "total": 2246.33
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2023-male-high",
+      "file": "6.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.30999999999994543,
+      "diffs": null,
+      "actual": {
+        "total": 8068.28
+      },
+      "expected": {
+        "basic": 3909.59,
+        "extra": null,
+        "personal": 1944.58,
+        "transitional": null,
+        "total": 8067.97
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2025-female-b",
+      "file": "7.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 5.559999999999945,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 1970.81,
+          "actual": 1965.25,
+          "diff": 5.559999999999945
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 2665.88,
+          "actual": 2660.66,
+          "diff": 5.220000000000255
+        }
+      ],
+      "actual": {
+        "total": 2660.66
+      },
+      "expected": {
+        "basic": 1970.81,
+        "extra": null,
+        "personal": 681.72,
+        "transitional": null,
+        "total": 2665.88
+      }
+    },
+    {
+      "province": "jiangxi",
+      "caseId": "jiangxi-nanchang-2023-male",
+      "file": "8.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.21000000000003638,
+      "diffs": null,
+      "actual": {
+        "total": 4458.15
+      },
+      "expected": {
+        "basic": 2743.62,
+        "extra": null,
+        "personal": 471.94,
+        "transitional": null,
+        "total": 4458.21
+      }
+    }
+  ]
+}

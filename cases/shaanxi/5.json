@@ -1,22 +1,28 @@
 {
   "case_id": "shaanxi-hanbin-2025-male2",
   "province": "shaanxi",
-  "gender": "男",
-  "birth": "1965年02月",
-  "work_start": "1983年11月",
+  "city": "安康市",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 2,
+  "work_year": 1983,
+  "work_month": 11,
   "retire_year": 2025,
   "retire_month": 2,
-  "total_years": 41.17,
+  "actual_years": 32.0,
   "sight_years": 9.17,
+  "total_years": 41.17,
+  "avg_index": 0.779,
+  "trans_index": 0.795,
+  "base_number": 7881,
+  "base_prov": 7881,
   "personal_account": 104302.95,
-  "baseRetire": 7727,
   "months": 139,
-  "avgIndex": 0.811,
   "expected": {
     "basic_pension": 2886.35,
     "personal_pension": 750.38,
     "transitional_pension": 804.21,
     "total": 4440.94
   },
-  "notes": "陕西安康汉滨，男1965-02生，1983-11参工，2025-02退休(60岁)。视同9年2月=9.17年(1983-11至1996-07)。累计41年2月=41.17年。2025年基数7881(表中7727为预发用2024基数)。过渡系数1.4%验证。"
+  "notes": "陕西安康汉滨，男1965-02生，1983-11参工，2025-02退休(60岁)。视同9年2月=9.17年(1983-11至1996-07)。累计41年2月=41.17年。2025年基数7881。过渡系数1.4%验证。"
 }

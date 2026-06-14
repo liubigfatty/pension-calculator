@@ -1,0 +1,32 @@
+{
+  "case_id": "shenzhen-male-2025-04",
+  "province": "guangdong",
+  "city": "sz",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 4,
+  "work_year": 1982,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 4,
+  "total_years": 37.58,
+  "sight_years": 11.33,
+  "pre_account_years": 13.67,
+  "avg_index": 1.3842,
+  "trans_index": 1.5049,
+  "base_number": 11293,
+  "base_prov": 11293,
+  "personal_account": 283370.02,
+  "months": 139,
+  "oldIndexSalary": 13717.61,
+  "enjoymentRatio": 0.118,
+  "localPensionYears": 34.08,
+  "pre1992LocalYears": 9.83,
+  "expected": {
+    "basic_pension": 5059.61,
+    "personal_pension": 2038.63,
+    "transitional_pension": 2887.15,
+    "total": 11087.91
+  },
+  "notes": "深圳核定表(2025-04)完整6项验证！男1965-04生，1982-10参工，451月=37.58年。视同136月+1998前28月=164月。发现：①原办法年限用floor(totalYears)=37年(非37.58) ②调节金100元(逐年递减) ③地方补助892.80+过渡性补助209.72=1102.52 ✅"
+}

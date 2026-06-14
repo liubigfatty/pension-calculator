@@ -1,24 +1,28 @@
 {
   "case_id": "guangdong-shaoguan-2026",
   "province": "guangdong",
-  "gender": "男",
-  "birth": "1965年12月",
-  "work_start": "1985年03月",
+  "city": "韶关",
+  "gender": "male",
+  "birth_year": 1965,
+  "birth_month": 12,
+  "work_year": 1985,
+  "work_month": 3,
   "retire_year": 2026,
   "retire_month": 1,
   "total_years": 27.33,
   "sight_years": 8.92,
   "pre_account_years": 14.90,
+  "avg_index": 1.1061,
+  "trans_index": 1.327,
+  "base_number": 9493,
+  "base_prov": 9493,
   "personal_account": 71733.80,
-  "baseRetire": 9493,
   "months": 139,
-  "avgIndex": 1.1061,
-  "transIndex": 1.327,
   "expected": {
     "basic_pension": 2732.40,
     "transitional_pension": 2252.11,
     "personal_pension": 516.07,
     "total": 5500.58
   },
-  "notes": "广东韶关，1965年生，1985年参工，2026年1月退休。过渡系数1.2%确认！双指数：基础用全程1.1061，过渡用视同1.327。建账1998年7月，过渡年限=视同8.92+1998年6月前实际5.98=14.90年。"
+  "notes": "广东韶关，1965年生，1985年参工，2026年1月退休。过渡性用粤府函[2021]294号新办法：系数法1.2%。年限=视同8.92+1998年6月前实际5.98=14.90年。双指数：基础用全程1.1061，过渡用1998年6月前1.327。"
 }

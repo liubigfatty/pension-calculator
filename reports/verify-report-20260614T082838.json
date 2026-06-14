@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-06-14T08:28:38.763Z",
+  "tolerance": 1,
+  "summary": {
+    "pass": 2,
+    "fail": 1,
+    "skip": 0,
+    "error": 0
+  },
+  "total": 3,
+  "results": [
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2023-female",
+      "file": "1.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.24000000000023647,
+      "diffs": null,
+      "actual": {
+        "total": 2550.31
+      },
+      "expected": {
+        "basic": 1793.01,
+        "extra": null,
+        "personal": 446.67,
+        "transitional": null,
+        "total": 2550.55
+      }
+    },
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-2026-male",
+      "file": "2.json",
+      "status": "pass",
+      "reason": null,
+      "maxDiff": 0.2300000000000182,
+      "diffs": null,
+      "actual": {
+        "total": 4083.83
+      },
+      "expected": {
+        "basic": 2655.44,
+        "extra": null,
+        "personal": 757.29,
+        "transitional": null,
+        "total": 4084.06
+      }
+    },
+    {
+      "province": "xinjiang",
+      "caseId": "xinjiang-urumqi-2024-female",
+      "file": "3.json",
+      "status": "fail",
+      "reason": null,
+      "maxDiff": 196.78999999999996,
+      "diffs": [
+        {
+          "label": "基础养老金",
+          "expect": 1577.36,
+          "actual": 1773.91,
+          "diff": 196.55000000000018
+        },
+        {
+          "label": "月养老金合计",
+          "expect": 2072.76,
+          "actual": 2269.55,
+          "diff": 196.78999999999996
+        }
+      ],
+      "actual": {
+        "total": 2269.55
+      },
+      "expected": {
+        "basic": 1577.36,
+        "extra": null,
+        "personal": 306.25,
+        "transitional": null,
+        "total": 2072.76
+      }
+    }
+  ]
+}

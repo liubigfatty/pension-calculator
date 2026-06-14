@@ -9,6 +9,8 @@
     "year": 1996,
     "month": 7
   },
+  "transition_coefficient": 0.014,
+  "dual_index": true,
   "base_rates": {
     "_source": "陕人社发/陕人社函〔2022〕~〔2025〕",
     "prov": {
