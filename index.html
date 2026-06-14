@@ -70,7 +70,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 <div class="field">
 <label>退休类型</label>
-<select id="retireType"><option value="normal">正常退休</option><option value="flex_early">弹性提前</option><option value="special">特殊工种</option></select>
+<select id="retireType"><option value="normal">正常退休</option><option value="flex_early">弹性提前</option></select>
 </div>
 <div class="field">
 <label>出生：年 / 月</label>
@@ -180,9 +180,13 @@ function calculate() {
 }
 
 function displayResult(result) {
-  var r = result.legal;
+  var retireType = document.getElementById("retireType").value;
+  var r = retireType === "flex_early" && result.flex && result.flex.total ? result.flex : result.legal;
+  var other = r === result.legal ? result.flex : result.legal;
+  var tagLabel = retireType === "flex_early" ? "弹性提前退休" : "法定退休";
+  
   document.getElementById("result-card").classList.remove("result-hidden");
-  document.getElementById("total-amount").innerHTML = "¥" + r.total.toLocaleString("zh-CN",{minimumFractionDigits:2}) + "<br><small>月基本养老金</small>";
+  document.getElementById("total-amount").innerHTML = "<span style='font-size:14px;color:#86868b'>" + tagLabel + "</span><br>¥" + r.total.toLocaleString("zh-CN",{minimumFractionDigits:2}) + "<br><small>月基本养老金</small>";
   var items = [
     {label:"基础养老金",val:r.basicPension.amount,desc:r.basicPension.description},
     {label:"个人账户养老金",val:r.personalAccount.amount,desc:r.personalAccount.description}
@@ -211,9 +215,12 @@ function displayResult(result) {
     "过渡系数: " + transCoef + "%"
   ].map(function(t){return "<span class='info-tag'>"+t+"</span>";}).join("");
   var fc = document.getElementById("flex-compare");
-  if (result.flex && result.flex.total) {
+  if (retireType === "flex_early" && result.legal && result.legal.total) {
     fc.style.display = "block";
-    fc.innerHTML = "<strong>弹性退休对比</strong><br>法定 ¥" + r.total.toFixed(2) + " | 提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + ((result.flex.total||0)-(r.total||0)).toFixed(2);
+    fc.innerHTML = "<strong>对比</strong><br>法定退休 ¥" + result.legal.total.toFixed(2) + " | 弹性提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + (result.flex.total - result.legal.total).toFixed(2);
+  } else if (retireType === "normal" && result.flex && result.flex.total) {
+    fc.style.display = "block";
+    fc.innerHTML = "<strong>也可选弹性提前</strong><br>法定 ¥" + result.legal.total.toFixed(2) + " | 提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + (result.flex.total - result.legal.total).toFixed(2);
   } else { fc.style.display = "none"; }
   document.getElementById("result-card").scrollIntoView({behavior:"smooth"});
 }
