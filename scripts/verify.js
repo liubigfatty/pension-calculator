@@ -154,6 +154,7 @@ function mapCityType(city, province) {
   if (/沈阳/.test(s)) return 'sy'   // 辽宁
   if (/深圳/.test(s)) return 'sz'   // 广东
   if (/西宁/.test(s)) return 'xining' // 青海
+  if (/郑州/.test(s)) return 'zz'    // 河南
   return 'prov'
 }
 

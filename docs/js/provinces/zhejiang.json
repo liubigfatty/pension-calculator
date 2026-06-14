@@ -6,9 +6,14 @@
     "month": 1
   },
   "viewing_start": {
-    "year": 1997,
-    "month": 1
+    "year": 1998,
+    "month": 1,
+    "_note": "过渡性养老金用1997年底前年限，calcYears截止1998-01代表含1997年12月在内"
   },
+  "transition_coefficient": 0.014,
+  "dual_index": true,
+  "usePreAccountYears": true,
+  "round_to_jiao": true,
   "base_rates": {
     "prov": {
       "2021": 6595,
@@ -157,8 +162,10 @@
       "formula": "(退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%"
     },
     "extra_pension": {
-      "enabled": false,
-      "formula": "待核定表确认"
+      "enabled": true,
+      "formula_type": "zhejiang_subsidy",
+      "amount": 150,
+      "formula": "基本养老金补贴150元/月（浙人社发〔2011〕146号）"
     },
     "personal_account": {
       "enabled": true,
@@ -171,6 +178,13 @@
     },
     "special_addition": {
       "enabled": false
+    },
+    "adjustment_fund": {
+      "enabled": true,
+      "type": "zhejiang",
+      "base_amount": 480,
+      "coefficient": 3,
+      "formula": "过渡调节金 = 480 + avgIndex × 缴费年限 × 3（浙人社发〔2018〕102号）"
     }
   },
   "cities": [
@@ -180,13 +194,14 @@
     }
   ],
   "notes": {
-    "policy": "浙江省企业职工养老金。全口径加权平均工资=计发基数（无'双基数'分离）。建账时间1997年1月。过渡系数暂设1.4%（待验证）。浙江有'过渡性调节金'+'基本养老金补贴'两项独家福利。",
+    "policy": "浙江省企业职工养老金。全口径加权平均工资=计发基数（无'双基数'分离）。建账时间1997年1月。过渡系数1.4%。浙江三大特色福利：①过渡调节金(480+指数×年限×3) ②基本养老金补贴150元 ③见分进角补足。双指数(avgIndex≠transIndex)。",
     "data_source": "浙江省人社厅官方文件（浙人社发）",
     "verified_count": 6,
     "todoverify": [
-      "过渡性调节金规则",
-      "基本养老金补贴规则",
-      "见分进角补足规则"
+      "过渡调节金规则（已实现：480+avgIndex×年限×3）",
+      "基本养老金补贴规则（已实现：150元/月）",
+      "见分进角补足规则（已实现：ceil×10/10）",
+      "需用浙江核定表验证三项福利计算"
     ]
   }
 }
