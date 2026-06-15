@@ -321,7 +321,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         document.getElementById('legalDate').textContent = fmtDateObj(L.date);
         document.getElementById('flexTotal').textContent = '¥' + (F.total || 0).toFixed(2);
         document.getElementById('flexDate').textContent = fmtDateObj(F.date);
-        document.getElementById('flexNote').textContent = '提前 ' + C.flexAdvance + ' 个月退休，每月少领约 ¥' + ((L.total || 0) - (F.total || 0)).toFixed(2);
+        document.getElementById('flexNote').innerHTML = 
+          '提前 ' + C.flexAdvance + ' 个月退休，每月少领约 ¥' + ((L.total || 0) - (F.total || 0)).toFixed(2) +
+          '，提前多领约 ¥' + ((F.total || 0) * (C.flexAdvance || 0)).toFixed(0) +
+          '。<br><strong>盈亏平衡分析：</strong>约 ' +
+          (function(){
+            var diff = (L.total||0) - (F.total||0);
+            var extra = (F.total||0) * (C.flexAdvance||0);
+            var bm = diff > 0 ? Math.ceil(extra / diff) : 0;
+            var fy = F.date.year + Math.floor((F.date.month + bm - 1) / 12);
+            var fm = ((F.date.month + bm - 1) % 12) + 1;
+            return bm + ' 个月（' + (bm/12).toFixed(1) + '年）后追平，约 ' + fy + '年' + fm + '月起反超。';
+          })();
+      }
       }
 
       // ===== 关键参数 =====

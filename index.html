@@ -296,7 +296,17 @@ function displayResult(result) {
   var fc = document.getElementById("flex-compare");
   if (result.flex && result.flex.total) {
     fc.style.display = "block";
-    fc.innerHTML = "<strong>弹性退休对比</strong><br>法定 ¥" + r.total.toFixed(2) + " | 提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + ((result.flex.total||0)-(r.total||0)).toFixed(2);
+    var diffAmt = (r.total||0) - (result.flex.total||0);
+    var adv = result.comparison.flexAdvance || 0;
+    var flexTotalAmt = result.flex.total || 0;
+    var extraTotal = flexTotalAmt * adv;
+    var breakEvenM = diffAmt > 0 ? Math.ceil(extraTotal / diffAmt) : 0;
+    var flexDate = result.flex.date;
+    var breakY = flexDate.year + Math.floor((flexDate.month + breakEvenM - 1) / 12);
+    var breakM = ((flexDate.month + breakEvenM - 1) % 12) + 1;
+    fc.innerHTML = "<strong>弹性退休对比</strong><br>法定 ¥" + r.total.toFixed(2) + " | 提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + diffAmt.toFixed(2) +
+      "<br><small style='color:#86868b'>提前" + adv + "个月退休，多领约 ¥" + extraTotal.toFixed(0) +
+      "，每月少领¥" + diffAmt.toFixed(2) + "。<br>约" + breakEvenM + "个月（" + (breakEvenM/12).toFixed(1) + "年）后追平，约" + breakY + "年" + breakM + "月起反超。</small>";
   } else { fc.style.display = "none"; }
   document.getElementById("result-card").scrollIntoView({behavior:"smooth"});
   document.getElementById("reportBtn").style.display = "block";
