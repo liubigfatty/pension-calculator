@@ -106,17 +106,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <!-- 四、两项对比 -->
 <div class="card" id="compareCard" style="display:none">
   <div class="card-title"><span class="icon purple">⇄</span> 法定 vs 弹性提前 对比分析</div>
-  <div class="compare-box">
-    <div class="box highlight">
-      <div class="lbl">法定退休</div>
-      <div class="num" id="cmpLegal">--</div>
-      <div class="sub" id="cmpLegalDate">--</div>
+  <div style="display:flex;justify-content:space-around;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:14px">
+    <div style="text-align:center">
+      <div style="font-size:12px;color:var(--sub)">法定退休</div>
+      <div style="font-size:20px;font-weight:700;color:var(--primary)" id="cmpLegal">--</div>
+      <div style="font-size:12px;color:var(--sub)" id="cmpLegalDate">--</div>
     </div>
-    <div class="box">
-      <div class="lbl">弹性提前</div>
-      <div class="num" id="cmpFlex">--</div>
-      <div class="sub" id="cmpFlexDate">--</div>
+    <div style="width:1px;background:var(--border)"></div>
+    <div style="text-align:center">
+      <div style="font-size:12px;color:var(--sub)">弹性提前</div>
+      <div style="font-size:20px;font-weight:700;color:#ff9500" id="cmpFlex">--</div>
+      <div style="font-size:12px;color:var(--sub)" id="cmpFlexDate">--</div>
     </div>
+  </div>
+  <div style="text-align:center;margin-bottom:12px">
+    <div style="font-size:13px;color:var(--sub)">累计领取养老金对比趋势</div>
+    <svg id="cmpChart" width="100%" height="200" viewBox="0 0 680 200" style="max-width:680px;margin-top:8px"></svg>
   </div>
   <div id="cmpDetail" style="font-size:14px;line-height:1.9;padding:14px;background:#f8f9fa;border-radius:8px"></div>
 </div>
@@ -143,29 +148,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   </div>
 </div>
 
-<!-- 六、估算依据 -->
-<div class="card">
-  <div class="card-title"><span class="icon purple">📐</span> 估算依据说明</div>
-  <div style="font-size:12px;color:#4a4a4a;line-height:1.8">
-    <p>1. 您填写的个人账户余额和平均缴费指数为截至填表时的实际数据。</p>
-    <p style="margin-top:6px">2. 后续至退休前的缴费，按您填写的平均缴费指数延续估算。</p>
-    <p style="margin-top:6px">3. 个人账户后续利息按 <strong>1.5%</strong>（2025年全国统一记账利率）逐年复利估算。</p>
-    <p style="margin-top:6px">4. 社平工资增长率按 <strong>2.6%</strong>（基于近年各省平均增长率）估算。</p>
-    <p style="margin-top:6px">5. 计发基数按估算的退休年份社平工资计算，实际以退休时社保部门公布为准。</p>
-  </div>
-</div>
-
-<!-- 七、免责 -->
+<!-- 六、免责（含估算依据） -->
 <div class="card">
   <div class="card-title"><span class="icon purple">📋</span> 相关说明与免责</div>
   <div style="font-size:12px;color:#4a4a4a;line-height:1.8">
+    <p><strong>▎估算依据</strong></p>
+    <p>1. 您填写的个人账户余额和平均缴费指数为截至填表时的实际数据。</p>
+    <p style="margin-top:4px">2. 后续至退休前的缴费，按您填写的平均缴费指数延续估算。</p>
+    <p style="margin-top:4px">3. 个人账户后续利息按 <strong>1.5%</strong>（2025年全国统一记账利率）逐年复利估算。</p>
+    <p style="margin-top:4px">4. 社平工资增长率按 <strong>2.6%</strong>（基于近年各省平均增长率）估算。</p>
+    <p style="margin-top:4px">5. 计发基数按估算的退休年份社平工资计算，实际以退休时社保部门公布为准。</p>
+
+    <p style="margin-top:12px"><strong>▎免责声明</strong></p>
     <p><strong>1. 数据来源</strong> — 计发基数、记账利率、过渡系数等参数依据各省人社厅官方文件及国家统一公布数据，截至2026年6月。</p>
-    <p style="margin-top:8px"><strong>2. 计算结果说明</strong> — 基于您自行填写的参保参数和现行养老金计发办法测算，<strong>不等同于社保经办机构最终核定的养老金数额</strong>。</p>
-    <p style="margin-top:8px"><strong>3. 政策风险</strong> — 养老保险政策可能调整，特别是延迟退休政策（国办发〔2025〕5号）处于渐进实施阶段，以退休时当地社保部门规定为准。</p>
-    <p style="margin-top:8px"><strong>4. 估算说明</strong> — 未来缴费指数按您当前指数延续估算，实际可能因政策变化、个人收入变化等存在差异。</p>
-    <p style="margin-top:8px"><strong>5. 建议性质</strong> — 报告中的分析与建议为通用性参考，不构成任何形式的投资或保险购买建议。</p>
-    <p style="margin-top:8px"><strong>6. 责任限制</strong> — 本平台对因使用本报告内容而产生的任何直接或间接损失不承担法律责任。</p>
-    <p style="margin-top:8px"><strong>7. 信息保密</strong> — 您填写的参保参数仅用于本次测算，不会存储在服务器端。</p>
+    <p style="margin-top:6px"><strong>2. 计算结果说明</strong> — 基于您自行填写的参保参数和现行养老金计发办法测算，<strong>不等同于社保经办机构最终核定的养老金数额</strong>。</p>
+    <p style="margin-top:6px"><strong>3. 政策风险</strong> — 养老保险政策可能调整，特别是延迟退休政策（国办发〔2025〕5号）处于渐进实施阶段，以退休时当地社保部门规定为准。</p>
+    <p style="margin-top:6px"><strong>4. 建议性质</strong> — 报告中的分析与建议为通用性参考，不构成任何形式的投资或保险购买建议。</p>
+    <p style="margin-top:6px"><strong>5. 责任限制</strong> — 本平台对因使用本报告内容而产生的任何直接或间接损失不承担法律责任。</p>
+    <p style="margin-top:6px"><strong>6. 信息保密</strong> — 您填写的参保参数仅用于本次测算，不会存储在服务器端。</p>
   </div>
 </div>
 
@@ -193,6 +193,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     document.getElementById('loading').style.display = 'none';
     document.getElementById('error').style.display = 'block';
     document.getElementById('errorMsg').textContent = msg;
+  }
+
+  // ===== 绘制对比趋势图 =====
+  function drawCompareChart(svgId, advMonths, flexAmt, legalAmt, beMonths) {
+    var svg = document.getElementById(svgId);
+    if (!svg) return;
+    var W = 680, H = 200, pad = {top:20, right:30, bottom:30, left:50};
+    var cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
+    var maxX = Math.max(beMonths * 1.3, 120);
+    var maxY = Math.max(flexAmt * maxX, legalAmt * (maxX - advMonths)) * 1.15;
+    function sx(m) { return pad.left + (m / maxX) * cw; }
+    function sy(v) { return pad.top + ch - (v / maxY) * ch; }
+
+    var pts = [];
+    // 弹性线 (从0开始)
+    for (var m = 0; m <= maxX; m += 2) pts.push(sx(m) + ',' + sy(flexAmt * m));
+    var flexPath = pts.join(' ');
+    pts = [];
+    // 法定线 (从advMonths开始)
+    for (var m = advMonths; m <= maxX; m += 2) pts.push(sx(m) + ',' + sy(legalAmt * (m - advMonths)));
+    var legalPath = pts.join(' ');
+
+    var html =
+      '<line x1="'+pad.left+'" y1="'+pad.top+'" x2="'+pad.left+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>' +
+      '<line x1="'+pad.left+'" y1="'+(pad.top+ch)+'" x2="'+(pad.left+cw)+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>' +
+      // 弹性线
+      '<polyline points="'+flexPath+'" fill="none" stroke="#ff9500" stroke-width="2.5"/>' +
+      '<text x="'+(pad.left+cw-40)+'" y="'+(sy(flexAmt*maxX)-6)+'" font-size="11" fill="#ff9500">弹性提前</text>' +
+      // 法定线
+      '<polyline points="'+legalPath+'" fill="none" stroke="'+getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#0071e3'+'" stroke-width="2.5"/>' +
+      '<text x="'+(pad.left+cw-40)+'" y="'+(sy(legalAmt*(maxX-advMonths))-6)+'" font-size="11" fill="'+getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#0071e3'+
+      '">法定退休</text>' +
+      // 盈亏平衡点
+      (beMonths > 0 && beMonths <= maxX ? '<circle cx="'+sx(beMonths)+'" cy="'+sy(flexAmt*beMonths)+'" r="4" fill="var(--red)"/><text x="'+(sx(beMonths)+6)+'" y="'+(sy(flexAmt*beMonths)-6)+'" font-size="10" fill="var(--red)">追平点 '+(beMonths/12).toFixed(1)+'年</text>' : '') +
+      // 刻度
+      '<text x="'+pad.left+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">0</text>' +
+      '<text x="'+(sx(maxX/2)-10)+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">领取时间</text>' +
+      '<text y="'+(pad.top+12)+'" x="4" font-size="10" fill="#999">累计领取</text>';
+    svg.innerHTML = html;
   }
 
   var params = new URLSearchParams(window.location.search);
@@ -308,6 +347,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           '③ <strong>每月差额：</strong>弹性退休每月少领 <strong>'+money(diff)+'</strong>（法定 '+money(L.total)+' - 弹性 '+money(F.total)+'）<br>'+
           (diff > 0 ? '④ <strong>盈亏平衡：</strong>约 <strong>'+beMonths+'个月（'+(beMonths/12).toFixed(1)+'年）</strong>后追平，约 <strong>'+beY+'年'+beM+'月</strong>起反超。<br>'+
           '   即如果领取养老金超过 <strong>'+(beMonths/12).toFixed(1)+'年</strong>（约'+beY+'年后），正常退休的总收入将反超弹性提前退休。' : '');
+
+        // ===== 绘制对比趋势图 =====
+        drawCompareChart('cmpChart', adv, F.total, L.total, beMonths);
+
       }
 
       // ===== 五、建议 =====
