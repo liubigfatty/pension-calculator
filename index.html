@@ -258,29 +258,40 @@ function calculate() {
 
 function displayResult(result) {
   var r = result.legal;
+  var dateStr = result.legalDate || (result.getDateStr ? result.getDateStr(r.date) : "--");
   document.getElementById("result-card").classList.remove("result-hidden");
   document.getElementById("total-amount").innerHTML = "¥" + r.total.toLocaleString("zh-CN",{minimumFractionDigits:2}) + "<br><small>月基本养老金</small>";
+  // 优化描述显示：去掉末尾的"= XXX元"，因为右侧已经单独显示金额了
+  function cleanDesc(d) {
+    if (!d) return "";
+    return d.replace(/=\s*[\d,.]+元$/, "").replace(/1\.00%/g, "1%").trim();
+  }
   var items = [
-    {label:"基础养老金",val:r.basicPension.amount,desc:r.basicPension.description},
+    {label:"基础养老金",val:r.basicPension.amount,desc:cleanDesc(r.basicPension.description)},
     {label:"个人账户养老金",val:r.personalAccount.amount,desc:r.personalAccount.description}
   ];
-  if (r.extraPension && r.extraPension.amount > 0) items.push({label:"增发基础养老金",val:r.extraPension.amount});
-  if (r.transitionalPension && r.transitionalPension.amount > 0) items.push({label:"过渡性养老金",val:r.transitionalPension.amount,desc:r.transitionalPension.description});
-  if (r.specialAddition && r.specialAddition.amount > 0) items.push({label:"特殊增发",val:r.specialAddition.amount,desc:r.specialAddition.description});
+  if (r.extraPension && r.extraPension.amount > 0) items.push({label:"增发基础养老金",val:r.extraPension.amount,desc:cleanDesc(r.extraPension.description)});
+  if (r.transitionalPension && r.transitionalPension.amount > 0) items.push({label:"过渡性养老金",val:r.transitionalPension.amount,desc:cleanDesc(r.transitionalPension.description)});
+  if (r.specialAddition && r.specialAddition.amount > 0) items.push({label:"特殊增发",val:r.specialAddition.amount,desc:cleanDesc(r.specialAddition.description)});
   if (r.adjustmentFund && r.adjustmentFund.amount > 0) items.push({label:"调节金",val:r.adjustmentFund.amount});
   var grid = document.getElementById("result-grid");
   grid.innerHTML = items.map(function(i){
     var d = i.desc ? " <span style='font-size:11px;color:#86868b'>("+i.desc+")</span>" : "";
     return "<div class='item'><div class='label'>"+i.label+d+"</div><div class='val'>¥"+i.val.toLocaleString("zh-CN",{minimumFractionDigits:2})+"</div></div>";
   }).join("");
-  var transCoef = (currentConfig.modules&&currentConfig.modules.transitional_pension?currentConfig.modules.transitional_pension.coefficient:0)*100;
+  // 过渡系数：兼容不同字段名
+  var transMd = currentConfig.modules && currentConfig.modules.transitional_pension;
+  var transCoef = 0;
+  if (transMd) {
+    transCoef = (transMd.coefficient || transMd.coefficient_over_20 || 0) * 100;
+  }
   document.getElementById("info-bar").innerHTML = [
-    "退休日期: " + (result.legalDate||"--"),
+    "退休日期: " + dateStr,
     "退休年龄: " + (r.ageStr||"--"),
     "计发月数: " + (r.months||"--"),
     "累计年限: " + (r.totalYears||0).toFixed(2) + "年",
     "计发基数: ¥" + (r.baseRetire||0).toLocaleString(),
-    "过渡系数: " + transCoef + "%"
+    "过渡系数: " + (transCoef ? transCoef + "%" : "--")
   ].map(function(t){return "<span class='info-tag'>"+t+"</span>";}).join("");
   var fc = document.getElementById("flex-compare");
   if (result.flex && result.flex.total) {

@@ -342,11 +342,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       // ===== 计算过程 =====
       var steps = [];
 
+      // 清理描述：去掉末尾"= XXX元"和1.00%优化
+      function cleanDesc(d) {
+        if (!d) return '--';
+        return d.replace(/=\s*[\d,.]+元$/, '').replace(/1\.00%/g, '1%').trim();
+      }
+
       // 基础养老金
       if (L.basicPension && L.basicPension.amount != null) {
         steps.push({
           title: '基础养老金',
-          formula: L.basicPension.description || '--',
+          formula: cleanDesc(L.basicPension.description),
           result: '¥' + (L.basicPension.amount || 0).toFixed(2)
         });
       } else {
@@ -370,7 +376,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       if (L.transitionalPension && L.transitionalPension.amount > 0) {
         steps.push({
           title: '过渡性养老金',
-          formula: L.transitionalPension.description || '--',
+          formula: cleanDesc(L.transitionalPension.description),
           result: '¥' + (L.transitionalPension.amount || 0).toFixed(2)
         });
       }
@@ -379,7 +385,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       if (L.extraPension && L.extraPension.amount > 0) {
         steps.push({
           title: '增发基础养老金',
-          formula: L.extraPension.description || '--',
+          formula: cleanDesc(L.extraPension.description),
           result: '¥' + (L.extraPension.amount || 0).toFixed(2)
         });
       }
