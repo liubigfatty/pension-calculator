@@ -203,35 +203,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     var cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
     var maxX = Math.max(beMonths * 1.3, 120);
     var maxY = Math.max(flexAmt * maxX, legalAmt * (maxX - advMonths)) * 1.15;
-    function sx(m) { return pad.left + (m / maxX) * cw; }
-    function sy(v) { return pad.top + ch - (v / maxY) * ch; }
+    function sx(m) { return (pad.left + (m / maxX) * cw).toFixed(1); }
+    function sy(v) { return (pad.top + ch - (v / maxY) * ch).toFixed(1); }
 
-    var pts = [];
-    // 弹性线 (从0开始)
-    for (var m = 0; m <= maxX; m += 2) pts.push(sx(m) + ',' + sy(flexAmt * m));
-    var flexPath = pts.join(' ');
-    pts = [];
-    // 法定线 (从advMonths开始)
-    for (var m = advMonths; m <= maxX; m += 2) pts.push(sx(m) + ',' + sy(legalAmt * (m - advMonths)));
-    var legalPath = pts.join(' ');
+    var fps = [];
+    for (var m = 0; m <= maxX; m += 2) fps.push(sx(m) + ',' + sy(flexAmt * m));
+    var lps = [];
+    for (var m = advMonths; m <= maxX; m += 2) lps.push(sx(m) + ',' + sy(legalAmt * (m - advMonths)));
 
-    var html =
-      '<line x1="'+pad.left+'" y1="'+pad.top+'" x2="'+pad.left+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>' +
-      '<line x1="'+pad.left+'" y1="'+(pad.top+ch)+'" x2="'+(pad.left+cw)+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>' +
-      // 弹性线
-      '<polyline points="'+flexPath+'" fill="none" stroke="#ff9500" stroke-width="2.5"/>' +
-      '<text x="'+(pad.left+cw-40)+'" y="'+(sy(flexAmt*maxX)-6)+'" font-size="11" fill="#ff9500">弹性提前</text>' +
-      // 法定线
-      '<polyline points="'+legalPath+'" fill="none" stroke="'+getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#0071e3'+'" stroke-width="2.5"/>' +
-      '<text x="'+(pad.left+cw-40)+'" y="'+(sy(legalAmt*(maxX-advMonths))-6)+'" font-size="11" fill="'+getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()||'#0071e3'+
-      '">法定退休</text>' +
-      // 盈亏平衡点
-      (beMonths > 0 && beMonths <= maxX ? '<circle cx="'+sx(beMonths)+'" cy="'+sy(flexAmt*beMonths)+'" r="4" fill="var(--red)"/><text x="'+(sx(beMonths)+6)+'" y="'+(sy(flexAmt*beMonths)-6)+'" font-size="10" fill="var(--red)">追平点 '+(beMonths/12).toFixed(1)+'年</text>' : '') +
-      // 刻度
-      '<text x="'+pad.left+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">0</text>' +
-      '<text x="'+(sx(maxX/2)-10)+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">领取时间</text>' +
-      '<text y="'+(pad.top+12)+'" x="4" font-size="10" fill="#999">累计领取</text>';
-    svg.innerHTML = html;
+    var html = [
+      '<line x1="'+pad.left+'" y1="'+pad.top+'" x2="'+pad.left+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>',
+      '<line x1="'+pad.left+'" y1="'+(pad.top+ch)+'" x2="'+(pad.left+cw)+'" y2="'+(pad.top+ch)+'" stroke="#ccc" stroke-width="1"/>',
+      '<polyline points="'+fps.join(' ')+'" fill="none" stroke="#ff9500" stroke-width="2.5"/>',
+      '<text x="'+(pad.left+cw-60)+'" y="'+(sy(flexAmt*maxX)-8)+'" font-size="11" fill="#ff9500">● 弹性提前</text>',
+      '<polyline points="'+lps.join(' ')+'" fill="none" stroke="#0071e3" stroke-width="2.5"/>',
+      '<text x="'+(pad.left+cw-60)+'" y="'+(sy(legalAmt*(maxX-advMonths))-8)+'" font-size="11" fill="#0071e3">● 法定退休</text>'
+    ];
+    if (beMonths > 0 && beMonths <= maxX) {
+      var bx = sx(beMonths), by = sy(flexAmt * beMonths);
+      html.push('<circle cx="'+bx+'" cy="'+by+'" r="4" fill="#ff3b30"/>');
+      html.push('<text x="'+(parseFloat(bx)+8)+'" y="'+(parseFloat(by)-6)+'" font-size="10" fill="#ff3b30">▲ 追平 '+(beMonths/12).toFixed(1)+'年</text>');
+    }
+    html.push('<text x="'+pad.left+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">0</text>');
+    html.push('<text x="'+(sx(maxX/2)-20)+'" y="'+(pad.top+ch+16)+'" font-size="10" fill="#999">领取时间 →</text>');
+    html.push('<text x="4" y="'+(pad.top+12)+'" font-size="10" fill="#999">累计领取 ↑</text>');
+    svg.innerHTML = html.join('');
   }
 
   var params = new URLSearchParams(window.location.search);
