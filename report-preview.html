@@ -285,21 +285,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       // ===== 核心结果 =====
       var total = L.total || 0;
       document.getElementById('totalAmount').textContent = '¥' + total.toLocaleString('zh-CN', {minimumFractionDigits:2});
-      document.getElementById('retireInfo').textContent = pName + ' · ' + (L.ageStr || '--') + '退休 · ' + eng.getDateStr(L.date);
+      // 日期格式化统一
+      function fmtDate(y, m) { return (y || '--') + '年' + (m || '--') + '月'; }
+      function fmtDateObj(d) { return d ? fmtDate(d.year, d.month) : '--'; }
 
-      // 明细列表
+      document.getElementById('retireInfo').textContent = pName + ' · ' + (L.ageStr || '--') + '退休 · ' + fmtDateObj(L.date);
+
+      // 明细列表（description去掉末尾的"= XXX元"）
+      function cleanDesc(d) {
+        if (!d) return '';
+        return d.replace(/=\s*[\d,.]+元$/, '').replace(/1\.00%/g, '1%').trim();
+      }
       var items = [
-        {label:'基础养老金', val:L.basicPension.amount, desc:L.basicPension.description},
+        {label:'基础养老金', val:L.basicPension.amount, desc:cleanDesc(L.basicPension.description)},
         {label:'个人账户养老金', val:L.personalAccount.amount, desc:'账户余额¥' + (L.personalAccount.balance || 0).toLocaleString() + ' ÷ ' + L.months + '个月'},
       ];
       if (L.transitionalPension && L.transitionalPension.amount > 0)
-        items.push({label:'过渡性养老金', val:L.transitionalPension.amount, desc:L.transitionalPension.description});
+        items.push({label:'过渡性养老金', val:L.transitionalPension.amount, desc:cleanDesc(L.transitionalPension.description)});
       if (L.extraPension && L.extraPension.amount > 0)
-        items.push({label:'增发基础养老金', val:L.extraPension.amount, desc:L.extraPension.description});
+        items.push({label:'增发基础养老金', val:L.extraPension.amount, desc:cleanDesc(L.extraPension.description)});
       if (L.specialAddition && L.specialAddition.amount > 0)
-        items.push({label:'特殊增发', val:L.specialAddition.amount, desc:L.specialAddition.description});
+        items.push({label:'特殊增发', val:L.specialAddition.amount, desc:cleanDesc(L.specialAddition.description)});
       if (L.adjustmentFund && L.adjustmentFund.amount > 0)
-        items.push({label:'调节金', val:L.adjustmentFund.amount, desc:L.adjustmentFund.description});
+        items.push({label:'调节金', val:L.adjustmentFund.amount, desc:cleanDesc(L.adjustmentFund.description)});
 
       document.getElementById('detailGrid').innerHTML = items.map(function(item) {
         return '<div class="item"><div class="label">' + item.label + '<small>' + (item.desc || '') + '</small></div><div class="val">¥' + (item.val || 0).toLocaleString('zh-CN', {minimumFractionDigits:2}) + '</div></div>';
@@ -310,19 +318,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       if (C && C.canFlex && F && F.total) {
         document.getElementById('flexCard').style.display = 'block';
         document.getElementById('legalTotal').textContent = '¥' + (L.total || 0).toFixed(2);
-        document.getElementById('legalDate').textContent = eng.getDateStr(L.date);
+        document.getElementById('legalDate').textContent = fmtDateObj(L.date);
         document.getElementById('flexTotal').textContent = '¥' + (F.total || 0).toFixed(2);
-        document.getElementById('flexDate').textContent = eng.getDateStr(F.date);
-        document.getElementById('flexNote').textContent = '提前 ' + C.flexAdvance + ' 个月退休，每月少领约 ¥' + (C.amountDiff ? (C.amountDiff / (F.totalYears || 1)).toFixed(2) : '0') + '，差额累计约 ¥' + (C.amountDiff ? (C.amountDiff * C.flexAdvance).toFixed(0) : '0');
+        document.getElementById('flexDate').textContent = fmtDateObj(F.date);
+        document.getElementById('flexNote').textContent = '提前 ' + C.flexAdvance + ' 个月退休，每月少领约 ¥' + ((L.total || 0) - (F.total || 0)).toFixed(2);
       }
 
       // ===== 关键参数 =====
       var paramsList = [
         {lbl:'退休省份', val:pName},
         {lbl:'性别', val: (input.genderType === 'male' || input.gender === 'male') ? '男' : '女'},
-        {lbl:'出生年月', val:input.birthYear + '年' + input.birthMonth + '月'},
-        {lbl:'参工时间', val:input.workYear + '年' + input.workMonth + '月'},
-        {lbl:'退休日期', val:eng.getDateStr(L.date)},
+        {lbl:'出生年月', val:fmtDate(input.birthYear, input.birthMonth)},
+        {lbl:'参工时间', val:fmtDate(input.workYear, input.workMonth)},
+        {lbl:'退休日期', val:fmtDateObj(L.date)},
         {lbl:'退休年龄', val:L.ageStr || '--'},
         {lbl:'延迟退休月数', val:L.age ? (L.age - (L.ageStr.includes('岁') ? parseInt(L.ageStr) : 60)).toFixed(0) + '个月' : '--'},
         {lbl:'累计缴费年限', val:(L.totalYears || 0).toFixed(2) + '年'},
