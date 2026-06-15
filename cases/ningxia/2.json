@@ -15,8 +15,8 @@
   "expected": {
     "basic_pension": 2771.13,
     "personal_pension": 879.95,
-    "transitional_pension": 709.05,
-    "total": 4378.63
+    "transitional_pension": 618.63,
+    "total": 4269.71
   },
   "notes": "宁夏2026年1月退休男职工(知识分子)，1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。低指数0.7666。知识分子过渡系数1.43%(+0.13%)+地区津贴10元+工龄补贴8.5元。计发基数8366。",
   "intellectual": true,

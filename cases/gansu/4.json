@@ -13,18 +13,18 @@
     "year": 1996,
     "month": 1
   },
-  "actual_years": 22,
+  "actual_years": 22.00,
   "sight_years": 0,
-  "total_years": 22,
+  "total_years": 22.00,
   "avg_index": 0.5341,
   "base_number": 8613,
   "personal_account": 77892.16,
   "months": 195,
   "expected": {
-    "basic_pension": 1349.39,
+    "basic_pension": 1453.45,
     "personal_pension": 399.45,
     "transitional_pension": 0,
-    "total": 1748.84
+    "total": 1852.90
   },
-  "notes": "甘肃女工人50岁2024.06退休，纯新人案例。参工2002.07（建账1996-01之后），无视同/无过渡性养老金。低指数0.5341，个账7.8万。 [2026-06-15: expected synced to engine]"
+  "notes": "甘肃女工人50岁2024.06退休，纯新人案例。参工2002.07（建账1996-01之后），无视同/无过渡性养老金。低指数0.5341，个账7.8万。"
 }
