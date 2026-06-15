@@ -153,15 +153,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <p style="margin-top:4px">2. 后续至退休前的缴费，按您填写的平均缴费指数延续估算。</p>
     <p style="margin-top:4px">3. 个人账户后续利息按 <strong>1.5%</strong>（2025年全国统一记账利率）逐年复利估算。</p>
     <p style="margin-top:4px">4. 社平工资增长率按 <strong>2.6%</strong>（基于近年各省平均增长率）估算。</p>
-    <p style="margin-top:4px">5. 计发基数按估算的退休年份社平工资计算，实际以退休时社保部门公布为准。</p>
 
     <p style="margin-top:12px"><strong>▎免责声明</strong></p>
     <p><strong>1. 数据来源</strong> — 计发基数、记账利率、过渡系数等参数依据各省人社厅官方文件及国家统一公布数据，截至2026年6月。</p>
-    <p style="margin-top:6px"><strong>2. 计算结果说明</strong> — 基于您自行填写的参保参数和现行养老金计发办法测算，<strong>不等同于社保经办机构最终核定的养老金数额</strong>。</p>
-    <p style="margin-top:6px"><strong>3. 政策风险</strong> — 养老保险政策可能调整，特别是延迟退休政策（国办发〔2025〕5号）处于渐进实施阶段，以退休时当地社保部门规定为准。</p>
-    <p style="margin-top:6px"><strong>4. 建议性质</strong> — 报告中的分析与建议为通用性参考，不构成任何形式的投资或保险购买建议。</p>
-    <p style="margin-top:6px"><strong>5. 责任限制</strong> — 本平台对因使用本报告内容而产生的任何直接或间接损失不承担法律责任。</p>
-    <p style="margin-top:6px"><strong>6. 信息保密</strong> — 您填写的参保参数仅用于本次测算，不会存储在服务器端。</p>
+    <p style="margin-top:6px"><strong>2. 计算结果说明</strong> — 基于您自行填写的参保参数和现行养老金计发办法测算，<strong>不等同于社保经办机构最终核定的养老金数额</strong>。实际退休待遇以退休时当地社保部门核定为准。</p>
+    <p style="margin-top:6px"><strong>3. 政策风险</strong> — 养老保险政策可能调整，特别是延迟退休政策（国办发〔2025〕5号）处于渐进实施阶段，具体执行细则以退休时的最新政策为准。</p>
+    <p style="margin-top:6px"><strong>4. 估算局限性</strong> — 未来缴费指数按您当前指数延续估算，社平工资增长率和记账利率按近年平均水平估算，实际可能与估算存在差异。</p>
+    <p style="margin-top:6px"><strong>5. 建议性质</strong> — 报告中的分析与建议为通用性参考，不构成任何形式的投资或保险购买建议。如需个性化规划，请咨询专业社保服务机构。</p>
+    <p style="margin-top:6px"><strong>6. 责任限制</strong> — 本平台及报告提供方对因使用本报告内容而产生的任何直接或间接损失不承担法律责任。</p>
+    <p style="margin-top:6px"><strong>7. 信息保密</strong> — 您填写的参保参数仅用于本次测算，不会存储在服务器端，可放心使用。</p>
   </div>
 </div>
 
@@ -277,7 +277,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           '<span class="lbl">最早退休时间：</span><span class="val">'+fmtObj(F.date)+'</span>',
           '<span class="lbl">退休年龄：</span><span class="val">'+(F.ageStr||'--')+'</span>',
           '<span class="lbl">累计缴费：</span><span class="val">'+(F.totalYears||0).toFixed(2)+'年</span>',
-          '<span class="lbl">计发基数：</span><span class="val">'+money(F.baseRetire)+'</span>'
+          '<span class="lbl">视同缴费：</span><span class="val">'+(F.sightYears||0).toFixed(2)+'年</span>',
+          '<span class="lbl">实际缴费：</span><span class="val">'+(F.actualYears||0).toFixed(2)+'年</span>',
+          '<span class="lbl">计发基数：</span><span class="val">'+money(F.baseRetire)+'</span>',
+          '<span class="lbl">是否满足最低年限：</span><span class="val" style="color:'+(F.meetMin?'var(--green)':'var(--red)')+'">'+(F.meetMin?'✅ 是':'❌ 否')+'</span>'
         ].join('');
 
         document.getElementById('flexCalcSteps').innerHTML = buildSteps(F);
