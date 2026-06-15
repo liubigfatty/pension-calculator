@@ -41,8 +41,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .adv-panel.show{display:block}
 .error-msg{background:#fff0f0;color:var(--red);padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:12px;display:none}
 .loading{text-align:center;padding:40px;color:var(--sub)}
-.flex-compare{margin-top:12px;padding:12px;background:#f8f8fa;border-radius:10px;font-size:14px}
-.flex-compare .row{grid-template-columns:1fr 1fr 1fr}
 .footer{text-align:center;color:var(--sub);font-size:12px;padding:24px}
 .province-selector select{font-size:16px;font-weight:500}
 .note-text{font-size:13px;color:var(--sub);line-height:1.6}
@@ -74,7 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 <div class="field">
 <label>退休类型</label>
-<select id="retireType"><option value="normal">正常退休</option><option value="flex_early">弹性提前</option><option value="special">特殊工种</option></select>
+<select id="retireType"><option value="normal">正常退休</option><option value="flex_early">弹性提前</option></select>
 </div>
 <div class="field">
 <label>出生：年 / 月</label>
@@ -97,13 +95,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="adv-toggle" onclick="document.getElementById('adv-panel').classList.toggle('show');this.textContent=this.textContent.includes('展开')?'▲ 收起高级参数':'▼ 展开高级参数'">▼ 展开高级参数</div>
 <div class="adv-panel" id="adv-panel">
 <div class="row">
-<div class="field"><label>视同缴费年限</label><input type="number" id="sightYears" placeholder="自动计算" step="0.01"></div>
-<div class="field"><label>建账前缴费年限</label><input type="number" id="preAccountYears" placeholder="自动计算" step="0.01"></div>
-<div class="field"><label>累计缴费年限</label><input type="number" id="totalYears" placeholder="自动计算" step="0.01"></div>
-<div class="field"><label>计发月数</label><input type="number" id="months" placeholder="自动计算"></div>
-<div class="field"><label>退休地计发基数</label><input type="number" id="baseRetire" placeholder="自动查询" step="0.01"></div>
-<div class="field"><label>全省计发基数</label><input type="number" id="baseProv" placeholder="自动查询" step="0.01"></div>
-<div class="field"><label>过渡指数</label><input type="number" id="transIndex" placeholder="=avgIndex" step="0.0001"></div>
+<div class="field"><label>视同缴费年限</label><input type="number" id="sightYears" placeholder="不填则自动计算" step="0.01"></div>
+<div class="field"><label>退休地计发基数</label><input type="number" id="baseRetire" placeholder="不填则自动查询" step="0.01"></div>
+<div class="field"><label>全省计发基数</label><input type="number" id="baseProv" placeholder="不填则自动查询" step="0.01"></div>
 <div class="field"><label>特殊标记</label>
 <select id="specialFlags"><option value="">无</option><option value="oneChild">独生子女</option><option value="intellectual">知识分子</option><option value="both">独生+知识分子</option></select>
 </div>
@@ -118,8 +112,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="card result-card result-hidden" id="result-card">
 <div class="total" id="total-amount">--</div>
 <div class="result-grid" id="result-grid"></div>
-<div class="info-bar" id="info-bar"></div>
-<div id="flex-compare" class="flex-compare" style="display:none"></div>
+  <div class="info-bar" id="info-bar"></div>
 <button class="btn btn-secondary" id="reportBtn" onclick="openReport()" style="margin-top:16px;display:none">📄 查看完整报告（预览）</button>
 </div>
 
@@ -238,12 +231,8 @@ function calculate() {
       skipDelay: false
     };
     var sy = nv("sightYears"); if (sy != null) input.sightYears = sy;
-    var pa = nv("preAccountYears"); if (pa != null) input.preAccountYears = pa;
-    var ty = nv("totalYears"); if (ty != null) input.totalYears = ty;
-    var mo = nv("months"); if (mo != null) input.months = mo;
     var br = nv("baseRetire"); if (br != null) input.baseRetireInput = br;
     var bp = nv("baseProv"); if (bp != null) input.baseProvInput = bp;
-    var ti = nv("transIndex"); if (ti != null) input.transIndex = ti;
     var sf = document.getElementById("specialFlags").value;
     if (sf === "oneChild" || sf === "both") input.oneChild = true;
     if (sf === "intellectual" || sf === "both") input.intellectual = true;
@@ -258,7 +247,9 @@ function calculate() {
 
 function displayResult(result) {
   var r = result.legal;
-  var dateStr = result.legalDate || (result.getDateStr ? result.getDateStr(r.date) : "--");
+  // 日期格式统一：xx年xx月
+  function fmtDateObj(d) { return d ? d.year + '年' + d.month + '月' : '--'; }
+  var dateStr = result.legalDate || fmtDateObj(r.date);
   document.getElementById("result-card").classList.remove("result-hidden");
   document.getElementById("total-amount").innerHTML = "¥" + r.total.toLocaleString("zh-CN",{minimumFractionDigits:2}) + "<br><small>月基本养老金</small>";
   // 优化描述显示：去掉末尾的"= XXX元"，因为右侧已经单独显示金额了
@@ -291,15 +282,8 @@ function displayResult(result) {
     "计发月数: " + (r.months||"--"),
     "累计年限: " + (r.totalYears||0).toFixed(2) + "年",
     "计发基数: ¥" + (r.baseRetire||0).toLocaleString(),
-    "过渡系数: " + (transCoef ? transCoef + "%" : "--")
+    "过渡系数: " + (transCoef ? transCoef.toFixed(1) + "%" : "--")
   ].map(function(t){return "<span class='info-tag'>"+t+"</span>";}).join("");
-  var fc = document.getElementById("flex-compare");
-  if (result.flex && result.flex.total) {
-    fc.style.display = "block";
-    var diffAmt = (r.total||0) - (result.flex.total||0);
-    fc.innerHTML = "<strong>弹性退休对比</strong><br>法定 ¥" + r.total.toFixed(2) + " | 提前 ¥" + result.flex.total.toFixed(2) + " | 差额: ¥" + diffAmt.toFixed(2) +
-      "<br><small style='color:#86868b'>提前" + (result.comparison.flexAdvance||0) + "个月退休，每月少领¥" + diffAmt.toFixed(2) + "。查看完整报告了解盈亏平衡分析。</small>";
-  } else { fc.style.display = "none"; }
   document.getElementById("result-card").scrollIntoView({behavior:"smooth"});
   document.getElementById("reportBtn").style.display = "block";
 }
