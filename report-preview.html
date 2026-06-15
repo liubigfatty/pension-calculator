@@ -323,17 +323,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         document.getElementById('flexDate').textContent = fmtDateObj(F.date);
         document.getElementById('flexNote').innerHTML = 
           '提前 ' + C.flexAdvance + ' 个月退休，每月少领约 ¥' + ((L.total || 0) - (F.total || 0)).toFixed(2) +
-          '，提前多领约 ¥' + ((F.total || 0) * (C.flexAdvance || 0)).toFixed(0) +
-          '。<br><strong>盈亏平衡分析：</strong>约 ' +
-          (function(){
-            var diff = (L.total||0) - (F.total||0);
-            var extra = (F.total||0) * (C.flexAdvance||0);
-            var bm = diff > 0 ? Math.ceil(extra / diff) : 0;
-            var fy = F.date.year + Math.floor((F.date.month + bm - 1) / 12);
-            var fm = ((F.date.month + bm - 1) % 12) + 1;
-            return bm + ' 个月（' + (bm/12).toFixed(1) + '年）后追平，约 ' + fy + '年' + fm + '月起反超。';
-          })();
-      }
+          '，提前多领约 ¥' + ((F.total || 0) * (C.flexAdvance || 0)).toFixed(0) + '。';
+        // 盈亏平衡分析
+        var beDiff = (L.total||0) - (F.total||0);
+        var beExtra = (F.total||0) * (C.flexAdvance||0);
+        if (beDiff > 0) {
+          var beMonths = Math.ceil(beExtra / beDiff);
+          var beY = F.date.year + Math.floor((F.date.month + beMonths - 1) / 12);
+          var beM = ((F.date.month + beMonths - 1) % 12) + 1;
+          document.getElementById('flexNote').innerHTML +=
+            '<br><strong>盈亏平衡分析：</strong>约 ' + beMonths + ' 个月（' + (beMonths/12).toFixed(1) + '年）后追平，约 ' + beY + '年' + beM + '月起反超。';
+        }
       }
 
       // ===== 关键参数 =====
@@ -360,13 +360,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       }).join('');
 
       // ===== 计算过程 =====
+      // cleanDesc 已在上面定义
       var steps = [];
-
-      // 清理描述：去掉末尾"= XXX元"和1.00%优化
-      function cleanDesc(d) {
-        if (!d) return '--';
-        return d.replace(/=\s*[\d,.]+元$/, '').replace(/1\.00%/g, '1%').trim();
-      }
 
       // 基础养老金
       if (L.basicPension && L.basicPension.amount != null) {
