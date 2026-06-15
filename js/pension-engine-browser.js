@@ -71,6 +71,7 @@ function calcBasicPension(params) {
     description = `(¥${socialAvg.toLocaleString()} + ¥${socialAvg.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else if (mod.formula_type === 'guangdong') {
     // 广东特殊：基础养老金公式含a系数（国发[2005]38号）
+    // avgIndex≥0.6时a=1; avgIndex<0.6时a=avgIndex/0.6，提升低指数人员待遇
     const aCoeff = avgIndex >= 0.6 ? 1 : avgIndex / 0.6
     const indexSalary = retireBase * avgIndex
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
@@ -1575,6 +1576,13 @@ function calculate(config, inputData) {
   // ===== 构建返回结果 =====
   const canFlex = flexTotalMonths < legalTotalMonths
   const flexAdvance = legalTotalMonths - flexTotalMonths
+  // 弹性退休年限调整：提前退休意味着少缴费 flexAdvance 个月
+  const flexAdjYears = flexAdvance / 12
+  const flexTotalYears = Math.max(0, (totalYears || 0) - flexAdjYears)
+  const flexActualYears = Math.max(0, (actualYears || 0) - flexAdjYears)
+  // 视同缴费年限不变（建立个人账户前的工作年限，不受弹性退休影响）
+  const flexMinYears = getMinYears(flexDate.year, config)
+  const flexMeetMin = flexTotalYears >= flexMinYears
 
   return {
     // 法定退休
@@ -1613,11 +1621,13 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       total: flexTotal,
-      totalYears,
-      actualYears,
+      totalYears: flexTotalYears,
+      actualYears: flexActualYears,
       sightYears,
       baseRetire: flexRetBase,
-      baseProv: flexProvBase
+      baseProv: flexProvBase,
+      minYears: flexMinYears,
+      meetMin: flexMeetMin
     },
 
     // 对比信息
@@ -1712,39 +1722,16 @@ function formatResult(result) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  浏览器包装 — 同时支持 CommonJS 和浏览器全局
+//  浏览器包装
 // ═══════════════════════════════════════════════════════
 if (typeof window !== 'undefined') { window.PensionEngine = {
-  // 核心入口
-  calculate,
-
-  // 计算模块
-  calcBasicPension,
-  calcExtraPension,
-  calcPersonalAccountPension,
-  calcTransitionalPension,
-  calcSpecialAddition,
-  calcAdjustmentFund,
-
-  // 退休时间计算
-  getRetireMonths,
-  getDelayMonths,
-  getRetireTotalMonths,
-  getRetireDate,
-  getAgeStr,
-  getDateStr,
-  getMinYears,
-
-  // 基础数据查询
-  getBase,
-  getAccRate,
-
-  // 辅助函数
-  calcYears,
-  parseInput,
-  formatMoney,
-  getModuleName,
-  formatResult
+  calculate, calcBasicPension, calcExtraPension,
+  calcPersonalAccountPension, calcTransitionalPension,
+  calcSpecialAddition, calcAdjustmentFund,
+  getRetireMonths, getDelayMonths, getRetireTotalMonths,
+  getRetireDate, getAgeStr, getDateStr, getMinYears,
+  getBase, getAccRate,
+  calcYears, parseInput, formatMoney, getModuleName, formatResult
 }; }
 
 if (typeof module !== 'undefined') { module.exports = {

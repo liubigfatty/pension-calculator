@@ -1576,6 +1576,13 @@ function calculate(config, inputData) {
   // ===== 构建返回结果 =====
   const canFlex = flexTotalMonths < legalTotalMonths
   const flexAdvance = legalTotalMonths - flexTotalMonths
+  // 弹性退休年限调整：提前退休意味着少缴费 flexAdvance 个月
+  const flexAdjYears = flexAdvance / 12
+  const flexTotalYears = Math.max(0, (totalYears || 0) - flexAdjYears)
+  const flexActualYears = Math.max(0, (actualYears || 0) - flexAdjYears)
+  // 视同缴费年限不变（建立个人账户前的工作年限，不受弹性退休影响）
+  const flexMinYears = getMinYears(flexDate.year, config)
+  const flexMeetMin = flexTotalYears >= flexMinYears
 
   return {
     // 法定退休
@@ -1614,11 +1621,13 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       total: flexTotal,
-      totalYears,
-      actualYears,
+      totalYears: flexTotalYears,
+      actualYears: flexActualYears,
       sightYears,
       baseRetire: flexRetBase,
-      baseProv: flexProvBase
+      baseProv: flexProvBase,
+      minYears: flexMinYears,
+      meetMin: flexMeetMin
     },
 
     // 对比信息
