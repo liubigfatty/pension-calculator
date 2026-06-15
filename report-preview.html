@@ -353,6 +353,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     if (obj.specialAddition && obj.specialAddition.amount > 0) add('特殊增发', cleanDesc(obj.specialAddition.description), obj.specialAddition.amount);
     if (obj.adjustmentFund && obj.adjustmentFund.amount > 0) add('调节金', '', obj.adjustmentFund.amount);
     return steps.join('');
+  }
 
 })();
 </script>
