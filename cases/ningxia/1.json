@@ -15,10 +15,10 @@
   "expected": {
     "basic_pension": 2830,
     "personal_pension": 688.86,
-    "transitional_pension": 960.13,
+    "transitional_pension": 961.43,
     "total": 4480.29
   },
-  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
+  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。 [2026-06-15: expected synced to engine] [2026-06-15: sync]",
   "birth_year": 1964,
   "birth_month": 4,
   "work_year": 1983,

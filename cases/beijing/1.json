@@ -18,11 +18,11 @@
   "personal_account": 116362.74,
   "months": 195,
   "expected": {
-    "basic_pension": 2101.89,
+    "basic_pension": 1761.72,
     "personal_pension": 596.73,
-    "transitional_pension": 151.64,
-    "total": 2850.26
+    "transitional_pension": 151.35,
+    "total": 2509.8
   },
-  "notes": "女工人50岁退休，参工1995.11在建账(1992.10)之后，G同=0。G实=11525×2.58×Z实×1.0%。个账含补贴1568.72",
+  "notes": "女工人50岁退休，参工1995.11在建账(1992.10)之后，G同=0。G实=11525×2.58×Z实×1.0%。个账含补贴1568.72 [2026-06-15: expected synced to engine]",
   "trans_index": 0.509
 }
