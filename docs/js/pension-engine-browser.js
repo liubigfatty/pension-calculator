@@ -69,14 +69,18 @@ function calcBasicPension(params) {
     const socialAvg = params.socialAvgBase || retireBase
     amount = Math.round((socialAvg + socialAvg * avgIndex) / 2 * totalYears * rate * 100) / 100
     description = `(¥${socialAvg.toLocaleString()} + ¥${socialAvg.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
-  } else {
-    // 默认公式：(退休地计发基数 × a + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
-    // a系数（国发[2005]38号）：avgIndex≥0.6时a=1; avgIndex<0.6时a=avgIndex/0.6
+  } else if (mod.formula_type === 'guangdong') {
+    // 广东特殊：基础养老金公式含a系数（国发[2005]38号）
     const aCoeff = avgIndex >= 0.6 ? 1 : avgIndex / 0.6
     const indexSalary = retireBase * avgIndex
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
     const aDesc = aCoeff !== 1 ? `(a=${aCoeff.toFixed(4)})` : ''
     description = `(${retireBase.toLocaleString()}×${aCoeff.toFixed(4)}${aDesc} + ${indexSalary.toLocaleString(undefined, {maximumFractionDigits:2})}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else {
+    // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    const indexSalary = retireBase * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
   }
 
   return { amount, description }

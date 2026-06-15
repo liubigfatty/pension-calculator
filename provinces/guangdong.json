@@ -159,7 +159,8 @@
     "basic_pension": {
       "enabled": true,
       "rate_per_year": 0.01,
-      "formula": "(退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%"
+      "formula_type": "guangdong",
+      "formula": "(退休地计发基数 × a + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%，a系数见国发[2005]38号"
     },
     "extra_pension": {
       "enabled": false,
