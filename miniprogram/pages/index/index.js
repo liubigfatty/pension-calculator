@@ -2,6 +2,7 @@
  * 首页 - 引导式填表流程（5步）
  */
 const provinceUtil = require('../../utils/province')
+const engineUtil = require('../../utils/engine')
 
 Page({
   data: {
@@ -222,8 +223,11 @@ Page({
       return
     }
 
-    var d = this.data
-    var input = {
+    var self = this
+    wx.showLoading({title:'计算中...'})
+    engineUtil.loadEngine().then(function(engine) {
+      var d = self.data
+      var input = {
       name: '测算用户',
       gender: (d.genderType === 'male') ? 'male' : 'female',
       genderType: d.genderType,
@@ -243,8 +247,6 @@ Page({
     if (d.specialFlag === 'intellectual' || d.specialFlag === 'both') input.intellectual = true
 
     try {
-      // 延迟加载引擎（避免首次加载超时）
-      var engine = require('../../utils/pension-engine')
       var result = engine.calculate(d.currentConfig, input)
       // 存入全局并跳转
       var app = getApp()
@@ -252,9 +254,14 @@ Page({
       app.globalData.lastInput = input
       app.globalData.employType = d.employType
       app.globalData.lastProvince = d.provinceList[d.provinceIndex].name
+      wx.hideLoading()
       wx.navigateTo({ url: '/pages/result/result' })
     } catch(e) {
+      wx.hideLoading()
       wx.showToast({title:'计算失败: ' + e.message, icon:'none'})
     }
+  }).catch(function(err) {
+    wx.hideLoading()
+    wx.showToast({title:'引擎加载失败',icon:'none'})
+  })
   }
-})
