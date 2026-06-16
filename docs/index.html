@@ -82,22 +82,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <label>参工：年 / 月</label>
 <div style="display:flex;gap:8px"><input type="number" id="workYear" value="1985" style="flex:1" min="1960" max="2026" placeholder="年"><input type="number" id="workMonth" value="1" style="flex:1" min="1" max="12" placeholder="月"></div>
 </div>
-<div class="field">
-<label>个人账户余额（元）</label>
-<input type="number" id="personalAcc" value="150000" step="0.01">
-</div>
-<div class="field">
-<label>平均缴费指数</label>
-<input type="number" id="avgIndex" value="1.0" step="0.0001" min="0.6" max="3.0">
-</div>
+    <div class="field">
+      <label>个人账户余额（元）<span style="color:var(--sub);font-weight:400"> 不填则自动估算</span></label>
+      <input type="number" id="personalAcc" placeholder="留空按各省基数+指数自动估算" step="0.01">
+    </div>
+    <div class="field">
+      <label>平均缴费指数</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button type="button" class="idx-btn" onclick="setIndex(0.6)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">60%</button>
+        <button type="button" class="idx-btn" onclick="setIndex(0.8)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">80%</button>
+        <button type="button" class="idx-btn" onclick="setIndex(1.0)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">100%</button>
+        <input type="number" id="avgIndex" value="1.0" step="0.0001" min="0.6" max="3.0" style="flex:1;min-width:0" placeholder="或自定义">
+      </div>
+    </div>
 </div>
 
 <div class="adv-toggle" onclick="document.getElementById('adv-panel').classList.toggle('show');this.textContent=this.textContent.includes('展开')?'▲ 收起高级参数':'▼ 展开高级参数'">▼ 展开高级参数</div>
 <div class="adv-panel" id="adv-panel">
 <div class="row">
-<div class="field"><label>视同缴费年限</label><input type="number" id="sightYears" placeholder="不填则自动计算" step="0.01"></div>
-<div class="field"><label>退休地计发基数</label><input type="number" id="baseRetire" placeholder="不填则自动查询" step="0.01"></div>
-<div class="field"><label>全省计发基数</label><input type="number" id="baseProv" placeholder="不填则自动查询" step="0.01"></div>
 <div class="field"><label>特殊标记</label>
 <select id="specialFlags"><option value="">无</option><option value="oneChild">独生子女</option><option value="intellectual">知识分子</option><option value="both">独生+知识分子</option></select>
 </div>
@@ -163,7 +165,7 @@ async function loadProvince(id) {
 
 function updateDefaultAccount() {
   if (!currentConfig) return;
-  // 粗略估算个人账户余额默认值
+  // 自动估算个人账户余额
   // 公式：近10年平均基数 × 指数 × 8% × 12 × (退休年龄-参工年龄) × 复利因子1.3
   var baseRates = currentConfig.base_rates;
   if (!baseRates) return;
@@ -182,20 +184,31 @@ function updateDefaultAccount() {
   var estBalance = Math.round(avgBase * idx * 0.08 * 12 * totalYears * 1.3);
   // 取整到万
   estBalance = Math.round(estBalance / 10000) * 10000;
-  // 设置默认值（只改初始值，用户改过后不动）
+  // 只改默认占位符，不改用户已填值
   var accInput = document.getElementById("personalAcc");
-  if (!accInput.dataset.userModified) {
-    accInput.value = estBalance;
+  if (!accInput.value || !accInput.dataset.userModified) {
+    accInput.placeholder = "自动估算约 " + estBalance.toLocaleString() + " 元";
   }
+}
+
+function setIndex(val) {
+  document.getElementById("avgIndex").value = val;
+  // 高亮选中按钮
+  document.querySelectorAll('.idx-btn').forEach(function(b){ b.style.borderColor = 'var(--border)'; b.style.background = 'var(--card)'; });
+  event.target.style.borderColor = 'var(--accent)';
+  event.target.style.background = '#f0f7ff';
+  updateDefaultAccount();
 }
 
 // 监听指数变化，更新默认账户余额
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("avgIndex").addEventListener("input", function() {
+    // 取消按钮高亮
+    document.querySelectorAll('.idx-btn').forEach(function(b){ b.style.borderColor = 'var(--border)'; b.style.background = 'var(--card)'; });
     updateDefaultAccount();
   });
   document.getElementById("personalAcc").addEventListener("focus", function() {
-    this.dataset.userModified = "true";
+    if (this.value) this.dataset.userModified = "true";
   });
 });
 
@@ -207,7 +220,6 @@ function onProvinceChange() {
   loadProvince(id);
 }
 
-function nv(id) { var v = document.getElementById(id).value; return v ? parseFloat(v) : null; }
 
 function calculate() {
   var errEl = document.getElementById("error-msg");
@@ -227,12 +239,9 @@ function calculate() {
       retireType: document.getElementById("retireType").value,
       birthYear: by, birthMonth: bm, workYear: wy, workMonth: wm,
       avgIndex: parseFloat(document.getElementById("avgIndex").value) || 1.0,
-      personalAccInput: parseFloat(document.getElementById("personalAcc").value) || 0,
+      personalAccInput: parseFloat(document.getElementById("personalAcc").value) || undefined,
       skipDelay: false
     };
-    var sy = nv("sightYears"); if (sy != null) input.sightYears = sy;
-    var br = nv("baseRetire"); if (br != null) input.baseRetireInput = br;
-    var bp = nv("baseProv"); if (bp != null) input.baseProvInput = bp;
     var sf = document.getElementById("specialFlags").value;
     if (sf === "oneChild" || sf === "both") input.oneChild = true;
     if (sf === "intellectual" || sf === "both") input.intellectual = true;
