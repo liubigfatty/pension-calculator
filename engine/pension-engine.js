@@ -1010,17 +1010,27 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   if (cityRates && cityRates[year] !== undefined) return cityRates[year]
   if (provRates[year] !== undefined) return provRates[year]
 
-  // 2. 向前回退到最近年份（城市表优先，再查全省）
+  // 2. 向前回退到最近年份，若晚于该年则按2.0%社平增长率外推（城市表优先，再查全省）
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
+  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
-    if (cityKeys[i] <= year) return cityRates[cityKeys[i]]
+    if (cityKeys[i] <= year) {
+      const baseVal = cityRates[cityKeys[i]]
+      const diff = year - cityKeys[i]
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+    }
   }
   // 从全省向前找
   for (let i = provKeys.length - 1; i >= 0; i--) {
-    if (provKeys[i] <= year) return provRates[provKeys[i]]
+    if (provKeys[i] <= year) {
+      const baseVal = provRates[provKeys[i]]
+      const diff = year - provKeys[i]
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+    }
   }
 
   // 3. 所有年份都大于查询年份 → 回退到最后已知年份
@@ -1377,19 +1387,11 @@ function calculate(config, inputData) {
     const provRates = allRates['prov']
     const cityRates = allRates[city]
 
-    // 判断退休当年基数是否已正式公布（配置文件中有该年精确数据）
-    const hasCurrentYearProv = provRates && provRates[legalDate.year] !== undefined
-    const hasCurrentYearCity = cityRates && cityRates[legalDate.year] !== undefined
+    // 全省基数：当年有数据用当年，否则按2.0%外推
+    provBase = getBase('prov', legalDate.year, config)
 
-    // 全省基数：当年有数据用当年，否则回退上一年
-    provBase = hasCurrentYearProv
-      ? getBase('prov', legalDate.year, config)
-      : getBase('prov', legalDate.year - 1, config)
-
-    // 退休地基数：当年有数据用当年，否则回退上一年
-    retBase = hasCurrentYearCity
-      ? getBase(city, legalDate.year, config)
-      : getBase(city, legalDate.year - 1, config)
+    // 退休地基数：当年有数据用当年，否则按2.0%外推
+    retBase = getBase(city, legalDate.year, config)
   }
 
   const retireAgeExact = legalTotalMonths / 12
@@ -1518,14 +1520,8 @@ function calculate(config, inputData) {
   const allRates = config.base_rates || {}
   const provRates = allRates['prov']
   const cityRates = allRates[city]
-  const hasFlexCurrentProv = provRates && provRates[flexDate.year] !== undefined
-  const hasFlexCurrentCity = cityRates && cityRates[flexDate.year] !== undefined
-  const flexProvBase = hasFlexCurrentProv
-    ? getBase('prov', flexDate.year, config)
-    : getBase('prov', flexDate.year - 1, config)
-  const flexRetBase = hasFlexCurrentCity
-    ? getBase(city, flexDate.year, config)
-    : getBase(city, flexDate.year - 1, config)
+  const flexProvBase = getBase('prov', flexDate.year, config)
+  const flexRetBase = getBase(city, flexDate.year, config)
 
   const flexBasic = calcBasicPension({
     retireBase: flexRetBase, provBase: flexProvBase,
