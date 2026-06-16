@@ -262,8 +262,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         '<span class="lbl">累计缴费：</span><span class="val">'+(L.totalYears||0).toFixed(2)+'年</span>',
         '<span class="lbl">视同缴费：</span><span class="val">'+(L.sightYears||0).toFixed(2)+'年</span>',
         '<span class="lbl">实际缴费：</span><span class="val">'+(L.actualYears||0).toFixed(2)+'年</span>',
-        '<span class="lbl">退休地计发基数：</span><span class="val">'+money(L.baseRetire)+'</span>',
-        '<span class="lbl">全省计发基数：</span><span class="val">'+money(L.baseProv)+'</span>',
+        '<span class="lbl">计发基数：</span><span class="val">'+money(L.baseRetire)+'</span>',
         '<span class="lbl">是否满足最低年限：</span><span class="val" style="color:'+(L.meetMin?'var(--green)':'var(--red)')+'">'+(L.meetMin?'✅ 是':'❌ 否')+'</span>'
       ].join('');
 
@@ -280,8 +279,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
           '<span class="lbl">累计缴费：</span><span class="val">'+(F.totalYears||0).toFixed(2)+'年</span>',
           '<span class="lbl">视同缴费：</span><span class="val">'+(F.sightYears||0).toFixed(2)+'年</span>',
           '<span class="lbl">实际缴费：</span><span class="val">'+(F.actualYears||0).toFixed(2)+'年</span>',
-          '<span class="lbl">退休地计发基数：</span><span class="val">'+money(F.baseRetire)+'</span>',
-          '<span class="lbl">全省计发基数：</span><span class="val">'+money(F.baseProv)+'</span>',
+          '<span class="lbl">计发基数：</span><span class="val">'+money(F.baseRetire)+'</span>',
           '<span class="lbl">是否满足最低年限：</span><span class="val" style="color:'+(F.meetMin?'var(--green)':'var(--red)')+'">'+(F.meetMin?'✅ 是':'❌ 否')+'</span>'
         ].join('');
 
