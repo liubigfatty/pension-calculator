@@ -1,7 +1,7 @@
 /**
  * 完整报告页
  */
-const engine = require('../../utils/pension-engine')
+// 引擎延迟加载（避免初始化超时）
 
 Page({
   data: {

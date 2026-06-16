@@ -1,7 +1,6 @@
 /**
  * 首页 - 引导式填表流程（5步）
  */
-const engine = require('../../utils/pension-engine')
 const provinceUtil = require('../../utils/province')
 
 Page({
@@ -244,6 +243,8 @@ Page({
     if (d.specialFlag === 'intellectual' || d.specialFlag === 'both') input.intellectual = true
 
     try {
+      // 延迟加载引擎（避免首次加载超时）
+      var engine = require('../../utils/pension-engine')
       var result = engine.calculate(d.currentConfig, input)
       // 存入全局并跳转
       var app = getApp()
