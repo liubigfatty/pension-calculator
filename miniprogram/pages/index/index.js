@@ -253,6 +253,7 @@ Page({
         app.globalData.lastInput = input;
         app.globalData.employType = d.employType;
         app.globalData.lastProvince = d.provinceList[d.provinceIndex].name;
+        app.globalData.lastCityName = d.cityList[d.cityIndex].name;
         wx.navigateTo({ url: '/pages/result/result' });
       } catch(e) {
         wx.showToast({title:'计算失败: ' + e.message, icon:'none'});

@@ -47,10 +47,10 @@
         <view class="field-group">
           <text class="field-label">出生年月</text>
           <view class="picker-row">
-            <picker mode="selector" range="{{birthYearRange}}" value="{{birthYearRange.indexOf(birthYear)}}" bindchange="onBirthChange">
+            <picker mode="selector" range="{{birthYearRange}}" bindchange="onBirthChange">
               <view class="picker-box">{{birthYear}}年</view>
             </picker>
-            <picker mode="selector" range="{{monthRange}}" value="{{birthMonth - 1}}" bindchange="onBirthMonthChange">
+            <picker mode="selector" range="{{monthRange}}" bindchange="onBirthMonthChange">
               <view class="picker-box">{{birthMonth}}月</view>
             </picker>
           </view>
@@ -59,10 +59,10 @@
         <view class="field-group">
           <text class="field-label">参加工作时间</text>
           <view class="picker-row">
-            <picker mode="selector" range="{{workYearRange}}" value="{{workYearRange.indexOf(workYear)}}" bindchange="onWorkChange">
+            <picker mode="selector" range="{{workYearRange}}" bindchange="onWorkChange">
               <view class="picker-box">{{workYear}}年</view>
             </picker>
-            <picker mode="selector" range="{{monthRange}}" value="{{workMonth - 1}}" bindchange="onWorkMonthChange">
+            <picker mode="selector" range="{{monthRange}}" bindchange="onWorkMonthChange">
               <view class="picker-box">{{workMonth}}月</view>
             </picker>
           </view>

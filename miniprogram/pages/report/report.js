@@ -30,6 +30,7 @@ Page({
     var F = r.flex
     var C = r.comparison
     var pName = app.globalData.lastProvince || '吉林省'
+    var cName = app.globalData.lastCityName || (input.cityType === 'prov' ? '全省默认' : input.cityType)
 
     var now = new Date()
     var reportId = 'RP' + now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2)
@@ -43,7 +44,7 @@ Page({
       headerMeta: '生成时间：' + now.toLocaleString('zh-CN') + '  报告编号：' + reportId,
       personalInfo: [
         {label:'退休省份', value: pName},
-        {label:'城市/地区', value: input.cityType === 'prov' ? '全省默认' : input.cityType},
+        {label:'城市/地区', value: cName},
         {label:'人员身份', value: genderLbl(input.genderType, employType)},
         {label:'出生年月', value: input.birthYear + '年' + input.birthMonth + '月'},
         {label:'参加工作时间', value: input.workYear + '年' + input.workMonth + '月'},
