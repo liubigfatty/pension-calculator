@@ -1,0 +1,155 @@
+<!-- 引导流程 - 5步 -->
+<view class="page">
+  <!-- 步骤进度条 -->
+  <view class="step-bar">
+    <view wx:for="{{5}}" wx:key="index" class="step-dot {{step > index ? 'active' : ''}} {{step === index+1 ? 'current' : ''}}">
+      <text class="dot-num">{{index+1}}</text>
+    </view>
+    <view class="step-line"></view>
+  </view>
+
+  <swiper class="step-swiper" current="{{step-1}}" duration="300" catchtouchmove="noop">
+    <!-- ===== Step 1: 身份 + 性别 ===== -->
+    <swiper-item>
+      <view class="card">
+        <text class="step-title">选择您的身份</text>
+        <view class="employ-grid">
+          <view class="employ-card {{employType === 'employee' ? 'active' : ''}}" data-value="employee" bindtap="onEmployTap">
+            <text class="employ-icon">🏢</text>
+            <text class="employ-label">企业职工</text>
+            <text class="employ-desc">在单位上班</text>
+          </view>
+          <view class="employ-card {{employType === 'flexible' ? 'active' : ''}}" data-value="flexible" bindtap="onEmployTap">
+            <text class="employ-icon">🏠</text>
+            <text class="employ-label">灵活就业</text>
+            <text class="employ-desc">自己缴费</text>
+          </view>
+        </view>
+
+        <view wx:if="{{employType}}" class="gender-section">
+          <text class="section-label">性别</text>
+          <view class="gender-grid">
+            <view wx:for="{{genderOptions}}" wx:key="value"
+              class="gender-card {{genderType === item.value ? 'active' : ''}}"
+              data-value="{{item.value}}" bindtap="onGenderTap">
+              {{item.label}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- ===== Step 2: 出生/参工 ===== -->
+    <swiper-item>
+      <view class="card">
+        <text class="step-title">基本信息</text>
+
+        <view class="field-group">
+          <text class="field-label">出生年月</text>
+          <view class="picker-row">
+            <picker mode="selector" range="{{birthYearRange}}" bindchange="onBirthChange">
+              <view class="picker-box">{{birthYear}}年</view>
+            </picker>
+            <picker mode="selector" range="{{monthRange}}" bindchange="onBirthMonthChange">
+              <view class="picker-box">{{birthMonth}}月</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="field-group">
+          <text class="field-label">参加工作时间</text>
+          <view class="picker-row">
+            <picker mode="selector" range="{{workYearRange}}" bindchange="onWorkChange">
+              <view class="picker-box">{{workYear}}年</view>
+            </picker>
+            <picker mode="selector" range="{{monthRange}}" bindchange="onWorkMonthChange">
+              <view class="picker-box">{{workMonth}}月</view>
+            </picker>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- ===== Step 3: 地区 ===== -->
+    <swiper-item>
+      <view class="card">
+        <text class="step-title">选择地区</text>
+
+        <view class="field-group">
+          <text class="field-label">退休省份</text>
+          <picker mode="selector" range="{{provinceList}}" range-key="name" bindchange="onProvinceChange">
+            <view class="picker-box">{{provinceList[provinceIndex].name}}</view>
+          </picker>
+        </view>
+
+        <view class="field-group">
+          <text class="field-label">城市 / 地区</text>
+          <picker mode="selector" range="{{cityList}}" range-key="name" bindchange="onCityChange">
+            <view class="picker-box">{{cityList[cityIndex].name}}</view>
+          </picker>
+        </view>
+
+        <view wx:if="{{loading}}" class="loading-tip">加载省份配置中...</view>
+      </view>
+    </swiper-item>
+
+    <!-- ===== Step 4: 缴费水平 ===== -->
+    <swiper-item>
+      <view class="card">
+        <text class="step-title">缴费水平</text>
+        <text class="step-desc">您大概按什么档次缴费？</text>
+
+        <view class="pay-grid">
+          <view class="pay-card {{payLevel === 0 ? 'active' : ''}}" data-value="0" bindtap="onPayLevelTap">
+            <text class="pay-pct">60%</text>
+            <text class="pay-label">最低档</text>
+          </view>
+          <view class="pay-card {{payLevel === 1 ? 'active' : ''}}" data-value="1" bindtap="onPayLevelTap">
+            <text class="pay-pct">80%</text>
+            <text class="pay-label">中档</text>
+          </view>
+          <view class="pay-card {{payLevel === 2 ? 'active' : ''}}" data-value="2" bindtap="onPayLevelTap">
+            <text class="pay-pct">100%</text>
+            <text class="pay-label">高档</text>
+          </view>
+        </view>
+
+        <view class="divider-text">— 或自定义 —</view>
+
+        <view class="field-group">
+          <text class="field-label">平均缴费指数</text>
+          <input type="digit" value="{{avgIndex}}" bindinput="onIndexInput" class="custom-input" />
+        </view>
+
+        <view class="field-group">
+          <text class="field-label">个人账户余额（元）</text>
+          <input type="digit" placeholder="{{accEstimate || '不填则自动估算'}}" bindinput="onAccInput" class="custom-input" />
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- ===== Step 5: 其它加发 ===== -->
+    <swiper-item>
+      <view class="card">
+        <text class="step-title">其它加发</text>
+        <text class="step-desc">是否有以下情况？（没有请选"无"）</text>
+
+        <view class="special-grid">
+          <view wx:for="{{specialOptions}}" wx:key="value"
+            class="special-card {{specialFlag === item.value ? 'active' : ''}}"
+            data-value="{{item.value}}" bindtap="onSpecialTap">
+            {{item.label}}
+          </view>
+        </view>
+      </view>
+
+      <view class="btn-primary" bindtap="doCalculate">开始测算</view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部导航按钮 -->
+  <view class="nav-bar">
+    <view wx:if="{{step > 1}}" class="nav-btn prev" bindtap="prevStep">上一步</view>
+    <view wx:if="{{step < 5}}" class="nav-btn next" bindtap="nextStep">下一步</view>
+  </view>
+</view>

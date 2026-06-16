@@ -1,0 +1,29 @@
+<view class="page">
+  <view class="result-header">
+    <text class="result-label">月基本养老金</text>
+    <text class="result-amount">¥{{result.total}}</text>
+  </view>
+
+  <!-- 正常 vs 弹性切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{tab === 'legal' ? 'active' : ''}}" bindtap="switchTab" data-tab="legal">
+      <text class="tab-label">正常退休</text>
+      <text class="tab-amount">¥{{legalTotal}}</text>
+    </view>
+    <view wx:if="{{hasFlex}}" class="tab-item {{tab === 'flex' ? 'active' : ''}}" bindtap="switchTab" data-tab="flex">
+      <text class="tab-label">弹性提前</text>
+      <text class="tab-amount">¥{{flexTotal}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="info-row" wx:for="{{params}}" wx:key="label">
+      <text class="info-label">{{item.label}}</text>
+      <text class="info-value {{item.highlight ? 'highlight' : ''}}">{{item.value}}</text>
+    </view>
+  </view>
+
+  <view class="btn-primary" bindtap="goReport">📄 完整报告：弹性退休对比与建议</view>
+  <view class="btn-secondary pay-btn" bindtap="goReport">🔓 完整报告（未支付预览）</view>
+  <view class="btn-secondary" bindtap="goBack">重新测算</view>
+</view>

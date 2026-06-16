@@ -1,0 +1,8 @@
+<view class="page">
+  <view class="card" style="text-align:center;padding:40px 24px">
+    <text style="font-size:48px">🔒</text>
+    <text style="font-size:18px;font-weight:700;display:block;margin-top:16px">支付通道准备中</text>
+    <text style="font-size:14px;color:#86868b;display:block;margin-top:8px">商户号审核通过后接入</text>
+    <view class="btn-primary" bindtap="goBack" style="margin-top:32px">返回报告</view>
+  </view>
+</view>
