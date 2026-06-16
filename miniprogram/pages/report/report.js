@@ -91,7 +91,7 @@ Page({
       ? '如果您预期寿命较长（超过 ' + (beMonths/12).toFixed(1) + '年），正常退休的总收入更高，延迟退休更划算。如果您当前经济压力大、身体状况一般，弹性提前退休可以更早获得稳定现金流，提前退休更合适。建议结合个人健康状况、家庭经济需求、工作压力等综合判断。'
       : '弹性提前退休与正常退休的月养老金基本持平，您可以根据个人情况自由选择退休时间。'
     sugList.push({title:'📋 决策建议', text: decisionText, color:'blue'})
-    sugList.push({title:'💬 个性化咨询', text:'如果您的参保情况比较复杂（如存在断缴、特殊工种、多地参保等），或有其他社保规划需求，欢迎添加微信咨询。', color:'blue'})
+    // 个性化咨询在 WXML 中最后保留，这里不加
 
     this.setData({ suggestions: sugList })
   },
@@ -106,11 +106,18 @@ Page({
   buildCalcSteps(obj) {
     var steps = []
     var colors = ['blue','green','orange','purple']
+    var names = {
+      basicPension: '基础养老金',
+      personalAccount: '个人账户养老金',
+      transitionalPension: '过渡性养老金',
+      extraPension: '增发养老金',
+      specialAddition: '特殊加发'
+    }
     var icons = {basicPension:'📐',personalAccount:'👤',transitionalPension:'📋',extraPension:'➕',specialAddition:'⭐'}
-    function add(title, desc, val) {
+    function add(key, desc, val) {
       if (val == null || val <= 0) return
       var d = desc ? desc.replace(/=\s*[\d,.]+元$/,'').trim() : ''
-      steps.push({title: (icons[title]||'📌') + ' ' + title, formula: d, amount: '¥' + (val||0).toLocaleString('zh-CN',{minimumFractionDigits:2}), color: colors[steps.length % colors.length]})
+      steps.push({title: (icons[key]||'📌') + ' ' + (names[key]||key), formula: d, amount: '¥' + (val||0).toLocaleString('zh-CN',{minimumFractionDigits:2}), color: colors[steps.length % colors.length]})
     }
     if (obj.basicPension && obj.basicPension.amount) add('basicPension', obj.basicPension.description, obj.basicPension.amount)
     if (obj.personalAccount && obj.personalAccount.amount) add('personalAccount', '账户余额 ÷ ' + obj.months + '个月', obj.personalAccount.amount)

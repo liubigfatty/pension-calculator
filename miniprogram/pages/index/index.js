@@ -20,7 +20,7 @@ Page({
     workMonth: 1,
     birthYearRange: [],
     workYearRange: [],
-    monthRange: [1,2,3,4,5,6,7,8,9,10,11,12],
+    monthRange: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
 
     // Step 3: 地区
     provinceList: [],
@@ -28,8 +28,8 @@ Page({
     cityList: [{code:'prov',name:'全省默认'}],
     cityIndex: 0,
 
-    // Step 4: 缴费水平
-    payLevel: -1,          // -1=未选, 0=60%, 1=80%, 2=100%
+    // Step 4: 缴费水平（默认选中100%）
+    payLevel: 2,          // 2=100%
     avgIndex: 1.0,
     personalAcc: '',
     accEstimate: '',
@@ -152,15 +152,13 @@ Page({
     this.setData({ birthYear: this.data.birthYearRange[e.detail.value] })
   },
   onBirthMonthChange(e) {
-    var m = (e.detail.value === undefined ? 0 : e.detail.value) + 1
-    this.setData({ birthMonth: m })
+    this.setData({ birthMonth: e.detail.value + 1 })
   },
   onWorkChange(e) {
     this.setData({ workYear: this.data.workYearRange[e.detail.value] })
   },
   onWorkMonthChange(e) {
-    var m = (e.detail.value === undefined ? 0 : e.detail.value) + 1
-    this.setData({ workMonth: m })
+    this.setData({ workMonth: e.detail.value + 1 })
   },
 
   // ===== Step 3: 地区 =====
@@ -207,7 +205,10 @@ Page({
     var totalY = Math.max(retireY - this.data.workYear, 15)
     var est = Math.round(avgBase * idx * 0.08 * 12 * totalY * 1.3)
     est = Math.round(est / 10000) * 10000
-    this.setData({ accEstimate: '约 ' + est.toLocaleString() + ' 元' })
+    this.setData({
+      accEstimate: '约 ' + est.toLocaleString() + ' 元',
+      personalAcc: this.data.personalAcc || est.toString()
+    })
   },
 
   // ===== Step 5: 其它加发 =====
