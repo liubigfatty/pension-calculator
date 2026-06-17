@@ -20,12 +20,16 @@
   <view class="card">
     <view class="card-title">📋 正常退休测算</view>
     <view class="summary-line">{{legalSummary}}</view>
-    <view class="calc-detail" wx:for="{{legalCalc}}" wx:key="title">
-      <view class="calc-step {{item.color}}">
+    <block wx:for="{{legalCalc}}" wx:key="title">
+      <view wx:if="{{item.formula}}" class="calc-step {{item.color}}">
         <text class="calc-title">{{item.title}}</text>
         <text class="calc-formula">{{item.formula}} = <text class="hl">{{item.amount}}</text></text>
       </view>
-    </view>
+      <view wx:else class="calc-step {{item.color}}">
+        <text class="calc-title">{{item.title}}</text>
+        <text class="calc-formula"><text class="hl">{{item.amount}}</text></text>
+      </view>
+    </block>
     <view class="total-line">月基本养老金合计：<text class="total-amount">{{legalTotal}}</text></view>
   </view>
 
