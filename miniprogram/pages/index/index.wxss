@@ -1,97 +1,129 @@
-.page {
-  padding-bottom: 100px;
+/* pages/index/index.wxss */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
-/* 步骤进度条 */
-.step-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px 8px;
+/* 主视觉区域 */
+.hero {
+  width: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120rpx;
+  padding-bottom: 60rpx;
 }
-.step-dot {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: #e5e5ea;
+
+.logo-img {
+  width: 400rpx;
+  height: 300rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 16rpx 48rpx rgba(0,0,0,0.3);
+}
+
+.hero-overlay {
+  margin-top: 40rpx;
+  text-align: center;
+}
+
+.brand-name {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 4rpx;
+}
+
+.brand-desc {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.6);
+}
+
+/* 核心优势 */
+.advantages {
+  width: 90%;
+  background: rgba(255,255,255,0.08);
+  border-radius: 24rpx;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 40rpx 20rpx;
+  margin-top: 40rpx;
+  backdrop-filter: blur(10px);
+}
+
+.adv-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.adv-num {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+.adv-label {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.85);
+  margin-top: 8rpx;
+}
+
+.adv-sub {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4rpx;
+}
+
+.adv-divider {
+  width: 1rpx;
+  height: 80rpx;
+  background: rgba(255,255,255,0.15);
+}
+
+/* 开始按钮 */
+.btn-start {
+  width: 85%;
+  margin-top: 60rpx;
+  background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50rpx;
+  padding: 28rpx 0;
+  font-size: 36rpx;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
-}
-.step-dot.active { background: #0071e3; }
-.step-dot.current { background: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,.2); }
-.dot-num { font-size: 12px; color: #fff; font-weight: 600; }
-
-/* 步骤内容 */
-.step-swiper { height: 70vh; }
-.step-title { font-size: 20px; font-weight: 700; display: block; margin-bottom: 6px; }
-.step-desc { font-size: 14px; color: #86868b; display: block; margin-bottom: 16px; }
-
-/* 身份选择 */
-.employ-grid { display: flex; gap: 12px; margin-top: 16px; }
-.employ-card {
-  flex: 1; padding: 20px 12px; border-radius: 12px;
-  border: 2px solid #e5e5ea; text-align: center;
-}
-.employ-card.active { border-color: #0071e3; background: #f0f7ff; }
-.employ-icon { font-size: 32px; display: block; }
-.employ-label { font-size: 16px; font-weight: 600; display: block; margin-top: 8px; }
-.employ-desc { font-size: 12px; color: #86868b; display: block; margin-top: 4px; }
-
-/* 性别选择 */
-.gender-section { margin-top: 20px; }
-.section-label { font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px; }
-.gender-grid { display: flex; gap: 10px; }
-.gender-card {
-  flex: 1; padding: 14px; border-radius: 10px;
-  border: 1.5px solid #e5e5ea; text-align: center; font-size: 15px;
-}
-.gender-card.active { border-color: #0071e3; background: #f0f7ff; color: #0071e3; font-weight: 600; }
-
-/* 表单字段 */
-.field-group { margin-top: 20px; }
-.field-label { font-size: 15px; font-weight: 600; display: block; margin-bottom: 8px; color: #1d1d1f; }
-.picker-row { display: flex; gap: 12px; }
-.picker-box {
-  flex: 1; height: 44px; line-height: 44px; padding: 0 14px;
-  border: 1px solid #e5e5ea; border-radius: 10px; font-size: 15px;
-}
-.custom-input {
-  height: 44px; line-height: 44px; padding: 0 14px;
-  border: 1px solid #e5e5ea; border-radius: 10px; font-size: 15px;
+  gap: 12rpx;
+  box-shadow: 0 8rpx 32rpx rgba(7,193,96,0.35);
 }
 
-/* 缴费水平 */
-.pay-grid { display: flex; gap: 10px; margin-top: 16px; }
-.pay-card {
-  flex: 1; padding: 18px 8px; border-radius: 12px;
-  border: 2px solid #e5e5ea; text-align: center;
-}
-.pay-card.active { border-color: #0071e3; background: #f0f7ff; }
-.pay-pct { font-size: 22px; font-weight: 700; display: block; }
-.pay-label { font-size: 13px; color: #86868b; display: block; margin-top: 4px; }
-.divider-text { text-align: center; font-size: 13px; color: #86868b; margin: 16px 0; }
+.btn-text { letter-spacing: 6rpx; }
+.btn-arrow { font-size: 44rpx; line-height: 1; }
 
-/* 特殊标记 */
-.special-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-.special-card {
-  padding: 12px 20px; border-radius: 10px;
-  border: 1.5px solid #e5e5ea; font-size: 15px;
-}
-.special-card.active { border-color: #0071e3; background: #f0f7ff; color: #0071e3; font-weight: 600; }
+.btn-start::after { border: none; }
 
-/* 导航按钮 */
-.nav-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  display: flex; gap: 12px; padding: 12px 16px;
-  background: #f5f5f7; border-top: 1px solid #e5e5ea;
+/* 底部说明 */
+.footer {
+  position: fixed;
+  bottom: 40rpx;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0 50rpx;
 }
-.nav-btn {
-  flex: 1; height: 48px; line-height: 48px; text-align: center;
-  border-radius: 12px; font-size: 16px; font-weight: 600;
-}
-.nav-btn.prev { background: #e5e5ea; color: #1d1d1f; }
-.nav-btn.next { background: #0071e3; color: #fff; }
 
-.loading-tip { text-align: center; padding: 20px; color: #86868b; font-size: 14px; }
+.footer-text {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.35);
+}

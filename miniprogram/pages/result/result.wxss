@@ -1,21 +1,90 @@
-.page { padding-bottom: 100px; }
+/* pages/result/result.wxss */
 
-.result-header { text-align: center; padding: 32px 16px 16px; }
-.result-label { font-size: 14px; color: #86868b; }
-.result-amount { font-size: 42px; font-weight: 700; color: #0071e3; display: block; margin-top: 4px; }
-
-.tab-bar { display: flex; gap: 12px; margin: 0 16px; }
-.tab-item {
-  flex: 1; text-align: center; padding: 14px; border-radius: 12px;
-  background: #fff; border: 1.5px solid #e5e5ea;
+.container {
+  padding: 0;
+  background: #f5f6fa;
+  min-height: 100vh;
 }
-.tab-item.active { border-color: #0071e3; }
-.tab-label { font-size: 13px; color: #86868b; display: block; }
-.tab-amount { font-size: 20px; font-weight: 700; color: #1d1d1f; display: block; margin-top: 4px; }
-.tab-item.active .tab-amount { color: #0071e3; }
 
-.info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-.info-row:last-child { border-bottom: none; }
-.info-label { font-size: 14px; color: #86868b; }
-.info-value { font-size: 16px; font-weight: 600; }
-.info-value.highlight { color: #ff3b30; }
+/* 头部 */
+.result-header {
+  background: linear-gradient(135deg, #07c160, #05a854);
+  padding: 60rpx 40rpx 48rpx;
+  color: #fff;
+}
+.result-title {
+  display: block; font-size: 40rpx; font-weight: bold; letter-spacing: 2rpx;
+}
+.result-subtitle { display: block; font-size: 25rpx; opacity: 0.8; margin-top: 8rpx; }
+
+.total-amount { text-align: center; margin-top: 36rpx; }
+.total-label { display: block; font-size: 26rpx; opacity: 0.85; }
+.total-row { display: flex; align-items: baseline; justify-content: center; margin-top: 8rpx; }
+.total-currency { font-size: 36rpx; margin-right: 4rpx; }
+.total-value { font-size: 88rpx; font-weight: bold; line-height: 1; }
+.total-unit { display: block; font-size: 24rpx; opacity: 0.7; margin-top: 4rpx; }
+
+/* 退休信息 */
+.retire-info {
+  display: flex; align-items: center; justify-content: center; gap: 12rpx;
+  margin-top: 24rpx; padding: 16rpx 28rpx;
+  background: rgba(255,255,255,0.15); border-radius: 30rpx; align-self: flex-start;
+}
+.retire-label { font-size: 28rpx; font-weight: 600; }
+.retire-note { font-size: 22rpx; opacity: 0.8; }
+
+/* 区块 */
+.section { margin: 24rpx; background: #fff; border-radius: 20rpx; overflow: hidden; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+
+.section-title {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28rpx 32rpx; font-size: 30rpx; font-weight: 600; color: #333;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.toggle-icon { font-size: 26rpx; color: #07c160; font-weight: normal; }
+
+/* 养老金列表 */
+.pension-list { padding: 8rpx 0; }
+.pension-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24rpx 32rpx;
+}
+.pension-item.main { background: #f8fdf9; margin: 12rpx 20rpx; border-radius: 14rpx; }
+.pension-label { font-size: 29rpx; color: #555; display: flex; align-items: center; gap: 10rpx; }
+.pension-value { font-size: 32rpx; font-weight: 600; color: #333; }
+.main-val { font-size: 38rpx; color: #07c160; }
+
+.dot { width: 16rpx; height: 16rpx; border-radius: 50%; display: inline-block; }
+.dot-blue { background: #3498db; }
+.dot-green { background: #27ae60; }
+.dot-orange { background: #e67e22; }
+.dot-red { background: #e74c3c; }
+
+/* 详细参数 */
+.detail-list { padding: 8rpx 0; }
+.detail-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22rpx 32rpx; border-bottom: 1rpx solid #f5f5f5;
+}
+.detail-item:last-child { border-bottom: none; }
+.detail-label { font-size: 27rpx; color: #777; }
+.detail-value { font-size: 28rpx; color: #333; font-weight: 500; }
+.detail-value.highlight { color: #e67e22; font-weight: 700; font-size: 30rpx; }
+
+/* 按钮 */
+.btn-area { padding: 24rpx; display: flex; gap: 20rpx; }
+.btn-recalc {
+  flex: 1; background: #fff; color: #07c160; border: 2rpx solid #07c160;
+  border-radius: 50rpx; padding: 24rpx 0; font-size: 30rpx; font-weight: 500;
+}
+.btn-recalc::after { border: none; }
+.btn-share { flex: 1; background: #07c160; color: #fff; border: none; border-radius: 50rpx; padding: 24rpx 0; font-size: 30rpx; }
+.btn-share::after { border: none }
+.btn-preview { flex: 1; background: #fff7e6; color: #e67e22; border: 2rpx solid #e67e22; border-radius: 50rpx; padding: 24rpx 0; font-size: 30rpx; font-weight: 500; }
+.btn-preview::after { border: none; }
+
+/* 声明 */
+.disclaimer {
+  padding: 24rpx 40rpx 48rpx; text-align: center;
+}
+.disclaimer text { font-size: 23rpx; color: #bbb; }

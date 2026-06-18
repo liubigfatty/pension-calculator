@@ -1,29 +1,103 @@
-<view class="page">
+<!--pages/result/result.wxml-->
+<view class="container">
+  <!-- 头部 -->
   <view class="result-header">
-    <text class="result-label">月基本养老金</text>
-    <text class="result-amount">¥{{result.total}}</text>
-  </view>
+    <text class="result-title">测算结果</text>
+    <text class="result-subtitle">{{provinceName}} · {{cityLabel}}</text>
 
-  <!-- 正常 vs 弹性切换 -->
-  <view class="tab-bar">
-    <view class="tab-item {{tab === 'legal' ? 'active' : ''}}" bindtap="switchTab" data-tab="legal">
-      <text class="tab-label">正常退休</text>
-      <text class="tab-amount">¥{{legalTotal}}</text>
+    <view class="total-amount">
+      <text class="total-label">每月养老金预计</text>
+      <view class="total-row">
+        <text class="total-currency">¥</text>
+        <text class="total-value">{{totalAmount != null ? totalAmount : '--'}}</text>
+      </view>
+      <text class="total-unit">元/月</text>
     </view>
-    <view wx:if="{{hasFlex}}" class="tab-item {{tab === 'flex' ? 'active' : ''}}" bindtap="switchTab" data-tab="flex">
-      <text class="tab-label">弹性提前</text>
-      <text class="tab-amount">¥{{flexTotal}}</text>
-    </view>
-  </view>
 
-  <view class="card">
-    <view class="info-row" wx:for="{{params}}" wx:key="label">
-      <text class="info-label">{{item.label}}</text>
-      <text class="info-value {{item.highlight ? 'highlight' : ''}}">{{item.value}}</text>
+    <!-- 退休时间 -->
+    <view class="retire-info" wx:if="{{exactAge || retireAge}}">
+      <text class="retire-label">{{exactAge || retireAge}}法定退休</text>
+      <text class="retire-note" wx:if="{{retireAge && retireAge.includes('岁')}}">（已纳入延迟退休政策）</text>
     </view>
   </view>
 
-  <view class="btn-primary" bindtap="goReport">📄 完整报告：弹性退休对比与建议</view>
-  <view class="btn-secondary pay-btn" bindtap="goReport">🔓 完整报告（未支付预览）</view>
-  <view class="btn-secondary" bindtap="goBack">重新测算</view>
+  <!-- 养老金构成 -->
+  <view class="section">
+    <view class="section-title" bindtap="toggleDetail">
+      <text>养老金构成明细</text>
+      <text class="toggle-icon">{{showDetail ? '收起 ▲' : '展开 ▼'}}</text>
+    </view>
+
+    <view class="pension-list" wx:if="{{!showDetail}}">
+      <view class="pension-item main">
+        <text class="pension-label">月养老金合计</text>
+        <text class="pension-value main-val">{{basePension != null ? basePension + ' 元' : '--'}}</text>
+      </view>
+    </view>
+
+    <view class="pension-list" wx:if="{{showDetail}}">
+      <view class="pension-item">
+        <text class="pension-label"><text class="dot dot-blue"></text>基础养老金</text>
+        <text class="pension-value">{{basePension != null ? basePension + ' 元' : '--'}}</text>
+      </view>
+      <view class="pension-item">
+        <text class="pension-label"><text class="dot dot-green"></text>个人账户养老金</text>
+        <text class="pension-value">{{personalPension != null ? personalPension + ' 元' : '--'}}</text>
+      </view>
+      <view class="pension-item" wx:if="{{transitionPension != null && transitionPension > 0}}">
+        <text class="pension-label"><text class="dot dot-orange"></text>过渡性养老金</text>
+        <text class="pension-value">{{transitionPension}} 元</text>
+      </view>
+      <view class="pension-item" wx:if="{{extraPension != null && extraPension > 0}}">
+        <text class="pension-label"><text class="dot dot-red"></text>增发养老金</text>
+        <text class="pension-value">{{extraPension}} 元</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 详细参数 -->
+  <view class="section" wx:if="{{showDetail}}">
+    <view class="section-title"><text>计算参数</text></view>
+    <view class="detail-list">
+      <view class="detail-item">
+        <text class="detail-label">法定退休年龄</text>
+        <text class="detail-value highlight">{{retireAge != null ? retireAge : '--'}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">累计缴费年限</text>
+        <text class="detail-value">{{workYears != null ? workYears + ' 年' : '--'}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">平均缴费指数</text>
+        <text class="detail-value">{{averageIndex != null ? averageIndex : '--'}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">个人账户余额</text>
+        <text class="detail-value">{{accountBalance != null ? accountBalance + ' 元' : '--'}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">计发月数</text>
+        <text class="detail-value">{{months != null ? months : '--'}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">退休地计发基数</text>
+        <text class="detail-value">{{baseNumber != null ? baseNumber + ' 元' : '--'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-area">
+    <button class="btn-recalc" bindtap="onRecalculate">重新测算</button>
+    <button class="btn-save" bindtap="saveShareImage">保存分享图</button>
+    <button class="btn-share" open-type="share">分享给好友</button>
+  </view>
+
+  <!-- 声明 -->
+  <view class="disclaimer">
+    <text>⚠️ 本结果仅供参考，实际以社保部门核定为准</text>
+  </view>
+
+  <!-- 隐藏Canvas，用于生成分享图 -->
+  <canvas type="2d" id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:750px;height:1000px;"></canvas>
 </view>

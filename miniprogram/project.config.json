@@ -1,5 +1,5 @@
 {
-  "description": "养老金计算小程序",
+  "description": "养老金测算小程序",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -28,14 +28,11 @@
     "useApiHostProcess": true,
     "showShadowRootInWxmlPanel": true,
     "packNpmManually": false,
-    "enableEngp": false,
+    "enableEngineNative": false,
     "packNpmRelationList": [],
     "minifyWXSS": true,
-    "minifyWXML": true,
-    "useStaticServer": true,
     "showES6CompileOption": false,
-    "condition": false,
-    "ignoreUploadUnusedFiles": true,
+    "minifyWXML": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -45,17 +42,19 @@
     "localPlugins": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
+    "condition": false,
     "swc": false,
     "disableSWC": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.16.1",
   "appid": "wx76075ba352d5333c",
-  "projectname": "养老金计算",
+  "projectname": "pension-calculator",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
+  "cloudfunctionRoot": "cloud-functions/",
   "simulatorPluginLibVersion": {}
 }

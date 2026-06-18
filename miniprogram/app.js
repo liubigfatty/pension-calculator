@@ -1,26 +1,57 @@
+// app.js
 App({
-  onLaunch() {
-    // 初始化时加载省份列表
-    this.loadProvinceList()
-  },
   globalData: {
-    provinceList: [],
-    provinceData: {},  // { 'jilin': {config}, ... }
-    userInfo: {}
+    // 云开发环境ID（从云开发控制台获取）
+    envId: 'cloud1-d2gfe2lrpe9cdf8a0',
+    // 省份列表（从云存储加载，这里先硬编码）
+    provinceList: [
+      { code: 'jilin', name: '吉林省' },
+      { code: 'liaoning', name: '辽宁省' },
+      { code: 'heilongjiang', name: '黑龙江省' },
+      { code: 'beijing', name: '北京市' },
+      { code: 'shanghai', name: '上海市' },
+      { code: 'guangdong', name: '广东省' },
+      { code: 'jiangsu', name: '江苏省' },
+      { code: 'zhejiang', name: '浙江省' },
+      { code: 'shandong', name: '山东省' },
+      { code: 'henan', name: '河南省' },
+      { code: 'hebei', name: '河北省' },
+      { code: 'hubei', name: '湖北省' },
+      { code: 'hunan', name: '湖南省' },
+      { code: 'sichuan', name: '四川省' },
+      { code: 'fujian', name: '福建省' },
+      { code: 'anhui', name: '安徽省' },
+      { code: 'shaanxi', name: '陕西省' },
+      { code: 'tianjin', name: '天津市' },
+      { code: 'chongqing', name: '重庆市' },
+      { code: 'liaoning', name: '辽宁省' },
+      { code: 'shanxi', name: '山西省' },
+      { code: 'jiangxi', name: '江西省' },
+      { code: 'yunnan', name: '云南省' },
+      { code: 'guangxi', name: '广西壮族自治区' },
+      { code: 'guizhou', name: '贵州省' },
+      { code: 'gansu', name: '甘肃省' },
+      { code: 'hainan', name: '海南省' },
+      { code: 'neimenggu', name: '内蒙古自治区' },
+      { code: 'xinjiang', name: '新疆维吾尔自治区' },
+      { code: 'xizang', name: '西藏自治区' },
+      { code: 'ningxia', name: '宁夏回族自治区' },
+      { code: 'qinghai', name: '青海省' }
+    ],
+    // 计算结果
+    calcResult: null,
+    // 用户输入（跨页面共享）
+    calcInput: {}
   },
-  loadProvinceList() {
-    var list = [
-      {id:'jilin',name:'吉林省'},{id:'liaoning',name:'辽宁省'},{id:'heilongjiang',name:'黑龙江省'},
-      {id:'beijing',name:'北京市'},{id:'tianjin',name:'天津市'},{id:'shanghai',name:'上海市'},{id:'chongqing',name:'重庆市'},
-      {id:'hebei',name:'河北省'},{id:'shanxi',name:'山西省'},{id:'neimenggu',name:'内蒙古'},
-      {id:'shandong',name:'山东省'},{id:'henan',name:'河南省'},{id:'jiangsu',name:'江苏省'},
-      {id:'zhejiang',name:'浙江省'},{id:'anhui',name:'安徽省'},{id:'fujian',name:'福建省'},
-      {id:'jiangxi',name:'江西省'},{id:'hubei',name:'湖北省'},{id:'hunan',name:'湖南省'},
-      {id:'guangdong',name:'广东省'},{id:'guangxi',name:'广西'},{id:'hainan',name:'海南省'},
-      {id:'sichuan',name:'四川省'},{id:'guizhou',name:'贵州省'},{id:'yunnan',name:'云南省'},
-      {id:'shaanxi',name:'陕西省'},{id:'gansu',name:'甘肃省'},{id:'qinghai',name:'青海省'},
-      {id:'ningxia',name:'宁夏'},{id:'xinjiang',name:'新疆'},{id:'xizang',name:'西藏'}
-    ]
-    this.globalData.provinceList = list
+
+  onLaunch() {
+    // 初始化云开发环境
+    if (wx.cloud) {
+      wx.cloud.init({
+        env: this.globalData.envId,
+        traceUser: true
+      })
+      console.log('云开发初始化成功，环境ID：', this.globalData.envId)
+    }
   }
 })

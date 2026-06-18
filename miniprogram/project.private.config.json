@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.16.1",
+  "libVersion": "3.3.5",
   "projectname": "miniprogram",
   "setting": {
     "urlCheck": false,
@@ -9,7 +9,7 @@
     "preloadBackgroundData": false,
     "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
-    "compileHotReLoad": false,
+    "compileHotReLoad": true,
     "useApiHook": true,
     "useStaticServer": true,
     "useLanDebug": false,

@@ -1,0 +1,105 @@
+// 数据来源：✅ 官方数据
+// 2024年计发基数：7842元/月
+// 更新时间：2026-06-10
+
+// data/provinces/anhui.js
+// 安徽省养老金计算数据模块（框架版，待补充官方数据）
+// TODO：补充官方计发基数、过渡系数、建账时间等
+
+const PROV_BASE = {
+  1978: 831,
+  1979: 873,
+  1980: 916,
+  1981: 962,
+  1982: 1010,
+  1983: 1061,
+  1984: 1114,
+  1985: 1170,
+  1986: 1228,
+  1987: 1290,
+  1988: 1354,
+  1989: 1422,
+  1990: 1493,
+  1991: 1567,
+  1992: 1646,
+  1993: 1728,
+  1994: 1814,
+  1995: 1905,
+  1996: 2000,
+  1997: 2100,
+  1998: 2205,
+  1999: 2316,
+  2000: 2432,
+  2001: 2553,
+  2002: 2681,
+  2003: 2815,
+  2004: 2956,
+  2005: 3103,
+  2006: 3259,
+  2007: 3421,
+  2008: 3593,
+  2009: 3772,
+  2010: 3961,
+  2011: 4159,
+  2012: 4367,
+  2013: 4585,
+  2014: 4814,
+  2015: 5055,
+  2016: 5308,
+  2017: 5573,
+  2018: 5852,
+  2019: 6144,
+  2020: 6452,
+  2021: 6774,
+  2022: 7113,
+  2023: 7469,
+  2024: 7842,
+  2025: 8077,
+};
+
+const BASE_PARAMS = {
+  PROV_2025: 7300,
+  PROV_GROWTH: 0.03,
+  MERGE_YEAR: 2031
+}
+
+const CITY_LIST = [
+  '合肥市', '芜湖市', '蚌埠市', '淮南市', '马鞍山市',
+  '淮北市', '铜陵市', '安庆市', '黄山市', '滁州市',
+  '阜阳市', '宿州市', '六安市', '亳州市', '池州市',
+  '宣城市',
+]
+
+const ACCOUNT_START = { year: 1998, month: 1 }
+const CUTOFF_DATE   = { year: 1997, month: 12 }
+const TRANS_COEF = 0.012
+const PROV_TAG = 'anhui'
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+const cases = []
+
+function getEngineConfig() {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ modules: {},
+  }
+}
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}

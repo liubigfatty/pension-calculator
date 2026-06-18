@@ -1,16 +1,15 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/result/result",
-    "pages/report/report",
-    "pages/payment/payment"
+    "pages/step1/step1",
+    "pages/step2/step2",
+    "pages/step3/step3",
+    "pages/result/result"
   ],
   "window": {
-    "navigationBarTitleText": "养老金计算",
-    "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTextStyle": "black",
-    "backgroundColor": "#f5f5f7"
-  },
-  "style": "v2",
-  "sitemapLocation": "sitemap.json"
+    "navigationBarTitleText": "养老金测算",
+    "navigationBarBackgroundColor": "#07c160",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  }
 }
