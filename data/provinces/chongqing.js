@@ -44,25 +44,26 @@ const PROV_BASE = {
   2010: 4121,
   2011: 4327,
   2012: 4544,
-  2013: 4771,
-  2014: 5010,
-  2015: 5260,
-  2016: 5523,
-  2017: 5799,
-  2018: 6089,
-  2019: 6394,
-  2020: 6713,
-  2021: 7049,
-  2022: 7401,
-  2023: 7771,
+  2013: 4252,
+  2014: 5488,
+  2015: 5174,
+  2016: 5616,
+  2017: 6106,
+  2018: 5439,
+  2019: 6577,
+  2020: 6160,
+  2021: 6594,
+  2022: 6862,
+  2023: 7264,
   2024: 8160,
   2025: 8405,
 };
 
 const BASE_PARAMS = {
-  PROV_2025: 8350,
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031
+  PROV_2025: 7600,  // 2023年7264，按4.6%增长预估
+  PROV_GROWTH: 0.046,
+  LATEST_BASE_YEAR: 2023,
+  LATEST_BASE_VALUE: 7264,
 }
 
 // ==================== 城市列表 ====================
@@ -110,12 +111,13 @@ function getEngineConfig() {
     }
   }
 
-  return {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
-    name: '重庆市',
     base_rates: { prov: PROV_BASE },
-    modules: modules,
-    account_start: ACCOUNT_START,
+ modules: modules,
+    
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],

@@ -121,12 +121,13 @@ function getEngineConfig() {
     }
   }
 
-  return {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
-    name: '陕西省',
     base_rates: { prov: PROV_BASE },
-    modules: modules,
-    account_start: ACCOUNT_START,
+ modules: modules,
+    
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],

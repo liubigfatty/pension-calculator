@@ -85,11 +85,12 @@ const MODULE_LABELS = {
 const cases = []
 
 function getEngineConfig() {
-  return {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
-    name: '安徽省',
     base_rates: { prov: PROV_BASE },
-    modules: {},
+ modules: {},
   }
 }
 

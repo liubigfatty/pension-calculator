@@ -110,7 +110,9 @@ const cases = [
 // ==================== 引擎配置 ====================
 
 function getEngineConfig() {
-  return {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
     name: '浙江省',
     base_rates: { prov: PROV_BASE },

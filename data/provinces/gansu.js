@@ -106,7 +106,26 @@ function predictBase(year) {
 // 验证案例（从官方核定表提取）
 const cases = [
   {
-    name: '甘肃-女-1973-10（正式核定表）',
+        interest_rates: {
+      1998: 0.060,
+      1999: 0.060,
+      2000: 0.060,
+      2001: 0.060,
+      2002: 0.060,
+      2003: 0.060,
+      2004: 0.060,
+      2005: 0.060,
+      2006: 0.050,
+      2007: 0.050,
+      2008: 0.050,
+      2009: 0.050,
+      2010: 0.050,
+      2011: 0.040,
+      2012: 0.040,
+      2013: 0.040,
+      2014: 0.040,
+      2015: 0.040
+    },
     input: {
       birthYear: 1973, birthMonth: 10,
       workYear: 1995, workMonth: 1,
@@ -155,12 +174,14 @@ function getEngineConfig() {
   }
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
-  return {
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
-    name: '甘肃省',
     base_rates: { prov: PROV_BASE },
-    modules: modules,
-    account_start: ACCOUNT_START,
+    name: '甘肃省',
+ modules: modules,
+    
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,  // 吉林省不用建账前缴费年限
     cities: CITY_LIST || [],

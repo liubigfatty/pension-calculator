@@ -112,11 +112,29 @@ const cases = [
 // ==================== 引擎配置 ====================
 
 function getEngineConfig() {
-  return {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+  return {    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
     province: PROV_TAG,
-    name: '山东省',
     base_rates: { prov: PROV_BASE },
-    modules: {},
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年基数7678元（鲁人社字〔2024〕112号）。⚠️ 双指数：基础用avgIndex，过渡用transIndex（视同缴费指数）。',
   }
 }
 

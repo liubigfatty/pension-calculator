@@ -62,6 +62,13 @@ const PROV_BASE = {
   2025: 6738,
 };
 
+// 郑州市单独计发基数（郑州市人社局2024年第5号通告）
+// 2024年基数6757元，与全省6738元相差19元（约0.3%）
+// 历史年份暂用全省基数代替，待补充官方数据
+const ZHENGZHOU_BASE = { ...PROV_BASE };
+ZHENGZHOU_BASE[2024] = 6757;  // 郑州市人社局2024年第5号通告
+ZHENGZHOU_BASE[2025] = 6950;  // 预估3%增长
+
 // 河南省基数增长预测参数
 const BASE_PARAMS = {
   PROV_2025: 6850,
@@ -112,9 +119,14 @@ const cases = [
 
 function getEngineConfig() {
   return {
+    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
     province: PROV_TAG,
     name: '河南省',
-    base_rates: { prov: PROV_BASE },
+    base_rates: {
+      prov: PROV_BASE,
+      zhengzhou: ZHENGZHOU_BASE,
+    },
     modules: {},
   }
 }

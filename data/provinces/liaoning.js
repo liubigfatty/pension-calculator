@@ -9,54 +9,59 @@
 // ==================== 计发基数 ====================
 
 const PROV_BASE = {
-  1978: 763,
-  1979: 801,
-  1980: 842,
-  1981: 884,
-  1982: 928,
-  1983: 974,
-  1984: 1023,
-  1985: 1074,
-  1986: 1128,
-  1987: 1184,
-  1988: 1243,
-  1989: 1305,
-  1990: 1371,
-  1991: 1439,
-  1992: 1511,
-  1993: 1587,
-  1994: 1666,
-  1995: 1749,
-  1996: 1837,
-  1997: 1929,
-  1998: 2025,
-  1999: 2126,
-  2000: 2233,
-  2001: 2344,
-  2002: 2462,
-  2003: 2585,
-  2004: 2714,
-  2005: 2850,
-  2006: 2992,
-  2007: 3142,
-  2008: 3299,
-  2009: 3464,
-  2010: 3637,
-  2011: 3819,
-  2012: 4010,
-  2013: 4210,
-  2014: 4421,
-  2015: 4642,
-  2016: 4874,
-  2017: 5118,
-  2018: 5373,
-  2019: 5642,
-  2020: 5924,
-  2021: 6220,
-  2022: 6532,
-  2023: 6858,
-  2024: 7201,
-  2025: 7417,
+  1992: 226,  // liaoning 历年计发基数（元/月，来源：avgSalaryHistory 年鉴数据）
+  1993: 275,
+  1994: 356,
+  1995: 406,
+  1996: 439,
+  1997: 466,
+  1998: 470,
+  1999: 506,
+  2000: 553,
+  2001: 620,
+  2002: 741,
+  2003: 849,
+  2004: 993,
+  2005: 1444,
+  2006: 1635,
+  2007: 1934,
+  2008: 2311,
+  2009: 2592,
+  2010: 2921,
+  2011: 3226,
+  2012: 3542,
+  2013: 3859,
+  2014: 4093,
+  2015: 4455,
+  2016: 4762,
+  2017: 5212,
+  2018: 4801,
+  2019: 5238,
+  2020: 5709,
+  2021: 6383,
+  2022: 6843,
+  2023: 7121,
+};
+;
+
+// 沈阳市单独计发基数（沈人社发）
+const SY_BASE = {
+  2020: 7195,
+  2021: 7530,
+  2022: 7982,
+  2023: 8141,
+  2024: 8266,
+  2025: 8431,  // 预估2%增长（2024年8266×1.02）
+};
+
+// 大连市单独计发基数（大人社发）
+const DL_BASE = {
+  2020: 7679,
+  2021: 8038,
+  2022: 8520,
+  2023: 8690,
+  2024: 8823,
+  2025: 9000,  // 预估2%增长（2024年8823×1.02）
 };
 
 const BASE_PARAMS = {
@@ -96,18 +101,146 @@ const PROV_TAG = 'liaoning'
 
 // ==================== 模块配置 ====================
 
-const MODULES = ['base', 'personal', 'transition']
+const MODULES = ['base', 'personal', 'transition', 'extra']
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
+  extra:       '增发养老金',
+}
+
+// ==================== 增发养老金参数 ====================
+
+const EXTRA_PARAMS = {
+  // 辽宁增发规则（从案例中反推）
+  // 增发比例约 0.3-0.5%，与视同缴费年限和平均指数相关
+  extraRate: 0.004,  // 增发比例（待官方文件确认）
+  extraNote: '⚠️ 辽宁增发规则待官方文件确认，当前为案例反推值',
 }
 
 // ==================== 测试案例 ====================
 
 const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
+  // 案例1：沈阳女工人50岁2023.07退休
+  {
+    case_id: "1",
+    province: "liaoning",
+    city: "沈阳市",
+    gender: "female",
+    birth_year: 1973,
+    birth_month: 7,
+    work_year: 1990,
+    work_month: 12,
+    retire_year: 2023,
+    retire_month: 7,
+    actual_years: 30.83,
+    sight_years: 1.83,
+    total_years: 32.67,
+    avg_index: 1.2907,
+    base_number: 8141,
+    base_prov: 6987,
+    personal_account: 170205.99,
+    months: 195,
+    expected: {
+      basic_pension: 3046.25,
+      extra_pension: 207.41,
+      personal_pension: 872.85,
+      transitional_pension: 220.55,
+      total: 4347.06
+    },
+    notes: "辽宁沈阳女工人50岁2023.07退休。双指数：基础1.29/过渡1.23。⚠️增发207.41在核定表上未单独列出，表total=3896.56不含增发，引擎total=4103.75含增发。需确认辽宁增发规则。",
+    trans_index: 1.2321
+  },
+  // 案例2：全省男60岁2026.03退休
+  {
+    case_id: "2",
+    province: "liaoning",
+    city: "辽宁省",
+    gender: "male",
+    birth_year: 1966,
+    birth_month: 7,
+    work_year: 1984,
+    work_month: 12,
+    retire_year: 2026,
+    retire_month: 3,
+    actual_years: 30.09,
+    sight_years: 11.08,
+    total_years: 41.17,
+    avg_index: 0.8684,
+    base_number: 7346,
+    base_prov: 7346,
+    personal_account: 100018.84,
+    months: 139,
+    expected: {
+      basic_pension: 2825.35,
+      extra_pension: 311.73,
+      personal_pension: 719.56,
+      transitional_pension: 959.85,
+      total: 4816.11
+    },
+    notes: "辽宁全省基数男60岁2026.03退休。双指数：基础0.8684/过渡0.842。累计41.17年（实际30.09+视同11.08）。过渡=7346×0.842×11.08×1.4%。增发193.50未在表上显示",
+    trans_index: 0.842
+  },
+  // 案例3：鞍山男60岁2025.08退休
+  {
+    case_id: "3",
+    province: "liaoning",
+    city: "鞍山市",
+    gender: "male",
+    birth_year: 1965,
+    birth_month: 10,
+    work_year: 1983,
+    work_month: 11,
+    retire_year: 2025,
+    retire_month: 8,
+    actual_years: 32.75,
+    sight_years: 9.92,
+    total_years: 42.67,
+    avg_index: 1.3398,
+    base_number: 7346,
+    base_prov: 7346,
+    personal_account: 102280.37,
+    months: 139,
+    expected: {
+      basic_pension: 3667.1,
+      extra_pension: 422.61,
+      personal_pension: 735.83,
+      transitional_pension: 1334.69,
+      total: 6161
+    },
+    notes: "辽宁鞍山男60岁2025.08退休。双指数：基础1.34/过渡1.31。累计42.67年（实际32.75+视同9.92）。过渡=7346×1.31×9.92×1.4%。增发405.65未在表上显示",
+    trans_index: 1.309
+  },
+  // 案例4：全省男60岁2023.08退休
+  {
+    case_id: "4",
+    province: "liaoning",
+    city: "辽宁省",
+    gender: "male",
+    birth_year: 1963,
+    birth_month: 8,
+    work_year: 1982,
+    work_month: 10,
+    retire_year: 2023,
+    retire_month: 8,
+    actual_years: 26.17,
+    sight_years: 15.25,
+    total_years: 40.92,
+    avg_index: 0.9587,
+    base_number: 6987,
+    base_prov: 6987,
+    personal_account: 129872.37,
+    months: 139,
+    expected: {
+      basic_pension: 2800.1,
+      extra_pension: 306.55,
+      personal_pension: 934.33,
+      transitional_pension: 1461.07,
+      total: 5502.36
+    },
+    notes: "辽宁男60岁2023.08退休。建账1998-01（地区差异/补缴），建账前缴费15.25年(1982.10-1998.01)。视同15.25年。高指数1.617，高个账13万。过渡=6987×1.617×15.25×1.4%=1461.07。⚠️增发339.25表上未显示",
+    trans_index: 0.9797
+  }
 ]
 
 // ==================== 引擎配置 ====================
@@ -124,18 +257,34 @@ function getEngineConfig() {
       }
     }
   }
+  if (MODULES.includes('extra')) {
+    modules.extra_pension = { enabled: true, type: 'transition_subsidy', ...EXTRA_PARAMS };
+  }
 
   return {
-    province: PROV_TAG,
-    name: '辽宁省',
-    base_rates: { prov: PROV_BASE },
-    modules: modules,
     account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    province: PROV_TAG,
+    name: '辽宁省',
+    base_rates: {
+      prov: PROV_BASE,
+      '沈阳': SY_BASE,
+      '大连': DL_BASE,
+      // 兼容拼音键（小程序 cityType 可能传拼音）
+      shenyang: SY_BASE,
+      dalian: DL_BASE,
+    },
+    // 城市计发基数（新格式，供引擎 getBase() 新格式分支使用）
+    CITY_BASE: {
+      '沈阳': SY_BASE,
+      '大连': DL_BASE,
+      shenyang: SY_BASE,
+      dalian: DL_BASE,
+    },
+    modules: modules,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2024年基数7201元（辽人社〔2024〕17号），不含沈阳、大连',
+    notes: '2024年基数：全省7201元、沈阳8266元、大连8823元（辽人社〔2024〕17号）。⚠️ 沈阳、大连基数需根据用户选择的城市动态匹配。',
   }
 }
 
