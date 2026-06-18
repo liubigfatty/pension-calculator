@@ -1,0 +1,11 @@
+{
+  "name": "yanglaopin-calc",
+  "version": "1.0.0",
+  "description": "养老金计算平台自动化测试",
+  "scripts": {
+    "test": "node scripts/auto-e2e.js"
+  },
+  "devDependencies": {
+    "miniprogram-automator": "^0.12.0"
+  }
+}
