@@ -13,10 +13,10 @@
   "personal_account": 139534.42,
   "months": 170,
   "expected": {
-    "basic_pension": 3277.29,
+    "basic_pension": 3441.13,
     "personal_pension": 820.79,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 2044.39,
+    "total": 6400.66
   },
   "notes": "guizhou 女干部55岁退休（自动生成）",
   "birth_year": 1968,

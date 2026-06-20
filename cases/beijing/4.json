@@ -18,10 +18,10 @@
   "personal_account": 413932.35,
   "months": 195,
   "expected": {
-    "basic_pension": 4796.69,
+    "basic_pension": 4705.41,
     "personal_pension": 2122.73,
-    "transitional_pension": 662.96,
-    "total": 7582.38
+    "transitional_pension": 285.92,
+    "total": 7764.4
   },
   "notes": "女工人50岁退休2022.11，参工1990.03。G同=285.92(2.58年×11082×1%)，G实=650.38(5.67年×Z实1.035×1%)。表上视同5.02年含建账后视同。",
   "trans_index": 1.035

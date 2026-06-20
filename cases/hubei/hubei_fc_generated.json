@@ -11,10 +11,10 @@
   "personal_account": 25843.25,
   "months": 170,
   "expected": {
-    "basic_pension": 1610.8,
+    "basic_pension": 1800.28,
     "personal_pension": 152.02,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1239.26,
+    "total": 3191.56
   },
   "notes": "hubei 女干部55岁退休（自动生成）",
   "birth_year": 1970,

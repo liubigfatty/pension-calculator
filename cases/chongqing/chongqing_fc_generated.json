@@ -13,10 +13,10 @@
   "personal_account": 109277.7,
   "months": 170,
   "expected": {
-    "basic_pension": 3167.12,
+    "basic_pension": 3982.89,
     "personal_pension": 642.81,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1514.35,
+    "total": 6462.69
   },
   "notes": "chongqing 女干部55岁退休（自动生成）",
   "birth_year": 1968,

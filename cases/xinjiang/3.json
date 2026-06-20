@@ -13,10 +13,10 @@
   "personal_account": 59718.96,
   "months": 195,
   "expected": {
-    "basic_pension": 2052.99,
+    "basic_pension": 2050.28,
     "personal_pension": 306.25,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 0,
+    "total": 2545.83
   },
   "notes": "新疆乌鲁木齐2024年11月退休女工，1974-11生，1996-01参工。指数0.704。基础用退休地基数6402。过渡用全省基数8332。新政办发[2010]167号冬季采暖补贴120元/月。月养老待遇=1952.76+120=2072.76。",
   "birth_year": 1974,

@@ -17,10 +17,10 @@
   "personal_account": 211757.03,
   "months": 140,
   "expected": {
-    "basic_pension": 3957.05,
+    "basic_pension": 3887.72,
     "personal_pension": 1512.55,
-    "transitional_pension": 1634.02,
-    "total": 7103.62
+    "transitional_pension": 1605.39,
+    "total": 7005.66
   },
   "notes": "黑龙江男60岁3个月2025.12延迟退休。参工1987.05，建账1996-07。视同10.67年(128月)，过渡=7570×10.67×1.6566×1.2%=1605.18"
 }

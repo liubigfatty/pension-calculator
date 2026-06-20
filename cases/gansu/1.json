@@ -22,10 +22,10 @@
   "personal_account": 314079.5,
   "months": 137.3,
   "expected": {
-    "basic_pension": 5273.25,
+    "basic_pension": 5222.01,
     "personal_pension": 2287.54,
-    "transitional_pension": 3513.06,
-    "total": 11073.85
+    "transitional_pension": 3478.92,
+    "total": 10988.47
   },
   "notes": "甘肃男60岁2026.01退休，高指数2.6+高个账31万。建账时间2003-01（地区差异）。视同年限14.42年<15年，调节金为0。过渡性=7746×2.5955×14.42×1.2%=3478.92"
 }

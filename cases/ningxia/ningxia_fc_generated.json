@@ -15,8 +15,8 @@
   "expected": {
     "basic_pension": 2918.6,
     "personal_pension": 563.24,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 991.79,
+    "total": 4473.63
   },
   "notes": "ningxia 女干部55岁退休（自动生成）",
   "birth_year": 1969,

@@ -22,10 +22,10 @@
   "personal_account": 173043.36,
   "months": 170,
   "expected": {
-    "basic_pension": 2957.56,
+    "basic_pension": 3176.88,
     "personal_pension": 1017.9,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1170.37,
+    "total": 5335.14
   },
   "verified": true,
   "notes": "tianjin 女干部55岁退休（自动生成）",

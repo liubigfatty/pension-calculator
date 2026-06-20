@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2649.5,
     "personal_pension": 564.22,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 839.1,
+    "total": 4052.82
   },
   "notes": "安徽合肥，男1964-03生，1983-05参工，2024-03退休(60岁)。高视同12年8月=12.7年，累计40年11月→基础用41.0年。2023年基数7688。过渡=7688×0.6481×1.3%×12.7=822.63。核定表显示安徽基础年限有0.5年取整规则。",
   "birth_year": 1964,

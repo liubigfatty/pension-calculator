@@ -14,8 +14,8 @@
   "expected": {
     "basic_pension": 4016.27,
     "personal_pension": 1608.01,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1143.84,
+    "total": 7299.32
   },
   "notes": "河北省，男性1964年生，1986年参工，2024年12月60岁退休。极高指数(1.87)，建账前年限=视同6.46+建账前实际3=9.46年。个人账户22.35万。",
   "birth_year": 1964,

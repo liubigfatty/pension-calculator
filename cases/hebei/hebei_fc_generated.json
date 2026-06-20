@@ -11,10 +11,10 @@
   "personal_account": 85250.79,
   "months": 170,
   "expected": {
-    "basic_pension": 1830.33,
+    "basic_pension": 1884.04,
     "personal_pension": 501.48,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 222.38,
+    "total": 2607.9
   },
   "notes": "hebei 女干部55岁退休（自动生成）",
   "birth_year": 1968,

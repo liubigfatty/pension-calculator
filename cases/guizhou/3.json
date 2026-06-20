@@ -15,8 +15,8 @@
   "expected": {
     "basic_pension": 1766.94,
     "personal_pension": 360.33,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 256.71,
+    "total": 2383.98
   },
   "notes": "贵州2024年3月退休女工，1974-03生，1993-10参工。建账1998-01，过渡年限4.25年(1993-10至1997-12)。低指数0.5933。过渡1.4%确认。独子113.43未计入。",
   "birth_year": 1974,

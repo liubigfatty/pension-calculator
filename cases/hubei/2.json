@@ -11,10 +11,10 @@
   "personal_account": 140863.26,
   "months": 195,
   "expected": {
-    "basic_pension": 1626.44,
+    "basic_pension": 0,
     "personal_pension": 722.38,
     "transitional_pension": 0,
-    "total": 2348.82
+    "total": 722.38
   },
   "notes": "湖北武汉，女性1972年生，1993年参工（1996年建账前参工），2022年11月50岁退休。无视同年限。武汉2022年计发基数7753（确认）。计发月数195。",
   "birth_year": 1972,

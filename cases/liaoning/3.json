@@ -18,10 +18,11 @@
   "personal_account": 102280.37,
   "months": 139,
   "expected": {
-    "basic_pension": 3698.39,
+    "basic_pension": 3667.1,
     "personal_pension": 735.83,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1366.88,
+    "total": 6161,
+    "extra_pension": 422.61
   },
   "notes": "辽宁鞍山男60岁2025.08退休。双指数：基础1.34/过渡1.31。累计42.67年（实际32.75+视同9.92）。过渡=7346×1.31×9.92×1.4%。增发405.65未在表上显示",
   "trans_index": 1.309

@@ -12,10 +12,11 @@
   "personal_account": 96678.71,
   "months": 139,
   "expected": {
-    "basic_pension": 3156.09,
+    "basic_pension": 3225.78,
     "personal_pension": 695.53,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1429.34,
+    "total": 6496.4,
+    "extra_pension": 150
   },
   "notes": "浙江省男性，1965年生，1981年参工，2025年2月退休。过渡系数1.4%确认！核定表另有'过渡性调节金'572.76元+'基本养老金补贴'150元+'见分进角补足'0.03元=合计6242.10元。此案例total不含这三项。双指数：全程0.7219 vs 1997年底0.9307。过渡年限待精确确认。 [2026-06-15 fix]",
   "birth_year": 1965,

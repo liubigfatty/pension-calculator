@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2666.28,
     "personal_pension": 849.49,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 634.58,
+    "total": 4150.35
   },
   "notes": "陕西西安，男1964-12生，1984-11参工，2024-12退休(60岁)。视同8年2月=8.17年(1984-11至1996-07建账)。累计40年2月=40.17年。2024年基数7727。过渡系数1.4%：7727×0.718×8.17×1.4%=634.32。陕政发〔2006〕20号。",
   "birth_year": 1964,

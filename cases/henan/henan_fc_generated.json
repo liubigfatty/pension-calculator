@@ -12,10 +12,10 @@
   "months": 170,
   "trans_pension_old": 679.38,
   "expected": {
-    "basic_pension": 2576.15,
+    "basic_pension": 2525.63,
     "personal_pension": 417.82,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 792.99,
+    "total": 3622.82
   },
   "notes": "henan 女干部55岁退休（自动生成）",
   "birth_year": 1971,

@@ -13,10 +13,10 @@
   "personal_account": 88922.06,
   "months": 195,
   "expected": {
-    "basic_pension": 1824.72,
+    "basic_pension": 1915.94,
     "personal_pension": 456.01,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 323.01,
+    "total": 2694.96
   },
   "notes": "贵州2023年12月退休女工，1973-08生，1993-10参工。建账1998-01，过渡年限4.25年(1993-10至1997-12)。过渡1.4%确认。独子128.36未计入。",
   "birth_year": 1973,

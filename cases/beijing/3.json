@@ -18,10 +18,10 @@
   "personal_account": 220606.75,
   "months": 139,
   "expected": {
-    "basic_pension": 4910.64,
+    "basic_pension": 4812.1,
     "personal_pension": 1587.1,
-    "transitional_pension": 356.65,
-    "total": 6854.39
+    "transitional_pension": 1574.32,
+    "total": 8323.01
   },
   "notes": "男60岁退休，参工1981.09（建账1992.10前），视同年限13.98年(1981.09-1995.07)，建账前实际2.85年。G视同=1532.64，G实际=340.61。计发基数11217.75=11082×1.0245（假设）",
   "trans_index": 1.0245

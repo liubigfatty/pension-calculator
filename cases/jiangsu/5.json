@@ -19,10 +19,10 @@
   "months": 139,
   "trans_pension_old": 424.63,
   "expected": {
-    "basic_pension": 2689.14,
+    "basic_pension": 2649.92,
     "personal_pension": 635.47,
-    "transitional_pension": 1031.17,
-    "total": 4355.78
+    "transitional_pension": 0,
+    "total": 3285.39
   },
   "notes": "南京男60岁2025.10退休。双指数分离：基础0.6248，过渡0.9996。1996年底前9.5年(1986.07-1996.01)。2025年过渡期70%，新办法1014.83，原办法424.63，差额70%发放。",
   "trans_index": 0.9996

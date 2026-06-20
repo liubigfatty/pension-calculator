@@ -23,10 +23,10 @@
   "localPensionYears": 7.83,
   "pre1992LocalYears": 0,
   "expected": {
-    "basic_pension": 3247.01,
+    "basic_pension": 3197.77,
     "personal_pension": 983.71,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1257.58,
+    "total": 5819.8
   },
   "notes": "深圳核定表(2023-05)，男1963-05生，1983-07参工，60岁退休。视同126月+1998年6月前54月=180月(15年)。双指数：全程1.0433/1998前1.378。过渡性核心：8306.75×0.1174+34×4=1111.44(无+100保障，因oldIndexSalary>0)。新办法：10795×1.378×15×1.2%=2677.59。调整：(2677.59-1111.44)×70%=1096.31≈1096.34。2026-06-15从截图修正：enjoymentRatio→0.1174，+100只在oldIndexSalary=0时加。"
 }

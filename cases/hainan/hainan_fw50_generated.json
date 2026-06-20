@@ -13,10 +13,10 @@
   "personal_account": 223786.86,
   "months": 195,
   "expected": {
-    "basic_pension": 4993.06,
+    "basic_pension": 4847.59,
     "personal_pension": 1147.62,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1837.11,
+    "total": 9092.05
   },
   "notes": "hainan 女工人50岁退休（自动生成）",
   "birth_year": 1975,

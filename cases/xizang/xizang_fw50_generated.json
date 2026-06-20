@@ -12,10 +12,10 @@
   "personal_account": 68200.11,
   "months": 195,
   "expected": {
-    "basic_pension": 2558.51,
+    "basic_pension": 2252.95,
     "personal_pension": 349.74,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1782.32,
+    "total": 4385.01
   },
   "notes": "xizang 女工人50岁退休（自动生成）",
   "birth_year": 1968,

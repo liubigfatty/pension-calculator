@@ -13,10 +13,10 @@
   "personal_account": 139534.42,
   "months": 139,
   "expected": {
-    "basic_pension": 3277.29,
+    "basic_pension": 3441.13,
     "personal_pension": 1003.84,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 2044.39,
+    "total": 6583.71
   },
   "notes": "贵州2023年4月退休男职工，1963-04生，1981-10参工。首次缴费1992-04，建账1996-01。视同11.25年(135月)，过渡年限17年(1997-12-31前)。过渡系数1.4%确认！指数分段：1992-12-31前=1，之后=1.3289。独子5%未计入expected。黔劳社厅发〔2006〕20号。",
   "birth_year": 1963,

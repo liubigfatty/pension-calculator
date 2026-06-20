@@ -18,10 +18,10 @@
   "personal_account": 116362.74,
   "months": 170,
   "expected": {
-    "basic_pension": 2144.89,
+    "basic_pension": 2101.85,
     "personal_pension": 684.49,
-    "transitional_pension": 154.45,
-    "total": 2983.83
+    "transitional_pension": 0,
+    "total": 2937.69
   },
   "notes": "beijing 女干部55岁退休（自动生成）",
   "trans_index": 0.509,

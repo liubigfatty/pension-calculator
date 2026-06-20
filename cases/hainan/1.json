@@ -13,10 +13,10 @@
   "personal_account": 223786.86,
   "months": 139,
   "expected": {
-    "basic_pension": 4993.06,
+    "basic_pension": 4847.59,
     "personal_pension": 1609.98,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1837.11,
+    "total": 9554.41
   },
   "notes": "海南2025年3月退休男职工，1965-01生，1983-04参工。视同10.75年(1983-04至1992-01)+建账前实际4年(1992-01至1998-01)=14.75年建账前年限。高指数1.8444，长工龄41.92年。月养老金9554元。琼府〔2022〕40号。",
   "birth_year": 1965,

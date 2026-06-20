@@ -18,10 +18,11 @@
   "personal_account": 69844.83,
   "months": 170,
   "expected": {
-    "basic_pension": 2397.62,
+    "basic_pension": 2374.3,
     "personal_pension": 410.85,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 719.1,
+    "total": 3790.48,
+    "extra_pension": 286.23
   },
   "notes": "jilin 女干部55岁退休（自动生成）",
   "genderType": "fc",

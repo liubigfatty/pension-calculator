@@ -18,10 +18,11 @@
   "personal_account": 170205.99,
   "months": 170,
   "expected": {
-    "basic_pension": 2664.58,
+    "basic_pension": 2614.44,
     "personal_pension": 1001.21,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 231.04,
+    "total": 4029.66,
+    "extra_pension": 193.46
   },
   "notes": "liaoning 女干部55岁退休（自动生成）",
   "trans_index": 1.2321,

@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2689.71,
     "personal_pension": 293.3,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 2271.63,
+    "total": 5254.64
   },
   "notes": "anhui 女干部55岁退休（自动生成）",
   "birth_year": 1969,

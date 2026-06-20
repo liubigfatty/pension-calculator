@@ -18,10 +18,10 @@
   "months": 195,
   "early_retire_months": 9,
   "expected": {
-    "basic_pension": 2537.27,
+    "basic_pension": 2487.52,
     "personal_pension": 1211.61,
     "transitional_pension": 0,
-    "total": 3748.88
+    "total": 3699.13
   },
   "notes": "黑龙江女工人50岁2026.05提前退休（因病/破产提前9个月）。参工2005.05（建账后），纯新人无过渡。高指数2.30，高个账23.6万。提前退休减发比例待确认"
 }

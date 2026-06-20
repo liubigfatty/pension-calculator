@@ -13,10 +13,10 @@
   "personal_account": 151692.52,
   "months": 195,
   "expected": {
-    "basic_pension": 2785.29,
+    "basic_pension": 3502.71,
     "personal_pension": 777.91,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 0,
+    "total": 4999
   },
   "notes": "重庆2023年5月退休女工，1973-04生，1990-07参工。建账前5.5年(1990-07至1996-01)，高指数1.3359。使用2022年计发基数7750（2023年基数未公布=预核表），基础养老金A=计发基数7750而非社平9135。有独生子女增发133.4元。渝人社发〔2013〕19号文。",
   "socialAvgBaseInput": 7750,

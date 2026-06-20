@@ -18,10 +18,11 @@
   "personal_account": 70132.51,
   "months": 195,
   "expected": {
-    "basic_pension": 1764.95,
+    "basic_pension": 1747.78,
     "personal_pension": 359.65,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 27.68,
+    "total": 2247.87,
+    "extra_pension": 112.76
   },
   "notes": "吉林女工人50岁2025.12退休。双基数：市县7978.25+全省7322.08。累计31年（实际30.5+视同0.5）。分段增发：21-25年44.75，26-30年59.66，31年+14.92，合计119.33。过渡=7322.08×0.54×0.5×1.4%=27.68 [2026-06-15 fix]"
 }

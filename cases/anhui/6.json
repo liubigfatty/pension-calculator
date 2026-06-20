@@ -13,10 +13,10 @@
   "personal_account": 108905.83,
   "months": 195,
   "expected": {
-    "basic_pension": 2139.24,
+    "basic_pension": 2225.86,
     "personal_pension": 558.49,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 268.11,
+    "total": 3052.46
   },
   "notes": "安徽省2022年12月退休女职工，1972-11生，1993-04参工，50岁退休。实际缴费356月，建账前(含视同)32月=2年8月。建账1996-01。上年省月平均工资7401，指数1.0321，指数化工资7638.57。皖人社秘〔2022〕。安徽取整规则：年限取1位小数(第2位四舍五入)，指数保留4位(第5位四舍五入)，结果保留2位(第3位四舍五入)。",
   "birth_year": 1972,

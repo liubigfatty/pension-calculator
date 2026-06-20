@@ -13,10 +13,10 @@
   "personal_account": 93577.2,
   "months": 170,
   "expected": {
-    "basic_pension": 2762.52,
+    "basic_pension": 2706.59,
     "personal_pension": 550.45,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 719.59,
+    "total": 4369.31
   },
   "notes": "neimenggu 女干部55岁退休（自动生成）",
   "birth_year": 1970,

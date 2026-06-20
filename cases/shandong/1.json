@@ -21,10 +21,10 @@
   "personal_account": 95061.63,
   "months": 137.8,
   "expected": {
-    "basic_pension": 2726.76,
+    "basic_pension": 2700.21,
     "personal_pension": 689.85,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 977.57,
+    "total": 4367.63
   },
   "notes": "山东潍坊男60岁2025.09退休。建账1998-11（地区差异），建账前14.08年(1981.10-1998.11)。视同14.08年。过渡=7678×0.6820×14.08×1.3%=958.47"
 }

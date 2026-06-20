@@ -17,10 +17,10 @@
   "personal_account": 109716.46,
   "months": 170,
   "expected": {
-    "basic_pension": 3232.4,
+    "basic_pension": 3175.76,
     "personal_pension": 645.39,
-    "transitional_pension": 1249.08,
-    "total": 5126.87
+    "transitional_pension": 1227.19,
+    "total": 5048.34
   },
   "notes": "heilongjiang 女干部55岁退休（自动生成）",
   "genderType": "fc",

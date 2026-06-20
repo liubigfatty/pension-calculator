@@ -21,8 +21,8 @@
   "expected": {
     "basic_pension": 2607.88,
     "personal_pension": 539.37,
-    "transitional_pension": 1327.74,
-    "total": 4474.99
+    "transitional_pension": 0,
+    "total": 3147.25
   },
   "notes": "淮安男60岁2024.04退休。参工1985.07，1991年底前无工龄。双指数：基础0.7046，过渡1.1995。过渡性10.5年(1985.07-1996.01)。新办法1323.5，原办法547.4，2024年差额40%发放。",
   "trans_index": 1.1995

@@ -19,10 +19,10 @@
   "xuzhang": 0,
   "months": 139,
   "expected": {
-    "basic_pension": 5882.82,
+    "basic_pension": 5823.55,
     "personal_pension": 2749.3,
     "transitional_pension": 0,
-    "total": 8632.12
+    "total": 8572.85
   },
   "notes": "上海案例4，男60岁新人。1999.10参工，无视同无过渡。23.83年，指数3.0118。个账382153，计发139。基数12183。"
 }

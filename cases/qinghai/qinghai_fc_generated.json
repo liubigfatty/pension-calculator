@@ -15,8 +15,8 @@
   "expected": {
     "basic_pension": 2390.67,
     "personal_pension": 634.23,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 633.89,
+    "total": 3671.79
   },
   "notes": "qinghai 女干部55岁退休（自动生成）",
   "birth_year": 1969,

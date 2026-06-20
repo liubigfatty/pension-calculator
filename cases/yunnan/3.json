@@ -18,10 +18,10 @@
   "personal_account": 83946.23,
   "months": 139,
   "expected": {
-    "basic_pension": 2180.49,
+    "basic_pension": 2481.31,
     "personal_pension": 603.93,
-    "transitional_pension": 638.08,
-    "total": 3422.5
+    "transitional_pension": 707.96,
+    "total": 3989
   },
   "notes": "云南男60岁2025.09退休。参工1985.10，建账1995-10，建账前缴费10年。视同10年，实际25.83年。过渡性=8264×0.6758×10×1.3%=726.01。独生子女177.65=3553×5%（2025年预估人均）"
 }

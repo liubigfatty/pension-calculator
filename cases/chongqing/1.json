@@ -13,10 +13,10 @@
   "personal_account": 109277.7,
   "months": 139,
   "expected": {
-    "basic_pension": 3167.12,
+    "basic_pension": 3982.89,
     "personal_pension": 786.17,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1514.35,
+    "total": 6606.05
   },
   "notes": "重庆2023年6月退休男职工，1963-05生，1979-11参工。视同13.33年(1979-11至1993-02)+建账前实际2.83年(1993-02至1996-01)=16.17年建账前年限。高指数1.0317，长工龄42.92年。过渡系数反推约1.38%(1836.61/7988/1.0317/16.17)，待核实是否为1.4%。文件依据：渝府发〔2006〕?号",
   "birth_year": 1963,

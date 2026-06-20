@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 3786.13,
     "personal_pension": 1932.58,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1279.36,
+    "total": 6998.07
   },
   "notes": "安徽合肥，男1964-10生，1983-10参工，2024-10退休(60岁)。111月视同=9.25年，493月累计=41.1年。7688基。基础=3711.78精确匹配(用41.1年)。过渡差6.74(1254.24 vs 1247.5)，年限取整精度问题。个人=1932.58精确。",
   "birth_year": 1964,

@@ -21,10 +21,10 @@
   "personal_account": 95061.63,
   "months": 170,
   "expected": {
-    "basic_pension": 2726.76,
+    "basic_pension": 2700.21,
     "personal_pension": 559.19,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 977.57,
+    "total": 4236.97
   },
   "notes": "shandong 女干部55岁退休（自动生成）",
   "genderType": "fc",

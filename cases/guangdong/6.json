@@ -23,10 +23,10 @@
   "localPensionYears": 34.08,
   "pre1992LocalYears": 9.83,
   "expected": {
-    "basic_pension": 4437.35,
+    "basic_pension": 4252.78,
     "personal_pension": 2038.63,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 2483.5,
+    "total": 8634.89
   },
   "notes": "深圳核定表(2025-04)完整6项验证！男1965-04生，1982-10参工，451月=37.58年。视同136月+1998前28月=164月。发现：①原办法年限用floor(totalYears)=37年(非37.58) ②调节金100元(逐年递减) ③地方补助892.80+过渡性补助209.72=1102.52 ✅"
 }

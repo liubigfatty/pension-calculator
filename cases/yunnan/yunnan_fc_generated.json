@@ -18,10 +18,10 @@
   "personal_account": 127070.82,
   "months": 170,
   "expected": {
-    "basic_pension": 2145.26,
+    "basic_pension": 2492.24,
     "personal_pension": 747.48,
-    "transitional_pension": 283.7,
-    "total": 3176.44
+    "transitional_pension": 304.23,
+    "total": 3733.95
   },
   "notes": "yunnan 女干部55岁退休（自动生成）",
   "genderType": "fc",

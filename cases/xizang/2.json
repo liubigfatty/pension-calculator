@@ -12,10 +12,10 @@
   "personal_account": 68200.11,
   "months": 170,
   "expected": {
-    "basic_pension": 3265.25,
+    "basic_pension": 3204.38,
     "personal_pension": 401.18,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 2534.99,
+    "total": 6140.55
   },
   "notes": "西藏2018年灵活就业男55岁退休，1989-09参工。视同15.83年。过渡系数1.4%确认！藏政发〔2006〕37号。 [2026-06-15 fix]",
   "birth_year": 1963,

@@ -11,10 +11,10 @@
   "personal_account": 67182.54,
   "months": 139,
   "expected": {
-    "basic_pension": 2323.96,
+    "basic_pension": 2410.79,
     "personal_pension": 483.33,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1095.89,
+    "total": 3990.01
   },
   "notes": "广西柳州，男1962-12生，1980-10参工，2023-02退休(60岁)。视同11年3月=11.25年，实际31年。累计42年3月=42.25年。广西特色：过渡性养老金用建账前年限15.75年(1980-10至1996-01=15年3月，表写折算15.75)。过渡=6442×0.7715×15.75×1.4%=1095.9。桂人社规〔2019〕26号。",
   "birth_year": 1962,

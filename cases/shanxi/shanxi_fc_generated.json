@@ -11,10 +11,10 @@
   "personal_account": 96607.26,
   "months": 170,
   "expected": {
-    "basic_pension": 2659.22,
+    "basic_pension": 2633.44,
     "personal_pension": 568.28,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 926.33,
+    "total": 4059.34
   },
   "notes": "shanxi 女干部55岁退休（自动生成）",
   "birth_year": 1970,

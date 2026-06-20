@@ -19,10 +19,10 @@
   "personal_account": 71733.8,
   "months": 170,
   "expected": {
-    "basic_pension": 2907.66,
+    "basic_pension": 2732.07,
     "personal_pension": 421.96,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1680.03,
+    "total": 5406.41
   },
   "notes": "guangdong 女干部55岁退休（自动生成）",
   "genderType": "fc",

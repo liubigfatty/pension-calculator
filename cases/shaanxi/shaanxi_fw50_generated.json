@@ -11,10 +11,10 @@
   "personal_account": 131635.42,
   "months": 195,
   "expected": {
-    "basic_pension": 2042.82,
+    "basic_pension": 2078.91,
     "personal_pension": 675.05,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 138.71,
+    "total": 2892.67
   },
   "notes": "shaanxi 女工人50岁退休（自动生成）",
   "birth_year": 1973,

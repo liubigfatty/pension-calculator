@@ -11,10 +11,10 @@
   "personal_account": 85250.79,
   "months": 195,
   "expected": {
-    "basic_pension": 1830.33,
+    "basic_pension": 1884.04,
     "personal_pension": 437.18,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 222.38,
+    "total": 2543.6
   },
   "notes": "河北省，女性1973年生，1992年参工，2023年8月50岁退休。计发基数6849（可能是市级基数）。过渡系数1.3%确认！标准公式，无增发养老金。",
   "birth_year": 1973,

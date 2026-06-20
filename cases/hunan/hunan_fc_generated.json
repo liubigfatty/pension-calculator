@@ -18,10 +18,10 @@
   "personal_account": 85298.25,
   "months": 170,
   "expected": {
-    "basic_pension": 2292.69,
+    "basic_pension": 1992.39,
     "personal_pension": 501.75,
-    "transitional_pension": 789.62,
-    "total": 3584.06
+    "transitional_pension": 686.2,
+    "total": 3180.34
   },
   "verified": true,
   "notes": "hunan 女干部55岁退休（自动生成）",

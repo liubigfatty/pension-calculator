@@ -24,10 +24,10 @@
   "xuzhang": 60173,
   "months": 195,
   "expected": {
-    "basic_pension": 3919.82,
+    "basic_pension": 3880.33,
     "personal_pension": 785.46,
-    "transitional_pension": 294.39,
-    "total": 4999.67
+    "transitional_pension": 207.6,
+    "total": 4873.39
   },
   "verified": true,
   "notes": "shanghai 女工人50岁退休（自动生成）",

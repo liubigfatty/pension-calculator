@@ -13,10 +13,10 @@
   "personal_account": 89206.85,
   "months": 195,
   "expected": {
-    "basic_pension": 2076.66,
+    "basic_pension": 24193.56,
     "personal_pension": 457.47,
     "transitional_pension": 0,
-    "total": 2534.13
+    "total": 24651.03
   },
   "notes": "重庆2025年10月退休女工（新人），1975-10生，2008-01参工（很晚参保）。无视同，无建账前年限(M1=0)，缴费27年10月。低指数0.7756。使用2024年计发基数8160（2025年基数未公布=预核表）。过渡性养老金为0。渝人社发〔2013〕19号文。",
   "socialAvgBaseInput": 8160,

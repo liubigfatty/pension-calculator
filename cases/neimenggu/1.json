@@ -13,10 +13,10 @@
   "personal_account": 93577.2,
   "months": 139,
   "expected": {
-    "basic_pension": 2762.52,
+    "basic_pension": 2706.59,
     "personal_pension": 673.22,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 719.59,
+    "total": 4492.08
   },
   "notes": "内蒙古2025年9月退休男，1965-09生，1984-09参工。建账1996-01，视同7.33年(1984-09至1992-01)+建账前实际4年=11.33年建账前年限。指数0.6111。过渡公式疑似=(A+A×Q)/2×M1×1.5%(待确认)。",
   "birth_year": 1965,

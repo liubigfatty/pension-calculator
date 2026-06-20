@@ -21,10 +21,10 @@
   "personal_account": 50001.51,
   "months": 195,
   "expected": {
-    "basic_pension": 1441.37,
+    "basic_pension": 1322.11,
     "personal_pension": 256.42,
     "transitional_pension": 0,
-    "total": 1697.79
+    "total": 1578.53
   },
   "notes": "黑龙江女工人50岁2023.12退休。建账时间1994-09（地区差异），参工1991.09在建账前但视同年限为0（档案缺失）。低指数0.62，低个账5万。"
 }

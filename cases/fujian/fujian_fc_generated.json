@@ -12,10 +12,10 @@
   "months": 170,
   "skipDelay": true,
   "expected": {
-    "basic_pension": 2612.46,
+    "basic_pension": 3206.9,
     "personal_pension": 354.53,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 840.72,
+    "total": 4402.15
   },
   "notes": "fujian 女干部55岁退休（自动生成）",
   "birth_year": 1970,

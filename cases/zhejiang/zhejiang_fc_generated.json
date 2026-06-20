@@ -12,10 +12,11 @@
   "personal_account": 96678.71,
   "months": 170,
   "expected": {
-    "basic_pension": 3156.09,
+    "basic_pension": 3225.78,
     "personal_pension": 568.7,
-    "transitional_pension": null,
-    "total": null
+    "transitional_pension": 1429.34,
+    "total": 6369.5,
+    "extra_pension": 150
   },
   "notes": "zhejiang 女干部55岁退休（自动生成）",
   "birth_year": 1970,
