@@ -1,4 +1,5 @@
 /**
+const { mapCaseToInput } = require('./run-cases.js');
  * 养老金引擎正式验证脚本
  * 用法：
  *   node scripts/verify.js                  # 验证所有已配置省份
@@ -328,93 +329,50 @@ function parseCaseDate(c) {
 // ══════════════════════════════════════════════════════
 //  案例 → 引擎输入（标准格式映射）
 // ══════════════════════════════════════════════════════
-function caseToEngineInput(c) {
-  const dates = parseCaseDate(c);
-  if (!dates) return null;
-  const { birth, work } = dates;
+function mapCaseToInput(c, provConfig) {
+  // 性别
+  const isFemale = (c.gender === '女' || c.gender === 'female');
+  const gender = isFemale ? 'female' : 'male';
 
-  const gender     = mapGender(c.gender);
-  const genderType = mapGenderType(c.gender);
-  const cityType  = c.cityType || mapCityType(c.city, c.province);
-  const retireType = mapRetireType(c.retire_type || c.retireType);
+  // genderType：优先用案例里的，否则根据 months 判断
+  let genderType = c.genderType || '';
+  if (!genderType && isFemale) {
+    const m = c.months || 195;
+    if (m === 170) {
+      // 170个月=55岁：看 notes 是否含"女干部"
+      genderType = (c.notes && c.notes.includes('女干部')) ? 'fc' : 'fw55';
+    } else {
+      genderType = 'fw50';
+    }
+  }
+  if (!genderType) genderType = 'male';
 
-  const input = {
-    name:            String(c.case_id || c.caseId || 'unknown'),
+  // 退休年月
+  const retireYear  = c.retire_year  || (c.retireDate ? parseInt(c.retireDate) : null);
+  const retireMonth = c.retire_month || (c.retireDate ? parseInt(c.retireDate.split('-')[1]) : null);
+
+  return {
+    name:           c.case_id || '测试',
+    province:       c.province || provConfig.provinceKey || 'beijing',
     gender,
     genderType,
-    cityType,
-    retireType,
-    skipDelay:       true,
-    birthYear:        birth.year,
-    birthMonth:       birth.month,
-    workYear:         work.year,
-    workMonth:        work.month,
-    avgIndex:         num(c.avg_index, c.avgIndex) || 1.0,
-    personalAccInput: num(c.personal_account, c.personalAccount, c.personalAccInput),
-    sightYears:       num(c.sight_years, c.sightYears),
-    totalYears:       num(c.total_years, c.totalYears),
+    birthYear:      c.birth_year,
+    birthMonth:     c.birth_month,
+    workYear:       c.work_year,
+    workMonth:      c.work_month,
+    retireYear,
+    retireMonth,
+    avgIndex:       c.avg_index ?? 1.0,
+    personalAcc:    c.personal_account ?? 0,
+    sightYears:      c.sight_years   ?? null,
+    totalYears:      c.total_years    ?? null,
+    preAccountYears: c.pre_account_years ?? null,
+    actualYears:     c.actual_years     ?? null,
+    months:         c.months         ?? null,
+    retireType:      c.retire_type    || 'standard',
+    cityType:        c.city_type      || 'prov',
+    transIndex:      c.trans_index     ?? null,
   };
-
-  // 计发基数
-  const baseNumber = num(c.base_number, c.baseNumber, c.baseRetire, c.baseRetireInput);
-  if (baseNumber != null) {
-    input.baseRetireInput = baseNumber;
-    const baseProv = num(c.base_prov, c.baseProv, c.baseProvInput);
-    input.baseProvInput = baseProv != null ? baseProv : baseNumber;
-  }
-
-  // 计发月数（引擎读 inputData.months）
-  const months = num(c.months, c.months, c.monthsInput);
-  if (months != null && months > 0) {
-    input.months = months;
-  }
-
-  // 省份特殊字段
-  const transIndex = num(c.trans_index, c.transIndex);
-  if (transIndex != null) input.transIndex = transIndex;
-
-  const xuzhang = num(c.xuzhang, c.xuzhang);
-  if (xuzhang != null) input.xuzhang = xuzhang;
-
-  const extraRate = num(c.extra_rate, c.extraRate);
-  if (extraRate != null) input.extraRate = extraRate;
-
-  const preAccountYears = num(c.pre_account_years);
-  if (preAccountYears != null) input.preAccountYears = preAccountYears;
-
-  // 重庆特殊：基础养老金的社平基数覆盖（预核表使用计发基数代替社平）
-  const socialAvgBaseInput = num(c.socialAvgBaseInput);
-  if (socialAvgBaseInput != null) input.socialAvgBaseInput = socialAvgBaseInput;
-
-  // 重庆独生子女标记
-  if (c.one_child === true) input.oneChild = true;
-
-  // 宁夏知识分子标记
-  if (c.intellectual === true) input.intellectual = true;
-
-  // 江苏过渡性养老金：1996年底前缴费年限
-  const pre1996Years = num(c.pre_1996_years, c.pre1996Years);
-  if (pre1996Years != null) input.pre1996Years = pre1996Years;
-
-  // 江苏过渡性养老金：原办法金额
-  const transPensionOld = num(c.trans_pension_old, c.transPensionOld);
-  if (transPensionOld != null) input.transPensionOld = transPensionOld;
-
-  // 深圳独立体系：指数化月平均缴费工资(老) + 享受比例
-  const oldIndexSalary = num(c.oldIndexSalary);
-  if (oldIndexSalary != null) input.oldIndexSalary = oldIndexSalary;
-
-  const enjoymentRatio = num(c.enjoymentRatio);
-  if (enjoymentRatio != null) input.enjoymentRatio = enjoymentRatio;
-
-  // 深圳独立体系：地方补充养老缴费年限 + 1992年7月前地方补缴年限
-  const localPensionYears = num(c.localPensionYears);
-  if (localPensionYears != null) input.localPensionYears = localPensionYears;
-
-  const pre1992LocalYears = num(c.pre1992LocalYears);
-  if (pre1992LocalYears != null) input.pre1992LocalYears = pre1992LocalYears;
-
-  return input;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -462,7 +420,7 @@ function getExpected(c) {
 //  单案例验证
 // ═══════════════════════════════════════════════════════
 function verifySingleCase(c, config, tolerance) {
-  const input     = caseToEngineInput(c)
+  const input     = mapCaseToInput(c, config)  // 复用 run-cases.js 的字段映射
   const expected  = getExpected(c)
 
   if (!input)    return { status: 'skip', reason: '无法解析输入日期' }

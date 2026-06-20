@@ -164,3 +164,6 @@ function main() {
 }
 
 main();
+
+// 导出（供 verify.js 复用）
+module.exports = { mapCaseToInput };
