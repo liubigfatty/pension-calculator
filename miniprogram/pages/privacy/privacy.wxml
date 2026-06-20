@@ -1,0 +1,42 @@
+<!--pages/privacy/privacy.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">隐私保护指引</text>
+  </view>
+
+  <view class="content">
+    <text class="section-title">1. 信息收集</text>
+    <text class="section-content">
+      本小程序为计算养老金所需，会收集以下信息：
+      - 省份（用于加载对应省份的计算规则）
+      - 参保时间、退休时间（用于计算缴费年限）
+      - 缴费基数（用于计算个人账户金额）
+      - 视同缴费年限（如有，用于计算过渡性养老金）
+      
+      以上信息仅用于养老金计算，不会分享给第三方。
+    </text>
+
+    <text class="section-title">2. 信息存储</text>
+    <text class="section-content">
+      您的计算数据仅保存在本地手机，不会上传到服务器。
+      您可以随时清除小程序缓存来删除这些数据。
+    </text>
+
+    <text class="section-title">3. 您的权利</text>
+    <text class="section-content">
+      根据《个人信息保护法》，您有权：
+      - 查阅我们收集的信息（在小程序设置里查看）
+      - 要求删除您的信息（清除小程序缓存即可）
+      - 撤回授权（在小程序设置里操作）
+    </text>
+
+    <text class="section-title">4. 联系方式</text>
+    <text class="section-content">
+      如有疑问，请联系：example@email.com
+    </text>
+  </view>
+
+  <view class="footer">
+    <button class="btn-agree" bindtap="onAgree">我已知晓，继续使用该小程序</button>
+  </view>
+</view>

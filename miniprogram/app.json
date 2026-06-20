@@ -4,7 +4,10 @@
     "pages/step1/step1",
     "pages/step2/step2",
     "pages/step3/step3",
-    "pages/result/result"
+    "pages/result/result",
+    "pages/privacy/privacy",
+    "pages/test/test",
+    "pages/cloud-test/cloud-test"
   ],
   "window": {
     "navigationBarTitleText": "养老金测算",

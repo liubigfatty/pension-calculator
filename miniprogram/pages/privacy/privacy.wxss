@@ -1,0 +1,52 @@
+/* pages/privacy/privacy.wxss */
+.container {
+  padding: 32rpx;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-top: 32rpx;
+  margin-bottom: 16rpx;
+}
+
+.section-content {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.footer {
+  text-align: center;
+}
+
+.btn-agree {
+  background: #07c160;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  padding: 20rpx 0;
+}

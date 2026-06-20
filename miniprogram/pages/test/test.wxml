@@ -1,0 +1,22 @@
+<!--pages/test/test.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">云函数调用测试</text>
+  </view>
+
+  <view class="content">
+    <button class="btn-test" bindtap="onTestCalculate" disabled="{{testing}}">
+      {{testing ? '测试中...' : '测试calculate云函数'}}
+    </button>
+
+    <view class="result" wx:if="{{result}}">
+      <text class="result-title">计算结果：</text>
+      <text class="result-content">{{result}}</text>
+    </view>
+
+    <view class="error" wx:if="{{error}}">
+      <text class="error-title">错误信息：</text>
+      <text class="error-content">{{error}}</text>
+    </view>
+  </view>
+</view>
