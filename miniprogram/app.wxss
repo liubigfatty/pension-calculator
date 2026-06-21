@@ -28,14 +28,14 @@ page {
   --color-border: #e0e0e0;
   --color-border-focus: #07c160;
   
-  /* 字体系统 */
-  --font-size-xs: 22rpx;    /* 辅助文字 */
-  --font-size-sm: 26rpx;    /* 次要文字 */
-  --font-size-base: 30rpx;  /* 正文 */
-  --font-size-md: 34rpx;    /* 小标题 */
-  --font-size-lg: 38rpx;    /* 标题 */
-  --font-size-xl: 44rpx;   /* 大标题 */
-  --font-size-xxl: 56rpx;  /* 首页品牌名 */
+  /* 字体系统 - 优化：更紧凑 */
+  --font-size-xs: 20rpx;    /* 辅助文字（缩小） */
+  --font-size-sm: 24rpx;    /* 次要文字（缩小） */
+  --font-size-base: 28rpx;  /* 正文（缩小） */
+  --font-size-md: 32rpx;    /* 小标题（缩小） */
+  --font-size-lg: 36rpx;    /* 标题（缩小） */
+  --font-size-xl: 40rpx;   /* 大标题（缩小） */
+  --font-size-xxl: 48rpx;  /* 首页品牌名（缩小，原来56rpx） */
   
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -45,13 +45,13 @@ page {
   --line-height-normal: 1.6;
   --line-height-loose: 1.8;
   
-  /* 间距系统（基于8rpx） */
-  --space-xs: 8rpx;      /* 8rpx */
-  --space-sm: 16rpx;     /* 16rpx */
-  --space-md: 24rpx;     /* 24rpx */
-  --space-lg: 32rpx;     /* 32rpx */
-  --space-xl: 48rpx;     /* 48rpx */
-  --space-xxl: 64rpx;    /* 64rpx */
+  /* 间距系统 - 优化：更紧凑（基于4rpx） */
+  --space-xs: 4rpx;      /* 4rpx（缩小） */
+  --space-sm: 12rpx;     /* 12rpx（缩小） */
+  --space-md: 20rpx;     /* 20rpx（缩小） */
+  --space-lg: 28rpx;     /* 28rpx（缩小） */
+  --space-xl: 40rpx;     /* 40rpx（缩小） */
+  --space-xxl: 56rpx;    /* 56rpx（缩小） */
   
   /* 圆角系统 */
   --radius-sm: 8rpx;
@@ -253,7 +253,7 @@ page {
 }
 
 /* ============================================
-   按钮系统（统一风格：全圆角）
+   按钮系统（优化：更紧凑）
    ============================================ */
 
 /* 主按钮 */
@@ -262,8 +262,8 @@ page {
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-md);
+  padding: var(--space-sm) 0;  /* 缩小padding */
+  font-size: var(--font-size-base);  /* 缩小字号 */
   font-weight: var(--font-weight-medium);
   width: 100%;
   text-align: center;
@@ -289,8 +289,8 @@ page {
   color: var(--color-primary);
   border: 2rpx solid var(--color-primary);
   border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-md);
+  padding: var(--space-sm) 0;  /* 缩小padding */
+  font-size: var(--font-size-base);  /* 缩小字号 */
   font-weight: var(--font-weight-medium);
   width: 100%;
   text-align: center;
@@ -301,54 +301,32 @@ page {
   background: var(--color-primary-light);
 }
 
-/* 文字按钮 */
-.btn-text {
-  background: transparent;
-  color: var(--color-primary);
-  border: none;
-  padding: var(--space-sm) 0;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-align: center;
-}
-
-.btn-text:active {
-  opacity: 0.7;
-}
-
 /* 底部按钮固定区域 */
 .btn-bottom {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--space-lg);
+  padding: var(--space-md);
   background: var(--color-bg-card);
-  box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.08);
-  padding-bottom: calc(var(--space-lg) + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.06);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
 }
 
 .btn-area {
   display: flex;
   gap: var(--space-sm);
-}
-
-.btn-area .btn-secondary {
-  width: 25%;
-}
-
-.btn-area .btn-primary {
-  flex: 1;
+  margin-top: var(--space-lg);
 }
 
 /* ============================================
-   卡片系统
+   卡片系统（优化：更紧凑）
    ============================================ */
 
 .card {
   background: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  padding: var(--space-md);  /* 缩小padding */
   margin-bottom: var(--space-md);
   box-shadow: var(--shadow-sm);
 }
@@ -357,51 +335,52 @@ page {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);  /* 缩小margin */
   display: block;
 }
 
 .card-desc {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-normal);  /* 优化行高 */
 }
 
 /* ============================================
-   提示框系统
+   提示框系统（优化：更紧凑）
    ============================================ */
 
 .tip-box {
   display: flex;
   align-items: flex-start;
-  padding: var(--space-md);
+  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
   background: var(--color-primary-light);
   border-radius: var(--radius-md);
-  border-left: 8rpx solid var(--color-warning);
-  margin-bottom: var(--space-lg);
+  border-left: 6rpx solid var(--color-warning);  /* 缩小边框 */
+  margin-bottom: var(--space-md);  /* 缩小margin */
 }
 
 .tip-icon {
   font-size: var(--font-size-sm);
   margin-right: var(--space-sm);
+  flex-shrink: 0;
 }
 
 .tip-text {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-normal);  /* 优化行高 */
   flex: 1;
 }
 
 /* ============================================
-   进度条系统
+   进度条系统（优化：更紧凑）
    ============================================ */
 
 .progress-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) 0;
+  padding: var(--space-md) 0;
   margin-bottom: var(--space-xl);
 }
 
@@ -414,8 +393,8 @@ page {
 }
 
 .step-dot {
-  width: 48rpx;
-  height: 48rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
   background: var(--color-bg-input);
   border: 4rpx solid var(--color-border);
@@ -442,7 +421,7 @@ page {
 
 .step-line {
   position: absolute;
-  top: 24rpx;
+  top: 20rpx;
   left: 50%;
   width: 100%;
   height: 4rpx;
@@ -469,24 +448,24 @@ page {
 }
 
 /* ============================================
-   结果展示系统
+   结果展示系统（优化：更紧凑）
    ============================================ */
 
 .result-card {
   background: var(--color-bg-card);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+  padding: var(--space-xl);  /* 缩小padding */
   margin-bottom: var(--space-lg);
   box-shadow: var(--shadow-md);
 }
 
 .result-amount {
-  font-size: 72rpx;
+  font-size: 64rpx;  /* 缩小：原来72rpx */
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   text-align: center;
   display: block;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-md);  /* 缩小margin */
 }
 
 .result-unit {
@@ -499,12 +478,12 @@ page {
   color: var(--color-text-secondary);
   text-align: center;
   display: block;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);  /* 缩小margin */
 }
 
 .result-detail {
   border-top: 2rpx solid var(--color-border);
-  padding-top: var(--space-lg);
+  padding-top: var(--space-lg);  /* 缩小padding */
 }
 
 .detail-row {
@@ -515,12 +494,12 @@ page {
 }
 
 .detail-label {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);  /* 缩小字号 */
   color: var(--color-text-secondary);
 }
 
 .detail-value {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);  /* 缩小字号 */
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }

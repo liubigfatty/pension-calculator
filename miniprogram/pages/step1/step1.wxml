@@ -1,53 +1,59 @@
-<!--pages/step1/step1.wxml-->
-<view class="container">
-  <!-- 进度指示 -->
-  <view class="progress">
-    <view class="progress-dot active"></view>
-    <view class="progress-line active"></view>
-    <view class="progress-dot"></view>
-    <view class="progress-line"></view>
-    <view class="progress-dot"></view>
+<!--pages/step1/step1.wxml - 优化版（统一选择器样式）-->
+<view class="step-container">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-step active">
+      <view class="step-dot">1</view>
+      <text class="step-label">选择地区</text>
+    </view>
+    <view class="step-line"></view>
+    <view class="progress-step">
+      <view class="step-dot">2</view>
+      <text class="step-label">个人信息</text>
+    </view>
+    <view class="step-line"></view>
+    <view class="progress-step">
+      <view class="step-dot">3</view>
+      <text class="step-label">缴费信息</text>
+    </view>
   </view>
-  <text class="page-title">第1步：选择参保地区</text>
-  <text class="page-desc">不同地区的计发基数和政策可能不同，请准确选择</text>
+
+  <!-- 标题 -->
+  <text class="page-title">选择参保地区</text>
+  <text class="page-desc">不同地区的计发基数不同，请准确选择</text>
 
   <!-- 省份选择 -->
   <view class="form-group">
-    <view class="form-label">参保省份 <text class="required">*</text></view>
-    <picker mode="selector" range="{{provinceNames}}" value="{{provinceIndex}}" bindchange="onProvinceChange" disabled="{{provinceNames.length === 0}}">
-      <view class="picker-value {{provinceIndex >= 0 ? 'selected' : 'placeholder'}}">
-        {{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择您的参保省份'}}
+    <text class="form-label"><text class="form-required">*</text> 参保省份</text>
+    <picker mode="selector" range="{{provinceNames}}" value="{{provinceIndex}}" bindchange="onProvinceChange">
+      <view class="picker-box {{provinceIndex >= 0 ? '' : 'placeholder'}}">
+        {{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择省份'}}
         <text class="picker-arrow">›</text>
       </view>
     </picker>
   </view>
 
-  <!-- 城市/基数类型选择（选中省份后显示） -->
+  <!-- 城市/基数类型选择 -->
   <view class="form-group" wx:if="{{cityTypeNames.length > 0}}">
-    <view class="form-label">{{cityTypeNames.length > 1 ? '基数类型' : '地区'}} <text class="required">*</text></view>
-    <picker mode="selector" range="{{cityTypeNames}}" value="{{cityTypeIndex}}" bindchange="onCityTypeChange" wx:if="{{cityTypeNames.length > 1}}">
-      <view class="picker-value selected">
+    <text class="form-label"><text class="form-required">*</text> {{cityTypeNames.length > 1 ? '基数类型' : '地区'}}</text>
+    <picker mode="selector" range="{{cityTypeNames}}" value="{{cityTypeIndex}}" bindchange="onCityTypeChange">
+      <view class="picker-box">
         {{cityTypeNames[cityTypeIndex]}}
         <text class="picker-arrow">›</text>
       </view>
     </picker>
-    <view class="info-box" wx:else>
-      <text class="info-text">{{cityTypeNames[0]}}</text>
-      <text class="info-sub">该省采用统一计发基数</text>
-    </view>
   </view>
 
   <!-- 提示信息 -->
   <view class="tip-box" wx:if="{{provinceIndex >= 0}}">
     <text class="tip-icon">💡</text>
     <view class="tip-content">
-      <text class="tip-text">已选择：{{provinceNames[provinceIndex]}} · {{cityTypeLabels[cityTypeIndex] || cityTypeNames[cityTypeIndex] || '全省统一'}}</text>
-      <text class="tip-sub">不同省份的计发基数不同，将影响最终计算结果。请务必准确选择。</text>
+      <text class="tip-text">已选择：{{provinceNames[provinceIndex]}} · {{cityTypeNames[cityTypeIndex] || '全省统一'}}</text>
     </view>
   </view>
 
-  <!-- 按钮 -->
+  <!-- 下一步按钮 -->
   <view class="btn-area">
-    <button class="btn-next" bindtap="onNext">下一步</button>
+    <button class="btn-primary" bindtap="onNext">下一步</button>
   </view>
 </view>

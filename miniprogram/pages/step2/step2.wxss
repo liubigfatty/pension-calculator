@@ -1,34 +1,78 @@
-/* pages/step2/step2.wxss - 使用全局设计系统 v2.0 */
+/* pages/step2/step2.wxss - 优化版（更紧凑）*/
 
-/* 退休年龄预览卡片样式（特有样式，保留） */
-.retire-preview {
+/* 表单组优化 */
+.form-group {
+  margin-bottom: var(--space-md);  /* 缩小margin */
+}
+
+/* 单选按钮组优化 */
+.radio-group {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.radio-item {
+  flex: 1;
+  min-width: 180rpx;  /* 缩小最小宽度 */
+  background: var(--color-bg-input);
+  border: 2rpx solid transparent;
+  border-radius: var(--radius-round);
+  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.radio-item:active {
+  background: #eee;
+}
+
+.radio-item.active {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border-color: var(--color-primary);
+}
+
+.radio-text {
+  font-weight: var(--font-weight-medium);
+}
+
+/* 日期选择器行优化 */
+.date-row {
+  display: flex;
+  gap: var(--space-sm);  /* 缩小间距 */
+}
+
+.date-picker {
+  flex: 1;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #ebf5ff 0%, #f0f9ff 100%);
-  border: 1rpx solid #b3d9ff;
-  border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
-  margin: var(--space-md) 0;
-  box-shadow: var(--shadow-sm);
+  justify-content: center;
+  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
+  border-radius: var(--radius-round);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg-input);
+  border: 2rpx solid transparent;
+  transition: all var(--transition-fast);
 }
 
-.retire-icon {
-  font-size: 40rpx;
-  margin-right: var(--space-md);
+.date-picker:active {
+  background: #eee;
 }
 
-.retire-text {
-  font-size: var(--font-size-sm);  /* 26rpx */
-  color: var(--color-info);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-tight);
+.date-picker.warn {
+  border-color: var(--color-warning);
+  background: #fffbf0;
 }
 
-/* 表单验证提示（特有样式，保留） */
+/* 提示文字优化 */
 .form-hint {
-  font-size: var(--font-size-xs);  /* 22rpx */
-  color: var(--color-warning);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-hint);
   margin-top: var(--space-xs);
   display: block;
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-normal);
 }

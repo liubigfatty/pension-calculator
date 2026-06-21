@@ -1,4 +1,4 @@
-/* pages/index/index.wxss - 使用全局设计系统 v2.0 */
+/* pages/index/index.wxss - 优化版（更紧凑）*/
 
 .container {
   display: flex;
@@ -6,7 +6,7 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: var(--space-lg);
+  padding: var(--space-md);  /* 缩小padding */
 }
 
 /* 主视觉区域 */
@@ -16,49 +16,49 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 120rpx;
-  padding-bottom: 60rpx;
+  padding-top: 80rpx;  /* 缩小顶部间距 */
+  padding-bottom: 40rpx;  /* 缩小底部间距 */
 }
 
 .logo-img {
-  width: 400rpx;
-  height: 300rpx;
+  width: 320rpx;  /* 缩小logo */
+  height: 240rpx;  /* 缩小logo */
   border-radius: var(--radius-lg);
-  box-shadow: 0 16rpx 48rpx rgba(0,0,0,0.3);
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.3);  /* 缩小阴影 */
 }
 
 .hero-overlay {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);  /* 缩小margin */
   text-align: center;
 }
 
 .brand-name {
   display: block;
-  font-size: var(--font-size-xxl);  /* 56rpx */
+  font-size: var(--font-size-xxl);  /* 48rpx（原来56rpx） */
   font-weight: var(--font-weight-bold);
   color: var(--color-text-white);
-  letter-spacing: 6rpx;
-  text-shadow: 0 4rpx 12rpx rgba(0,0,0,0.3);
+  letter-spacing: 4rpx;  /* 缩小字间距 */
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.3);  /* 缩小阴影 */
 }
 
 .brand-slogan {
   display: block;
-  margin-top: var(--space-md);
-  font-size: var(--font-size-sm);  /* 26rpx */
+  margin-top: var(--space-sm);  /* 缩小margin */
+  font-size: var(--font-size-base);  /* 28rpx（原来26rpx，略增大提高可读性） */
   color: rgba(255,255,255,0.75);
-  letter-spacing: 2rpx;
+  letter-spacing: 1rpx;  /* 缩小字间距 */
 }
 
 .brand-tagline {
   display: block;
-  margin-top: var(--space-sm);
-  font-size: var(--font-size-xs);  /* 22rpx */
+  margin-top: var(--space-xs);  /* 缩小margin */
+  font-size: var(--font-size-sm);  /* 24rpx（原来22rpx，略增大） */
   color: rgba(7,193,96,0.9);
   font-weight: var(--font-weight-medium);
-  letter-spacing: 1rpx;
+  letter-spacing: 0.5rpx;  /* 缩小字间距 */
 }
 
-/* 核心优势 */
+/* 核心优势 - 优化：更紧凑 */
 .advantages {
   width: 90%;
   background: rgba(255,255,255,0.08);
@@ -66,8 +66,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: var(--space-xl) var(--space-md);
-  margin-top: var(--space-lg);
+  padding: var(--space-lg) var(--space-md);  /* 缩小padding */
+  margin-top: var(--space-xl);  /* 缩小margin */
   backdrop-filter: blur(10px);
 }
 
@@ -79,78 +79,60 @@
 }
 
 .adv-num {
-  font-size: var(--font-size-xl);  /* 44rpx */
+  font-size: var(--font-size-xl);  /* 40rpx（原来44rpx） */
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
 }
 
 .adv-label {
-  font-size: var(--font-size-sm);  /* 26rpx */
+  font-size: var(--font-size-sm);  /* 24rpx（原来26rpx） */
   color: rgba(255,255,255,0.85);
-  margin-top: var(--space-xs);
+  margin-top: var(--space-xs);  /* 缩小margin */
 }
 
 .adv-sub {
-  font-size: var(--font-size-xs);  /* 22rpx */
+  font-size: var(--font-size-xs);  /* 20rpx（原来22rpx） */
   color: rgba(255,255,255,0.5);
-  margin-top: 4rpx;
+  margin-top: 2rpx;  /* 缩小margin */
 }
 
 .adv-divider {
   width: 1rpx;
-  height: 80rpx;
+  height: 60rpx;  /* 缩小高度 */
   background: rgba(255,255,255,0.15);
 }
 
-/* 开始按钮（基于全局.btn-primary，增加特有的光泽动画） */
+/* 开始按钮 - 优化：更紧凑 */
 .btn-start {
-  width: 85%;
-  margin-top: var(--space-xxl);
-}
-
-/* 按钮光泽动画 */
-.btn-start::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  animation: btnShine 3s infinite;
-}
-
-@keyframes btnShine {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
+  width: 75%;  /* 缩小宽度（原来85%） */
+  margin-top: var(--space-xl);  /* 缩小margin */
 }
 
 .btn-text { 
-  letter-spacing: 6rpx; 
+  letter-spacing: 4rpx;  /* 缩小字间距 */
 }
 
 .btn-arrow { 
-  font-size: 44rpx; 
+  font-size: 36rpx;  /* 缩小箭头（原来44rpx） */
   line-height: 1; 
 }
 
-/* 底部说明 */
+/* 底部说明 - 优化：更紧凑 */
 .footer {
   position: fixed;
-  bottom: var(--space-md);
+  bottom: var(--space-md);  /* 缩小底部间距 */
   left: 0;
   right: 0;
   text-align: center;
-  padding: 0 var(--space-xxl);
+  padding: 0 var(--space-xl);  /* 缩小左右padding */
 }
 
 .footer-text {
-  font-size: var(--font-size-xs);  /* 22rpx */
+  font-size: var(--font-size-xs);  /* 20rpx（原来22rpx） */
   color: rgba(255,255,255,0.35);
 }
 
-/* 隐私协议弹窗 */
+/* 隐私协议弹窗 - 优化：更紧凑 */
 .privacy-mask {
   position: fixed;
   top: 0;
@@ -168,30 +150,30 @@
   width: 80%;
   background: var(--color-bg-card);
   border-radius: var(--radius-xl);
-  padding: var(--space-xxl) var(--space-xl);
-  box-shadow: 0 16rpx 48rpx rgba(0,0,0,0.3);
+  padding: var(--space-xl) var(--space-xl);  /* 缩小padding */
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.3);  /* 缩小阴影 */
 }
 
 .privacy-title {
-  font-size: var(--font-size-lg);  /* 38rpx */
+  font-size: var(--font-size-lg);  /* 36rpx（原来38rpx） */
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   text-align: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);  /* 缩小margin */
 }
 
 .privacy-content {
-  font-size: var(--font-size-base);  /* 30rpx */
+  font-size: var(--font-size-base);  /* 28rpx（原来30rpx） */
   color: var(--color-text-secondary);
   line-height: var(--line-height-normal);
-  margin-bottom: var(--space-xxl);
+  margin-bottom: var(--space-xl);  /* 缩小margin */
   text-align: justify;
 }
 
 .privacy-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-md);  /* 缩小间距 */
 }
 
 .privacy-btn-view {
@@ -199,8 +181,8 @@
   color: var(--color-primary);
   border: 2rpx solid var(--color-primary);
   border-radius: var(--radius-round);
-  font-size: var(--font-size-base);  /* 30rpx */
-  padding: var(--space-md) 0;
+  font-size: var(--font-size-base);  /* 28rpx（原来30rpx） */
+  padding: var(--space-sm) 0;  /* 缩小padding */
 }
 
 .privacy-btn-disagree {
@@ -208,8 +190,8 @@
   color: var(--color-text-hint);
   border: 2rpx solid var(--color-border);
   border-radius: var(--radius-round);
-  font-size: var(--font-size-base);  /* 30rpx */
-  padding: var(--space-md) 0;
+  font-size: var(--font-size-base);  /* 28rpx（原来30rpx） */
+  padding: var(--space-sm) 0;  /* 缩小padding */
 }
 
 .privacy-btn-agree {
@@ -217,9 +199,9 @@
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-round);
-  font-size: var(--font-size-md);  /* 34rpx */
+  font-size: var(--font-size-md);  /* 32rpx（原来34rpx） */
   font-weight: var(--font-weight-medium);
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 0;  /* 缩小padding */
   box-shadow: var(--shadow-primary);
 }
 

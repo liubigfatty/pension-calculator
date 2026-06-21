@@ -1,23 +1,42 @@
-<!--pages/step3/step3.wxml-->
-<view class="container">
-  <!-- 页面标题 -->
-  <text class="page-title">第3步：填写缴费信息</text>
-  <text class="page-desc">请填写您的平均缴费指数和个人账户余额</text>
-
-  <!-- 顶部信息摘要 -->
-  <view class="summary-card">
-    <text class="summary-province">{{provinceName || '...'}} · {{cityLabel || '全省'}}</text>
-    <view class="summary-tags">
-      <text class="tag">{{genderLabel}}</text>
-      <text class="tag">{{identityLabel}}</text>
-      <text class="tag">{{retireAgeLabel}}</text>
+<!--pages/step3/step3.wxml - 优化版（去掉多余提示）-->
+<view class="step-container">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-step done">
+      <view class="step-dot">1</view>
+      <text class="step-label">选择地区</text>
+    </view>
+    <view class="step-line active"></view>
+    <view class="progress-step done">
+      <view class="step-dot">2</view>
+      <text class="step-label">个人信息</text>
+    </view>
+    <view class="step-line active"></view>
+    <view class="progress-step active">
+      <view class="step-dot">3</view>
+      <text class="step-label">缴费信息</text>
     </view>
   </view>
 
-  <!-- 缴费指数选择 -->
-  <view class="section">
-    <view class="section-title">平均缴费指数</view>
-    <view class="section-hint">反映您的缴费水平，通常在0.6-3.0之间\n可咨询当地社保部门获取准确数值</view>
+  <!-- 标题 -->
+  <text class="page-title">缴费信息</text>
+  <text class="page-desc">请填写缴费相关信息</text>
+
+  <!-- 顶部信息摘要 -->
+  <view class="summary-card">
+    <view class="summary-row">
+      <text class="summary-label">参保地区</text>
+      <text class="summary-value">{{provinceName}} · {{cityLabel}}</text>
+    </view>
+    <view class="summary-row">
+      <text class="summary-label">个人信息</text>
+      <text class="summary-value">{{genderLabel}} · {{identityLabel}}</text>
+    </view>
+  </view>
+
+  <!-- 平均缴费指数 -->
+  <view class="form-group">
+    <text class="form-label"><text class="form-required">*</text> 平均缴费指数</text>
     <view class="index-grid">
       <view
         wx:for="{{indexOptions}}"
@@ -28,51 +47,40 @@
       >{{item.label}}</view>
     </view>
     <view class="custom-index" bindtap="onCustomIndexTap">
-      <text class="{{useCustomIndex ? 'active' : ''}}">{{useCustomIndex ? '手动输入中...' : '手动输入缴费指数'}}</text>
+      <text class="{{useCustomIndex ? 'active' : ''}}">{{useCustomIndex ? '✏️ 手动输入中...' : '✏️ 手动输入'}}</text>
     </view>
     <input
       wx:if="{{useCustomIndex}}"
-      class="index-input"
+      class="custom-input"
       type="digit"
-      placeholder="输入 0.6 ~ 3.0"
+      placeholder="0.6 ~ 3.0"
       value="{{customIndex}}"
       bindinput="onIndexInput"
     />
   </view>
 
   <!-- 个人账户余额 -->
-  <view class="section">
-    <view class="section-title">个人账户余额（元）</view>
+  <view class="form-group">
+    <text class="form-label"><text class="form-required">*</text> 个人账户余额（元）</text>
     <input
       class="balance-input"
       type="digit"
-      placeholder="估算约 {{estimatedBalance}} 元，可修改"
+      placeholder="请输入个人账户余额"
       value="{{accountBalance}}"
       bindinput="onBalanceInput"
     />
-    <text class="balance-hint" wx:if="{{estimatedBalance}}">💡 估算依据：按平均指数 1.0、缴费年限推算，仅供参考</text>
   </view>
 
   <!-- 加发项（根据省份动态显示） -->
-  <view class="section" wx:if="{{hasExtra}}">
-    <view class="section-title">{{extraLabel || '加发项'}}</view>
-
-    <!-- extra_pension 类型（吉林、四川）：视同缴费年限触发增发 -->
-    <view wx:if="{{extraType === 'extra_pension'}}">
-      <view class="extra-hint">视同缴费年限 ≥ 20年可触发增发养老金，系统将自动计算</view>
-    </view>
-
-    <!-- special_addition 类型（甘肃、黑龙江、云南）：省份特殊补贴 -->
-    <view wx:if="{{extraType === 'special_addition'}}">
-      <view class="extra-hint">该省份有特殊加发项，系统将自动核算</view>
-    </view>
+  <view class="form-group" wx:if="{{hasExtra}}">
+    <text class="form-label">{{extraLabel || '加发项'}}</text>
+    <view class="form-hint" wx:if="{{extraType === 'extra_pension'}}">视同缴费年限 ≥ 20年可触发增发</view>
+    <view class="form-hint" wx:if="{{extraType === 'special_addition'}}">该省份有特殊加发项</view>
   </view>
 
-  <!-- 按钮 -->
+  <!-- 计算按钮 -->
   <view class="btn-area">
-    <button class="btn-prev" bindtap="onPrev">上一步</button>
-    <button class="btn-calculate" loading="{{loading}}" disabled="{{loading}}" bindtap="onCalculate">
-      {{loading ? '计算中...' : '计算养老金'}}
-    </button>
+    <button class="btn-secondary" bindtap="onPrev">上一步</button>
+    <button class="btn-primary {{!isFormValid() ? 'disabled' : ''}}" bindtap="onCalculate" disabled="{{!isFormValid()}}">计算养老金</button>
   </view>
 </view>

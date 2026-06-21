@@ -1,22 +1,19 @@
-/* pages/step3/step3.wxss - 使用全局设计系统 v2.0 */
+/* pages/step3/step3.wxss - 优化版（更紧凑）*/
 
-/* 容器（使用全局.step-container，覆盖部分样式） */
-.step-container {
-  padding-bottom: 200rpx;  /* 为底部按钮留空间 */
-}
-
-/* 摘要卡片（特有样式，保留） */
+/* 摘要卡片优化 */
 .summary-card {
-  background: var(--color-bg-input);
+  background: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
+  padding: var(--space-md) var(--space-lg);  /* 缩小padding */
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1rpx solid var(--color-border);
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding: var(--space-sm) 0;
+  padding: var(--space-xs) 0;  /* 缩小padding */
   border-bottom: 1rpx solid #eee;
 }
 
@@ -25,31 +22,31 @@
 }
 
 .summary-label {
-  font-size: var(--font-size-sm);  /* 27rpx */
+  font-size: var(--font-size-xs);  /* 缩小字号 */
   color: var(--color-text-hint);
 }
 
 .summary-value {
-  font-size: var(--font-size-sm);  /* 27rpx */
+  font-size: var(--font-size-sm);  /* 缩小字号 */
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
 }
 
-/* 指数选择网格 */
+/* 指数选择网格优化 */
 .index-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
+  gap: var(--space-sm);  /* 缩小间距 */
   margin-bottom: var(--space-md);
 }
 
 .index-item {
-  width: calc(33.33% - 12rpx);
+  width: calc(50% - var(--space-sm) / 2);
   text-align: center;
-  padding: var(--space-md) 0;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);  /* 30rpx */
-  color: var(--color-text-secondary);
+  padding: var(--space-sm) 0;  /* 缩小padding */
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   background: var(--color-bg-input);
   border: 2rpx solid transparent;
   box-sizing: border-box;
@@ -67,48 +64,48 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* 自定义输入 */
-.custom-input-btn {
+/* 自定义输入按钮优化 */
+.custom-index {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  padding: var(--space-md) 0;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);  /* 26rpx */
-  color: var(--color-text-hint);
-  background: transparent;
-  border: 2rpx dashed var(--color-border);
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);  /* 缩小字号 */
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 2rpx dashed var(--color-primary);
+  margin-top: var(--space-sm);
+  transition: all var(--transition-fast);
 }
 
-.custom-input-btn .arrow {
-  font-size: var(--font-size-md);  /* 34rpx */
-}
-
-.custom-input-wrap {
-  margin-top: var(--space-md);
+.custom-index:active {
+  background: #d4edda;
 }
 
 .custom-input {
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);  /* 30rpx */
+  margin-top: var(--space-md);
+  padding: var(--space-md);  /* 缩小padding */
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  background: var(--color-bg-input);
+  background: var(--color-bg-card);
   border: 2rpx solid var(--color-primary);
   width: 100%;
   box-sizing: border-box;
 }
 
-/* 账户余额 */
-.balance-row {
-  position: relative;
+.custom-input::placeholder {
+  color: var(--color-text-hint);
+  font-size: var(--font-size-sm);
 }
 
+/* 账户余额输入优化 */
 .balance-input {
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
   border-radius: var(--radius-round);
-  font-size: var(--font-size-md);  /* 34rpx */
+  font-size: var(--font-size-base);
   color: var(--color-text-primary);
   background: var(--color-bg-input);
   border: 2rpx solid transparent;
@@ -119,96 +116,37 @@
 
 .balance-input:focus {
   background: var(--color-bg-card);
-  border-color: var(--color-primary);
+  border-color: var(--color-border-focus);
 }
 
-.balance-hint {
-  position: absolute;
-  right: var(--space-lg);
-  top: 50%;
-  transform: translateY(-50%);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);  /* 24rpx */
-  color: var(--color-primary);
-  background: #f0faf5;
-  white-space: nowrap;
-}
-
-.balance-note {
-  font-size: var(--font-size-sm);  /* 24rpx */
+.balance-input::placeholder {
   color: var(--color-text-hint);
-  margin-top: var(--space-sm);
 }
 
-/* 加发项 */
-.extra-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md) 0;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.extra-label {
-  font-size: var(--font-size-base);  /* 28rpx */
-  color: var(--color-text-secondary);
-}
-
-.extra-input {
-  width: 200rpx;
-  text-align: right;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-base);  /* 28rpx */
-  color: var(--color-text-primary);
-  background: var(--color-bg-input);
-  border: 2rpx solid var(--color-border);
-}
-
-/* 按钮区域（使用全局.btn-area，覆盖部分样式） */
-.btn-area {
-  margin-top: var(--space-xxl);
-}
-
-.btn-prev {
-  width: 25%;
-  background: var(--color-bg-card);
-  color: var(--color-text-secondary);
-  border: 2rpx solid var(--color-border);
-  border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-base);  /* 28rpx */
-}
-
-.btn-prev::after {
-  border: none;
-}
-
-.btn-calc {
+/* 计算按钮优化 */
+.btn-calculate {
   flex: 1;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-md);  /* 34rpx */
+  padding: var(--space-sm) 0;  /* 缩小padding */
+  font-size: var(--font-size-base);  /* 缩小字号 */
   font-weight: var(--font-weight-medium);
   letter-spacing: 4rpx;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-primary);
+  transition: all var(--transition-normal);
 }
 
-.btn-calc::after {
-  border: none;
+.btn-calculate:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-calc[disabled] {
-  background: linear-gradient(135deg, #a8d8a 0%, #8ec78e 100%);
+.btn-calculate[disabled] {
+  background: #d1d5db;
+  color: #9ca3af;
   box-shadow: none;
-}
-
-.btn-calc .loading-text {
-  font-size: var(--font-size-base);  /* 30rpx */
 }
