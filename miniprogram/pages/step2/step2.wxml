@@ -66,10 +66,10 @@
   <view class="form-group" wx:if="{{identity}}">
     <text class="form-label"><text class="form-required">*</text> 出生年月</text>
     <view class="date-row">
-      <picker mode="selector" range="{{birthYearRange}}" value="{{birthYear - birthYearRange[0]}}" bindchange="onBirthYearChange">
+      <picker mode="selector" range="{{birthYearRange}}" value="{{birthYear - birthYearRange[0]}}" bindchange="onBirthYearChange" class="picker-year">
         <view class="date-picker">{{birthYear}}年</view>
       </picker>
-      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{birthMonth-1}}" bindchange="onBirthMonthChange">
+      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{birthMonth-1}}" bindchange="onBirthMonthChange" class="picker-month">
         <view class="date-picker">{{birthMonth}}月</view>
       </picker>
     </view>
@@ -79,10 +79,10 @@
   <view class="form-group" wx:if="{{birthYear && identity}}">
     <text class="form-label"><text class="form-required">*</text> 参加工作时间</text>
     <view class="date-row">
-      <picker mode="selector" range="{{workYearRange}}" value="{{workYear - workYearRange[0]}}" bindchange="onWorkYearChange">
+      <picker mode="selector" range="{{workYearRange}}" value="{{workYear - workYearRange[0]}}" bindchange="onWorkYearChange" class="picker-year">
         <view class="date-picker {{workYear >= birthYear + 16 ? '' : 'warn'}}">{{workYear}}年</view>
       </picker>
-      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{workMonth-1}}" bindchange="onWorkMonthChange">
+      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{workMonth-1}}" bindchange="onWorkMonthChange" class="picker-month">
         <view class="date-picker">{{workMonth}}月</view>
       </picker>
     </view>
@@ -104,7 +104,7 @@
 
   <!-- 按钮 -->
   <view class="btn-area">
-    <button class="btn-secondary" bindtap="onPrev">上一步</button>
-    <button class="btn-primary {{!isFormValid() ? 'disabled' : ''}}" bindtap="onNext">下一步</button>
+    <button class="btn-prev" bindtap="onPrev">上一步</button>
+    <button class="btn-next" bindtap="onNext">下一步</button>
   </view>
 </view>

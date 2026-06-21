@@ -39,25 +39,41 @@
   font-weight: var(--font-weight-medium);
 }
 
-/* 日期选择器行优化 */
+/* 日期选择器行优化 - 紧凑明显 */
 .date-row {
   display: flex;
   gap: var(--space-sm);
-  width: 100%;  /* 增加：占满父容器 */
+  width: 100%;
+}
+
+/* 年份选择器：占大部分空间 */
+.picker-year {
+  flex: 3;
+}
+
+/* 月份选择器：固定较小宽度 */
+.picker-month {
+  flex: 1.2;
+  min-width: 140rpx;
 }
 
 .date-picker {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
   border-radius: var(--radius-round);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
   background: var(--color-bg-input);
-  border: 2rpx solid transparent;
+  border: 2rpx solid #d0d5dd;
   transition: all var(--transition-fast);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+
+.date-picker:active {
+  border-color: var(--color-primary);
+  background: #f6fffb;
 }
 
 .date-picker:active {
@@ -76,4 +92,46 @@
   margin-top: var(--space-xs);
   display: block;
   line-height: var(--line-height-normal);
+}
+
+/* 按钮区域 - Step2专用 */
+.btn-area {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.btn-prev {
+  width: 200rpx;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-round);
+  padding: var(--space-md) 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.btn-prev:active {
+  background: var(--color-primary-light);
+}
+
+.btn-next {
+  flex: 1;
+  background: linear-gradient(135deg, #07c160 0%, #06ae56 100%);
+  color: var(--color-text-white);
+  border: none;
+  border-radius: var(--radius-round);
+  padding: var(--space-md) 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 4rpx;
+  box-shadow: var(--shadow-primary);
+  transition: all var(--transition-normal);
+}
+
+.btn-next:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-sm);
 }
