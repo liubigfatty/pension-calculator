@@ -110,6 +110,11 @@ Page({
     this.setData({ estimating: true })
 
     const pad = n => String(n).padStart(2, '0')
+
+    // 退休方式映射（与 onCalculate 保持一致）
+    const rtMap = { normal: 'standard', early: 'early' }
+    const rt = rtMap[input.retirementType] || 'standard'
+
     const params = {
       province: provCode,
       cityType: cityType || 'prov',
@@ -119,7 +124,8 @@ Page({
       birthDate: `${input.birthYear}-${pad(input.birthMonth)}`,
       workStartDate: `${input.workYear}-${pad(input.workMonth)}`,
       averageIndex: avgIndex,
-      personalAccount: 0  // 传 0，让引擎估算
+      personalAccount: 0,  // 传 0，让引擎估算
+      retireType: rt  // ✅ 传入退休方式，影响余额估算（提前退休=更少缴费月数）
     }
 
     wx.cloud.callFunction({
@@ -234,6 +240,11 @@ Page({
 
     const input = app.globalData.calcInput || {}
 
+    // ⚠️ retireType 必须在 params 之前定义！（之前在 params 之后导致 TDZ 错误）
+    const retireTypeMap = { normal: 'standard', early: 'early' }
+    const retireType = retireTypeMap[input.retirementType] || 'standard'
+    const isEarly = retireType === 'early'
+
     // 构造日期字符串格式 YYYY-MM
     const pad = n => String(n).padStart(2, '0')
     const params = {
@@ -247,18 +258,8 @@ Page({
       averageIndex: idx,
       personalAccount: balance,
       extras: this.data.extraValues,
-      retireType: retireType  // 退休方式：'standard'法定 / 'early'弹性提前
+      retireType: retireType  // ✅ 正确传入：'standard'法定 / 'early'弹性提前
     }
-
-    // 辅助函数：安全数字转换
-    const safeNum = (v) => (v != null && !isNaN(v) && isFinite(v) ? v : null)
-    const fmt = (v, d = 2) => v != null ? Number(v).toFixed(d) : null
-
-    // 退休方式映射：小程序用 retirementType，云函数用 retireType
-    //   'normal' → 'standard'（法定年龄退休）
-    //   'early'  → 'early'   （弹性提前退休）
-    const retireTypeMap = { normal: 'standard', early: 'early' }
-    const retireType = retireTypeMap[input.retirementType] || 'standard'
 
     wx.cloud.callFunction({
       name: 'calculate',
@@ -268,43 +269,61 @@ Page({
         if (res.result && res.result.success) {
           const raw = res.result.data || {}
           const legal = raw.legal || {}
+          const flex = raw.flex || {}
           const meta = raw.metaData || {}
 
-          // 引擎返回值中 legal 对象已有 total 字段
-            const totalAmount = fmt(legal.total)
-            const basePension = fmt(legal.basicPension?.amount)
-            const personalPension = fmt(legal.personalAccount?.amount || legal.personalAccountPension?.amount)
-            const transitionPension = fmt(legal.transitionalPension?.amount)
-            const extraPension = fmt((legal.extraPension?.amount || 0) + (legal.specialAddition?.amount || 0))
+          // ✅ 根据退休方式选择数据源（核心修复！）
+          //   弹性提前退休 → 用 flex 数据（更早退休年龄、更少缴费年限、更低养老金）
+          //   法定年龄退休 → 用 legal 数据
+          const source = isEarly && flex.total ? flex : legal
 
-            console.log('[step3] 计算结果映射:', {
-              totalAmount, basePension, personalPension, transitionPension, extraPension,
-              legalTotal: legal.total,
-              rawLegal: JSON.stringify(legal).slice(0, 300)
-            })
+          // 辅助函数
+          const safeNum = (v) => (v != null && !isNaN(v) && isFinite(v) ? v : null)
+          const fmt = (v, d = 2) => v != null ? Number(v).toFixed(d) : null
 
-            app.globalData.calcResult = {
-              // 核心金额（直接存字符串，result 页不用再 fmt）
-              totalAmount,
-              basePension,
-              personalPension,
-              transitionPension,
-              extraPension,
-              // 计算参数
-              workYears: fmt(legal.totalYears || meta.totalYears),
-              averageIndex: idx,  // ✅ 直接用用户选择的指数，不依赖 meta
-              accountBalance: fmt(balance, 0),  // ✅ 直接用用户输入的余额
-              months: legal.months || meta.months || null,
-              retireAge: legal.ageStr || null,
-              baseNumber: fmt(legal.baseRetire),
-              // 地区
-              provinceName: meta.name || '',
-              cityLabel: this.getCityLabel(params.cityType, meta),
-              // 退休方式（用于 result 页显示）
-              retirementType: input.retirementType || 'normal',
-              // 保留原始数据（result 页 fallback 用）
-              _raw: raw
-            }
+          // 从正确的数据源提取金额
+          const totalAmount = fmt(source.total)
+          const basePension = fmt(source.basicPension?.amount)
+          const personalPension = fmt(source.personalAccount?.amount || source.personalAccountPension?.amount)
+          const transitionPension = fmt(source.transitionalPension?.amount)
+          const extraPension = fmt((source.extraPension?.amount || 0) + (source.specialAddition?.amount || 0))
+
+          console.log('[step3] 计算结果映射:', {
+            retireType, isEarly, source: isEarly ? 'flex' : 'legal',
+            totalAmount, basePension, personalPension,
+            sourceTotal: source.total,
+            legalTotal: legal.total,
+            flexTotal: flex.total
+          })
+
+          app.globalData.calcResult = {
+            // 核心金额（从正确的数据源提取）
+            totalAmount,
+            basePension,
+            personalPension,
+            transitionPension,
+            extraPension,
+            // 计算参数（从正确的数据源提取）
+            workYears: fmt(source.totalYears || meta.totalYears),
+            averageIndex: idx,
+            accountBalance: fmt(balance, 0),
+            months: source.months || meta.months || null,
+            retireAge: source.ageStr || null,  // ✅ 弹性提前时显示 60岁X月，不是62岁
+            baseNumber: fmt(source.baseRetire),
+            // 退休日期（用于精确年龄计算）
+            retireYear: source.date?.year || null,
+            retireMonth: source.date?.month || null,
+            // 地区
+            provinceName: meta.name || '',
+            cityLabel: this.getCityLabel(params.cityType, meta),
+            // 出生日期（用于 result 页精确年龄计算）
+            birthYear: input.birthYear,
+            birthMonth: input.birthMonth,
+            // 退休方式（用于 result 页显示文案）
+            retirementType: input.retirementType || 'normal',
+            // 保留原始数据（result 页 fallback 用）
+            _raw: raw
+          }
           console.log('[step3] 计算结果:', JSON.stringify(app.globalData.calcResult))
           wx.navigateTo({ url: '/pages/result/result' })
         } else {
