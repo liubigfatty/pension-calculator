@@ -2,8 +2,8 @@
 const app = getApp()
 
 const NOW_YEAR = new Date().getFullYear()
-const MIN_BIRTH_YEAR = 1940
-const DEFAULT_BIRTH = { year: MIN_BIRTH_YEAR, month: 5 }
+const MIN_BIRTH_YEAR = 1960
+const DEFAULT_BIRTH = { year: 1970, month: 6 }
 
 // 延迟退休规则（国发〔2024〕14号）
 // 2025-01-01 起实施，渐进式延迟：
@@ -78,8 +78,8 @@ Page({
     birthMonth: DEFAULT_BIRTH.month,
 
     // 参加工作时间
-    workYear: MIN_BIRTH_YEAR + 18, // 默认18岁参加工作
-    workMonth: 7,                  // 默认7月
+    workYear: 1995,              // 默认1995年
+    workMonth: 7,                 // 默认7月
 
     // 女职工退休年龄选择（仅女职工显示）
     femaleEmployeeAge: '50',       // 50 或 55
@@ -108,9 +108,9 @@ Page({
     }
 
     // 恢复已填数据或使用默认值
-    const birthYr = saved.birthYear || MIN_BIRTH_YEAR
+    const birthYr = saved.birthYear || DEFAULT_BIRTH.year
     const birthMo = saved.birthMonth || DEFAULT_BIRTH.month
-    const workYr = saved.workYear || (birthYr + 18)
+    const workYr = saved.workYear || 1995
     const workMo = saved.workMonth || 7
 
     this.setData({

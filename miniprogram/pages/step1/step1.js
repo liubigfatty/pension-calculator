@@ -54,7 +54,9 @@ const PROVINCE_CONFIG = [
     { type: 'prov', label: '全省统一基数' }
   ]},
   { code: 'hubei', name: '湖北省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
+    { type: 'wh', label: '武汉市及省直（一档）' },
+    { type: 'prov', label: '全省其他地区（二档）' },
+    { type: 'tier3', label: '三档城市（孝感/荆州/黄冈等）' }
   ]},
   { code: 'hunan', name: '湖南省', cityTypes: [
     { type: 'prov', label: '全省统一基数' }
