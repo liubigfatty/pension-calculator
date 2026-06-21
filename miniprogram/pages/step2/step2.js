@@ -2,7 +2,7 @@
 const app = getApp()
 
 const NOW_YEAR = new Date().getFullYear()
-const MIN_BIRTH_YEAR = 1975
+const MIN_BIRTH_YEAR = 1940
 const DEFAULT_BIRTH = { year: MIN_BIRTH_YEAR, month: 5 }
 
 // 延迟退休规则（国发〔2024〕14号）
