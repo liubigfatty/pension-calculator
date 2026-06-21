@@ -21,7 +21,8 @@
     <image class="logo-img" src="/assets/logo.jpg" mode="aspectFit"></image>
     <view class="hero-overlay">
       <text class="brand-name">正元养老金测算</text>
-      <text class="brand-desc">全国31省份 · 精准计算引擎 · 实时政策</text>
+      <text class="brand-slogan">覆盖全国31省 · 精准测算 · 政策实时更新</text>
+      <text class="brand-tagline">您的养老金，算得清清楚楚</text>
     </view>
   </view>
 
