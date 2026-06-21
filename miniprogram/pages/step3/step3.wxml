@@ -69,6 +69,6 @@
   <!-- 计算按钮 -->
   <view class="btn-area">
     <button class="btn-secondary" bindtap="onPrev">上一步</button>
-    <button class="btn-calculate {{!isFormValid() ? 'disabled' : ''}}" bindtap="onCalculate" disabled="{{!isFormValid()}}">计算养老金</button>
+    <button class="btn-calculate {{!formValid ? 'disabled' : ''}}" bindtap="onCalculate" disabled="{{!formValid}}">计算养老金</button>
   </view>
 </view>

@@ -53,7 +53,10 @@ Page({
 
     // 省份信息
     provinceName: '',
-    cityLabel: ''
+    cityLabel: '',
+
+    // 表单是否可提交（每次输入后 setData 更新）
+    formValid: false
   },
 
   onLoad() {
@@ -75,8 +78,18 @@ Page({
       hasExtra,
       extraType,
       extraLabel
-      // accountBalance 由 estimateBalanceProperly 异步回填
+      // accountBalance + formValid 由 estimateBalanceProperly 异步回填
     })
+  },
+
+  // 更新表单可提交状态（每次输入后调用）
+  updateFormValid() {
+    const idx = this.getSelectedIndexValue()
+    const balance = parseFloat(this.data.accountBalance)
+    const valid = !!(idx && idx > 0 && balance >= 0)
+    if (valid !== this.data.formValid) {
+      this.setData({ formValid: valid })
+    }
   },
 
   // 获取城市类型标签
@@ -120,16 +133,22 @@ Page({
           this.setData({
             estimatedBalance: balance,
             accountBalance: balance != null ? String(Math.round(balance)) : null
+          }, () => {
+            this.updateFormValid()  // 估算值回填后更新按钮状态
           })
         } else {
           console.error('[step3] 估算余额失败:', res.result?.message)
-          this.setData({ accountBalance: null })
+          this.setData({ accountBalance: null }, () => {
+            this.updateFormValid()
+          })
         }
       },
       fail: (err) => {
         this.setData({ estimating: false })
         console.error('[step3] 估算余额调用失败:', err)
-        this.setData({ accountBalance: null })
+        this.setData({ accountBalance: null }, () => {
+          this.updateFormValid()
+        })
       }
     })
   },
@@ -147,6 +166,7 @@ Page({
       useCustomIndex: false,
       customIndex: ''
     })
+    this.updateFormValid()
 
     // 重新估算账户余额（指数变化会影响估算值）
     this.estimateBalanceProperly(provCode, input.cityType, newAvgIndex)
@@ -160,6 +180,7 @@ Page({
   // 缴费指数输入
   onIndexInput(e) {
     this.setData({ customIndex: e.detail.value })
+    this.updateFormValid()
     // 自定义指数变化时也重新估算
     const val = parseFloat(e.detail.value)
     if (!isNaN(val) && val > 0) {
@@ -172,6 +193,7 @@ Page({
   // 账户余额输入
   onBalanceInput(e) {
     this.setData({ accountBalance: e.detail.value })
+    this.updateFormValid()
   },
 
   // 加发项输入
@@ -191,13 +213,6 @@ Page({
       return isNaN(v) ? null : v
     }
     return this.data.indexOptions[this.data.selectedIndex].value
-  },
-
-  // 表单验证（供 WXML 调用）
-  isFormValid() {
-    const idx = this.getSelectedIndexValue()
-    const balance = parseFloat(this.data.accountBalance)
-    return !!(idx && idx > 0 && balance >= 0)
   },
 
   onCalculate() {
