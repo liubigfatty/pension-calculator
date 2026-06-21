@@ -223,7 +223,25 @@ Page({
 
   onNext() {
     if (!this.data.isValid) {
-      wx.showToast({ title: '请填写完整信息', icon: 'none' })
+      // 详细验证提示
+      const { gender, identity, birthYear, birthMonth, workYear, workMonth } = this.data
+      let errorMsg = ''
+      
+      if (!gender) {
+        errorMsg = '请选择性别'
+      } else if (!identity) {
+        errorMsg = '请选择人员类型'
+      } else if (!birthYear || !birthMonth) {
+        errorMsg = '请选择出生年月'
+      } else if (!workYear || !workMonth) {
+        errorMsg = '请选择参加工作日期'
+      } else if (workYear < birthYear + 16) {
+        errorMsg = '参加工作时间必须满16周岁'
+      } else {
+        errorMsg = '请填写完整信息'
+      }
+      
+      wx.showToast({ title: errorMsg, icon: 'none', duration: 2000 })
       return
     }
 

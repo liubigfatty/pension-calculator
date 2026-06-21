@@ -10,8 +10,8 @@
   </view>
 
   <!-- 标题 -->
-  <text class="page-title">个人信息</text>
-  <text class="page-desc">请填写您的个人基本信息</text>
+  <text class="page-title">第2步：填写个人信息</text>
+  <text class="page-desc">请填写您的性别、出生日期、参加工作时间</text>
 
   <!-- 性别选择 -->
   <view class="form-group">
@@ -83,7 +83,7 @@
         <view class="date-picker">{{workMonth}}月</view>
       </picker>
     </view>
-    <view class="form-hint" wx:if="{{workYear < birthYear + 16}}">⚠️ 参加工作年龄偏小，请确认</view>
+    <view class="form-hint" wx:if="{{workYear < birthYear + 16}}">⚠️ 您填写的参加工作年龄小于16岁，请确认是否准确\n（法定最低工作年龄为16岁）</view>
   </view>
 
   <!-- 退休年龄预览 -->

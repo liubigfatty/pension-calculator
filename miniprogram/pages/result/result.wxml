@@ -2,7 +2,7 @@
 <view class="container">
   <!-- 头部 -->
   <view class="result-header">
-    <text class="result-title">测算结果</text>
+    <text class="result-title">您的养老金测算结果</text>
     <text class="result-subtitle">{{provinceName}} · {{cityLabel}}</text>
 
     <view class="total-amount">
@@ -88,14 +88,14 @@
 
   <!-- 操作按钮 -->
   <view class="btn-area">
-    <button class="btn-recalc" bindtap="onRecalculate">重新测算</button>
-    <button class="btn-save" bindtap="saveShareImage">保存分享图</button>
     <button class="btn-share" open-type="share">分享给好友</button>
+    <button class="btn-save" bindtap="saveShareImage">保存分享图</button>
+    <button class="btn-recalc" bindtap="onRecalculate">重新测算</button>
   </view>
 
   <!-- 声明 -->
   <view class="disclaimer">
-    <text>⚠️ 本结果仅供参考，实际以社保部门核定为准</text>
+    <text>💡 温馨提示：本测算结果仅供参考，实际养老金以社保部门核定为准。\n如有疑问，可咨询当地社保热线：12333</text>
   </view>
 
   <!-- 隐藏Canvas，用于生成分享图 -->

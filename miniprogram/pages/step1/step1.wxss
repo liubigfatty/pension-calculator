@@ -113,13 +113,19 @@
   display: flex;
   align-items: flex-start;
   padding: 24rpx;
-  background: #fffbf0;
+  background: #e6f7ff;
   border-radius: 12rpx;
-  border-left: 8rpx solid #ffc107;
+  border-left: 8rpx solid #1890ff;
   margin-bottom: 60rpx;
 }
-.tip-icon { font-size: 28rpx; margin-right: 12rpx; }
-.tip-text { font-size: 26rpx; color: #856404; line-height: 1.5; }
+.tip-icon { font-size: 36rpx; margin-right: 16rpx; flex-shrink: 0; }
+.tip-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.tip-text { font-size: 28rpx; color: #1577d6; font-weight: 500; line-height: 1.5; }
+.tip-sub { font-size: 24rpx; color: #8c8c8c; margin-top: 8rpx; line-height: 1.4; }
 
 /* 按钮 */
 .btn-area { margin-top: 20rpx; }

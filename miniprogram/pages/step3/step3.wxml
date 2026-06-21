@@ -1,5 +1,9 @@
 <!--pages/step3/step3.wxml-->
 <view class="container">
+  <!-- 页面标题 -->
+  <text class="page-title">第3步：填写缴费信息</text>
+  <text class="page-desc">请填写您的平均缴费指数和个人账户余额</text>
+
   <!-- 顶部信息摘要 -->
   <view class="summary-card">
     <text class="summary-province">{{provinceName || '...'}} · {{cityLabel || '全省'}}</text>
@@ -13,6 +17,7 @@
   <!-- 缴费指数选择 -->
   <view class="section">
     <view class="section-title">平均缴费指数</view>
+    <view class="section-hint">反映您的缴费水平，通常在0.6-3.0之间\n可咨询当地社保部门获取准确数值</view>
     <view class="index-grid">
       <view
         wx:for="{{indexOptions}}"
@@ -41,7 +46,7 @@
     <input
       class="balance-input"
       type="digit"
-      placeholder="系统估算约 {{estimatedBalance}} 元，可手动修改"
+      placeholder="估算约 {{estimatedBalance}} 元，可修改"
       value="{{accountBalance}}"
       bindinput="onBalanceInput"
     />

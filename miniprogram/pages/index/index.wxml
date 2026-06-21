@@ -5,7 +5,7 @@
     <view class="privacy-popup">
       <view class="privacy-title">隐私保护指引</view>
       <view class="privacy-content">
-        <text>本小程序需要收集省份、缴费年限、平均指数等信息用于计算养老金。信息仅本地保存，不会上传服务器。\n\n请阅读并同意{{privacyContractName || '《隐私保护指引》'}}。</text>
+        <text>我们需要以下信息来帮您计算养老金：\n• 参保地区（用于选择正确计发基数）\n• 个人信息（出生年月、工作年限等）\n• 缴费情况（缴费指数、账户余额等）\n\n所有信息仅保存在您的手机上，不会上传到任何服务器。\n您可以随时清除数据。</text>
       </view>
       <view class="privacy-actions">
         <button class="privacy-btn-view" bindtap="onViewPrivacy">查看隐私协议</button>
@@ -34,7 +34,7 @@
     </view>
     <view class="adv-divider"></view>
     <view class="adv-item">
-      <text class="adv-num">140+</text>
+      <text class="adv-num">170+</text>
       <text class="adv-label">真实案例</text>
       <text class="adv-sub">核定表验证通过</text>
     </view>

@@ -8,15 +8,15 @@
     <view class="progress-line"></view>
     <view class="progress-dot"></view>
   </view>
-  <text class="page-title">选择参保地区</text>
-  <text class="page-desc">不同地区计发基数和政策有所不同</text>
+  <text class="page-title">第1步：选择参保地区</text>
+  <text class="page-desc">不同地区的计发基数和政策可能不同，请准确选择</text>
 
   <!-- 省份选择 -->
   <view class="form-group">
     <view class="form-label">参保省份 <text class="required">*</text></view>
     <picker mode="selector" range="{{provinceNames}}" value="{{provinceIndex}}" bindchange="onProvinceChange" disabled="{{provinceNames.length === 0}}">
       <view class="picker-value {{provinceIndex >= 0 ? 'selected' : 'placeholder'}}">
-        {{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择省份'}}
+        {{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择您的参保省份'}}
         <text class="picker-arrow">›</text>
       </view>
     </picker>
@@ -40,7 +40,10 @@
   <!-- 提示信息 -->
   <view class="tip-box" wx:if="{{provinceIndex >= 0}}">
     <text class="tip-icon">💡</text>
-    <text class="tip-text">已选择：{{provinceNames[provinceIndex]}} · {{cityTypeLabels[cityTypeIndex] || cityTypeNames[cityTypeIndex] || '全省统一'}}</text>
+    <view class="tip-content">
+      <text class="tip-text">已选择：{{provinceNames[provinceIndex]}} · {{cityTypeLabels[cityTypeIndex] || cityTypeNames[cityTypeIndex] || '全省统一'}}</text>
+      <text class="tip-sub">不同省份的计发基数不同，将影响最终计算结果。请务必准确选择。</text>
+    </view>
   </view>
 
   <!-- 按钮 -->

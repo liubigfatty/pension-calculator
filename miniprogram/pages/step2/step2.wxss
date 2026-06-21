@@ -1,2 +1,25 @@
 /* pages/step2/step2.wxss */
-/* 使用 app.wxss 中的全局样式，此处无需额外样式 */
+
+/* 退休年龄预览卡片样式 */
+.retire-preview {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #ebf5ff 0%, #f0f9ff 100%);
+  border: 1rpx solid #b3d9ff;
+  border-radius: 12rpx;
+  padding: 24rpx 28rpx;
+  margin: 24rpx 0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 150, 255, 0.08);
+}
+
+.retire-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.retire-text {
+  font-size: 28rpx;
+  color: #1a6fc4;
+  font-weight: 500;
+  line-height: 1.5;
+}
