@@ -57,7 +57,7 @@ function mapCaseToInput(c, provConfig) {
     personalAcc:    c.personal_account ?? 0,
     sightYears:      c.sight_years   ?? null,
     totalYears:      c.total_years    ?? null,
-    preAccountYears: (provConfig?.province === 'yunnan' && c.pre_account_years != null) ? c.pre_account_years : null,
+    preAccountYears: c.pre_account_years ?? null,
     actualYears:     c.actual_years     ?? null,
     months:         c.months         ?? null,
     retireType:      c.retire_type    || 'standard',
@@ -166,7 +166,10 @@ function main() {
   }
 }
 
-main();
-
 // 导出（供 verify.js 复用）
 module.exports = { mapCaseToInput };
+
+// 只有直接运行此脚本时才执行主流程
+if (require.main === module) {
+  main();
+}
