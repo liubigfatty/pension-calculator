@@ -27,10 +27,13 @@ Page({
     showDetail: true,
     // 精确退休年龄
     exactAge: '',
+    // 小程序码路径（缓存）
+    qrCodePath: '',
   },
 
   onLoad() {
-    const r = app.globalData.calcResult || {}
+    // 优先从缓存读取计算结果（step2 存到 calc_result）
+    const r = wx.getStorageSync('calc_result') || app.globalData.calcResult || {}
 
     // 调试：打印原始数据（上线前可删除）
     console.log('[result] calcResult:', JSON.stringify(r))
@@ -48,6 +51,9 @@ Page({
 
     this.setData({ hasValidData: true })
 
+    // 异步加载小程序码（不阻塞页面渲染）
+    this.loadQRCode()
+
     // 退休方式：'normal'法定 / 'early'弹性提前
     const retirementType = r.retirementType || 'normal'
     const isEarly = retirementType === 'early'
@@ -60,7 +66,14 @@ Page({
 
     // 根据退休方式选择数据源
     const source = isEarly && flex.total ? flex : legal
-    const sourceLabel = isEarly && flex.total ? '弹性提前退休' : '法定年龄退休'
+
+    // 具体退休日期
+    let retireDateStr = ''
+    if (source.date && source.date.year && source.date.month) {
+      retireDateStr = `${source.date.year}年${source.date.month}月`
+    } else if (r.retireYear && r.retireMonth) {
+      retireDateStr = `${r.retireYear}年${r.retireMonth}月`
+    }
 
     // fmt: 安全数字格式化，失败返回 null（WXML 里用 != null 判断）
     const fmt = (v, d = 2) => {
@@ -106,18 +119,45 @@ Page({
     }
 
     // averageIndex: 平均缴费指数
-    const averageIndexVal = r.averageIndex != null ? r.averageIndex : null
+    const averageIndexVal = r.averageIndex != null ? r.averageIndex : (source.averageIndex || null)
+
+    // actualYears: 实际缴费年限
+    let actualYearsVal = null
+    if (r.actualYears != null) {
+      actualYearsVal = fmt(r.actualYears, 2)
+    } else if (source.actualYears != null) {
+      actualYearsVal = fmt(source.actualYears, 2)
+    }
+
+    // sameYears: 视同缴费年限 = 累计 - 实际
+    let sameYearsVal = null
+    if (workYearsVal != null && actualYearsVal != null) {
+      const work = parseFloat(workYearsVal)
+      const actual = parseFloat(actualYearsVal)
+      if (!isNaN(work) && !isNaN(actual)) {
+        sameYearsVal = fmt(Math.max(0, work - actual), 2)
+      }
+    } else if (r.sameYears != null) {
+      sameYearsVal = fmt(r.sameYears, 2)
+    }
 
     // months: 计发月数（用 source 动态选择）
     const monthsVal = r.months != null ? r.months : (source.months || null)
 
-    // retireAge: 退休年龄（根据退休方式显示）
-    const retireAgeVal = r.retireAge || source.ageStr || null
+    // 退休方式标签（纯方式，不带年龄 → 计算参数用）
+    const retireTypeLabel = isEarly ? '弹性提前退休' : '法定年龄退休'
+
     // 精确退休年龄（岁+月）— 用 source.date 动态选择
-    let exactAgeStr = retireAgeVal || ''
+    let exactAgeStr = ''
     if (r.birthYear && r.birthMonth && source.date) {
       exactAgeStr = calcExactAge(r.birthYear, r.birthMonth, source.date.year, source.date.month)
     }
+    const retireAgeText = r.retireAge || source.ageStr || exactAgeStr || ''
+
+    // 头部退休信息（一行：60岁弹性提前退休（2031年6月））
+    const retireInfo = retireDateStr
+      ? `${retireAgeText}${retireTypeLabel}（${retireDateStr}）`
+      : `${retireAgeText}${retireTypeLabel}`
 
     this.setData({
       // 核心金额
@@ -129,11 +169,13 @@ Page({
 
       // 计算参数（已经是格式化好的字符串，WXML 直接显示）
       workYears: workYearsVal,
+      actualYears: actualYearsVal,
+      sameYears: sameYearsVal,
       averageIndex: averageIndexVal,
       accountBalance: accountBalanceVal,
       months: monthsVal,
-      retireAge: retireAgeVal,
-      exactAge: exactAgeStr,
+      retireAge: retireAgeText,
+      retireDate: retireDateStr,
       baseNumber: baseNumberVal,
 
       // 地区信息
@@ -142,7 +184,9 @@ Page({
 
       // 退休方式（用于 WXML 显示不同文案）
       retirementType: retirementType,
-      retireAgeLabel: sourceLabel  // "法定年龄退休" 或 "弹性提前退休"
+      retireAgeLabel: retireTypeLabel,  // "弹性提前退休" 或 "法定年龄退休"
+      retireInfo: retireInfo,        // "60岁弹性提前退休（2031年6月）"
+      retireDateLabel: retireDateStr ? `预计${retireDateStr}退休` : ''
     })
 
     // 生成分享图（异步，不阻塞页面渲染）
@@ -162,6 +206,64 @@ Page({
 
   onRecalculate() {
     wx.navigateBack({ delta: 3 })
+  },
+
+  /**
+   * 查看详细退休计划报告（暂未实现）
+   */
+  goReport() {
+    wx.showModal({
+      title: '详细退休计划报告',
+      content: '该功能正在开发中，敬请期待！\n\n报告将包含：\n• 退休年龄精确计算\n• 缴费年限明细\n• 养老金构成分析\n• 提前退休 vs 正常退休对比',
+      showCancel: false,
+      confirmText: '知道了'
+    })
+  },
+
+  /**
+   * 加载小程序码（优先读缓存，无缓存则调用云函数）
+   */
+  loadQRCode() {
+    // 1. 先读缓存
+    const cached = wx.getStorageSync('share_qrcode')
+    if (cached) {
+      // 验证文件是否存在
+      const fm = wx.getFileSystemManager()
+      try {
+        fm.accessSync(cached)
+        this.setData({ qrCodePath: cached })
+        console.log('[QRCode] 使用缓存:', cached)
+        return
+      } catch (e) {
+        // 缓存文件不存在，清除缓存
+        wx.removeStorageSync('share_qrcode')
+      }
+    }
+
+    // 2. 调用云函数获取小程序码
+    wx.cloud.callFunction({
+      name: 'getQRCode',
+      data: {}
+    }).then(res => {
+      const result = res.result
+      if (!result || !result.success) {
+        console.error('[QRCode] 云函数失败:', result?.error)
+        return
+      }
+
+      // 3. 将 base64 写入临时文件
+      const base64 = result.buffer
+      const filePath = `${wx.env.USER_DATA_PATH}/qrcode_share.png`
+      const fm = wx.getFileSystemManager()
+      fm.writeFileSync(filePath, base64, 'base64')
+
+      // 4. 缓存路径
+      wx.setStorageSync('share_qrcode', filePath)
+      this.setData({ qrCodePath: filePath })
+      console.log('[QRCode] 已生成并缓存:', filePath)
+    }).catch(err => {
+      console.error('[QRCode] 调用云函数失败:', err)
+    })
   },
 
   // 保存分享图到相册
@@ -210,6 +312,7 @@ Page({
   /**
    * 生成分享图（Canvas 2D）
    * 动态绘制：根据结果字段自动显示/隐藏对应行
+   * 支持小程序码绘制
    */
   generateShareImage() {
     const query = this.createSelectorQuery()
@@ -224,165 +327,265 @@ Page({
         const ctx = canvas.getContext('2d')
         const dpr = wx.getSystemInfoSync().pixelRatio
         canvas.width = 750 * dpr
-        canvas.height = 1000 * dpr
+        canvas.height = 1400 * dpr
         ctx.scale(dpr, dpr)
 
-        this._drawShare(ctx, this.data)
+        const d = this.data
+        const finishDraw = (qrImg) => {
+          this._drawShare(ctx, d, qrImg)
+          // 导出临时文件
+          wx.canvasToTempFilePath({
+            canvas: canvas,
+            fileType: 'png',
+            quality: 1,
+            success: (res) => {
+              this.setData({ shareImagePath: res.tempFilePath })
+              console.log('[share] 分享图已生成:', res.tempFilePath)
+              wx.showToast({ title: '分享图已生成', icon: 'success', duration: 1500 })
+            },
+            fail: (err) => {
+              console.error('[share] 导出失败:', err)
+              wx.showToast({ title: '分享图生成失败', icon: 'none' })
+            }
+          })
+        }
 
-        // 导出临时文件
-        wx.canvasToTempFilePath({
-          canvas: canvas,
-          fileType: 'png',
-          quality: 1,
-          success: (res) => {
-            this.setData({ shareImagePath: res.tempFilePath })
-            console.log('[share] 分享图已生成:', res.tempFilePath)
-            wx.showToast({ title: '分享图已生成', icon: 'success', duration: 1500 })
-          },
-          fail: (err) => {
-            console.error('[share] 导出失败:', err)
-            wx.showToast({ title: '分享图生成失败', icon: 'none' })
+        // 加载小程序码
+        const qrPath = d.qrCodePath
+        if (qrPath) {
+          const img = canvas.createImage()
+          img.onload = () => finishDraw(img)
+          img.onerror = () => {
+            console.error('[share] 小程序码加载失败')
+            finishDraw(null)
           }
-        })
+          img.src = qrPath
+        } else {
+          finishDraw(null)
+        }
       })
   },
 
   /**
    * 绘制分享图内容（动态布局）
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Object} d - this.data
+   * @param {Image|null} qrImg - 小程序码图片对象（可选）
    */
-  _drawShare(ctx, d) {
-    const W = 750, H = 1000
+  _drawShare(ctx, d, qrImg = null) {
+    const W = 750, H = 1400
 
-    // ── 背景 ──
-    ctx.fillStyle = '#F7F8FA'
+    // ═══ 设计规范（和结果页完全一致） ═══
+    const C = {
+      bg: '#F5F3F0',           /* 暖白 - 页面背景 */
+      white: '#F4F0E8',        /* Creamy Off-White - 卡片背景 */
+      darkBg: '#171717',       /* Deep Charcoal - 金额卡片背景 */
+      darkBgEnd: '#2A2A2A',    /* 深色渐变结束 */
+      gold: '#B8977D',         /* 正元光 - 金色文字 */
+      text: '#171717',         /* Deep Charcoal - 深色正文 */
+      sub: '#6C584B',         /* Warm Taupe - 暖棕 */
+      faint: '#AAAAAA',         /* 辅助文字 */
+      line: '#E0D8CC',        /* 暖棕分割线 */
+    }
+    const F = {
+      title: 'bold 34px PingFang SC',
+      region: '25px PingFang SC',
+      amount: 'bold 88px DIN Alternate',
+      unit: '24px PingFang SC',
+      section: 'bold 28px PingFang SC',
+      label: '22px PingFang SC',
+      value: 'bold 26px PingFang SC',
+      note: '19px PingFang SC',
+      brand: '17px PingFang SC'
+    }
+
+    // ── 1. 页面背景 ──
+    ctx.fillStyle = C.bg
     ctx.fillRect(0, 0, W, H)
 
-    // ── 顶部品牌条 ──
-    ctx.fillStyle = '#1677FF'
-    ctx.fillRect(0, 0, W, 8)
+    // ── 2. 金额主卡片（深色渐变，和结果页一致）──
+    const cardX = 40, cardW = W - 80, cardY = 40, cardH = 280
+    
+    // 阴影
+    ctx.shadowColor = 'rgba(40,41,43,0.25)'
+    ctx.shadowBlur = 30
+    ctx.shadowOffsetY = 8
+    
+    // 深色渐变背景
+    const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH)
+    cardGrad.addColorStop(0, C.darkBg)
+    cardGrad.addColorStop(1, C.darkBgEnd)
+    ctx.fillStyle = cardGrad
+    this._roundRect(ctx, cardX, cardY, cardW, cardH, 32)
+    ctx.fill()
+    
+    ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0
 
-    // ── 标题 ──
-    ctx.fillStyle = '#1A1A1A'
-    ctx.font = 'bold 34px PingFang SC'
+    // 标题：每月可领取养老金
+    let y = cardY + 48
+    ctx.fillStyle = 'rgba(139,115,85,0.9)'
+    ctx.font = F.title
     ctx.textAlign = 'center'
-    ctx.fillText('养老金测算结果', W / 2, 70)
+    ctx.fillText('每月可领取养老金', W / 2, y)
+    y += 80
 
-    // ── 核心金额 ──
-    ctx.fillStyle = '#1677FF'
-    ctx.font = 'bold 68px DIN Alternate, PingFang SC'
+    // 金额（金色）
+    ctx.fillStyle = C.gold
+    ctx.font = F.amount
     ctx.textAlign = 'center'
-    const totalStr = d.totalAmount ? `¥${d.totalAmount}` : '--'
-    ctx.fillText(totalStr, W / 2, 185)
+    const totalStr = d.totalAmount ? ('¥' + d.totalAmount) : '--'
+    ctx.fillText(totalStr, W / 2, y)
+    y += 90
 
-    ctx.fillStyle = '#666666'
-    ctx.font = '26px PingFang SC'
-    ctx.fillText('元/月（基本养老金）', W / 2, 225)
-
-    // ── 分隔线 ──
-    ctx.strokeStyle = '#E5E5EA'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(60, 260)
-    ctx.lineTo(W - 60, 260)
-    ctx.stroke()
-
-    // ── 养老金构成（动态）────
-    ctx.textAlign = 'left'
-    let y = 310
-    const itemFont = '26px PingFang SC'
-    const valFont  = 'bold 26px DIN Alternate, PingFang SC'
-    const labelColor = '#333333'
-    const valColor   = '#1A1A1A'
-
-    // 基础养老金（必有）
-    ctx.fillStyle = labelColor
-    ctx.font = itemFont
-    ctx.fillText('基础养老金', 60, y)
-    ctx.fillStyle = valColor
-    ctx.font = valFont
-    ctx.textAlign = 'right'
-    ctx.fillText(`${d.basePension || '--'} 元`, W - 60, y)
-    y += 56
-
-    // 个人账户养老金（必有）
-    ctx.textAlign = 'left'
-    ctx.fillStyle = labelColor
-    ctx.font = itemFont
-    ctx.fillText('个人账户养老金', 60, y)
-    ctx.fillStyle = valColor
-    ctx.font = valFont
-    ctx.textAlign = 'right'
-    ctx.fillText(`${d.personalPension || '--'} 元`, W - 60, y)
-    y += 56
-
-    // 过渡性养老金（有条件）
-    if (d.transitionPension != null && Number(d.transitionPension) > 0) {
-      ctx.textAlign = 'left'
-      ctx.fillStyle = labelColor
-      ctx.font = itemFont
-      ctx.fillText('过渡性养老金', 60, y)
-      ctx.fillStyle = valColor
-      ctx.font = valFont
-      ctx.textAlign = 'right'
-      ctx.fillText(`${d.transitionPension} 元`, W - 60, y)
-      y += 56
+    // 退休信息标签（半透明金色背景）
+    if (d.retireInfo) {
+      const tagW = Math.min(W - 120, 400)
+      const tagX = (W - tagW) / 2
+      ctx.fillStyle = 'rgba(139,115,85,0.12)'
+      this._roundRect(ctx, tagX, y - 30, tagW, 44, 22)
+      ctx.fill()
+      ctx.fillStyle = 'rgba(139,115,85,0.95)'
+      ctx.font = F.region
+      ctx.textAlign = 'center'
+      ctx.fillText(d.retireInfo, W / 2, y)
     }
 
-    // 增发养老金（有条件）
-    if (d.extraPension != null && Number(d.extraPension) > 0) {
-      ctx.textAlign = 'left'
-      ctx.fillStyle = labelColor
-      ctx.font = itemFont
-      ctx.fillText('增发养老金', 60, y)
-      ctx.fillStyle = valColor
-      ctx.font = valFont
-      ctx.textAlign = 'right'
-      ctx.fillText(`${d.extraPension} 元`, W - 60, y)
-      y += 56
-    }
+    // ── 3. 地区标签 ──
+    y = cardY + cardH + 32
+    ctx.fillStyle = C.sub
+    ctx.font = F.region
+    ctx.textAlign = 'center'
+    ctx.fillText((d.provinceName || '') + (d.cityLabel ? ' · ' + d.cityLabel : ''), W / 2, y)
+    y += 48
 
-    // ── 分隔线 ──
-    ctx.strokeStyle = '#E5E5EA'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(60, y + 10)
-    ctx.lineTo(W - 60, y + 10)
-    ctx.stroke()
+    // ── 4. 养老金构成明细（白色卡片）──
+    ctx.fillStyle = C.text
+    ctx.font = F.section
+    ctx.textAlign = 'left'
+    ctx.fillText('养老金构成', 48, y)
     y += 46
 
-    // ── 关键参数 ──
-    ctx.fillStyle = '#86868B'
-    ctx.font = '22px PingFang SC'
+    const items = [
+      { label: '基础养老金', value: d.basePension },
+      { label: '个人账户养老金', value: d.personalPension },
+    ]
+    if (d.transitionPension != null && Number(d.transitionPension) > 0)
+      items.push({ label: '过渡性养老金', value: d.transitionPension })
+    if (d.extraPension != null && Number(d.extraPension) > 0)
+      items.push({ label: '其它加发', value: d.extraPension })
+
+    const detailH = items.length * 56 + 32
+    ctx.fillStyle = C.white
+    this._roundRect(ctx, 40, y, cardW, detailH, 20)
+    ctx.fill()
+
+    ctx.strokeStyle = C.line
+    ctx.lineWidth = 1
+    items.forEach((item, i) => {
+      const iy = y + 16 + i * 56
+      if (i > 0) {
+        ctx.beginPath()
+        ctx.moveTo(72, iy)
+        ctx.lineTo(W - 72, iy)
+        ctx.stroke()
+      }
+      ctx.fillStyle = C.sub
+      ctx.font = F.label
+      ctx.textAlign = 'left'
+      ctx.fillText(item.label, 72, iy + 33)
+      ctx.fillStyle = C.text
+      ctx.font = F.value
+      ctx.textAlign = 'right'
+      ctx.fillText((item.value || '--') + ' 元', W - 72, iy + 33)
+    })
+    y += detailH + 40
+
+    // ── 5. 计算参数（白色卡片，不含退休方式/年龄/日期）──
+    ctx.fillStyle = C.text
+    ctx.font = F.section
     ctx.textAlign = 'left'
+    ctx.fillText('计算参数', 48, y)
+    y += 46
 
     const params = []
-    if (d.exactAge)      params.push(`退休年龄：${d.exactAge}`)
-    if (d.workYears)      params.push(`累计缴费：${d.workYears}年`)
-    if (d.averageIndex)    params.push(`平均指数：${d.averageIndex}`)
-    if (d.provinceName)    params.push(`省份：${d.provinceName}`)
-    if (d.cityLabel)       params.push(`退休地：${d.cityLabel}`)
+    params.push({ label: '累计缴费年限', value: (d.workYears || '--') + ' 年' })
+    params.push({ label: '实际缴费年限', value: (d.actualYears || '--') + ' 年' })
+    if (d.sameYears != null && Number(d.sameYears) > 0)
+      params.push({ label: '视同缴费年限', value: d.sameYears + ' 年' })
+    params.push({ label: '平均缴费指数', value: String(d.averageIndex || '--') })
+    params.push({ label: '个人账户余额', value: (d.accountBalance || '--') + ' 元' })
+    params.push({ label: '计发月数', value: String(d.months || '--') })
+    params.push({ label: '退休地计发基数', value: (d.baseNumber || '--') + ' 元' })
 
-    // 两列显示
-    const colW = (W - 120) / 2
-    for (let i = 0; i < params.length; i++) {
-      const col = i % 2
-      const row = Math.floor(i / 2)
-      const x = 60 + col * (colW + 20)
-      const yy = y + row * 40
-      ctx.fillText(params[i], x, yy)
+    const paramCardH = params.length * 56 + 32
+    ctx.fillStyle = C.white
+    this._roundRect(ctx, 40, y, cardW, paramCardH, 20)
+    ctx.fill()
+
+    ctx.strokeStyle = C.line
+    ctx.lineWidth = 1
+    params.forEach((p, i) => {
+      const py = y + 16 + i * 56
+      if (i > 0) {
+        ctx.beginPath()
+        ctx.moveTo(72, py)
+        ctx.lineTo(W - 72, py)
+        ctx.stroke()
+      }
+      ctx.fillStyle = C.sub
+      ctx.font = F.label
+      ctx.textAlign = 'left'
+      ctx.fillText(p.label, 72, py + 33)
+      ctx.fillStyle = C.text
+      ctx.font = F.value
+      ctx.textAlign = 'right'
+      ctx.fillText(p.value, W - 72, py + 33)
+    })
+    y += paramCardH + 44
+
+    // ── 6. 温馨提示 ──
+    ctx.fillStyle = '#C9A96E'
+    ctx.font = F.note
+    ctx.textAlign = 'center'
+    ctx.fillText('💡 温馨提示：本测算结果仅供参考', W / 2, y)
+    y += 28
+    ctx.fillText('实际养老金以社保部门核定为准', W / 2, y)
+    y += 50
+
+    // ── 7. 小程序码（右下角）──
+    if (qrImg) {
+      const qs = 130, qx = W - 60 - qs
+      ctx.drawImage(qrImg, qx, y - 10, qs, qs)
+      ctx.fillStyle = C.faint
+      ctx.font = F.note
+      ctx.textAlign = 'center'
+      ctx.fillText('长按识别小程序码', qx + qs / 2, y + qs + 16)
     }
-    y += Math.ceil(params.length / 2) * 40 + 30
 
-    // ── 免责声明 ──
-    ctx.fillStyle = '#FF8F1F'
-    ctx.font = '20px PingFang SC'
+    // ── 8. 底部品牌 ──
+    ctx.fillStyle = '#CCCCCC'
+    ctx.font = F.brand
     ctx.textAlign = 'center'
-    ctx.fillText('⚠️ 结果仅供参考，实际以社保部门核定为准', W / 2, y)
+    ctx.fillText('养老金计算平台 · 数据来源各省人社厅', W / 2, H - 35)
+  },
 
-    // ── 底部品牌 ──
-    ctx.fillStyle = '#86868B'
-    ctx.font = '18px PingFang SC'
-    ctx.textAlign = 'center'
-    ctx.fillText('养老金计算平台 · 数据来源各省人社厅', W / 2, H - 40)
-  }
+
+  /**
+   * 绘制圆角矩形（辅助方法）
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} x - 左上角x
+   * @param {number} y - 左上角y
+   * @param {number} w - 宽度
+   * @param {number} h - 高度
+   * @param {number} r - 圆角半径
+   */
+  _roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    ctx.arcTo(x + w, y, x + w, y + h, r)
+    ctx.arcTo(x + w, y + h, x, y + h, r)
+    ctx.arcTo(x, y + h, x, y, r)
+    ctx.arcTo(x, y, x + w, y, r)
+    ctx.closePath()
+  },
 })

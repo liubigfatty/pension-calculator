@@ -1,293 +1,218 @@
-/* pages/result/result.wxss - 使用全局设计系统 v2.0 */
+/* pages/result/result.wxss - 增强版 v3（精致金融风格） */
 
 .container {
-  padding: 0;
-  background: var(--color-bg-page);
+  padding: 32rpx;
+  background: #F5F3F0;  /* 正元暖白 - 页面底 */
   min-height: 100vh;
 }
 
-/* 头部 */
-.result-header {
-  background: linear-gradient(135deg, var(--color-primary), #05a854);
-  padding: var(--space-xxl) var(--space-xl) var(--space-xl);
-  color: var(--color-text-white);
+/* ═════════════ 金额主卡片（精致渐变） ═════════════ */
+.amount-card {
+  background: linear-gradient(165deg, #171717 0%, #2A2A2A 100%);  /* 精致深色渐变 */
+  border-radius: 32rpx;  /* 更大的圆角 */
+  padding: 56rpx 40rpx 44rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24rpx;
+  box-shadow: 
+    0 8rpx 32rpx rgba(40,41,43,0.25),  /* 主阴影 */
+    0 2rpx 8rpx rgba(40,41,43,0.15),   /* 次阴影 */
+    inset 0 1rpx 0 rgba(139,115,85,0.12);  /* 顶部高光 */
+  position: relative;
+  overflow: hidden;
 }
 
-.result-title {
-  display: block;
-  font-size: var(--font-size-lg);  /* 38rpx */
-  font-weight: var(--font-weight-bold);
+/* 添加 subtle 纹理背景 */
+.amount-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 40%, rgba(139,115,85,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.amount-card-label {
+  font-size: 28rpx;
+  color: rgba(139,115,85,0.9);  /* 正元光 - 半透明 */
   letter-spacing: 2rpx;
+  font-weight: 400;
+  margin-bottom: 8rpx;
 }
 
-.result-subtitle {
-  display: block;
-  font-size: var(--font-size-sm);  /* 26rpx */
-  opacity: 0.8;
-  margin-top: var(--space-xs);
-}
-
-.total-amount {
-  text-align: center;
-  margin-top: var(--space-xl);
-}
-
-.total-label {
-  display: block;
-  font-size: var(--font-size-sm);  /* 26rpx */
-  opacity: 0.85;
-}
-
-.total-row {
+.amount-card-row {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-top: var(--space-md);
+  margin: 24rpx 0 16rpx;
 }
 
-.total-currency {
-  font-size: var(--font-size-xl);  /* 44rpx */
-  margin-right: var(--space-xs);
+.amount-card-symbol {
+  font-size: 48rpx;
+  color: #B8977D;  /* 正元光 - 金色 */
+  font-weight: 600;
+  margin-right: 8rpx;
 }
 
-.total-value {
-  font-size: 88rpx;  /* 保持大字体 */
-  font-weight: var(--font-weight-bold);
+.amount-card-value {
+  font-size: 96rpx;  /* 更大的金额 */
+  color: #B8977D;  /* 正元光 - 金色 */
+  font-weight: 700;  /* 更粗的字重 */
   line-height: 1;
+  letter-spacing: -3rpx;  /* 更紧凑的字母间距 */
+  font-family: -apple-system, 'Helvetica Neue', 'PingFang SC', sans-serif;
 }
 
-.total-unit {
+/* 退休信息标签 */
+.retire-tag {
+  margin-top: 24rpx;
+  background: rgba(139,115,85,0.12);  /* 半透明金色 */
+  border-radius: 48rpx;
+  padding: 12rpx 32rpx;
+  border: 1rpx solid rgba(139,115,85,0.18);  /* 精致边框 */
+}
+
+.retire-tag text {
+  font-size: 26rpx;
+  color: rgba(139,115,85,0.95);  /* 正元光 */
+  font-weight: 500;
+}
+
+/* 地区标签 */
+.region-text {
   display: block;
-  font-size: var(--font-size-sm);  /* 24rpx */
-  opacity: 0.7;
-  margin-top: var(--space-xs);
+  text-align: center;
+  font-size: 26rpx;
+  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  margin: 8rpx 0 28rpx;
+  letter-spacing: 1rpx;
 }
 
-/* 退休信息 */
-.retire-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-  padding: var(--space-md) var(--space-lg);
-  background: rgba(255,255,255,0.15);
-  border-radius: var(--radius-round);
-  align-self: flex-start;
-}
-
-.retire-label {
-  font-size: var(--font-size-base);  /* 28rpx */
-  font-weight: var(--font-weight-bold);
-}
-
-.retire-note {
-  font-size: var(--font-size-xs);  /* 22rpx */
-  opacity: 0.8;
-}
-
-/* 区块 */
-.section {
-  margin: var(--space-lg);
-  background: var(--color-bg-card);
-  border-radius: var(--radius-xl);
+/* ═════════════ 通用卡片样式（增强） ═════════════ */
+.card {
+  background: #F4F0E8;  /* Creamy Off-White - 暖白 */
+  border-radius: 24rpx;  /* 更大的圆角 */
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 24rpx;
+  box-shadow: 
+    0 4rpx 16rpx rgba(40,41,43,0.06),  /* 主阴影 */
+    0 1rpx 4rpx rgba(40,41,43,0.04);   /* 次阴影 */
+  border: 1rpx solid rgba(213,206,195,0.5);  /* 精致富质感边框 */
 }
 
-.section-title {
+.card-body {
+  padding: 8rpx 36rpx;  /* 更宽松的padding */
+}
+
+.card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-xl);
-  font-size: var(--font-size-md);  /* 30rpx */
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: 30rpx 0;  /* 更宽松的上下padding */
+  min-height: 56rpx;
 }
 
-.toggle-icon {
-  font-size: var(--font-size-base);  /* 26rpx */
-  color: var(--color-primary);
-  font-weight: var(--font-weight-normal);
+.card-label {
+  font-size: 28rpx;
+  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  font-weight: 400;
+  letter-spacing: 0.5rpx;
 }
 
-/* 养老金列表 */
-.pension-list {
-  padding: var(--space-xs) 0;
+.card-value {
+  font-size: 32rpx;  /* 更大的数值 */
+  color: #171717;  /* Deep Charcoal - 深色正文 */
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
 }
 
-.pension-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md) var(--space-xl);
+.card-value-blue {
+  color: #8B7355;  /* 正元金 */
+  font-weight: 600;
 }
 
-.pension-item.main {
-  background: #f8fdf9;
-  margin: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
+.card-divider {
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent 0%, #E0D8CC 15%, #E0D8CC 85%, transparent 100%);  /* 渐变分割线 */
+  margin: 0;
 }
 
-.pension-label {
-  font-size: var(--font-size-base);  /* 29rpx */
-  color: var(--color-text-secondary);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.pension-value {
-  font-size: var(--font-size-md);  /* 32rpx */
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-.main-val {
-  font-size: var(--font-size-lg);  /* 38rpx */
-  color: var(--color-primary);
-}
-
-.dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot-blue { background: #3498db; }
-.dot-green { background: #27ae60; }
-.dot-orange { background: #e67e22; }
-.dot-red { background: #e74c3c; }
-
-/* 详细参数 */
-.detail-list {
-  padding: var(--space-xs) 0;
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md) var(--space-xl);
-  border-bottom: 1rpx solid #f5f5f5;
-}
-
-.detail-item:last-child {
-  border-bottom: none;
-}
-
-.detail-label {
-  font-size: var(--font-size-base);  /* 27rpx */
-  color: var(--color-text-secondary);
-}
-
-.detail-value {
-  font-size: var(--font-size-base);  /* 28rpx */
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.detail-value.highlight {
-  color: #e67e22;
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-md);  /* 30rpx */
-}
-
-/* 按钮区域 */
+/* ═════════════ 按钮区域（增强） ═════════════ */
 .btn-area {
-  padding: var(--space-xl) var(--space-lg);
+  padding: 16rpx 0 24rpx;
   display: flex;
-  gap: var(--space-md);
-  background: var(--color-bg-card);
-  border-radius: var(--radius-xl);
-  margin: var(--space-lg);
-  box-shadow: var(--shadow-sm);
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 12rpx;
 }
 
 .btn-share {
-  flex: 1.2;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--color-text-white);
+  width: 100%;
+  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
+  color: #FFFFFF !important;
   border: none;
-  border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-base);  /* 30rpx */
-  font-weight: var(--font-weight-bold);
-  box-shadow: var(--shadow-primary);
+  border-radius: 48rpx;
+  padding: 28rpx 0;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  box-shadow: 0 8rpx 24rpx rgba(139,115,85,0.35);
 }
 
-.btn-share::after {
-  border: none;
+.btn-share::after { border: none; }
+
+.btn-report {
+  width: 100%;
+  background: #F4F0E8;
+  color: #8B7355 !important;
+  border: 2rpx solid #8B7355;
+  border-radius: 48rpx;
+  padding: 28rpx 0;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
 }
 
-.btn-save {
-  flex: 1;
-  background: var(--color-bg-card);
-  color: var(--color-primary);
-  border: 2rpx solid var(--color-primary);
-  border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-base);  /* 28rpx */
-  font-weight: var(--font-weight-medium);
-}
+.btn-report::after { border: none; }
 
-.btn-save::after {
-  border: none;
-}
-
-.btn-recalc {
-  flex: 0.8;
-  background: var(--color-bg-input);
-  color: var(--color-text-hint);
-  border: none;
-  border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  font-size: var(--font-size-base);  /* 28rpx */
-}
-
-.btn-recalc::after {
-  border: none;
-}
-
-/* 数据异常提示 */
 .error-tip {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx var(--space-xxl) 80rpx;
+  padding: 160rpx 48rpx 80rpx;
   min-height: 60vh;
   text-align: center;
 }
 
-.error-icon {
-  font-size: 80rpx;
-  margin-bottom: var(--space-xl);
-}
+.error-icon { font-size: 80rpx; margin-bottom: 32rpx; }
 
 .error-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-lg);
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #171717;  /* Deep Charcoal - 深色正文 */
+  margin-bottom: 24rpx;
 }
 
 .error-desc {
-  font-size: var(--font-size-base);
-  color: var(--color-text-hint);
-  line-height: var(--line-height-normal);
-  margin-bottom: var(--space-xxl);
+  font-size: 28rpx;
+  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  line-height: 1.6;
+  margin-bottom: 48rpx;
 }
 
-/* 声明 */
+/* ═════════════ 声明 ═════════════ */
 .disclaimer {
-  padding: var(--space-lg) var(--space-xxl) var(--space-xxl);
+  padding: 32rpx 16rpx 56rpx;
   text-align: center;
 }
 
 .disclaimer text {
-  font-size: var(--font-size-xs);  /* 23rpx */
-  color: var(--color-text-hint);
+  font-size: 24rpx;
+  color: #AAAAAA;
+  line-height: 1.6;
+  letter-spacing: 0.5rpx;
 }

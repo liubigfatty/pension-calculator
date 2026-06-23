@@ -1,111 +1,200 @@
-/* pages/step1/step1.wxss - 使用全局设计系统 v2.0 */
+/* pages/step1/step1.wxss - 个人信息页样式 */
 
-/* 进度条（使用全局.progress-bar系统，覆盖部分样式） */
-.progress-bar {
-  margin-bottom: var(--space-xxl);
+.container {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding: 32rpx;
+  box-sizing: border-box;
 }
 
-/* 表单（使用全局.form-group和.form-label，无需重复定义） */
+/* 进度条 */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx 0 40rpx;
+}
 
-/* 选择器（基于全局.picker-box，增加选中状态） */
-.picker-value {
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-dot {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #D5CEC3;
+  color: #AAAAAA;
+  font-size: 22rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-step.active .step-dot {
+  background: #8B7355;
+  color: #FFFFFF;
+}
+
+.progress-step.done .step-dot {
+  background: #8B7355;
+  color: #FFFFFF;
+}
+
+.step-label {
+  font-size: 20rpx;
+  color: #AAAAAA;
+  margin-top: 8rpx;
+}
+
+.progress-step.active .step-label {
+  color: #8B7355;
+}
+
+.progress-line {
+  width: 80rpx;
+  height: 4rpx;
+  background: #D5CEC3;
+  margin: 0 16rpx;
+  margin-bottom: 28rpx;
+}
+
+/* 表单卡片 */
+.form-card {
+  background: var(--color-bg-card);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(40,41,43,0.08);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.step-number {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #8B7355;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 表单项 */
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  margin-bottom: 12rpx;
+}
+
+.picker-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-round);
-  font-size: var(--font-size-base);
   background: var(--color-bg-input);
-  border: 2rpx solid transparent;
-  transition: all var(--transition-fast);
-}
-
-.picker-value.selected {
+  border: 2rpx solid var(--color-border);
+  border-radius: 48rpx;
+  padding: 24rpx 32rpx;
+  font-size: 28rpx;
   color: var(--color-text-primary);
-  background: var(--color-bg-card);
+  transition: all 0.2s ease;
+}
+
+.picker-box.selected {
   border-color: var(--color-primary);
-  box-shadow: 0 2rpx 12rpx rgba(7,193,96,0.08);
+  background: var(--color-bg-card);
 }
 
-.picker-value.placeholder {
-  color: var(--color-text-hint);
-}
-
-.picker-arrow {
-  font-size: var(--font-size-md);
-  color: var(--color-text-hint);
-}
-
-/* 信息框（单基数省份） */
-.info-box {
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  background: #f0faf5;
-  border: 2rpx solid #d4edda;
-}
-
-.info-text {
-  font-size: var(--font-size-base);
-  color: #155724;
-  font-weight: var(--font-weight-medium);
-  display: block;
-}
-
-.info-sub {
-  font-size: var(--font-size-sm);
-  color: #6c9b78;
-  display: block;
-  margin-top: var(--space-xs);
-}
-
-/* 提示框（使用全局.tip-box，覆盖部分样式） */
-.tip-box {
-  margin-bottom: var(--space-xxl);
-}
-
-.tip-icon { 
-  font-size: var(--font-size-md); 
-  margin-right: var(--space-sm); 
-  flex-shrink: 0; 
-}
-
-.tip-content {
-  display: flex;
-  flex-direction: column;
+.picker-value {
   flex: 1;
 }
 
-.tip-text { 
-  font-size: var(--font-size-base); 
-  color: var(--color-info); 
-  font-weight: var(--font-weight-medium); 
-  line-height: var(--line-height-tight); 
+.picker-arrow {
+  font-size: 20rpx;
+  color: var(--color-text-hint);
+  margin-left: 12rpx;
 }
 
-.tip-sub { 
-  font-size: var(--font-size-sm); 
-  color: var(--color-text-hint); 
-  margin-top: var(--space-xs); 
-  line-height: var(--line-height-tight); 
+/* 单选组（退休方案） */
+.radio-group {
+  display: flex;
+  gap: 20rpx;
 }
 
-/* 按钮区域（使用全局.btn-area，覆盖部分样式） */
-.btn-area { 
-  margin-top: var(--space-md); 
+.radio-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  border: 2rpx solid var(--color-border);
+  border-radius: 48rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
+  transition: all 0.2s ease;
+}
+
+.radio-item.active {
+  background: #8B7355;
+  color: #FFFFFF;
+  border-color: #8B7355;
+}
+
+/* 下一步按钮 */
+.btn-area {
+  margin-top: 60rpx;
+  padding: 0 0 60rpx;
 }
 
 .btn-next {
   width: 100%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--color-text-white);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
+  color: #FFFFFF !important;
   border: none;
-  border-radius: var(--radius-round);
-  padding: var(--space-md) 0;
-  letter-spacing: 4rpx;
+  border-radius: 48rpx;
+  padding: 28rpx 0;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 6rpx;
+  box-shadow: 0 8rpx 24rpx rgba(139,115,85,0.35);
+  position: relative;
+  overflow: hidden;
+  line-height: normal;
 }
 
-.btn-next::after { 
-  border: none; 
+.btn-next::after {
+  border: none;
+}
+
+/* ═══════════════════════════════
+   日期选择器（年月并排）
+   ═══════════════════════════════ */
+.date-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.date-picker {
+  flex: 1;
+  min-width: 0;
 }

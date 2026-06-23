@@ -116,8 +116,12 @@ module.exports = {
     {
       "code": "hubei",
       "name": "湖北省",
-      "cityTypes": ["prov"],
-      "cityTypeLabels": { "prov": "全省统一基数" },
+      "cityTypes": ["prov", "wh", "tier3"],
+      "cityTypeLabels": {
+        "prov": "全省其他地区（二档）",
+        "wh": "武汉市及省直（一档）",
+        "tier3": "三档城市（孝感/荆州/黄冈等）"
+      },
       "hasExtra": false,
       "extraType": null,
       "extraLabel": null

@@ -1,110 +1,88 @@
-<!--pages/step2/step2.wxml - 优化版（更紧凑）-->
+<!--pages/step2/step2.wxml - 缴费信息页（新 step2）-->
 <view class="step-container">
   <!-- 进度条 -->
   <view class="progress-bar">
     <view class="progress-step done">
       <view class="step-dot">1</view>
-      <text class="step-label">选择地区</text>
+      <text class="step-label">测算</text>
     </view>
-    <view class="step-line active"></view>
-    <view class="progress-step active">
+    <view class="step-line done"></view>
+    <view class="progress-step done">
       <view class="step-dot">2</view>
       <text class="step-label">个人信息</text>
     </view>
-    <view class="step-line"></view>
-    <view class="progress-step">
+    <view class="step-line active"></view>
+    <view class="progress-step active">
       <view class="step-dot">3</view>
       <text class="step-label">缴费信息</text>
     </view>
   </view>
 
-  <!-- 标题 -->
-  <text class="page-title">填写个人信息</text>
-  <text class="page-desc">请准确填写，影响计算结果</text>
-
-  <!-- 性别选择 -->
-  <view class="form-group">
-    <text class="form-label"><text class="form-required">*</text> 性别</text>
-    <view class="radio-group">
-      <view class="radio-item {{gender === 'male' ? 'active' : ''}}" bindtap="onGenderSelect" data-value="male">
-        <text class="radio-text">♂ 男</text>
-      </view>
-      <view class="radio-item {{gender === 'female' ? 'active' : ''}}" bindtap="onGenderSelect" data-value="female">
-        <text class="radio-text">♀ 女</text>
-      </view>
+  <!-- 表单卡片 -->
+  <view class="form-card">
+    <view class="form-card-header">
+      <view class="form-card-num">①</view>
+      <text class="form-card-title">缴费信息</text>
     </view>
-  </view>
 
-  <!-- 人员类型选择 -->
-  <view class="form-group" wx:if="{{gender}}">
-    <text class="form-label"><text class="form-required">*</text> 参保身份</text>
-    <view class="radio-group">
-      <view class="radio-item {{identity === 'employee' ? 'active' : ''}}" bindtap="onIdentitySelect" data-value="employee">
-        <text class="radio-text">企业职工</text>
-      </view>
-      <view class="radio-item {{identity === 'flexible' ? 'active' : ''}}" bindtap="onIdentitySelect" data-value="flexible">
-        <text class="radio-text">灵活就业</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 女职工退休年龄 -->
-  <view class="form-group" wx:if="{{gender === 'female' && identity === 'employee'}}">
-    <text class="form-label"><text class="form-required">*</text> 退休年龄类型</text>
-    <view class="radio-group">
-      <view class="radio-item {{femaleEmployeeAge === '50' ? 'active' : ''}}" bindtap="onFemaleAgeSelect" data-value="50">
-        <text class="radio-text">工人（50岁）</text>
-      </view>
-      <view class="radio-item {{femaleEmployeeAge === '55' ? 'active' : ''}}" bindtap="onFemaleAgeSelect" data-value="55">
-        <text class="radio-text">干部（55岁）</text>
-      </view>
-    </view>
-    <text class="form-hint">根据岗位性质选择，不确定选50岁即可</text>
-  </view>
-
-  <!-- 出生日期 -->
-  <view class="form-group" wx:if="{{identity}}">
-    <text class="form-label"><text class="form-required">*</text> 出生年月</text>
-    <view class="date-row">
-      <picker mode="selector" range="{{birthYearRange}}" value="{{birthYear - birthYearRange[0]}}" bindchange="onBirthYearChange" class="picker-year">
-        <view class="date-picker">{{birthYear}}年</view>
-      </picker>
-      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{birthMonth-1}}" bindchange="onBirthMonthChange" class="picker-month">
-        <view class="date-picker">{{birthMonth}}月</view>
+    <!-- 缴费基数类型 -->
+    <view class="form-item">
+      <text class="form-label"><text class="form-required">*</text> 缴费基数类型</text>
+      <picker mode="selector" range="{{baseTypeNames}}" value="{{baseTypeIndex}}" bindchange="onBaseTypeChange" class="form-picker">
+        <view class="picker-content {{baseTypeIndex >= 0 ? '' : 'placeholder'}}">{{baseTypeIndex >= 0 ? baseTypeNames[baseTypeIndex] : '请选择基数类型'}}</view>
+        <text class="picker-arrow">▼</text>
       </picker>
     </view>
-  </view>
 
-  <!-- 参加工作时间 -->
-  <view class="form-group" wx:if="{{birthYear && identity}}">
-    <text class="form-label"><text class="form-required">*</text> 参加工作时间</text>
-    <view class="date-row">
-      <picker mode="selector" range="{{workYearRange}}" value="{{workYear - workYearRange[0]}}" bindchange="onWorkYearChange" class="picker-year">
-        <view class="date-picker {{workYear >= birthYear + 16 ? '' : 'warn'}}">{{workYear}}年</view>
-      </picker>
-      <picker mode="selector" range="{{['1','2','3','4','5','6','7','8','9','10','11','12']}}" value="{{workMonth-1}}" bindchange="onWorkMonthChange" class="picker-month">
-        <view class="date-picker">{{workMonth}}月</view>
+    <!-- 缴费档次（灵活就业） -->
+    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
+      <text class="form-label">缴费档次（灵活就业）</text>
+      <picker mode="selector" range="{{levelNames}}" value="{{levelIndex}}" bindchange="onLevelChange" class="form-picker">
+        <view class="picker-content {{levelIndex >= 0 ? '' : 'placeholder'}}">{{levelIndex >= 0 ? levelNames[levelIndex] : '请选择缴费档次'}}</view>
+        <text class="picker-arrow">▼</text>
       </picker>
     </view>
-    <text class="form-hint" wx:if="{{workYear < birthYear + 16}}">⚠️ 参加工作年龄小于16岁，请确认</text>
-  </view>
 
-  <!-- 退休方式选择 -->
-  <view class="form-group" wx:if="{{workYear && workMonth}}">
-    <text class="form-label"><text class="form-required">*</text> 退休方式</text>
-    <view class="radio-group">
-      <view class="radio-item {{retirementType === 'normal' ? 'active' : ''}}" bindtap="onRetirementTypeSelect" data-value="normal">
-        <text class="radio-text">法定年龄退休</text>
-      </view>
-      <view class="radio-item {{retirementType === 'early' ? 'active' : ''}}" bindtap="onRetirementTypeSelect" data-value="early">
-        <text class="radio-text">弹性提前退休</text>
+    <!-- 历年缴费指数（按实际缴费指数） -->
+    <view class="form-item" wx:if="{{baseTypeIndex == 2}}">
+      <text class="form-label">历年缴费指数</text>
+      <view class="input-row">
+        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="0.6~3.0" bindinput="onIndexInput"/>
+        <text class="input-unit">指数</text>
       </view>
     </view>
+
+    <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->
+    <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 2}}">
+      <text class="form-label">双指数省份（过渡性养老金指数）</text>
+      <view class="double-index-row">
+        <view class="input-row flex-1">
+          <input class="input-box" type="digit" value="{{transIndexInput}}" placeholder="过渡性指数" bindinput="onTransIndexInput"/>
+          <text class="input-unit">过渡指数</text>
+        </view>
+        <view class="input-row flex-1">
+          <input class="input-box" type="digit" value="{{oldIndexInput}}" placeholder="老办法指数" bindinput="onOldIndexInput"/>
+          <text class="input-unit">老办法指数</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 个人账户余额 -->
+    <view class="form-item">
+      <text class="form-label"><text class="form-required">*</text> 个人账户余额（估算）</text>
+      <view class="input-row">
+        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额" bindinput="onBalanceInput"/>
+        <text class="input-unit">元</text>
+      </view>
+      <text class="form-hint">不清楚可查看【小贴士】</text>
+    </view>
+
+    <!-- 计算按钮 -->
+    <button class="btn-submit" bindtap="onCalculate">计算养老金</button>
   </view>
 
-  <!-- 按钮 -->
-  <view class="btn-area">
-    <button class="btn-prev" bindtap="onPrev">上一步</button>
-    <button class="btn-next" bindtap="onNext">下一步</button>
+  <!-- 返回按钮 -->
+  <view class="btn-back-wrap">
+    <button class="btn-back" bindtap="onPrev">← 返回上一步</button>
   </view>
 </view>

@@ -1,159 +1,99 @@
-// pages/step1/step1.js
+// pages/step1/step1.js - 个人信息页（整合版）
 const app = getApp()
-
-// 省份配置：名称 + 城市类型选项（对应引擎的 cityType）
-// 注意：此配置需与 assets/province-meta.js 保持同步
-const PROVINCE_CONFIG = [
-  { code: 'jilin', name: '吉林省', cityTypes: [
-    { type: 'changchun', label: '长春市（独立基数）' },
-    { type: 'prov', label: '全省其他地区' }
-  ]},
-  { code: 'liaoning', name: '辽宁省', cityTypes: [
-    { type: 'shenyang', label: '沈阳市（独立基数）' },
-    { type: 'dalian', label: '大连市（独立基数）' },
-    { type: 'prov', label: '全省其他地区' }
-  ]},
-  { code: 'heilongjiang', name: '黑龙江省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'beijing', name: '北京市', cityTypes: [
-    { type: 'prov', label: '全市统一' }
-  ]},
-  { code: 'shanghai', name: '上海市', cityTypes: [
-    { type: 'prov', label: '全市统一' }
-  ]},
-  { code: 'tianjin', name: '天津市', cityTypes: [
-    { type: 'prov', label: '全市统一' }
-  ]},
-  { code: 'hebei', name: '河北省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'shanxi', name: '山西省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'shandong', name: '山东省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'henan', name: '河南省', cityTypes: [
-    { type: 'zhengzhou', label: '郑州市（独立基数）' },
-    { type: 'prov', label: '全省其他地区' }
-  ]},
-  { code: 'jiangsu', name: '江苏省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'zhejiang', name: '浙江省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'anhui', name: '安徽省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'fujian', name: '福建省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'jiangxi', name: '江西省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'hubei', name: '湖北省', cityTypes: [
-    { type: 'wh', label: '武汉市及省直（一档）' },
-    { type: 'prov', label: '全省其他地区（二档）' },
-    { type: 'tier3', label: '三档城市（孝感/荆州/黄冈等）' }
-  ]},
-  { code: 'hunan', name: '湖南省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'guangdong', name: '广东省', cityTypes: [
-    { type: 'shenzhen', label: '深圳市（独立体系）' },
-    { type: 'prov', label: '全省其他地区' }
-  ]},
-  { code: 'guangxi', name: '广西壮族自治区', cityTypes: [
-    { type: 'prov', label: '全区统一基数' }
-  ]},
-  { code: 'hainan', name: '海南省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'chongqing', name: '重庆市', cityTypes: [
-    { type: 'prov', label: '全市统一' }
-  ]},
-  { code: 'sichuan', name: '四川省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'guizhou', name: '贵州省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'yunnan', name: '云南省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'shaanxi', name: '陕西省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'gansu', name: '甘肃省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'qinghai', name: '青海省', cityTypes: [
-    { type: 'prov', label: '全省统一基数' }
-  ]},
-  { code: 'neimenggu', name: '内蒙古自治区', cityTypes: [
-    { type: 'prov', label: '全区统一基数' }
-  ]},
-  { code: 'xinjiang', name: '新疆维吾尔自治区', cityTypes: [
-    { type: 'prov', label: '全区统一基数' }
-  ]},
-  { code: 'xizang', name: '西藏自治区', cityTypes: [
-    { type: 'prov', label: '全区统一基数' }
-  ]},
-  { code: 'ningxia', name: '宁夏回族自治区', cityTypes: [
-    { type: 'prov', label: '全区统一基数' }
-  ]}
-]
 
 Page({
   data: {
-    provinceNames: [],
+    // 参保地
+    provinceNames: ['北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江','上海','江苏','浙江','安徽','福建','江西','山东','河南','湖北','湖南','广东','广西','海南','重庆','四川','贵州','云南','西藏','陕西','甘肃','青海','宁夏','新疆'],
     provinceIndex: -1,
-    cityTypeNames: [],
-    cityTypeIndex: -1,
-    currentCityTypes: []
+
+    // 退休类型（整合性别+人员类型）
+    retireTypeNames: [
+      '企业职工男',
+      '企业职工女（原50岁退休）',
+      '企业职工女（原55岁退休）',
+      '灵活就业男',
+      '灵活就业女'
+    ],
+    retireTypeIndex: -1,
+
+    // 出生日期（格式：1970-06）
+    birthDate: '',
+    today: '',
+
+    // 参加工作时间（格式：1995-07）
+    workDate: '',
+
+    // 退休方案
+    retirePlan: 'normal'  // 'normal' | 'early'
   },
 
   onLoad() {
-    const names = PROVINCE_CONFIG.map(p => p.name)
-    this.setData({ provinceNames: names })
-  },
+    // 今天的日期（用于限制日期选择器上限）
+    const now = new Date()
+    const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
 
-  // 选择省份 → 动态更新城市类型列表
-  onProvinceChange(e) {
-    const index = parseInt(e.detail.value)
-    const prov = PROVINCE_CONFIG[index]
-    const cityTypeNames = prov.cityTypes.map(c => c.label)
+    // 恢复已填数据或使用默认值
+    const saved = wx.getStorageSync('form_step1') || {}
 
     this.setData({
-      provinceIndex: index,
-      cityTypeNames,
-      cityTypeIndex: 0, // 默认选第一个
-      currentCityTypes: prov.cityTypes
+      today: today,
+      provinceIndex: saved.provinceIndex ?? -1,
+      retireTypeIndex: saved.retireTypeIndex ?? -1,
+      // 出生日期：恢复已填或使用默认（1970-06）
+      birthDate: saved.birthDate || '1970-06',
+      // 参加工作时间：恢复已填或使用默认（1995-07）
+      workDate: saved.workDate || '1995-07',
+      retirePlan: saved.retirePlan || 'normal'
     })
   },
 
-  // 选择城市/基数类型
-  onCityTypeChange(e) {
-    this.setData({ cityTypeIndex: parseInt(e.detail.value) })
+  // 选择省份
+  onProvinceChange(e) {
+    this.setData({ provinceIndex: Number(e.detail.value) })
   },
 
-  // 下一步
-  onNext() {
-    if (this.data.provinceIndex < 0 || this.data.provinceIndex === undefined) {
-      wx.showToast({ title: '请选择参保省份', icon: 'none' })
-      return
-    }
+  // 选择退休类型
+  onRetireTypeChange(e) {
+    this.setData({ retireTypeIndex: Number(e.detail.value) })
+  },
 
-    const prov = PROVINCE_CONFIG[this.data.provinceIndex]
-    const selectedCity = this.data.currentCityTypes[this.data.cityTypeIndex]
+  // 选择出生日期
+  onBirthDateChange(e) {
+    // 只取年月部分（格式：1970-06）
+    const date = e.detail.value  // 格式：1970-06-01
+    const yearMonth = date.substring(0, 7)  // 取前7位：1970-06
+    this.setData({ birthDate: yearMonth })
+  },
 
-    app.globalData.calcInput = Object.assign(app.globalData.calcInput || {}, {
-      province: prov.code,
-      provinceName: prov.name,
-      cityType: selectedCity.type,
-      cityLabel: selectedCity.label
+  // 选择参加工作时间
+  onWorkDateChange(e) {
+    const date = e.detail.value
+    const yearMonth = date.substring(0, 7)
+    this.setData({ workDate: yearMonth })
+  },
+
+  // 选择退休方案
+  onRetirePlanChange(e) {
+    this.setData({ retirePlan: e.currentTarget.dataset.value })
+  },
+
+  // 校验并通过
+  goNext() {
+    const d = this.data
+
+    if (d.provinceIndex < 0) return wx.showToast({ title: '请选择参保地', icon: 'none' })
+    if (d.retireTypeIndex < 0) return wx.showToast({ title: '请选择退休类型', icon: 'none' })
+    if (!d.birthDate) return wx.showToast({ title: '请选择出生日期', icon: 'none' })
+    if (!d.workDate) return wx.showToast({ title: '请选择参加工作时间', icon: 'none' })
+
+    // 保存数据到缓存（只保存年月部分）
+    wx.setStorageSync('form_step1', {
+      provinceIndex: d.provinceIndex,
+      retireTypeIndex: d.retireTypeIndex,
+      birthDate: d.birthDate,  // 格式：1970-06
+      workDate: d.workDate,    // 格式：1995-07
+      retirePlan: d.retirePlan
     })
 
     wx.navigateTo({ url: '/pages/step2/step2' })

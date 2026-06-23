@@ -5,28 +5,28 @@
    ============================================ */
 
 page {
-  /* 颜色系统 */
-  --color-primary: #07c160;
-  --color-primary-dark: #06ae56;
-  --color-primary-light: #e6f7ff;
-  
+  /* 颜色系统 - 正元品牌色板（校准到官方VI） */
+  --color-primary: #8B7355;           /* 正元金（官方VI精确色值） */
+  --color-primary-dark: #A08566;      /* 正元尊（深金色） */
+  --color-primary-light: #FEF0D6;    /* 正元光-浅底（暖金） */
+
   --color-success: #07c160;
-  --color-warning: #ffc107;
-  --color-danger: #e74c3c;
-  --color-info: #1577d6;
+  --color-warning: #B8977D;          /* 正元光-警告（亮金色） */
+  --color-danger: #c0392b;
+  --color-info: #005F6B;            /* Subtle Teal - 强调 */
   
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #666;
-  --color-text-hint: #999;
-  --color-text-white: #fff;
-  
-  --color-bg-page: #f5f5f5;
-  --color-bg-card: #fff;
-  --color-bg-input: #f5f5f5;
-  --color-bg-disabled: #f5f5f5;
-  
-  --color-border: #e0e0e0;
-  --color-border-focus: #07c160;
+  --color-text-primary: #171717;      /* 纯黑（官方VI深色背景对应文字） */
+  --color-text-secondary: #6C584B;  /* Warm Taupe - 暖棕（次要文字） */
+  --color-text-hint: #A3A3A3;      /* Cool Gray - 提示文字 */
+  --color-text-white: #FFFFFF;       /* 白色（深色背景用） */
+
+  --color-bg-page: #F5F3F0;         /* 暖白 - 页面底 */
+  --color-bg-card: #F4F0E8;        /* Creamy Off-White - 卡片底 */
+  --color-bg-input: #FAF8F5;        /* 输入框底 - 暖白 */
+  --color-bg-disabled: #E8E0D0;     /* 禁用态 - 暖灰 */
+
+  --color-border: #D5CEC3;          /* 暖棕边框 - 浅 */
+  --color-border-focus: #8B7355;     /* 正元金 - 聚焦边框 */
   
   /* 字体系统 - 优化：更紧凑 */
   --font-size-xs: 20rpx;    /* 辅助文字（缩小） */
@@ -61,10 +61,10 @@ page {
   --radius-round: 50rpx;  /* 全圆角 */
   
   /* 阴影系统 */
-  --shadow-sm: 0 2rpx 8rpx rgba(0,0,0,0.05);
-  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.08);
-  --shadow-lg: 0 8rpx 32rpx rgba(0,0,0,0.12);
-  --shadow-primary: 0 8rpx 32rpx rgba(7,193,96,0.35);
+  --shadow-sm: 0 2rpx 8rpx rgba(40,41,43,0.06);
+  --shadow-md: 0 4rpx 16rpx rgba(40,41,43,0.10);
+  --shadow-lg: 0 8rpx 32rpx rgba(40,41,43,0.14);
+  --shadow-primary: 0 8rpx 32rpx rgba(139,115,85,0.30);  /* 正元金阴影 */
   
   /* 过渡动画 */
   --transition-fast: 0.2s ease;
@@ -163,13 +163,18 @@ page {
 /* 选择器（统一风格：灰底、全圆角） */
 .picker-box {
   background: var(--color-bg-input);
-  border: 2rpx solid transparent;
-  border-radius: var(--radius-round);
+  border: 2rpx solid var(--color-border);
+  border-radius: 48rpx;
   padding: var(--space-md) var(--space-lg);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
   position: relative;
   transition: all var(--transition-fast);
+}
+
+.picker-box.selected {
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
 }
 
 .picker-box:active {
@@ -236,9 +241,9 @@ page {
 }
 
 .radio-item.active {
-  background: var(--color-primary);
+  background: #8B7355;
   color: var(--color-text-white);
-  border-color: var(--color-primary);
+  border-color: #8B7355;
 }
 
 /* 日期选择器 */
@@ -256,14 +261,14 @@ page {
    按钮系统（优化：更紧凑）
    ============================================ */
 
-/* 主按钮 */
+/* 主按钮 - 正元金渐变 */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
   color: var(--color-text-white);
   border: none;
   border-radius: var(--radius-round);
-  padding: var(--space-sm) 0;  /* 缩小padding */
-  font-size: var(--font-size-base);  /* 缩小字号 */
+  padding: var(--space-sm) 0;
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   width: 100%;
   text-align: center;
@@ -283,14 +288,14 @@ page {
   color: #fff;
 }
 
-/* 次按钮 */
+/* 次按钮 - 正元金边框 */
 .btn-secondary {
   background: var(--color-bg-card);
-  color: var(--color-primary);
-  border: 2rpx solid var(--color-primary);
+  color: #8B7355;
+  border: 2rpx solid #8B7355;
   border-radius: var(--radius-round);
-  padding: var(--space-sm) 0;  /* 缩小padding */
-  font-size: var(--font-size-base);  /* 缩小字号 */
+  padding: var(--space-sm) 0;
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   width: 100%;
   text-align: center;
@@ -298,7 +303,7 @@ page {
 }
 
 .btn-secondary:active {
-  background: var(--color-primary-light);
+  background: #FDF5E6;
 }
 
 /* 底部按钮固定区域 */
@@ -352,11 +357,11 @@ page {
 .tip-box {
   display: flex;
   align-items: flex-start;
-  padding: var(--space-sm) var(--space-md);  /* 缩小padding */
-  background: var(--color-primary-light);
+  padding: var(--space-sm) var(--space-md);
+  background: #FEFCFA;
   border-radius: var(--radius-md);
-  border-left: 6rpx solid var(--color-warning);  /* 缩小边框 */
-  margin-bottom: var(--space-md);  /* 缩小margin */
+  border-left: 6rpx solid #A08566;  /* 深金色边框（替代 Warm Taupe） */
+  margin-bottom: var(--space-md);
 }
 
 .tip-icon {
@@ -408,14 +413,14 @@ page {
 }
 
 .progress-step.active .step-dot {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: #8B7355;
+  border-color: #8B7355;
   color: var(--color-text-white);
 }
 
 .progress-step.done .step-dot {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: #8B7355;
+  border-color: #8B7355;
   color: var(--color-text-white);
 }
 
@@ -460,12 +465,12 @@ page {
 }
 
 .result-amount {
-  font-size: 64rpx;  /* 缩小：原来72rpx */
+  font-size: 64rpx;
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: #8B7355;  /* 正元金 - 金额（校准） */
   text-align: center;
   display: block;
-  margin-bottom: var(--space-md);  /* 缩小margin */
+  margin-bottom: var(--space-md);
 }
 
 .result-unit {

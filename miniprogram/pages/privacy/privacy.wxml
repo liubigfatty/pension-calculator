@@ -2,41 +2,120 @@
 <view class="container">
   <view class="header">
     <text class="title">隐私保护指引</text>
+    <text class="subtitle">生效日期：2026年6月22日</text>
+    <text class="version">版本：v1.0</text>
   </view>
 
   <view class="content">
-    <text class="section-title">1. 信息收集</text>
-    <text class="section-content">
-      本小程序为计算养老金所需，会收集以下信息：
-      - 省份（用于加载对应省份的计算规则）
-      - 参保时间、退休时间（用于计算缴费年限）
-      - 缴费基数（用于计算个人账户金额）
-      - 视同缴费年限（如有，用于计算过渡性养老金）
-      
-      以上信息仅用于养老金计算，不会分享给第三方。
-    </text>
 
-    <text class="section-title">2. 信息存储</text>
-    <text class="section-content">
-      您的计算数据仅保存在本地手机，不会上传到服务器。
-      您可以随时清除小程序缓存来删除这些数据。
-    </text>
+    <view class="section">
+      <text class="section-title">一、我们收集哪些信息</text>
+      <text class="section-content">
+        为提供养老金计算服务，本小程序仅在您主动输入时收集以下信息：
+      </text>
+      <view class="info-list">
+        <view class="info-item">
+          <text class="info-label">参保省份/地区</text>
+          <text class="info-desc">用于加载对应省份的养老金计发基数和计算规则</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">性别、出生年月、参加工作时间</text>
+          <text class="info-desc">用于确定退休年龄和缴费年限</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">参保身份（企业职工/灵活就业）</text>
+          <text class="info-desc">用于选择对应的养老金计算公式</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">平均缴费指数、个人账户余额</text>
+          <text class="info-desc">用于计算基础养老金和个人账户养老金金额</text>
+        </view>
+      </view>
+      <text class="section-content highlight">
+        ⚠️ 本小程序不收集您的姓名、身份证号、手机号、银行卡号等个人敏感信息。
+      </text>
+    </view>
 
-    <text class="section-title">3. 您的权利</text>
-    <text class="section-content">
-      根据《个人信息保护法》，您有权：
-      - 查阅我们收集的信息（在小程序设置里查看）
-      - 要求删除您的信息（清除小程序缓存即可）
-      - 撤回授权（在小程序设置里操作）
-    </text>
+    <view class="section">
+      <text class="section-title">二、我们如何使用信息</text>
+      <text class="section-content">
+        收集的信息仅用于以下目的：
+      </text>
+      <text class="section-content">
+        • 在本小程序内进行养老金测算计算\n
+        • 生成养老金结果报告和分享图片\n
+        • 在本地缓存您的输入信息，方便下次使用时自动填充
+      </text>
+      <text class="section-content">
+        我们不会将您的信息分享、出售或转让给任何第三方。
+      </text>
+    </view>
 
-    <text class="section-title">4. 联系方式</text>
-    <text class="section-content">
-      如有疑问，请联系：example@email.com
-    </text>
+    <view class="section">
+      <text class="section-title">三、信息存储与安全</text>
+      <text class="section-content">
+        您的所有输入数据仅存储在您手机的本地缓存中（微信小程序本地存储），不会上传至任何服务器。您可以随时通过以下方式删除这些数据：
+      </text>
+      <text class="section-content">
+        • 微信 → 小程序 → 长按本小程序 → 删除\n
+        • 微信 → 我 → 设置 → 通用 → 存储空间 → 清理缓存
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">四、您的权利</text>
+      <text class="section-content">
+        根据《中华人民共和国个人信息保护法》，您享有以下权利：
+      </text>
+      <text class="section-content">
+        • 查阅权：可查看小程序已存储的信息\n
+        • 更正权：可修改输入的计算参数\n
+        • 删除权：可清除本地缓存删除所有数据\n
+        • 撤回同意权：可随时撤回对信息处理的授权
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">五、第三方服务</text>
+      <text class="section-content">
+        本小程序使用微信云函数进行养老金计算引擎运算。云函数仅接收计算参数（省份代码、缴费年限等），不接收任何个人身份信息。计算完成后立即返回结果，不会持久化存储您的参数。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">六、免责声明</text>
+      <text class="section-content">
+        • 本小程序提供的养老金测算结果仅供参考，不构成任何法律承诺\n
+        • 实际养老金金额以当地社保部门的核定结果为准\n
+        • 计算基于当前公开政策文件，如遇政策调整，结果可能发生变化\n
+        • 本小程序不对因使用测算结果而产生的任何决策后果承担责任
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">七、联系我们</text>
+      <text class="section-content">
+        如您对本隐私保护指引有任何疑问、意见或建议，请通过以下方式联系：
+      </text>
+      <text class="section-content contact">
+        📧 邮箱：1404132931@qq.com\n
+        📍 地址：吉林省长春市
+      </text>
+      <text class="section-content">
+        我们将在收到您的反馈后15个工作日内予以回复。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">八、协议更新</text>
+      <text class="section-content">
+        我们可能会适时修订本隐私保护指引。更新后的指引将通过小程序内弹窗通知您。继续使用本小程序即表示您同意更新后的条款。
+      </text>
+    </view>
+
   </view>
 
   <view class="footer">
-    <button class="btn-agree" bindtap="onAgree">我已知晓，继续使用该小程序</button>
+    <button class="btn-agree" bindtap="onAgree">我已阅读并同意，继续使用</button>
   </view>
 </view>
