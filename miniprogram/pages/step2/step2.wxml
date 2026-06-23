@@ -30,7 +30,7 @@
     </view>
 
     <!-- 缴费档次（灵活就业） -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
+    <view class="form-item" wx:if="{{baseTypeIndex == 0}}">
       <view class="form-label-row">
         <text class="form-label">缴费档次</text>
       </view>
@@ -43,18 +43,19 @@
     </view>
 
     <!-- 历年缴费指数 -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 2}}">
+    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
       <view class="form-label-row">
         <text class="form-label">历年缴费指数</text>
-        <text class="form-hint">0.6 ~ 3.0</text>
+        <text class="form-hint">平均值，一般在0.6~3.0之间</text>
       </view>
       <view class="input-row">
-        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="如 1.2" bindinput="onIndexInput"/>
+        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="如 1.2（即按社平120%缴费）" bindinput="onIndexInput"/>
       </view>
+      <text class="form-hint">💡 可在【社保对账单】中查询，或咨询单位HR</text>
     </view>
 
     <!-- 双指数省份（浙江/广东/陕西） -->
-    <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 2}}">
+    <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 1}}">
       <view class="form-label-row">
         <text class="form-label">过渡性养老金指数</text>
         <text class="form-hint">双指数省份专用</text>
@@ -78,7 +79,14 @@
       <view class="input-row">
         <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额（元）" bindinput="onBalanceInput"/>
       </view>
-      <text class="form-hint">不清楚？查看【小贴士】</text>
+      <!-- 预估余额提示 -->
+      <view class="estimated-tip" wx:if="{{showEstimated && estimatedBalance}}">
+        <text>💡 预估余额约 {{estimatedBalance}} 元，可参考此值填写</text>
+      </view>
+      <!-- 小贴士按钮 -->
+      <view class="tip-btn" bindtap="showTip">
+        <text>💡 不清楚余额？查看小贴士</text>
+      </view>
     </view>
 
     <!-- 计算按钮 -->
@@ -88,5 +96,35 @@
   <!-- 返回按钮 -->
   <view class="btn-wrap">
     <button class="btn-back" bindtap="onPrev">← 返回上一步</button>
+  </view>
+
+  <!-- 小贴士弹窗 -->
+  <view class="tip-modal-mask" wx:if="{{showTip}}" bindtap="hideTip">
+    <view class="tip-modal" catchtap="stopProp">
+      <view class="tip-modal-header">
+        <text class="tip-modal-title">💡 如何查询个人账户余额</text>
+        <view class="tip-modal-close" bindtap="hideTip">✕</view>
+      </view>
+      <view class="tip-modal-body">
+        <view class="tip-item">
+          <text class="tip-num">1</text>
+          <text class="tip-text">登录【国家社会保险公共服务平台】查询</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-num">2</text>
+          <text class="tip-text">使用【支付宝/微信 → 城市服务 → 社保查询】</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-num">3</text>
+          <text class="tip-text">咨询单位HR或当地社保局（电话：区号+12333）</text>
+        </view>
+        <view class="tip-divider"></view>
+        <view class="tip-note">
+          <text class="tip-note-title">💰 灵活就业人员参考：</text>
+          <text class="tip-note-text">按60%档次缴费，缴费15年，账户余额约 5~8万元</text>
+          <text class="tip-note-text">按100%档次缴费，缴费15年，账户余额约 9~12万元</text>
+        </view>
+      </view>
+    </view>
   </view>
 </view>

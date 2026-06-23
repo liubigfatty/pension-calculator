@@ -168,6 +168,11 @@
   background: transparent;
 }
 
+/* 修复输入框文字颜色 */
+.input-box {
+  color: #28292B !important;
+}
+
 /* 双输入框并排 */
 .double-input-row {
   display: flex;
@@ -187,6 +192,132 @@
   color: #999999;
   margin-top: 8rpx;
   padding-left: 4rpx;
+}
+
+/* 预估余额提示 */
+.estimated-tip {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+  padding: 12rpx 16rpx;
+  background: #FFF9E6;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #D4A017;
+}
+
+/* 小贴士按钮 */
+.tip-btn {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+  padding: 10rpx 0;
+  font-size: 24rpx;
+  color: #8B7355;
+  font-weight: 500;
+}
+
+/* ═════════════════════════
+   小贴士弹窗
+   ══════════════════════════ */
+.tip-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-modal {
+  width: 85%;
+  max-height: 80vh;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 40rpx rgba(0,0,0,0.15);
+}
+
+.tip-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 36rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.tip-modal-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #28292B;
+}
+
+.tip-modal-close {
+  font-size: 36rpx;
+  color: #999999;
+  padding: 8rpx;
+}
+
+.tip-modal-body {
+  padding: 32rpx 36rpx 48rpx;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+
+.tip-num {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #8B7355;
+  color: #FFFFFF;
+  font-size: 22rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 27rpx;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.tip-divider {
+  height: 1rpx;
+  background: #F0F0F0;
+  margin: 28rpx 0;
+}
+
+.tip-note {
+  background: #FAFAFA;
+  border-radius: 12rpx;
+  padding: 24rpx;
+}
+
+.tip-note-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #8B7355;
+  margin-bottom: 12rpx;
+}
+
+.tip-note-text {
+  display: block;
+  font-size: 24rpx;
+  color: #777777;
+  line-height: 1.8;
 }
 
 /* ════════════════════════════
