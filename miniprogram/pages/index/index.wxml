@@ -48,10 +48,10 @@
   </view>
 
   <!-- 开始按钮 -->
-  <button class="btn-start" bindtap="onStart">
+  <view class="btn-start" bindtap="onStart">
     <text class="btn-text">开始测算</text>
     <text class="btn-arrow">›</text>
-  </button>
+  </view>
 
   <!-- 底部说明 -->
   <view class="footer">

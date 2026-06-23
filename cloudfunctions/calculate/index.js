@@ -9,7 +9,7 @@ cloud.init({
 // 云函数入口
 exports.main = async (event) => {
   try {
-    const { province, cityType, gender, identity, genderType, birthDate, workStartDate, averageIndex, personalAccount, extras } = event
+    const { province, cityType, gender, identity, genderType, birthDate, workStartDate, averageIndex, personalAccount, extras, estimateOnly } = event
 
     // 参数校验（personalAccount 不再必填，不填则引擎自动估算）
     if (!gender || !birthDate || !workStartDate || !averageIndex) {
@@ -45,6 +45,19 @@ exports.main = async (event) => {
       // 城市类型（如 shenyang/dalian/prov），引擎 calculate() 用 data.cityType 匹配城市计发基数
       cityType: cityType || 'prov',
       // 不设置 skipDelay，让引擎自动计算延迟退休
+    }
+
+    // 仅估算余额（快速路径，不跑完整测算）
+    if (estimateOnly) {
+      const result = engine.calculate(config, input)
+      const legalBalance = (result.legal && result.legal.personalAccount && result.legal.personalAccount.balance) || 0
+      const flexBalance = (result.flex && result.flex.personalAccount && result.flex.personalAccount.balance) || 0
+      return {
+        success: true,
+        data: {
+          estimatedBalance: Math.round(Math.max(legalBalance, flexBalance) * 100) / 100
+        }
+      }
     }
 
     // 调用真正的计算引擎（和 verify.js 同样的方式）

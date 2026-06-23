@@ -135,36 +135,38 @@
 
 /* 开始按钮 - 增强版 */
 .btn-start {
-  width: 88%;  /* 更宽的按钮 */
+  width: 88%;
   margin-top: 72rpx;
-}
-
-.btn-start button {
-  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);  /* 与其他按钮一致（去掉50%中间色） */
-  color: #FFFFFF !important;  /* 白色文字 */
+  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
+  color: #FFFFFF;
   border: none;
-  border-radius: 48rpx;  /* 统一圆角 */
-  padding: 28rpx 0;  /* 与其他按钮一致 */
-  font-size: 32rpx;  /* 与其他按钮一致 */
+  border-radius: 48rpx;
+  font-size: 32rpx;
   font-weight: 600;
-  letter-spacing: 6rpx;  /* 与其他按钮一致 */
-  box-shadow: 
+  letter-spacing: 6rpx;
+  box-shadow:
     0 8rpx 24rpx rgba(139,115,85,0.35),
     0 3rpx 10rpx rgba(139,115,85,0.2),
     inset 0 1rpx 0 rgba(255,255,255,0.1);
   position: relative;
   overflow: hidden;
-  line-height: normal;  /* 修复文字垂直对齐 */
+  line-height: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.btn-start button::after { border: none; }
-
 .btn-text { 
+  color: #FFFFFF;
   letter-spacing: 6rpx; 
   font-weight: 600;
+  font-size: 32rpx;
 }
 
 .btn-arrow { 
+  color: #FFFFFF;
   font-size: 40rpx; 
   line-height: 1; 
   margin-left: 12rpx;

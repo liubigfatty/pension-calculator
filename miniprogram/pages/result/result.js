@@ -129,8 +129,16 @@ Page({
       baseNumberVal = fmt(source.baseRetire)
     }
 
-    // averageIndex: 平均缴费指数
-    const averageIndexVal = r.averageIndex != null ? r.averageIndex : (source.averageIndex || null)
+    // averageIndex: 平均缴费指数（优先用 step2 传过来的值，其次从引擎返回值里取）
+    let averageIndexVal = null
+    if (r.averageIndex != null && String(r.averageIndex) !== '') {
+      const n = Number(r.averageIndex)
+      averageIndexVal = !isNaN(n) ? n.toFixed(2) : null
+    }
+    if (averageIndexVal === null && source.averageIndex != null) {
+      const n = Number(source.averageIndex)
+      averageIndexVal = !isNaN(n) ? n.toFixed(2) : null
+    }
 
     // actualYears: 实际缴费年限
     let actualYearsVal = null
@@ -314,8 +322,18 @@ Page({
   onShareAppMessage() {
     const d = this.data
     return {
-      title: `我的养老金预计每月${d.totalAmount || '--'}元，来测算你的吧`,
+      title: `养老金测算：我每月预计领${d.totalAmount || '--'}元`,
       path: '/pages/index/index',
+      imageUrl: d.shareImagePath || ''
+    }
+  },
+
+  // 分享到朋友圈（微信 7.0.12+ 支持）
+  onShareTimeline() {
+    const d = this.data
+    return {
+      title: `养老金测算：我每月预计领${d.totalAmount || '--'}元 · ${d.provinceName || ''}`,
+      query: '',
       imageUrl: d.shareImagePath || ''
     }
   },

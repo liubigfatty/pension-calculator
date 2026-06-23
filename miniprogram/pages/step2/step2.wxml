@@ -4,24 +4,23 @@
   <view class="progress-bar">
     <view class="progress-step done">
       <view class="step-dot">1</view>
-      <text class="step-label">测算</text>
+      <text class="step-label">个人信息</text>
     </view>
     <view class="step-line done"></view>
     <view class="progress-step done">
       <view class="step-dot">2</view>
-      <text class="step-label">个人信息</text>
+      <text class="step-label">缴费信息</text>
     </view>
     <view class="step-line active"></view>
     <view class="progress-step active">
       <view class="step-dot">3</view>
-      <text class="step-label">缴费信息</text>
+      <text class="step-label">测算结果</text>
     </view>
   </view>
 
   <!-- 表单卡片 -->
   <view class="form-card">
     <view class="form-card-header">
-      <view class="form-card-num">①</view>
       <text class="form-card-title">缴费信息</text>
     </view>
 
@@ -61,6 +60,16 @@
       </view>
     </view>
 
+    <!-- 历年缴费指数（常显，供用户参考） -->
+    <view class="form-item" wx:if="{{baseTypeIndex == 0}}">
+      <text class="form-label">历年缴费指数（参考值）</text>
+      <view class="input-wrap">
+        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="系统将自动估算" bindinput="onIndexInput" disabled/>
+        <text class="input-suffix">指数</text>
+      </view>
+      <text class="form-hint">选择灵活就业档次后，系统将自动估算缴费指数</text>
+    </view>
+
     <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->
     <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 1}}">
       <text class="form-label">双指数省份（过渡性养老金指数）</text>
@@ -83,7 +92,10 @@
         <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="如不清楚可留空，系统将自动估算" bindinput="onBalanceInput"/>
         <text class="input-suffix">元</text>
       </view>
-      <text class="form-hint" bindtap="onShowBalanceTip">不清楚可查看【小贴士】</text>
+      <view class="form-hint-row">
+        <text class="form-hint" bindtap="onShowBalanceTip">不清楚可查看【小贴士】</text>
+        <text class="form-estimate" bindtap="onEstimateBalance">估算余额</text>
+      </view>
     </view>
 
     <!-- 计算按钮 -->

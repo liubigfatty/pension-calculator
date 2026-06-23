@@ -266,7 +266,10 @@ Page({
         // 存缓存时包一层 _raw，兼容 result.js 的数据结构检测
         wx.setStorageSync('calc_result', {
           _raw: res.result.data,
-          retirePlan: step1.retirePlan || 'normal'
+          retirePlan: step1.retirePlan || 'normal',
+          averageIndex: averageIndex || null,       // 传给结果页显示
+          provinceName: step1.provinceName || '',
+          cityLabel: step1.cityTypeIndex >= 0 ? (step1.cityTypeNames || '')[step1.cityTypeIndex] : ''
         })
         wx.navigateTo({ url: '/pages/result/result' })
       } else {
@@ -278,6 +281,88 @@ Page({
       wx.hideLoading()
       console.error('[onCalculate] 云函数调用异常:', err)
       wx.showToast({ title: '计算失败，请检查网络', icon: 'none' })
+    }
+  },
+
+  // 估算个人账户余额（供用户参考，可手动修改）
+  async onEstimateBalance() {
+    const d = this.data
+    if (d.baseTypeIndex < 0) return wx.showToast({ title: '请先选择缴费基数类型', icon: 'none' })
+    if (d.baseTypeIndex === 1 && !d.averageIndexInput) return wx.showToast({ title: '请先输入平均缴费指数', icon: 'none' })
+
+    const step1 = wx.getStorageSync('form_step1')
+    if (!step1) return wx.showToast({ title: '请先填写个人信息', icon: 'none' })
+
+    // 参数映射（和 onCalculate 完全一致）
+    const province = PROVINCE_SLUGS[step1.provinceIndex]
+    const typeInfo = RETIRE_TYPE_MAP[step1.retireTypeIndex]
+    if (!province || !typeInfo) return wx.showToast({ title: '参数异常', icon: 'none' })
+    const { gender, identity, genderType } = typeInfo
+
+    let birthDate, workStartDate
+    if (step1.birthYearIndex != null && step1.birthMonthIndex != null) {
+      birthDate = `${1960 + step1.birthYearIndex}-${String(step1.birthMonthIndex + 1).padStart(2, '0')}`
+    } else {
+      birthDate = step1.birthDate || ''
+    }
+    if (step1.workYearIndex != null && step1.workMonthIndex != null) {
+      workStartDate = `${1980 + step1.workYearIndex}-${String(step1.workMonthIndex + 1).padStart(2, '0')}`
+    } else {
+      workStartDate = step1.workDate || ''
+    }
+
+    let averageIndex
+    if (d.baseTypeIndex === 0 && d.levelIndex >= 0) {
+      averageIndex = LEVEL_PERCENTS[d.levelIndex]
+    } else {
+      averageIndex = parseFloat(d.averageIndexInput) || 0
+    }
+
+    let cityType = null
+    if (d.showCityType && d.cityTypeIndex >= 0) {
+      if (step1.provinceIndex === 15) cityType = d.cityTypeIndex === 0 ? 'zz' : 'prov'
+      else if (step1.provinceIndex === 6) cityType = d.cityTypeIndex === 0 ? 'cc' : 'prov'
+      else if (step1.provinceIndex === 5) {
+        cityType = d.cityTypeIndex === 0 ? 'shenyang' : d.cityTypeIndex === 1 ? 'dalian' : 'prov'
+      }
+      else if (step1.provinceIndex === 18) cityType = d.cityTypeIndex === 0 ? 'sz' : 'prov'
+    }
+
+    wx.showLoading({ title: '估算中...' })
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'calculate',
+        data: {
+          province,
+          cityType: cityType || 'prov',
+          gender,
+          identity,
+          genderType,
+          birthDate,
+          workStartDate,
+          averageIndex,
+          personalAccount: 0,  // 0 → 引擎自动估算
+          extras: {},
+          estimateOnly: true   // 快速路径，只返回估算余额
+        }
+      })
+      wx.hideLoading()
+
+      if (res.result && res.result.success) {
+        const balance = res.result.data.estimatedBalance
+        if (balance != null && balance > 0) {
+          this.setData({ accountBalanceInput: String(Math.round(balance)) })
+          wx.showToast({ title: '已估算并填入', icon: 'success' })
+        } else {
+          wx.showToast({ title: '估算失败，请手动输入', icon: 'none' })
+        }
+      } else {
+        wx.showToast({ title: '估算失败，请稍后重试', icon: 'none' })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('[onEstimateBalance] 云函数调用异常:', err)
+      wx.showToast({ title: '网络异常，请重试', icon: 'none' })
     }
   },
 
