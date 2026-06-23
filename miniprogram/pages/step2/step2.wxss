@@ -168,9 +168,11 @@
   background: transparent;
 }
 
-/* 修复输入框文字颜色 */
+/* 修复输入框文字颜色 + 防止文字被截半 */
 .input-box {
   color: #28292B !important;
+  height: 48rpx;
+  line-height: 48rpx;
 }
 
 /* 双输入框并排 */

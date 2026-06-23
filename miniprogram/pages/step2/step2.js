@@ -7,8 +7,16 @@ const DOUBLE_INDEX_PROVINCES = [10, 18, 26]  // 浙江=10, 广东=18, 陕西=26
 // 缴费档次对应的指数
 const LEVEL_TO_INDEX = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 
-// 省份名称列表（必须和 step1 一致）
+// 省份名称列表（界面显示用，必须和 step1 一致）
 const PROVINCE_NAMES = ['北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江','上海','江苏','浙江','安徽','福建','江西','山东','河南','湖北','湖南','广东','广西','海南','重庆','四川','贵州','云南','西藏','陕西','甘肃','青海','宁夏','新疆']
+
+// 省份拼音列表（云函数 provinces/ 目录文件名，调用云函数时用）
+const PROVINCE_PINYIN = [
+  'beijing','tianjin','hebei','shanxi','neimenggu','liaoning','jilin','heilongjiang',
+  'shanghai','jiangsu','zhejiang','anhui','fujian','jiangxi','shandong','henan',
+  'hubei','hunan','guangdong','guangxi','hainan','chongqing','sichuan','guizhou',
+  'yunnan','xizang','shaanxi','gansu','qinghai','ningxia','xinjiang'
+]
 
 // 退休类型 → (gender, identity) 映射（必须和云函数期望的一致）
 const RETIRE_TYPE_MAP = [
@@ -168,8 +176,8 @@ Page({
     const step1 = wx.getStorageSync('form_step1')
 
     // ---- 字段映射（小程序字段 → 云函数字段）----
-    // 省份名：index → 名称
-    const province = PROVINCE_NAMES[step1.provinceIndex]
+    // 省份名：index → 拼音文件名（云函数 provinces/ 目录用拼音命名）
+    const province = PROVINCE_PINYIN[step1.provinceIndex]
     if (!province) return wx.showToast({ title: '参保地数据异常', icon: 'none' })
 
     // 性别和身份类型：retireTypeIndex → gender + identity

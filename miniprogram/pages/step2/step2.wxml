@@ -51,8 +51,7 @@
       <view class="input-row">
         <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="如 1.2（即按社平120%缴费）" bindinput="onIndexInput"/>
       </view>
-      <text class="form-hint">💡 可在【社保对账单】中查询，或咨询单位HR</text>
-    </view>
+      </view>
 
     <!-- 双指数省份（浙江/广东/陕西） -->
     <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 1}}">
