@@ -1,90 +1,91 @@
-<!--pages/step1/step1.wxml - 个人信息页（布局优化版）-->
+<!--pages/step1/step1.wxml - 个人信息页（整合版）-->
 <view class="container">
-  <!-- 顶部步骤指示 -->
-  <view class="step-indicator">
-    <view class="step-item active">
+  <!-- 顶部进度条 -->
+  <view class="progress-bar">
+    <view class="progress-step done">
       <view class="step-dot">1</view>
-      <text class="step-name">个人信息</text>
+      <text class="step-label">测算</text>
     </view>
-    <view class="step-line"></view>
-    <view class="step-item">
+    <view class="progress-line"></view>
+    <view class="progress-step active">
       <view class="step-dot">2</view>
-      <text class="step-name">缴费信息</text>
+      <text class="step-label">个人信息</text>
+    </view>
+    <view class="progress-line"></view>
+    <view class="progress-step">
+      <view class="step-dot">3</view>
+      <text class="step-label">缴费信息</text>
     </view>
   </view>
 
   <!-- 表单卡片 -->
   <view class="form-card">
+    <!-- 标题 -->
+    <view class="card-header">
+      <view class="step-number">2</view>
+      <text class="card-title">个人信息</text>
+    </view>
+
     <!-- 参保地 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">参保地</text>
-        <text class="form-required">*</text>
-      </view>
+      <text class="form-label">参保地</text>
       <picker mode="selector" range="{{provinceNames}}" value="{{provinceIndex}}" bindchange="onProvinceChange">
         <view class="picker-box {{provinceIndex >= 0 ? 'selected' : ''}}">
-          <text>{{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择省份'}}</text>
-          <text class="picker-arrow">▾</text>
+          <text class="picker-value">{{provinceIndex >= 0 ? provinceNames[provinceIndex] : '请选择省份'}}</text>
+          <text class="picker-arrow">▼</text>
         </view>
       </picker>
     </view>
 
-    <!-- 退休类型 -->
+    <!-- 退休类型（整合性别+人员类型） -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">退休类型</text>
-        <text class="form-required">*</text>
-      </view>
+      <text class="form-label">退休类型</text>
       <picker mode="selector" range="{{retireTypeNames}}" value="{{retireTypeIndex}}" bindchange="onRetireTypeChange">
         <view class="picker-box {{retireTypeIndex >= 0 ? 'selected' : ''}}">
-          <text>{{retireTypeIndex >= 0 ? retireTypeNames[retireTypeIndex] : '请选择退休类型'}}</text>
-          <text class="picker-arrow">▾</text>
+          <text class="picker-value">{{retireTypeIndex >= 0 ? retireTypeNames[retireTypeIndex] : '请选择退休类型'}}</text>
+          <text class="picker-arrow">▼</text>
         </view>
       </picker>
     </view>
 
     <!-- 出生日期 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">出生日期</text>
-        <text class="form-required">*</text>
-      </view>
-      <picker mode="date" value="{{birthDate}}" start="1940-01" end="{{today}}" bindchange="onBirthDateChange">
+      <text class="form-label">出生日期</text>
+      <picker mode="date" value="{{birthDate}}" start="1960-01" end="{{today}}" bindchange="onBirthDateChange">
         <view class="picker-box">
-          <text class="{{birthDate ? '' : 'placeholder'}}">{{birthDate || '请选择出生日期'}}</text>
-          <text class="picker-arrow">▾</text>
+          <text class="picker-value">{{birthDate || '请选择出生日期'}}</text>
+          <text class="picker-arrow">▼</text>
         </view>
       </picker>
     </view>
 
     <!-- 参加工作时间 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">参加工作时间</text>
-        <text class="form-required">*</text>
-      </view>
+      <text class="form-label">参加工作时间</text>
       <picker mode="date" value="{{workDate}}" start="1970-01" end="{{today}}" bindchange="onWorkDateChange">
         <view class="picker-box">
-          <text class="{{workDate ? '' : 'placeholder'}}">{{workDate || '请选择参加工作时间'}}</text>
-          <text class="picker-arrow">▾</text>
+          <text class="picker-value">{{workDate || '请选择参加工作时间'}}</text>
+          <text class="picker-arrow">▼</text>
         </view>
       </picker>
     </view>
 
     <!-- 退休方案 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">退休方案</text>
-      </view>
+      <text class="form-label">退休方案</text>
       <view class="radio-group">
-        <view class="radio-btn {{retirePlan === 'normal' ? 'active' : ''}}" bindtap="onRetirePlanChange" data-value="normal">正常退休</view>
-        <view class="radio-btn {{retirePlan === 'early' ? 'active' : ''}}" bindtap="onRetirePlanChange" data-value="early">弹性提前</view>
+        <view class="radio-item {{retirePlan === 'normal' ? 'active' : ''}}" bindtap="onRetirePlanChange" data-value="normal">
+          <text>正常退休</text>
+        </view>
+        <view class="radio-item {{retirePlan === 'early' ? 'active' : ''}}" bindtap="onRetirePlanChange" data-value="early">
+          <text>弹性提前</text>
+        </view>
       </view>
     </view>
   </view>
 
   <!-- 下一步按钮 -->
-  <view class="btn-wrap">
-    <button class="btn-primary" bindtap="goNext">下一步：缴费信息</button>
+  <view class="btn-area">
+    <button class="btn-next" bindtap="goNext">填写缴费信息</button>
   </view>
 </view>

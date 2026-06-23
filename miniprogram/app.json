@@ -1,17 +1,1 @@
-{
-  "pages": [
-    "pages/index/index",
-    "pages/step1/step1",
-    "pages/step2/step2",
-    "pages/result/result",
-    "pages/privacy/privacy"
-  ],
-  "__usePrivacyCheck__": true,
-  "lazyCodeLoading": "requiredComponents",
-  "window": {
-    "navigationBarTitleText": "养老金测算",
-    "navigationBarBackgroundColor": "#8B7355",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#F5F3F0"
-  }
-}
+{"pages": ["pages/index/index", "pages/step1/step1", "pages/step2/step2", "pages/step3/step3", "pages/result/result", "pages/privacy/privacy"], "lazyCodeLoading": "requiredComponents", "__usePrivacyCheck__": true, "window": {"navigationBarTitleText": "养老金测算", "navigationBarBackgroundColor": "#8B7355", "navigationBarTextStyle": "white", "backgroundColor": "#F5F3F0"}}

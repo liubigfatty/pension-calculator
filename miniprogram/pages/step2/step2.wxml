@@ -1,125 +1,88 @@
-<!--pages/step2/step2.wxml - 缴费信息页（布局优化版）-->
-<view class="container">
-  <!-- 顶部步骤指示 -->
-  <view class="step-indicator">
-    <view class="step-item done">
+<!--pages/step2/step2.wxml - 缴费信息页（新 step2）-->
+<view class="step-container">
+  <!-- 进度条 -->
+  <view class="progress-bar">
+    <view class="progress-step done">
       <view class="step-dot">1</view>
-      <text class="step-name">个人信息</text>
+      <text class="step-label">测算</text>
     </view>
-    <view class="step-line"></view>
-    <view class="step-item active">
+    <view class="step-line done"></view>
+    <view class="progress-step done">
       <view class="step-dot">2</view>
-      <text class="step-name">缴费信息</text>
+      <text class="step-label">个人信息</text>
+    </view>
+    <view class="step-line active"></view>
+    <view class="progress-step active">
+      <view class="step-dot">3</view>
+      <text class="step-label">缴费信息</text>
     </view>
   </view>
 
   <!-- 表单卡片 -->
   <view class="form-card">
+    <view class="form-card-header">
+      <view class="form-card-num">①</view>
+      <text class="form-card-title">缴费信息</text>
+    </view>
+
     <!-- 缴费基数类型 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">缴费基数类型</text>
-        <text class="form-required">*</text>
-      </view>
-      <picker mode="selector" range="{{baseTypeNames}}" value="{{baseTypeIndex}}" bindchange="onBaseTypeChange">
-        <view class="picker-box {{baseTypeIndex >= 0 ? 'selected' : ''}}">
-          <text>{{baseTypeIndex >= 0 ? baseTypeNames[baseTypeIndex] : '请选择基数类型'}}</text>
-          <text class="picker-arrow">▾</text>
-        </view>
+      <text class="form-label"><text class="form-required">*</text> 缴费基数类型</text>
+      <picker mode="selector" range="{{baseTypeNames}}" value="{{baseTypeIndex}}" bindchange="onBaseTypeChange" class="form-picker">
+        <view class="picker-content {{baseTypeIndex >= 0 ? '' : 'placeholder'}}">{{baseTypeIndex >= 0 ? baseTypeNames[baseTypeIndex] : '请选择基数类型'}}</view>
+        <text class="picker-arrow">▼</text>
       </picker>
     </view>
 
     <!-- 缴费档次（灵活就业） -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 0}}">
-      <view class="form-label-row">
-        <text class="form-label">缴费档次</text>
-      </view>
-      <picker mode="selector" range="{{levelNames}}" value="{{levelIndex}}" bindchange="onLevelChange">
-        <view class="picker-box {{levelIndex >= 0 ? 'selected' : ''}}">
-          <text>{{levelIndex >= 0 ? levelNames[levelIndex] : '请选择缴费档次'}}</text>
-          <text class="picker-arrow">▾</text>
-        </view>
+    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
+      <text class="form-label">缴费档次（灵活就业）</text>
+      <picker mode="selector" range="{{levelNames}}" value="{{levelIndex}}" bindchange="onLevelChange" class="form-picker">
+        <view class="picker-content {{levelIndex >= 0 ? '' : 'placeholder'}}">{{levelIndex >= 0 ? levelNames[levelIndex] : '请选择缴费档次'}}</view>
+        <text class="picker-arrow">▼</text>
       </picker>
     </view>
 
-    <!-- 历年缴费指数 -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
-      <view class="form-label-row">
-        <text class="form-label">历年缴费指数</text>
-        <text class="form-hint">平均值，一般在0.6~3.0之间</text>
-      </view>
+    <!-- 历年缴费指数（按实际缴费指数） -->
+    <view class="form-item" wx:if="{{baseTypeIndex == 2}}">
+      <text class="form-label">历年缴费指数</text>
       <view class="input-row">
-        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="如 1.2（即按社平120%缴费）" bindinput="onIndexInput"/>
+        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="0.6~3.0" bindinput="onIndexInput"/>
+        <text class="input-unit">指数</text>
       </view>
-      </view>
+    </view>
 
-    <!-- 双指数省份（浙江/广东/陕西） -->
-    <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 1}}">
-      <view class="form-label-row">
-        <text class="form-label">过渡性养老金指数</text>
-        <text class="form-hint">双指数省份专用</text>
-      </view>
-      <view class="double-input-row">
+    <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->
+    <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 2}}">
+      <text class="form-label">双指数省份（过渡性养老金指数）</text>
+      <view class="double-index-row">
         <view class="input-row flex-1">
           <input class="input-box" type="digit" value="{{transIndexInput}}" placeholder="过渡性指数" bindinput="onTransIndexInput"/>
+          <text class="input-unit">过渡指数</text>
         </view>
         <view class="input-row flex-1">
           <input class="input-box" type="digit" value="{{oldIndexInput}}" placeholder="老办法指数" bindinput="onOldIndexInput"/>
+          <text class="input-unit">老办法指数</text>
         </view>
       </view>
     </view>
 
     <!-- 个人账户余额 -->
     <view class="form-item">
-      <view class="form-label-row">
-        <text class="form-label">个人账户余额</text>
-        <text class="form-required">*</text>
-      </view>
+      <text class="form-label"><text class="form-required">*</text> 个人账户余额（估算）</text>
       <view class="input-row">
-        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额，如 114010" bindinput="onBalanceInput"/>
+        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额" bindinput="onBalanceInput"/>
+        <text class="input-unit">元</text>
       </view>
-      <!-- 小贴士按钮 -->
-      <view class="tip-btn" bindtap="showTip">
-        <text>💡 不清楚余额？查看小贴士</text>
-      </view>
+      <text class="form-hint">不清楚可查看【小贴士】</text>
     </view>
 
     <!-- 计算按钮 -->
-    <button class="btn-primary" bindtap="onCalculate">计算养老金</button>
+    <button class="btn-submit" bindtap="onCalculate">计算养老金</button>
   </view>
 
   <!-- 返回按钮 -->
-  <view class="btn-wrap">
+  <view class="btn-back-wrap">
     <button class="btn-back" bindtap="onPrev">← 返回上一步</button>
-  </view>
-
-  <!-- 小贴士弹窗 -->
-  <view class="tip-modal-mask" wx:if="{{showTip}}" bindtap="hideTip">
-    <view class="tip-modal" catchtap="stopProp">
-      <view class="tip-modal-header">
-        <text class="tip-modal-title">💡 如何查询个人账户余额</text>
-        <view class="tip-modal-close" bindtap="hideTip">✕</view>
-      </view>
-      <view class="tip-modal-body">
-        <view class="tip-item">
-          <text class="tip-num">1</text>
-          <text class="tip-text">登录【国家社会保险公共服务平台】查询</text>
-        </view>
-        <view class="tip-item">
-          <text class="tip-num">2</text>
-          <text class="tip-text">使用【支付宝/微信 → 城市服务 → 社保查询】</text>
-        </view>
-        <view class="tip-item">
-          <text class="tip-num">3</text>
-          <text class="tip-text">咨询单位HR或当地社保局（电话：区号+12333）</text>
-        </view>
-        <view class="tip-divider"></view>
-        <view class="tip-note">
-          <text class="tip-note-title">💰 灵活就业人员参考：</text>
-          <text class="tip-note-text">按60%档次缴费，缴费15年，账户余额约 5~8万元</text>
-          <text class="tip-note-text">按100%档次缴费，缴费15年，账户余额约 9~12万元</text>
-        </view>
-      </view>
-    </view>
   </view>
 </view>
