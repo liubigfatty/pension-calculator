@@ -3,55 +3,14 @@ const app = getApp()
 
 // 2025年计发基数（元/月），按省份索引 [0-30]
 // 数据来源：data/provinces/*.js 的 PROV_BASE 最新年份值
-const PROV_AVG_SALARY = [
-  8077,  // 0:北京
-  12477, // 1:天津
-  8405,  // 2:河北
-  8009,  // 3:山西
-  7822,  // 4:内蒙古
-  9905,  // 5:辽宁
-  7052,  // 6:吉林
-  7490,  // 7:黑龙江
-  8375,  // 8:上海
-  7483,  // 9:江苏
-  7705,  // 10:浙江
-  6738,  // 11:安徽
-  6665,  // 12:福建
-  7060,  // 13:江西
-  9049,  // 14:山东
-  7123,  // 15:河南
-  7394,  // 16:湖北
-  7121,  // 17:湖南
-  8348,  // 18:广东
-  8448,  // 19:广西
-  9144,  // 20:海南
-  7959,  // 21:重庆
-  7908,  // 22:四川
-  12636, // 23:贵州
-  7324,  // 24:云南
-  8289,  // 25:西藏
-  8762,  // 26:陕西
-  8582,  // 27:甘肃
-  11892, // 28:青海
-  7263,  // 29:宁夏
-  8559   // 30:新疆
-]
+
 
 // ==================== 历年记账利率（用于估算个人账户余额）====================
 // 2016年及以后：全国统一记账利率（人社部公布）
-const NATIONAL_INTEREST_RATES = {
-  2016: 0.0831, 2017: 0.0712, 2018: 0.0829,
-  2019: 0.0761, 2020: 0.0604, 2021: 0.0669,
-  2022: 0.0612, 2023: 0.0397, 2024: 0.0262, 2025: 0.0150,
-}
+
 
 // 2016年之前全国统一记账利率估算值（分段均值）
-const PRE2016_RATES = {
-  1998:0.060, 1999:0.060, 2000:0.060, 2001:0.060,
-  2002:0.060, 2003:0.060, 2004:0.060, 2005:0.060,
-  2006:0.050, 2007:0.050, 2008:0.050, 2009:0.050, 2010:0.050,
-  2011:0.040, 2012:0.040, 2013:0.040, 2014:0.040, 2015:0.040,
-}
+
 
 // 获取某年记账利率（优先查表，找不到用2.5%兜底）
 function getInterestRate(year) {
@@ -168,67 +127,16 @@ Page({
   // 选择缴费基数类型
   onBaseTypeChange(e) {
     const index = Number(e.detail.value)
-    this.setData({ baseTypeIndex: index }, () => {
-      // 切换到"灵活就业"时，如果已选档次，自动估算余额
-      if (index === 0 && this.data.levelIndex >= 0) {
-        setTimeout(() => this.estimateBalance(), 50)
-      }
-    })
+    this.setData({ baseTypeIndex: index })
   },
 
-  // 选择缴费档次（灵活就业）→ 自动估算余额
+  // 选择缴费档次（灵活就业）
   onLevelChange(e) {
-    this.setData({ levelIndex: Number(e.detail.value) }, () => {
-      // 延迟一帧，确保 levelIndex 已更新
-      setTimeout(() => this.estimateBalance(), 50)
-    })
+    this.setData({ levelIndex: Number(e.detail.value) })
   },
 
-  // 自动估算个人账户余额
-  // 简化估算：用近几年平均缴费额 × 缴费年数 × 经验系数
-  // 不用复利计算（用2025年基数估算历史缴费会严重偏高）
-  estimateBalance() {
-    const step1 = wx.getStorageSync("form_step1")
-    if (!step1 || step1.provinceIndex < 0) return
-    if (this.data.baseTypeIndex !== 0) return
-    if (this.data.levelIndex < 0) return
 
-    const provinceIndex = step1.provinceIndex
-    const avgSalary = PROV_AVG_SALARY[provinceIndex]  // 2025年计发基数（元/月）
-    if (!avgSalary) return
-
-    const percent = LEVEL_PERCENTS[this.data.levelIndex]  // 0.6, 0.8, 1.0, ...
-
-    // 缴费年数
-    let workStartYear
-    if (step1.workYearIndex != null) {
-      workStartYear = 1980 + step1.workYearIndex
-    } else if (step1.workDate) {
-      workStartYear = parseInt(step1.workDate.split("-")[0])
-    } else {
-      workStartYear = 1995
-    }
-    
-    const currentYear = new Date().getFullYear()
-    const contribYears = Math.max(1, currentYear - workStartYear)
-
-    // 简化估算公式：
-    // 年缴费额 = 计发基数 × 档次% × 8% × 12
-    // 但考虑到早期工资低，实际平均缴费额约为近年的 60~70%
-    // 所以用经验系数 0.65 来修正
-    const annualContrib = avgSalary * percent * 0.08 * 12 * 0.65
-    
-    // 估算余额 = 年缴费额 × 缴费年数
-    // 再加上粗略的利息（约 20~30%）
-    const estimated = Math.round(annualContrib * contribYears * 1.25)
-
-    console.log("[estimateBalance] 省份=" + provinceIndex + 
-      " 档次=" + (percent*100) + "%" +
-      " 缴费年数=" + contribYears +
-      " 估算余额=" + estimated)
-
-    this.setData({ accountBalanceInput: String(estimated) })
-  },
+  
 
   // 选择城市类型（双基数省份：郑州/长春 vs 全省其他）
   onCityTypeChange(e) {
@@ -279,7 +187,6 @@ Page({
     // 前端校验
     if (d.baseTypeIndex < 0) return wx.showToast({ title: '请选择缴费基数类型', icon: 'none' })
     if (d.baseTypeIndex === 1 && !d.averageIndexInput) return wx.showToast({ title: '请输入平均缴费指数', icon: 'none' })
-    if (!d.accountBalanceInput) return wx.showToast({ title: '请输入个人账户余额', icon: 'none' })
 
     const step1 = wx.getStorageSync('form_step1')
     if (!step1) return wx.showToast({ title: '请先填写个人信息', icon: 'none' })

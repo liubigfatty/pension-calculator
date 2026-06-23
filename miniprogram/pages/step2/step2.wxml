@@ -78,9 +78,9 @@
 
     <!-- 个人账户余额 -->
     <view class="form-item">
-      <text class="form-label"><text class="form-required">*</text> 个人账户余额（估算）</text>
+      <text class="form-label">个人账户余额</text>
       <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="请输入金额" bindinput="onBalanceInput"/>
+        <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="如不清楚可留空，系统将自动估算" bindinput="onBalanceInput"/>
         <text class="input-suffix">元</text>
       </view>
       <text class="form-hint" bindtap="onShowBalanceTip">不清楚可查看【小贴士】</text>
@@ -99,14 +99,13 @@
   <view class="tip-mask" wx:if="{{showBalanceTip}}" bindtap="onCloseBalanceTip">
     <view class="tip-popup" catchtap="stopProp">
       <view class="tip-title">💡 个人账户余额小贴士</view>
-      <view class="tip-content">
-        <view class="tip-line">• 个人账户余额 = 历年个人缴费累计本息</view>
-        <view class="tip-line">• 个人缴费比例一般为缴费基数的 <text class="tip-highlight">8%</text></view>
-        <view class="tip-line">• 灵活就业人员缴费比例一般为 <text class="tip-highlight">20%</text>（其中8%进入个人账户）</view>
-        <view class="tip-line">• 可登录社保APP或到社保大厅查询准确余额</view>
-        <view class="tip-line">• 如不清楚，可参考公式估算：</view>
-        <view class="tip-formula">账户余额 ≈ 缴费基数 × 8% × 缴费月数</view>
-      </view>
+        <view class="tip-content">
+          <view class="tip-line">• 个人账户余额 = 历年个人缴费累计本息</view>
+          <view class="tip-line">• 个人缴费比例一般为缴费基数的 <text class="tip-highlight">8%</text></view>
+          <view class="tip-line">• 灵活就业人员缴费比例一般为 <text class="tip-highlight">20%</text>（其中8%进入个人账户）</view>
+          <view class="tip-line">• 可登录社保APP或到社保大厅查询准确余额</view>
+          <view class="tip-line">• 如不清楚，系统将自动估算（基于历年缴费基数和记账利率）</view>
+        </view>
       <view class="tip-btn" bindtap="onCloseBalanceTip">知道了</view>
     </view>
   </view>
