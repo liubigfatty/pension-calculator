@@ -76,9 +76,6 @@ Page({
     oldIndexInput: '',      // 老办法指数
 
     // 双基数省份相关（河南郑州、吉林长春）
-    showCityType: false,
-    cityTypeNames: [],
-    cityTypeIndex: -1,
 
     // 个人账户余额
     accountBalanceInput: '',
@@ -99,31 +96,7 @@ Page({
     // 判断是否为双指数省份
     const isDoubleIndex = DOUBLE_INDEX_PROVINCES.includes(step1.provinceIndex)
     console.log('[step2] 读取 step1 数据：', step1, '是否双指数省份：', isDoubleIndex)
-
-    // 判断是否为双基数省份，并设置城市选项
-    let showCityType = false
-    let cityTypeNames = []
-    if (step1.provinceIndex === 15) {  // 河南（郑州）
-      showCityType = true
-      cityTypeNames = ['郑州市', '全省其他']
-    } else if (step1.provinceIndex === 6) {  // 吉林（长春）
-      showCityType = true
-      cityTypeNames = ['长春市', '全省其他']
-    } else if (step1.provinceIndex === 5) {  // 辽宁（沈阳、大连）
-      showCityType = true
-      cityTypeNames = ['沈阳市', '大连市', '全省其他']
-    } else if (step1.provinceIndex === 18) {  // 广东（深圳）
-      showCityType = true
-      cityTypeNames = ['深圳市', '全省其他']
-    }
-
-    this.setData({
-      showDoubleIndex: isDoubleIndex,
-      showCityType: showCityType,
-      cityTypeNames: cityTypeNames
-    })
   },
-
   // 选择缴费基数类型
   onBaseTypeChange(e) {
     const index = Number(e.detail.value)
@@ -227,15 +200,16 @@ Page({
       averageIndex = parseFloat(d.averageIndexInput) || 0
     }
 
-    // 5. 双基数城市类型
+    // 5. 双基数城市类型（从 form_step1 读取）
+    const _step1 = wx.getStorageSync('form_step1') || {}
     let cityType = null
-    if (d.showCityType && d.cityTypeIndex >= 0) {
-      if (step1.provinceIndex === 15) cityType = d.cityTypeIndex === 0 ? 'zz' : 'prov'     // 河南
-      else if (step1.provinceIndex === 6) cityType = d.cityTypeIndex === 0 ? 'cc' : 'prov'  // 吉林
-      else if (step1.provinceIndex === 5) {                                               // 辽宁
-        cityType = d.cityTypeIndex === 0 ? 'shenyang' : d.cityTypeIndex === 1 ? 'dalian' : 'prov'
+    if (_step1.cityTypeIndex != null && _step1.cityTypeIndex >= 0) {
+      if (step1.provinceIndex === 15) cityType = _step1.cityTypeIndex === 0 ? 'zz' : 'prov'     // 河南
+      else if (step1.provinceIndex === 6) cityType = _step1.cityTypeIndex === 0 ? 'cc' : 'prov'  // 吉林
+      else if (step1.provinceIndex === 5) {                                                    // 辽宁
+        cityType = _step1.cityTypeIndex === 0 ? 'shenyang' : _step1.cityTypeIndex === 1 ? 'dalian' : 'prov'
       }
-      else if (step1.provinceIndex === 18) cityType = d.cityTypeIndex === 0 ? 'sz' : 'prov' // 广东
+      else if (step1.provinceIndex === 18) cityType = _step1.cityTypeIndex === 0 ? 'sz' : 'prov' // 广东
     }
 
     console.log('[onCalculate] 映射后参数:', { province, gender, birthDate, workStartDate, averageIndex, cityType })
