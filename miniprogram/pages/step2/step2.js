@@ -46,6 +46,26 @@ const DOUBLE_INDEX_PROVINCES = [10, 18, 26]  // 浙江=10, 广东=18, 陕西=26
 // 双基数省份（河南=15, 吉林=6, 辽宁=5, 广东=18）
 const DOUBLE_BASE_PROVINCES = [15, 6, 5, 18]
 
+// 省份索引 → 云函数省份文件名（拼音，与 provinces/*.js 对应）
+const PROVINCE_SLUGS = [
+  'beijing','tianjin','hebei','shanxi','neimenggu',
+  'liaoning','jilin','heilongjiang','shanghai','jiangsu',
+  'zhejiang','anhui','fujian','jiangxi','shandong',
+  'henan','hubei','hunan','guangdong','guangxi',
+  'hainan','chongqing','sichuan','guizhou','yunnan',
+  'xizang','shaanxi','gansu','qinghai','ningxia','xinjiang'
+]
+
+// 退休类型索引 → { gender, identity }
+// step1 retireTypeNames: ['企业职工男','企业职工女（原50岁）','企业职工女（原55岁）','灵活就业男','灵活就业女']
+const RETIRE_TYPE_MAP = [
+  { gender: 'male',   identity: 'worker', genderType: 'male' },           // 0: 企业职工男
+  { gender: 'female', identity: 'worker', genderType: 'fw50' },            // 1: 企业职工女(50)
+  { gender: 'female', identity: 'worker', genderType: 'fw55' },            // 2: 企业职工女(55)
+  { gender: 'male',   identity: 'flexible', genderType: 'male' },          // 3: 灵活就业男
+  { gender: 'female', identity: 'flexible', genderType: 'flexFemale' }     // 4: 灵活就业女
+]
+
 Page({
   data: {
     // 缴费基数类型：0=灵活就业，1=按实际指数
@@ -219,77 +239,96 @@ Page({
   async onCalculate() {
     const d = this.data
 
-    // 校验
+    // 前端校验
     if (d.baseTypeIndex < 0) return wx.showToast({ title: '请选择缴费基数类型', icon: 'none' })
     if (d.baseTypeIndex === 1 && !d.averageIndexInput) return wx.showToast({ title: '请输入平均缴费指数', icon: 'none' })
     if (!d.accountBalanceInput) return wx.showToast({ title: '请输入个人账户余额', icon: 'none' })
 
-    // 读取 step1 数据
     const step1 = wx.getStorageSync('form_step1')
+    if (!step1) return wx.showToast({ title: '请先填写个人信息', icon: 'none' })
 
-    // 组装计算参数（调用云函数）
-    wx.showLoading({ title: '计算中...' })
+    // ── 参数映射：小程序内部格式 → 云函数期望格式 ──
 
-    // 确定 cityType（双基数省份）
-    let cityType = null
-    if (d.showCityType) {
-      if (d.cityTypeIndex === 0) {
-        // 根据省份设置 cityType
-        if (step1.provinceIndex === 15) cityType = 'zz'  // 河南郑州
-        else if (step1.provinceIndex === 6) cityType = 'cc'  // 吉林长春
-        else if (step1.provinceIndex === 5) cityType = 'shenyang'  // 辽宁沈阳
-        else if (step1.provinceIndex === 18) cityType = 'sz'  // 广东深圳
-      } else if (d.cityTypeIndex === 1 && step1.provinceIndex === 5) {
-        // 辽宁特殊情况：index=1 是大连市
-        cityType = 'dalian'  // 大连
-      } else {
-        cityType = 'prov'  // 全省其他
-      }
+    // 1. 省份：index → 拼音 slug
+    const province = PROVINCE_SLUGS[step1.provinceIndex]
+    if (!province) return wx.showToast({ title: '无效的参保省份', icon: 'none' })
+
+    // 2. 性别/人员类型：index → gender + identity
+    const typeInfo = RETIRE_TYPE_MAP[step1.retireTypeIndex]
+    if (!typeInfo) return wx.showToast({ title: '无效的退休类型', icon: 'none' })
+    const { gender, identity, genderType } = typeInfo
+
+    // 3. 出生日期：索引/字符串 → "YYYY-MM"
+    let birthDate, workStartDate
+    if (step1.birthYearIndex != null && step1.birthMonthIndex != null) {
+      const by = 1960 + step1.birthYearIndex
+      const bm = step1.birthMonthIndex + 1
+      birthDate = `${by}-${String(bm).padStart(2, '0')}`
+    } else {
+      birthDate = step1.birthDate || ''
+    }
+    if (step1.workYearIndex != null && step1.workMonthIndex != null) {
+      const wy = 1980 + step1.workYearIndex
+      const wm = step1.workMonthIndex + 1
+      workStartDate = `${wy}-${String(wm).padStart(2, '0')}`
+    } else {
+      workStartDate = step1.workDate || ''
     }
 
-    // 兼容旧版缓存：优先用索引，没有就从日期字符串解析
-    const birthIdx = (step1.birthYearIndex != null && step1.birthMonthIndex != null)
-      ? { yearIndex: step1.birthYearIndex, monthIndex: step1.birthMonthIndex }
-      : this._parseDateToIndex(step1.birthDate, this.data._BIRTH_START)
-    const workIdx = (step1.workYearIndex != null && step1.workMonthIndex != null)
-      ? { yearIndex: step1.workYearIndex, monthIndex: step1.workMonthIndex }
-      : this._parseDateToIndex(step1.workDate, this.data._WORK_START)
+    // 4. 平均缴费指数：灵活就业档次 → 数值，或直接用用户输入值
+    let averageIndex
+    if (d.baseTypeIndex === 0 && d.levelIndex >= 0) {
+      averageIndex = LEVEL_PERCENTS[d.levelIndex]
+    } else {
+      averageIndex = parseFloat(d.averageIndexInput) || 0
+    }
 
-    console.log('[onCalculate] birthIdx=', birthIdx, 'workIdx=', workIdx)
+    // 5. 双基数城市类型
+    let cityType = null
+    if (d.showCityType && d.cityTypeIndex >= 0) {
+      if (step1.provinceIndex === 15) cityType = d.cityTypeIndex === 0 ? 'zz' : 'prov'     // 河南
+      else if (step1.provinceIndex === 6) cityType = d.cityTypeIndex === 0 ? 'cc' : 'prov'  // 吉林
+      else if (step1.provinceIndex === 5) {                                               // 辽宁
+        cityType = d.cityTypeIndex === 0 ? 'shenyang' : d.cityTypeIndex === 1 ? 'dalian' : 'prov'
+      }
+      else if (step1.provinceIndex === 18) cityType = d.cityTypeIndex === 0 ? 'sz' : 'prov' // 广东
+    }
+
+    console.log('[onCalculate] 映射后参数:', { province, gender, birthDate, workStartDate, averageIndex, cityType })
+
+    // 调用云函数
+    wx.showLoading({ title: '计算中...' })
 
     try {
       const res = await wx.cloud.callFunction({
         name: 'calculate',
         data: {
-          provinceIndex: step1.provinceIndex,
-          retireTypeIndex: step1.retireTypeIndex,
-          birthYearIndex: birthIdx.yearIndex,
-          birthMonthIndex: birthIdx.monthIndex,
-          workYearIndex: workIdx.yearIndex,
-          workMonthIndex: workIdx.monthIndex,
-          retirePlan: step1.retirePlan,
-          cityType: cityType,  // 双基数省份的城市类型
-          baseTypeIndex: d.baseTypeIndex,
-          levelIndex: d.levelIndex >= 0 ? d.levelIndex : null,
-          averageIndex: d.averageIndexInput ? parseFloat(d.averageIndexInput) : null,
-          transIndex: d.transIndexInput ? parseFloat(d.transIndexInput) : null,
-          oldIndex: d.oldIndexInput ? parseFloat(d.oldIndexInput) : null,
-          accountBalance: parseFloat(d.accountBalanceInput) || 0
+          province,
+          cityType: cityType || 'prov',
+          gender,
+          identity,
+          genderType,
+          birthDate,
+          workStartDate,
+          averageIndex,
+          personalAccount: parseFloat(d.accountBalanceInput) || 0,
+          extras: {}
         }
       })
 
       wx.hideLoading()
 
       if (res.result && res.result.success) {
-        // 保存结果到缓存，跳转到结果页
         wx.setStorageSync('calc_result', res.result.data)
         wx.navigateTo({ url: '/pages/result/result' })
       } else {
-        wx.showToast({ title: '计算失败，请重试', icon: 'none' })
+        const msg = (res.result && res.result.message) || '计算失败，请重试'
+        console.error('[onCalculate] 云函数返回失败:', msg)
+        wx.showToast({ title: msg, icon: 'none' })
       }
     } catch (err) {
       wx.hideLoading()
-      console.error('[calculate] 调用失败：', err)
+      console.error('[onCalculate] 云函数调用异常:', err)
       wx.showToast({ title: '计算失败，请检查网络', icon: 'none' })
     }
   },

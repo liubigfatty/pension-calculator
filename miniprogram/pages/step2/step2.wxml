@@ -55,9 +55,9 @@
     <!-- 历年缴费指数（按实际缴费指数） -->
     <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
       <text class="form-label">历年缴费指数</text>
-      <view class="input-row">
-        <input class="input-box" type="digit" value="{{averageIndexInput}}" placeholder="0.6~3.0" bindinput="onIndexInput"/>
-        <text class="input-unit">指数</text>
+      <view class="input-wrap">
+        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="如 0.6~3.0" bindinput="onIndexInput"/>
+        <text class="input-suffix">指数</text>
       </view>
     </view>
 
@@ -65,13 +65,13 @@
     <view class="form-item" wx:if="{{showDoubleIndex && baseTypeIndex == 1}}">
       <text class="form-label">双指数省份（过渡性养老金指数）</text>
       <view class="double-index-row">
-        <view class="input-row flex-1">
-          <input class="input-box" type="digit" value="{{transIndexInput}}" placeholder="过渡性指数" bindinput="onTransIndexInput"/>
-          <text class="input-unit">过渡指数</text>
+        <view class="input-wrap flex-1">
+          <input class="input-field" type="digit" value="{{transIndexInput}}" placeholder="过渡性指数" bindinput="onTransIndexInput"/>
+          <text class="input-suffix">过渡指数</text>
         </view>
-        <view class="input-row flex-1">
-          <input class="input-box" type="digit" value="{{oldIndexInput}}" placeholder="老办法指数" bindinput="onOldIndexInput"/>
-          <text class="input-unit">老办法指数</text>
+        <view class="input-wrap flex-1">
+          <input class="input-field" type="digit" value="{{oldIndexInput}}" placeholder="老办法指数" bindinput="onOldIndexInput"/>
+          <text class="input-suffix">老办法指数</text>
         </view>
       </view>
     </view>
@@ -79,9 +79,9 @@
     <!-- 个人账户余额 -->
     <view class="form-item">
       <text class="form-label"><text class="form-required">*</text> 个人账户余额（估算）</text>
-      <view class="input-row">
-        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额" bindinput="onBalanceInput"/>
-        <text class="input-unit">元</text>
+      <view class="input-wrap">
+        <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="请输入金额" bindinput="onBalanceInput"/>
+        <text class="input-suffix">元</text>
       </view>
       <text class="form-hint" bindtap="onShowBalanceTip">不清楚可查看【小贴士】</text>
     </view>
