@@ -77,7 +77,7 @@
         <text class="form-required">*</text>
       </view>
       <view class="input-row">
-        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额（元）" bindinput="onBalanceInput"/>
+        <input class="input-box" type="digit" value="{{accountBalanceInput}}" placeholder="请输入余额，如 114010" bindinput="onBalanceInput"/>
       </view>
       <!-- 预估余额提示 -->
       <view class="estimated-tip" wx:if="{{showEstimated && estimatedBalance}}">
