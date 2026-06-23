@@ -1,23 +1,5 @@
-<!--pages/step2/step2.wxml - 缴费信息页（新 step2）-->
+<!--pages/step2/step2.wxml - 缴费信息页-->
 <view class="step-container">
-  <!-- 进度条 -->
-  <view class="progress-bar">
-    <view class="progress-step done">
-      <view class="step-dot">1</view>
-      <text class="step-label">个人信息</text>
-    </view>
-    <view class="step-line done"></view>
-    <view class="progress-step done">
-      <view class="step-dot">2</view>
-      <text class="step-label">缴费信息</text>
-    </view>
-    <view class="step-line active"></view>
-    <view class="progress-step active">
-      <view class="step-dot">3</view>
-      <text class="step-label">测算结果</text>
-    </view>
-  </view>
-
   <!-- 表单卡片 -->
   <view class="form-card">
     <view class="form-card-header">
@@ -51,23 +33,14 @@
       </picker>
     </view>
 
-    <!-- 历年缴费指数（按实际缴费指数） -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 1}}">
-      <text class="form-label">历年缴费指数</text>
+    <!-- 历年平均缴费指数（常显） -->
+    <view class="form-item">
+      <text class="form-label">历年平均缴费指数</text>
       <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="如 0.6~3.0" bindinput="onIndexInput"/>
+        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="如不清楚可留空，系统将自动估算" bindinput="onIndexInput"/>
         <text class="input-suffix">指数</text>
       </view>
-    </view>
-
-    <!-- 历年缴费指数（常显，供用户参考） -->
-    <view class="form-item" wx:if="{{baseTypeIndex == 0}}">
-      <text class="form-label">历年缴费指数（参考值）</text>
-      <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="系统将自动估算" bindinput="onIndexInput" disabled/>
-        <text class="input-suffix">指数</text>
-      </view>
-      <text class="form-hint">选择灵活就业档次后，系统将自动估算缴费指数</text>
+      <text class="form-hint">选择灵活就业档次后可留空，选择"按实际缴费指数"时请填写</text>
     </view>
 
     <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->
