@@ -50,6 +50,10 @@ Page({
   data: {
     // 缴费基数类型：0=灵活就业，1=按实际指数
     baseTypeNames: ['灵活就业', '按实际缴费指数'],
+
+    // 日期起始年份（与 step1 保持一致）
+    _BIRTH_START: 1960,
+    _WORK_START: 1980,
     baseTypeIndex: -1,
 
     // 灵活就业缴费档次
@@ -147,8 +151,16 @@ Page({
     // 缴费档次 → 百分比
     const percent = LEVEL_PERCENTS[this.data.levelIndex]
 
-    // 缴费年数 = 当前年份 − 参加工作年份
-    const workYear = 1960 + (step1.workYearIndex || 0)
+    // 缴费年数 = 当前年份 − 参加工作年份（兼容新旧缓存格式）
+    let workYear
+    if (step1.workYearIndex != null) {
+      workYear = 1960 + step1.workYearIndex
+    } else if (step1.workDate) {
+      // 旧格式：从 "1995-07" 解析年份
+      workYear = parseInt(step1.workDate.split('-')[0])
+    } else {
+      workYear = 1995  // 兜底默认值
+    }
     const currentYear = new Date().getFullYear()
     const contribYears = Math.max(1, currentYear - workYear)
 
@@ -196,8 +208,12 @@ Page({
     this.setData({ showBalanceTip: false })
   },
 
-  // 阻止事件冒泡（点击弹窗内容区不关闭）
-  stopProp() {},
+  // 把 "1970-06" 转成 { yearIndex, monthIndex }
+  _parseDateToIndex(dateStr, startYear) {
+    if (!dateStr) return { yearIndex: -1, monthIndex: -1 }
+    const [y, m] = dateStr.split('-').map(Number)
+    return { yearIndex: y - startYear, monthIndex: m - 1 }
+  },
 
   // 计算养老金
   async onCalculate() {
@@ -231,16 +247,26 @@ Page({
       }
     }
 
+    // 兼容旧版缓存：优先用索引，没有就从日期字符串解析
+    const birthIdx = (step1.birthYearIndex != null && step1.birthMonthIndex != null)
+      ? { yearIndex: step1.birthYearIndex, monthIndex: step1.birthMonthIndex }
+      : this._parseDateToIndex(step1.birthDate, this.data._BIRTH_START)
+    const workIdx = (step1.workYearIndex != null && step1.workMonthIndex != null)
+      ? { yearIndex: step1.workYearIndex, monthIndex: step1.workMonthIndex }
+      : this._parseDateToIndex(step1.workDate, this.data._WORK_START)
+
+    console.log('[onCalculate] birthIdx=', birthIdx, 'workIdx=', workIdx)
+
     try {
       const res = await wx.cloud.callFunction({
         name: 'calculate',
         data: {
           provinceIndex: step1.provinceIndex,
           retireTypeIndex: step1.retireTypeIndex,
-          birthYearIndex: step1.birthYearIndex,
-          birthMonthIndex: step1.birthMonthIndex,
-          workYearIndex: step1.workYearIndex,
-          workMonthIndex: step1.workMonthIndex,
+          birthYearIndex: birthIdx.yearIndex,
+          birthMonthIndex: birthIdx.monthIndex,
+          workYearIndex: workIdx.yearIndex,
+          workMonthIndex: workIdx.monthIndex,
           retirePlan: step1.retirePlan,
           cityType: cityType,  // 双基数省份的城市类型
           baseTypeIndex: d.baseTypeIndex,

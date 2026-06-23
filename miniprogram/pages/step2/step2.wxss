@@ -270,6 +270,9 @@
   font-size: 30rpx;
   color: #28292B;
   background: transparent;
+  height: 48rpx;
+  line-height: 48rpx;
+  min-height: 48rpx;
 }
 
 .input-unit {
