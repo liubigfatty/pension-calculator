@@ -37,6 +37,34 @@ const PROV_AVG_SALARY = [
   8559   // 30:新疆
 ]
 
+// ==================== 历年记账利率（用于估算个人账户余额）====================
+// 2016年及以后：全国统一记账利率（人社部公布）
+const NATIONAL_INTEREST_RATES = {
+  2016: 0.0831, 2017: 0.0712, 2018: 0.0829,
+  2019: 0.0761, 2020: 0.0604, 2021: 0.0669,
+  2022: 0.0612, 2023: 0.0397, 2024: 0.0262, 2025: 0.0150,
+}
+
+// 2016年之前全国统一记账利率估算值（分段均值）
+const PRE2016_RATES = {
+  1998:0.060, 1999:0.060, 2000:0.060, 2001:0.060,
+  2002:0.060, 2003:0.060, 2004:0.060, 2005:0.060,
+  2006:0.050, 2007:0.050, 2008:0.050, 2009:0.050, 2010:0.050,
+  2011:0.040, 2012:0.040, 2013:0.040, 2014:0.040, 2015:0.040,
+}
+
+// 获取某年记账利率（优先查表，找不到用2.5%兜底）
+function getInterestRate(year) {
+  if (year >= 2016 && NATIONAL_INTEREST_RATES[year] !== undefined) {
+    return NATIONAL_INTEREST_RATES[year]
+  }
+  if (PRE2016_RATES[year] !== undefined) return PRE2016_RATES[year]
+  // 2016年后：用最近已知值（2025=1.50%）
+  if (year > 2025) return NATIONAL_INTEREST_RATES[2025]
+  // 1998年前：兜底2.5%
+  return 0.025
+}
+
 // 缴费档次对应的百分比
 const LEVEL_PERCENTS = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 
@@ -157,40 +185,65 @@ Page({
   },
 
   // 自动估算个人账户余额
-  // 公式：计发基数 × 档次% × 8% × 12个月 × 缴费年数 × 1.4（利息系数）
+  // 使用历年真实记账利率做复利计算（不再用固定1.4系数）
+  // 逐年模拟：每年缴费额从次年开始按历年利率复利增长
   estimateBalance() {
-    const step1 = wx.getStorageSync('form_step1')
+    const step1 = wx.getStorageSync("form_step1")
     if (!step1 || step1.provinceIndex < 0) return
-    if (this.data.baseTypeIndex !== 0) return   // 仅"灵活就业"时估算
+    if (this.data.baseTypeIndex !== 0) return
     if (this.data.levelIndex < 0) return
 
     const provinceIndex = step1.provinceIndex
-    const avgSalary = PROV_AVG_SALARY[provinceIndex]  // 元/月
+    const avgSalary = PROV_AVG_SALARY[provinceIndex]
     if (!avgSalary) return
 
-    // 缴费档次 → 百分比
     const percent = LEVEL_PERCENTS[this.data.levelIndex]
 
-    // 缴费年数 = 当前年份 − 参加工作年份（兼容新旧缓存格式）
-    let workYear
+    // 参加工作年份
+    let workStartYear
     if (step1.workYearIndex != null) {
-      workYear = 1960 + step1.workYearIndex
+      workStartYear = 1980 + step1.workYearIndex
     } else if (step1.workDate) {
-      // 旧格式：从 "1995-07" 解析年份
-      workYear = parseInt(step1.workDate.split('-')[0])
+      workStartYear = parseInt(step1.workDate.split("-")[0])
     } else {
-      workYear = 1995  // 兜底默认值
+      workStartYear = 1995
     }
-    const currentYear = new Date().getFullYear()
-    const contribYears = Math.max(1, currentYear - workYear)
 
-    // 估算：计发基数 × 档次% × 8% × 12 × 缴费年数 × 1.4（利息）
-    const estimated = Math.round(
-      avgSalary * percent * 0.08 * 12 * contribYears * 1.4
-    )
+    // 预计退休年份（用于估算未来利息）
+    let retireYear
+    if (step1.birthYearIndex != null && step1.retireTypeIndex != null) {
+      const birthYear = 1960 + step1.birthYearIndex
+      const ages = [60, 50, 55, 60, 55]
+      retireYear = birthYear + (ages[step1.retireTypeIndex] || 60)
+    } else {
+      retireYear = new Date().getFullYear() + 10
+    }
+
+    // 逐年模拟个人账户积累
+    let balance = 0
+    const endYear = Math.max(retireYear, new Date().getFullYear())
+
+    for (let y = workStartYear; y < endYear; y++) {
+      // 当年月缴费额 = 计发基数 × 档次% × 8% × 12
+      const annualContrib = avgSalary * percent * 0.08 * 12
+
+      // 该笔缴费从 y+1 年到 endYear-1 年之间的复利增长
+      let growth = 1.0
+      for (let r = y + 1; r < endYear; r++) {
+        growth *= (1 + getInterestRate(r))
+      }
+
+      balance += annualContrib * growth
+    }
+
+    const estimated = Math.round(balance)
+    console.log("[estimateBalance] 省份=" + provinceIndex +
+      " 档次=" + (percent*100) + "%" +
+      " 工作年=" + workStartYear +
+      " 退休年=" + retireYear +
+      " 估算余额=" + estimated)
 
     this.setData({ accountBalanceInput: String(estimated) })
-    console.log('[estimateBalance] 省份=' + provinceIndex + ' 档次=' + (percent*100) + '% 缴费年数=' + contribYears + ' 估算余额=' + estimated)
   },
 
   // 选择城市类型（双基数省份：郑州/长春 vs 全省其他）
