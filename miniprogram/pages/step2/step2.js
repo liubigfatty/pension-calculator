@@ -4,6 +4,9 @@ const app = getApp()
 // 双指数省份（浙江、广东、陕西）
 const DOUBLE_INDEX_PROVINCES = [10, 18, 26]  // 浙江=10, 广东=18, 陕西=26
 
+// 双基数省份（河南=13, 吉林=15）
+const DOUBLE_BASE_PROVINCES = [13, 15]
+
 Page({
   data: {
     // 缴费基数类型：0=灵活就业，1=按实际指数
@@ -22,6 +25,11 @@ Page({
     transIndexInput: '',   // 过渡性养老金指数
     oldIndexInput: '',      // 老办法指数
 
+    // 双基数省份相关（河南郑州、吉林长春）
+    showCityType: false,
+    cityTypeNames: [],
+    cityTypeIndex: -1,
+
     // 个人账户余额
     accountBalanceInput: ''
   },
@@ -39,8 +47,21 @@ Page({
     const isDoubleIndex = DOUBLE_INDEX_PROVINCES.includes(step1.provinceIndex)
     console.log('[step2] 读取 step1 数据：', step1, '是否双指数省份：', isDoubleIndex)
     
+    // 判断是否为双基数省份，并设置城市选项
+    let showCityType = false
+    let cityTypeNames = []
+    if (step1.provinceIndex === 13) {  // 河南
+      showCityType = true
+      cityTypeNames = ['郑州市', '全省其他']
+    } else if (step1.provinceIndex === 15) {  // 吉林
+      showCityType = true
+      cityTypeNames = ['长春市', '全省其他']
+    }
+    
     this.setData({
-      showDoubleIndex: isDoubleIndex
+      showDoubleIndex: isDoubleIndex,
+      showCityType: showCityType,
+      cityTypeNames: cityTypeNames
     })
   },
 
@@ -52,6 +73,11 @@ Page({
   // 选择缴费档次（灵活就业）
   onLevelChange(e) {
     this.setData({ levelIndex: Number(e.detail.value) })
+  },
+
+  // 选择城市类型（双基数省份：郑州/长春 vs 全省其他）
+  onCityTypeChange(e) {
+    this.setData({ cityTypeIndex: Number(e.detail.value) })
   },
 
   // 输入平均缴费指数
@@ -89,6 +115,13 @@ Page({
     // 组装计算参数（调用云函数）
     wx.showLoading({ title: '计算中...' })
 
+    // 确定 cityType（双基数省份）
+    let cityType = null
+    if (d.showCityType) {
+      // 0=郑州市/长春市, 1=全省其他
+      cityType = d.cityTypeIndex === 0 ? (step1.provinceIndex === 13 ? 'zz' : 'cc') : 'prov'
+    }
+
     try {
       const res = await wx.cloud.callFunction({
         name: 'calculate',
@@ -100,6 +133,7 @@ Page({
           workYearIndex: step1.workYearIndex,
           workMonthIndex: step1.workMonthIndex,
           retirePlan: step1.retirePlan,
+          cityType: cityType,  // 双基数省份的城市类型
           baseTypeIndex: d.baseTypeIndex,
           levelIndex: d.levelIndex >= 0 ? d.levelIndex : null,
           averageIndex: d.averageIndexInput ? parseFloat(d.averageIndexInput) : null,

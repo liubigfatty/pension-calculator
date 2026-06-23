@@ -25,6 +25,15 @@
       <text class="form-card-title">缴费信息</text>
     </view>
 
+    <!-- 城市选择（双基数省份：河南郑州、吉林长春） -->
+    <view class="form-item" wx:if="{{showCityType}}">
+      <text class="form-label"><text class="form-required">*</text> 参保城市</text>
+      <picker mode="selector" range="{{cityTypeNames}}" value="{{cityTypeIndex}}" bindchange="onCityTypeChange" class="form-picker">
+        <view class="picker-content {{cityTypeIndex >= 0 ? '' : 'placeholder'}}">{{cityTypeIndex >= 0 ? cityTypeNames[cityTypeIndex] : '请选择参保城市'}}</view>
+        <text class="picker-arrow">▼</text>
+      </picker>
+    </view>
+
     <!-- 缴费基数类型 -->
     <view class="form-item">
       <text class="form-label"><text class="form-required">*</text> 缴费基数类型</text>
