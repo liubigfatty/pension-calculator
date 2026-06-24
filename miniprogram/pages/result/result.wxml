@@ -135,7 +135,6 @@
           />
         </scroll-view>
         <view class="share-preview-footer">
-          <button class="share-preview-btn save" bindtap="saveShareImage">保存到相册</button>
           <button class="share-preview-btn share" open-type="share">发送给朋友</button>
         </view>
       </view>

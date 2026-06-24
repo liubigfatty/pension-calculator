@@ -1,29 +1,29 @@
-/* pages/result/result.wxss - 增强版 v3（精致金融风格） */
+﻿/* pages/result/result.wxss - 澧炲己鐗?v3锛堢簿鑷撮噾铻嶉鏍硷級 */
 
 .container {
   padding: 32rpx;
-  background: #F5F3F0;  /* 正元暖白 - 页面底 */
+  background: #F5F3F0;  /* 姝ｅ厓鏆栫櫧 - 椤甸潰搴?*/
   min-height: 100vh;
 }
 
-/* ═════════════ 金额主卡片（精致渐变） ═════════════ */
+/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?閲戦涓诲崱鐗囷紙绮捐嚧娓愬彉锛?鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .amount-card {
-  background: linear-gradient(165deg, #171717 0%, #2A2A2A 100%);  /* 精致深色渐变 */
-  border-radius: 32rpx;  /* 更大的圆角 */
+  background: linear-gradient(165deg, #171717 0%, #2A2A2A 100%);  /* 绮捐嚧娣辫壊娓愬彉 */
+  border-radius: 32rpx;  /* 鏇村ぇ鐨勫渾瑙?*/
   padding: 56rpx 40rpx 44rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 24rpx;
   box-shadow: 
-    0 8rpx 32rpx rgba(40,41,43,0.25),  /* 主阴影 */
-    0 2rpx 8rpx rgba(40,41,43,0.15),   /* 次阴影 */
-    inset 0 1rpx 0 rgba(139,115,85,0.12);  /* 顶部高光 */
+    0 8rpx 32rpx rgba(40,41,43,0.25),  /* 涓婚槾褰?*/
+    0 2rpx 8rpx rgba(40,41,43,0.15),   /* 娆￠槾褰?*/
+    inset 0 1rpx 0 rgba(139,115,85,0.12);  /* 椤堕儴楂樺厜 */
   position: relative;
   overflow: hidden;
 }
 
-/* 添加 subtle 纹理背景 */
+/* 娣诲姞 subtle 绾圭悊鑳屾櫙 */
 .amount-card::before {
   content: '';
   position: absolute;
@@ -37,7 +37,7 @@
 
 .amount-card-label {
   font-size: 28rpx;
-  color: rgba(139,115,85,0.9);  /* 正元光 - 半透明 */
+  color: rgba(139,115,85,0.9);  /* 姝ｅ厓鍏?- 鍗婇€忔槑 */
   letter-spacing: 2rpx;
   font-weight: 400;
   margin-bottom: 8rpx;
@@ -52,95 +52,95 @@
 
 .amount-card-symbol {
   font-size: 48rpx;
-  color: #B8977D;  /* 正元光 - 金色 */
+  color: #B8977D;  /* 姝ｅ厓鍏?- 閲戣壊 */
   font-weight: 600;
   margin-right: 8rpx;
 }
 
 .amount-card-value {
-  font-size: 96rpx;  /* 更大的金额 */
-  color: #B8977D;  /* 正元光 - 金色 */
-  font-weight: 700;  /* 更粗的字重 */
+  font-size: 96rpx;  /* 鏇村ぇ鐨勯噾棰?*/
+  color: #B8977D;  /* 姝ｅ厓鍏?- 閲戣壊 */
+  font-weight: 700;  /* 鏇寸矖鐨勫瓧閲?*/
   line-height: 1;
-  letter-spacing: -3rpx;  /* 更紧凑的字母间距 */
+  letter-spacing: -3rpx;  /* 鏇寸揣鍑戠殑瀛楁瘝闂磋窛 */
   font-family: -apple-system, 'Helvetica Neue', 'PingFang SC', sans-serif;
 }
 
-/* 退休信息标签 */
+/* 閫€浼戜俊鎭爣绛?*/
 .retire-tag {
   margin-top: 24rpx;
-  background: rgba(139,115,85,0.12);  /* 半透明金色 */
+  background: rgba(139,115,85,0.12);  /* 鍗婇€忔槑閲戣壊 */
   border-radius: 48rpx;
   padding: 12rpx 32rpx;
-  border: 1rpx solid rgba(139,115,85,0.18);  /* 精致边框 */
+  border: 1rpx solid rgba(139,115,85,0.18);  /* 绮捐嚧杈规 */
 }
 
 .retire-tag text {
   font-size: 26rpx;
-  color: rgba(139,115,85,0.95);  /* 正元光 */
+  color: rgba(139,115,85,0.95);  /* 姝ｅ厓鍏?*/
   font-weight: 500;
 }
 
-/* 地区标签 */
+/* 鍦板尯鏍囩 */
 .region-text {
   display: block;
   text-align: center;
   font-size: 26rpx;
-  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  color: #6C584B;  /* Warm Taupe - 鏆栨 */
   margin: 8rpx 0 28rpx;
   letter-spacing: 1rpx;
 }
 
-/* ═════════════ 通用卡片样式（增强） ═════════════ */
+/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?閫氱敤鍗＄墖鏍峰紡锛堝寮猴級 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .card {
-  background: #F4F0E8;  /* Creamy Off-White - 暖白 */
-  border-radius: 32rpx;  /* 统一大卡片圆角 */
+  background: #F4F0E8;  /* Creamy Off-White - 鏆栫櫧 */
+  border-radius: 32rpx;  /* 缁熶竴澶у崱鐗囧渾瑙?*/
   overflow: hidden;
   margin-bottom: 24rpx;
   box-shadow: 
-    0 4rpx 16rpx rgba(40,41,43,0.06),  /* 主阴影 */
-    0 1rpx 4rpx rgba(40,41,43,0.04);   /* 次阴影 */
-  border: 1rpx solid rgba(213,206,195,0.5);  /* 精致富质感边框 */
+    0 4rpx 16rpx rgba(40,41,43,0.06),  /* 涓婚槾褰?*/
+    0 1rpx 4rpx rgba(40,41,43,0.04);   /* 娆￠槾褰?*/
+  border: 1rpx solid rgba(213,206,195,0.5);  /* 绮捐嚧瀵岃川鎰熻竟妗?*/
 }
 
 .card-body {
-  padding: 20rpx 36rpx;  /* 统一行间距 */
+  padding: 20rpx 36rpx;  /* 缁熶竴琛岄棿璺?*/
 }
 
 .card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx 0;  /* 统一行间距 */
+  padding: 20rpx 0;  /* 缁熶竴琛岄棿璺?*/
   min-height: 56rpx;
 }
 
 .card-label {
   font-size: 28rpx;
-  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  color: #6C584B;  /* Warm Taupe - 鏆栨 */
   font-weight: 400;
   letter-spacing: 0.5rpx;
 }
 
 .card-value {
-  font-size: 32rpx;  /* 更大的数值 */
-  color: #171717;  /* Deep Charcoal - 深色正文 */
+  font-size: 32rpx;  /* 鏇村ぇ鐨勬暟鍊?*/
+  color: #171717;  /* Deep Charcoal - 娣辫壊姝ｆ枃 */
   font-weight: 600;
   letter-spacing: 0.5rpx;
 }
 
 .card-value-blue {
-  color: #8B7355;  /* 正元金 */
+  color: #8B7355;  /* 姝ｅ厓閲?*/
   font-weight: 600;
 }
 
 .card-divider {
   height: 1rpx;
-  background: linear-gradient(90deg, transparent 0%, #E0D8CC 15%, #E0D8CC 85%, transparent 100%);  /* 渐变分割线 */
+  background: linear-gradient(90deg, transparent 0%, #E0D8CC 15%, #E0D8CC 85%, transparent 100%);  /* 娓愬彉鍒嗗壊绾?*/
   margin: 0;
 }
 
-/* ═════════════ 按钮区域（增强） ═════════════ */
+/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?鎸夐挳鍖哄煙锛堝寮猴級 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .btn-area {
   padding: 16rpx 0 24rpx;
   display: flex;
@@ -178,7 +178,7 @@
 
 .btn-report::after { border: none; }
 
-/* 分享查看模式："我也来算一下"按钮 */
+/* 鍒嗕韩鏌ョ湅妯″紡锛?鎴戜篃鏉ョ畻涓€涓?鎸夐挳 */
 .btn-calculate {
   width: 100%;
   background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
@@ -209,18 +209,18 @@
 .error-title {
   font-size: 34rpx;
   font-weight: 600;
-  color: #171717;  /* Deep Charcoal - 深色正文 */
+  color: #171717;  /* Deep Charcoal - 娣辫壊姝ｆ枃 */
   margin-bottom: 24rpx;
 }
 
 .error-desc {
   font-size: 28rpx;
-  color: #6C584B;  /* Warm Taupe - 暖棕 */
+  color: #6C584B;  /* Warm Taupe - 鏆栨 */
   line-height: 1.6;
   margin-bottom: 48rpx;
 }
 
-/* ═════════════ 声明 ═════════════ */
+/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?澹版槑 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?*/
 .disclaimer {
   padding: 32rpx 16rpx 56rpx;
   text-align: center;
@@ -230,7 +230,7 @@
   font-size: 24rpx;
   color: #AAAAAA;
 }
-/* ════════════ 分享预览弹窗 ══════════ */
+/* 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 鍒嗕韩棰勮寮圭獥 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 */
 .share-preview-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -302,11 +302,6 @@
 
 .share-preview-btn::after { border: none; }
 
-.share-preview-btn.save {
-  background: #F4F0E8;
-  color: #8B7355;
-  border: 2rpx solid #8B7355;
-}
 
 .share-preview-btn.share {
   background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
