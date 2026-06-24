@@ -144,7 +144,9 @@ function getEngineConfig() {
       "2024": 97572,
       "_source": "海南省历年在岗职工平均工资截图（2000-2020），头条@专讲社保",
       "_note": "2000-2020来自截图官方数据；2021-2024保持原有计发基数",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

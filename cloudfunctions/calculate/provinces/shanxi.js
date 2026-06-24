@@ -160,7 +160,9 @@ function getEngineConfig() {
       "2025": 85332,
       "_source": "山西省历年社平工资官方数据(2025-07-11归尘淡泊)",
       "_note": "1992-2025完整（缺2009）。值为上年社平工资年总额。2019-2020旧值严重偏低（约差10倍），已修正。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

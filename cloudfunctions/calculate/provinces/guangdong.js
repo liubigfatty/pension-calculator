@@ -178,7 +178,9 @@ function getEngineConfig() {
       "2024": 111684,
       "_source": "广东省官方公布的缴费基数（每年7月至次年6月周期），用于缴费指数计算。",
       "_note": "缴费指数 = 个人月缴费基数 ÷ 对应年度周期内官方公布的缴费工资基数。全省（除深圳）口径。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

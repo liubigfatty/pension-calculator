@@ -118,7 +118,9 @@ function getEngineConfig() {
       "2024": 94104,
       "_source": "官方数据",
       "_note": "缴费指数 = 个人缴费基数 ÷ 当年在岗职工月均值。1996-01-01建账。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

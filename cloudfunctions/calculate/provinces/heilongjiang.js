@@ -320,7 +320,9 @@ function getEngineConfig() {
       "2025": 92460,  // 预测
       "2026": 94253,  // 预测
       "_source": "官方数据（用户提供，2024-06-24）",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

@@ -115,7 +115,9 @@ function getEngineConfig() {
       "2024": 108264,
       "_source": "武汉市城镇单位在岗职工月平均工资。1998-2019来自官方公布数据，2020-2024来自武汉市统计局年值换算。",
       "_note": "缴费指数=个人基数÷当年武汉社平工资。其他城市社平数据待补充。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

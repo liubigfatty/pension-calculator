@@ -158,7 +158,9 @@ function getEngineConfig() {
       "2024": 93312,
       "_source": "官方数据（用户提供：福建省历年社平工资表，元/年）",
       "_note": "缴费指数 = 个人缴费基数 ÷ 当年在岗职工月均工资",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

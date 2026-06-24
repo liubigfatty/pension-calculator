@@ -157,7 +157,9 @@ function getEngineConfig() {
       "2025": 91899,
       "2026": 94293,
       "_source": "官方数据",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

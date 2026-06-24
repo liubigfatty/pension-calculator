@@ -158,7 +158,9 @@ function getEngineConfig() {
       "2024": 92724,
       "_source": "官方数据",
       "_note": "缴费指数=个人基数÷月均。1995-2023官方数据。2020年全口径切换：79128→66996，社平下降15.4%。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

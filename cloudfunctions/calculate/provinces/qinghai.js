@@ -146,7 +146,9 @@ function getEngineConfig() {
       "2023": 103711,
       "2024": 106536,
       "2025": 108684,
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

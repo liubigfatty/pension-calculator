@@ -329,7 +329,9 @@ function getEngineConfig() {
       ...(CC_BASE ? { cc: CC_BASE, '长春': CC_BASE, changchun: CC_BASE } : {}),
     },
     modules: modules,
-    account_start: ACCOUNT_START,
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,  // 吉林省不用建账前缴费年限
     cities: CITY_LIST || [],

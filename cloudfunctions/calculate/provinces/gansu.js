@@ -208,7 +208,9 @@ function getEngineConfig() {
       "2024": 91128,
       "_source": "甘肃省人社厅官方公布信息（用户提供），1995-2025年社保缴费基数及养老金计发基数",
       "_note": "双基数政策(2020起)：计发基数(base_rates)>缴费基数(avg_salary)。1995-2003全省职工社会；2004-2009分社会/在岗两套；2018起全口径用于缴费",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

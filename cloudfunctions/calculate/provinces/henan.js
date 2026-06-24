@@ -153,7 +153,9 @@ function getEngineConfig() {
       "_source": "河南省统计局：城镇非私营单位在岗职工平均工资（月均）",
       "_note": "缴费指数=个人缴费基数÷当年社平工资。1995-2004来自统计局公开数据，2005-2024来自用户直接提供的年值换算。",
     },
-    account_start: ACCOUNT_START,
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
     province: PROV_TAG,
     name: '河南省',

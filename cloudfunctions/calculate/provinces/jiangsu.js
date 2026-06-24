@@ -249,7 +249,9 @@ function getEngineConfig() {
       "2024": 105420,
       "_source": "江苏省历年社保工资及缴费基数表截图（头条@专讲社保）",
       "_note": "2018年全口径社平截图截断缺失。2019-2023为全口径社会平均工资(元/月×12)。2017→2019下降因全口径切换。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

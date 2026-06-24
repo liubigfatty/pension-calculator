@@ -159,7 +159,9 @@ function getEngineConfig() {
       "2024": 82164,
       "_source": "广西统计局公布+用户提供（2016-2020城镇非私营年工资÷12）",
       "_note": "1995-2017原有数据保持；2018-2020来自用户提供的非私营单位年工资；2021-2024按趋势估算待官方确认",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

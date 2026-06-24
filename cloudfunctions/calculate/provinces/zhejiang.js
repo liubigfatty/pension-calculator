@@ -147,7 +147,9 @@ function getEngineConfig() {
       "2024": 99720,
       "_source": "官方数据",
       "_note": "数据来自用户提供浙江省2013-2023年在岗职工平均工资。浙江已完成全口径转身，社平=计发基数。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

@@ -120,7 +120,9 @@ function getEngineConfig() {
       "2024": 87180,
       "_source": "官方数据",
       "_note": "缴费指数计算用。1993-2022来自省人社厅历年文件，2023+待补充同口径数据。",
-    },    account_start: ACCOUNT_START,
+    },    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,

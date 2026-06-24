@@ -225,7 +225,9 @@ function getEngineConfig() {
   return {
     province: 'sichuan',
     name: '四川省',
-    account_start: ACCOUNT_START,
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     viewing_start: VIEWING_START,
     usePreAccountYears: USE_PRE_ACCOUNT_YEARS,
     base_rates: {
