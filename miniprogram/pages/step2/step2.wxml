@@ -24,14 +24,14 @@
       </picker>
     </view>
 
-    <!-- 本人平均缴费指数（常显） -->
-    <view class="form-item">
-      <text class="form-label">本人平均缴费指数</text>
+    <!-- 本人平均缴费指数（企业职工必填） -->
+    <view class="form-item" wx:if="{{!isFlexible}}">
+      <text class="form-label"><text class="form-required">*</text> 本人平均缴费指数</text>
       <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="如不清楚可留空，系统将自动估算" bindinput="onIndexInput"/>
+        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="请输入（一般0.6-3.0）" bindinput="onIndexInput"/>
         <text class="input-suffix">指数</text>
       </view>
-      <text class="form-hint">可从社保查询，留空则系统自动估算</text>
+      <text class="form-hint">可在社保账户查询，或咨询12333</text>
     </view>
 
     <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->

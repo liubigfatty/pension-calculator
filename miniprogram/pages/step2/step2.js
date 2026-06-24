@@ -196,6 +196,13 @@ Page({
     // 前端校验
     if (d.isFlexible && d.levelIndex < 0) return wx.showToast({ title: '请选择缴费档次', icon: 'none' })
     if (!d.isFlexible && !d.averageIndexInput) return wx.showToast({ title: '请输入本人平均缴费指数', icon: 'none' })
+    // 校验指数范围（0.6~3.0 为合理区间）
+    if (!d.isFlexible) {
+      const idx = parseFloat(d.averageIndexInput)
+      if (isNaN(idx) || idx < 0.4 || idx > 3.0) {
+        return wx.showToast({ title: '指数一般为0.6-3.0，请检查', icon: 'none' })
+      }
+    }
 
     const step1 = wx.getStorageSync('form_step1')
     if (!step1) return wx.showToast({ title: '请先填写个人信息', icon: 'none' })
