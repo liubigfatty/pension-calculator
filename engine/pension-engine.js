@@ -953,6 +953,7 @@ function getRetireTotalMonths(birthYear, birthMonth, type, config, skipDelay) {
       break
     case 'fw':           // 女性工人，50岁退休（默认女性类型，来自parseInput）
     case 'fw50':         // 女性工人，50岁退休
+    case 'ef50':         // 企业女职工，50岁退休
       baseAge = 50
       break
     case 'fw55':         // 灵活就业女性，55岁退休
