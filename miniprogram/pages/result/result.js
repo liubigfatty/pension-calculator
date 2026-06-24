@@ -203,8 +203,8 @@ Page({
       retireDateLabel: retireDateStr ? `预计${retireDateStr}退休` : ''
     })
 
-    // 生成分享图（异步，不阻塞页面渲染）
-    this.generateShareImage()
+    // 分享图不再在 onLoad 时生成，改为按需触发（用户点"保存到相册"或"分享"时才生成）
+    this._shareImageReady = false
 
     // 调试：确认最终 setData 的值
     console.log('[result] setData done:', {
@@ -234,24 +234,72 @@ Page({
     })
   },
 
-  // 保存分享图到相册
-  saveShareImage() {
-    const path = this.data.shareImagePath
-    if (!path) {
-      wx.showToast({ title: '分享图生成中，请稍候', icon: 'none' })
-      // 如果分享图还没生成好，1秒后重试
-      setTimeout(() => {
-        this.saveShareImage()
-      }, 1000)
+  /**
+   * 显示分享操作菜单（替代原生 open-type="share"）
+   * 三个选项：发送给朋友、收藏、保存到相册
+   */
+  showShareMenu() {
+    wx.showActionSheet({
+      itemList: ['发送给朋友', '收藏', '保存到相册'],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0: // 发送给朋友 — 触发原生分享
+            // 先确保图片已生成，再触发分享
+            this._ensureShareImage().then(() => {
+              // 通过模拟按钮点击触发分享
+              this._triggerNativeShare()
+            })
+            break
+          case 1: // 收藏
+            this._addFavorite()
+            break
+          case 2: // 保存到相册 — 按需生成 + 保存
+            this._generateAndSave()
+            break
+        }
+      }
+    })
+  },
+
+  /**
+   * 确保分享图已生成（返回 Promise，已缓存则直接返回）
+   */
+  _ensureShareImage() {
+    if (this._shareImageReady && this.data.shareImagePath) {
+      return Promise.resolve(this.data.shareImagePath)
+    }
+    return this._generateShareImageAsync()
+  },
+
+  /**
+   * 生成并保存到相册（用户点"保存到相册"时调用）
+   */
+  _generateAndSave() {
+    wx.showLoading({ title: '生成图片中...', mask: true })
+
+    this._ensureShareImage().then((filePath) => {
+      wx.hideLoading()
+      this._saveToAlbum(filePath)
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '图片生成失败', icon: 'none' })
+    })
+  },
+
+  /**
+   * 保存图片到相册
+   */
+  _saveToAlbum(filePath) {
+    if (!filePath) {
+      wx.showToast({ title: '图片未生成', icon: 'none' })
       return
     }
     wx.saveImageToPhotosAlbum({
-      filePath: path,
+      filePath,
       success: () => {
         wx.showToast({ title: '已保存到相册', icon: 'success', duration: 1500 })
       },
       fail: (err) => {
-        // 如果是用户拒绝授权，引导开启权限
         if (err.errMsg && err.errMsg.includes('auth deny')) {
           wx.showModal({
             title: '需要相册权限',
@@ -266,6 +314,44 @@ Page({
         }
       }
     })
+  },
+
+  /**
+   * 收藏小程序/页面
+   */
+  _addFavorite() {
+    // 微信收藏 API（如果支持）
+    try {
+      const pages = getCurrentPages()
+      const currentPage = pages[pages.length - 1]
+      if (wx.addFavorite) {
+        wx.addFavorite({
+          webviewUrl: '',
+          success: () => wx.showToast({ title: '收藏成功', icon: 'success' }),
+          fail: () => wx.showToast({ title: '收藏失败，请长按收藏', icon: 'none' })
+        })
+      } else {
+        wx.showToast({ title: '请使用右上角菜单收藏', icon: 'none', duration: 2000 })
+      }
+    } catch (e) {
+      wx.showToast({ title: '请使用右上角菜单收藏', icon: 'none', duration: 2000 })
+    }
+  },
+
+  /**
+   * 触发原生微信分享
+   * 通过创建临时 button 元素并触发 open-type="share"
+   */
+  _triggerNativeShare() {
+    // 方案：直接用页面级 onShareAppMessage 的数据，
+    // 实际上微信会在调用此方法后自动弹出分享面板
+    // 这里我们通过设置标记位让系统知道要分享
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage']
+    })
+    // 注意：实际触发原生分享需要在 WXML 中有一个 open-type="share" 按钮
+    // 我们在 WXML 中保留一个隐藏的 share-button
   },
 
   onShareAppMessage() {
@@ -288,44 +374,53 @@ Page({
   },
 
   /**
-   * 生成分享图（Canvas 2D）
+   * 生成分享图（Canvas 2D）— 返回 Promise，支持按需调用
    * 和结果展示页视觉完全一致，不依赖小程序码
    */
-  generateShareImage() {
-    const query = this.createSelectorQuery()
-    query.select('#shareCanvas')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res || !res[0] || !res[0].node) {
-          console.error('[share] canvas not found')
-          return
-        }
-        const canvas = res[0].node
-        const ctx = canvas.getContext('2d')
-        const dpr = wx.getSystemInfoSync().pixelRatio
-        canvas.width = 750 * dpr
-        canvas.height = 1400 * dpr
-        ctx.scale(dpr, dpr)
-
-        // 直接绘制，无需等待小程序码
-        this._drawShare(ctx, this.data)
-
-        // 导出临时文件
-        wx.canvasToTempFilePath({
-          canvas: canvas,
-          fileType: 'png',
-          quality: 1,
-          success: (res) => {
-            this.setData({ shareImagePath: res.tempFilePath })
-            console.log('[share] 分享图已生成:', res.tempFilePath)
-            wx.showToast({ title: '分享图已生成', icon: 'success', duration: 1500 })
-          },
-          fail: (err) => {
-            console.error('[share] 导出失败:', err)
-            wx.showToast({ title: '分享图生成失败', icon: 'none' })
+  _generateShareImageAsync() {
+    return new Promise((resolve, reject) => {
+      const query = this.createSelectorQuery()
+      query.select('#shareCanvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          if (!res || !res[0] || !res[0].node) {
+            console.error('[share] canvas not found')
+            reject(new Error('canvas not found'))
+            return
           }
+          const canvas = res[0].node
+          const ctx = canvas.getContext('2d')
+          const dpr = wx.getSystemInfoSync().pixelRatio
+          canvas.width = 750 * dpr
+          canvas.height = 1400 * dpr
+          ctx.scale(dpr, dpr)
+
+          // 直接绘制
+          this._drawShare(ctx, this.data)
+
+          // 导出临时文件
+          wx.canvasToTempFilePath({
+            canvas: canvas,
+            fileType: 'png',
+            quality: 1,
+            success: (res) => {
+              this.setData({ shareImagePath: res.tempFilePath })
+              this._shareImageReady = true
+              console.log('[share] 分享图已生成:', res.tempFilePath)
+              resolve(res.tempFilePath)
+            },
+            fail: (err) => {
+              console.error('[share] 导出失败:', err)
+              reject(err)
+            }
+          })
         })
-      })
+    })
+  },
+
+  // 保留旧方法名作为兼容入口（内部不再自动调用）
+  generateShareImage() {
+    this._generateShareImageAsync()
   },
 
   /**

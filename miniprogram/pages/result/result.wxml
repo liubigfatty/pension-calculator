@@ -89,9 +89,12 @@
 
     <!-- 操作按钮（上下排列） -->
     <view class="btn-area">
-      <button class="btn-share" open-type="share">分享结果</button>
+      <button class="btn-share" bindtap="showShareMenu">分享结果</button>
       <button class="btn-report" bindtap="goReport">查看详细退休计划报告</button>
     </view>
+
+    <!-- 隐藏的原生分享按钮（用于触发 onShareAppMessage） -->
+    <button id="nativeShareBtn" open-type="share" style="position:fixed;left:-9999px;opacity:0;width:1px;height:1px;"></button>
 
     <!-- 声明 -->
     <view class="disclaimer">
