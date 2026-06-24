@@ -283,10 +283,10 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
     return { amount: 0, balance: 0, description: '无缴费起始信息' }
   }
 
-  // 确定个人账户实际开始时间
+  // 确定个人账户实际开始时间（孰晚原则：取较晚的日期）
   let accStart = { ...accountStart }
-  if (actualStart.year < accStart.year ||
-      (actualStart.year === accStart.year && actualStart.month < accStart.month)) {
+  if (actualStart.year > accStart.year ||
+      (actualStart.year === accStart.year && actualStart.month > accStart.month)) {
     accStart = { ...actualStart }
   }
 
@@ -302,20 +302,26 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   let fMonth = accStart.month
 
   // 第一年（可能只有部分月份）
+  // 计息规则：上年末余额计息，本年存入额不计当年利息
   let firstMonths = 12 - fMonth + 1
   if (firstMonths > 0 && firstMonths < 12) {
-    const baseY = getBase(city, fYear, config)
+    const baseY = getBase(city, fYear, config, 'avg_salary_history')
+    || getBase(city, fYear, config)
     const monthPayY = baseY * avgIndex * 0.08
     const accRateY = getAccRate(fYear, config)
-    totalAcc = (totalAcc + monthPayY * firstMonths) * (1 + accRateY)
+    // 正确：上年末余额计息 + 本年存入（不计当年利息）
+    totalAcc = totalAcc * (1 + accRateY) + monthPayY * firstMonths
   }
 
   // 中间年份（完整年度，复利计息）
+  // 计息规则：上年末余额计息，本年存入额不计当年利息
   for (let y = fYear + 1; y < retireDate.year; y++) {
-    const baseYear = getBase(city, y, config)
+    const baseYear = getBase(city, y, config, 'avg_salary_history')
+      || getBase(city, y, config)
     const annualPay = baseYear * avgIndex * 0.08 * 12
     const accRate = getAccRate(y, config)
-    totalAcc = (totalAcc + annualPay) * (1 + accRate)
+    // 正确：上年末余额计息 + 本年存入（不计当年利息）
+    totalAcc = totalAcc * (1 + accRate) + annualPay
   }
 
   // 最后一年（从退休月初到退休月，按月计提并单利计息）
@@ -1036,8 +1042,8 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   // 2. 新格式（JS模块）：config.PROV_BASE, config.CC_BASE
   let allRates = config[sourceField] || {};
   
-  // 如果是新格式，构建base_rates对象
-  if (config.PROV_BASE || config.CC_BASE) {
+  // 如果是新格式，构建base_rates对象（仅当 sourceField 为 base_rates 时）
+  if ((config.PROV_BASE || config.CC_BASE) && sourceField === 'base_rates') {
     allRates = {
       prov: config.PROV_BASE || {},
     };
