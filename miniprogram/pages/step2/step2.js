@@ -42,6 +42,7 @@ const PROVINCE_SLUGS = [
   'hainan','chongqing','sichuan','guizhou','yunnan',
   'xizang','shaanxi','gansu','qinghai','ningxia','xinjiang'
 ]
+const PROVINCE_NAMES = ['北京','天津','河北','山西','内蒙古','辽宁','吉林','黑龙江','上海','江苏','浙江','安徽','福建','江西','山东','河南','湖北','湖南','广东','广西','海南','重庆','四川','贵州','云南','西藏','陕西','甘肃','青海','宁夏','新疆']
 
 // 退休类型索引 → { gender, identity }
 // step1 retireTypeNames: ['企业职工男','企业职工女（原50岁）','企业职工女（原55岁）','灵活就业男','灵活就业女']
@@ -93,9 +94,20 @@ Page({
       return
     }
 
-    // 判断是否为双指数省份
+    // 判断是否为双指数省份，控制过渡指数输入框显示
     const isDoubleIndex = DOUBLE_INDEX_PROVINCES.includes(step1.provinceIndex)
-    console.log('[step2] 读取 step1 数据：', step1, '是否双指数省份：', isDoubleIndex)
+    this.setData({ showDoubleIndex: isDoubleIndex })
+
+    // 恢复已填数据（城市选择等）
+    const saved = wx.getStorageSync('form_step2') || {}
+    this.setData({
+      baseTypeIndex: saved.baseTypeIndex ?? -1,
+      levelIndex: saved.levelIndex ?? -1,
+      averageIndexInput: saved.averageIndexInput || '',
+      accountBalanceInput: saved.accountBalanceInput || '',
+      cityTypeIndex: step1.cityTypeIndex >= 0 ? step1.cityTypeIndex : -1,
+      showCityType: step1.showCityType || false,
+    })
   },
   // 选择缴费基数类型
   onBaseTypeChange(e) {
@@ -242,8 +254,8 @@ Page({
           _raw: res.result.data,
           retirePlan: step1.retirePlan || 'normal',
           averageIndex: averageIndex || null,       // 传给结果页显示
-          provinceName: step1.provinceName || '',
-          cityLabel: step1.cityTypeIndex >= 0 ? (step1.cityTypeNames || '')[step1.cityTypeIndex] : ''
+          provinceName: PROVINCE_NAMES[step1.provinceIndex] || '',
+          cityLabel: step1.cityLabel || ''
         })
         wx.navigateTo({ url: '/pages/result/result' })
       } else {

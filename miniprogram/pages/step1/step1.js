@@ -137,8 +137,18 @@ Page({
     const birth = this._parseDateToIndex(d.birthDate, 1960)  // 出生日期从1960年开始
     const work = this._parseDateToIndex(d.workDate, 1980)  // 参加工作从1980年开始
 
+    // 省份中文名称（供结果页显示）
+    const provinceName = d.provinceIndex >= 0 ? d.provinceNames[d.provinceIndex] : ''
+
+    // 城市标签（双基数省份，供结果页显示）
+    let cityLabel = ''
+    if (d.showCityType && d.cityTypeIndex >= 0) {
+      cityLabel = d.cityTypeNames[d.cityTypeIndex] || ''
+    }
+
     wx.setStorageSync('form_step1', {
       provinceIndex: d.provinceIndex,
+      provinceName: provinceName,    // 省份中文名称
       retireTypeIndex: d.retireTypeIndex,
       // 出生日期
       birthDate: d.birthDate,          // 字符串：1970-06
@@ -150,7 +160,8 @@ Page({
       workMonthIndex: work.monthIndex,   // 索引：6（7月-1=6）
       retirePlan: d.retirePlan,
       // 城市类型（双基数省份）
-      cityTypeIndex: d.showCityType ? d.cityTypeIndex : -1
+      cityTypeIndex: d.showCityType ? d.cityTypeIndex : -1,
+      cityLabel: cityLabel,          // 城市标签中文
     })
 
     wx.navigateTo({ url: '/pages/step2/step2' })

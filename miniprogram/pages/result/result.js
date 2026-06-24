@@ -217,6 +217,7 @@ Page({
       retireAge: retireAgeText,
       retireDate: retireDateStr,
       baseNumber: baseNumberVal,
+      retirementType: retirementType,  // 存到data，供分享路径使用
 
       // 地区信息
       provinceName: r.provinceName || '',
