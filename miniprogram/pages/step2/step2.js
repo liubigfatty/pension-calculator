@@ -29,9 +29,6 @@ const LEVEL_PERCENTS = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 // 双指数省份（浙江、广东、陕西）
 const DOUBLE_INDEX_PROVINCES = [10, 18, 26]  // 浙江=10, 广东=18, 陕西=26
 
-// 双基数省份（河南=15, 吉林=6, 辽宁=5, 广东=18）
-const DOUBLE_BASE_PROVINCES = [15, 6, 5, 18]
-
 // 省份索引 → 云函数省份文件名（拼音，与 provinces/*.js 对应）
 const PROVINCE_SLUGS = [
   'beijing','tianjin','hebei','shanxi','neimenggu',
@@ -50,7 +47,7 @@ const RETIRE_TYPE_MAP = [
   { gender: 'female', identity: 'worker', genderType: 'fw50' },            // 1: 企业职工女(50)
   { gender: 'female', identity: 'worker', genderType: 'fw55' },            // 2: 企业职工女(55)
   { gender: 'male',   identity: 'flexible', genderType: 'male' },          // 3: 灵活就业男
-  { gender: 'female', identity: 'flexible', genderType: 'flexFemale' }     // 4: 灵活就业女
+  { gender: 'female', identity: 'flexible', genderType: 'fw55' }     // 4: 灵活就业女(55岁退休)
 ]
 
 Page({
@@ -78,7 +75,6 @@ Page({
     baseRateIndex: 0,       // 当前选择的计发基数索引
     baseRateNames: [],      // 计发基数选项名称
     baseRateValues: [],     // 计发基数选项值
-    baseRateIndex: -1,      // 当前选择索引
 
     // 个人账户余额
     accountBalanceInput: '',
