@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=750, user-scalable=no">
+  <title>养老金测算分享图 - 预览版</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #F5F5F5;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    }
+    
+    /* 分享图容器 - 750×1400px */
+    .share-image {
+      width: 750px;
+      min-height: 1400px;
+      background: #F5F3F0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ═══ 金额主卡片（深色渐变） ═══ */
+    .amount-card {
+      background: linear-gradient(165deg, #171717 0%, #2A2A2A 100%);
+      border-radius: 32px;
+      padding: 56px 40px 44px;
+      margin: 40px 40px 24px;
+      box-shadow: 
+        0 8px 32px rgba(40,41,43,0.25),
+        0 2px 8px rgba(40,41,43,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 顶部高光纹理 */
+    .amount-card::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 40%, rgba(139,115,85,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .amount-card-label {
+      font-size: 28px;
+      color: rgba(139,115,85,0.9);
+      letter-spacing: 2px;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .amount-card-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      margin: 24px 0 16px;
+    }
+
+    .amount-card-symbol {
+      font-size: 48px;
+      color: #B8977D;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .amount-card-value {
+      font-size: 96px;
+      color: #B8977D;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -3px;
+    }
+
+    /* 退休信息标签 */
+    .retire-tag {
+      margin-top: 24px;
+      background: rgba(139,115,85,0.12);
+      border-radius: 48px;
+      padding: 12px 32px;
+      border: 1px solid rgba(139,115,85,0.18);
+      display: inline-block;
+      text-align: center;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .retire-tag span {
+      font-size: 26px;
+      color: rgba(139,115,85,0.95);
+      font-weight: 500;
+    }
+
+    /* 地区标签 */
+    .region-text {
+      display: block;
+      text-align: center;
+      font-size: 26px;
+      color: #6C584B;
+      margin: 8px 0 28px;
+      letter-spacing: 1px;
+    }
+
+    /* ═══ 通用卡片 ═══ */
+    .card {
+      background: #F4F0E8;
+      border-radius: 32px;
+      overflow: hidden;
+      margin: 0 40px 24px;
+      box-shadow: 
+        0 4px 16px rgba(40,41,43,0.06),
+        0 1px 4px rgba(40,41,43,0.04);
+      border: 1px solid rgba(213,206,195,0.5);
+    }
+
+    .card-body {
+      padding: 20px 36px;
+    }
+
+    .card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      min-height: 56px;
+    }
+
+    .card-label {
+      font-size: 28px;
+      color: #6C584B;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    .card-value {
+      font-size: 32px;
+      color: #171717;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #E0D8CC 15%, #E0D8CC 85%, transparent 100%);
+      margin: 0;
+    }
+
+    /* 卡片标题 */
+    .card-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: #171717;
+      padding: 20px 36px 8px;
+    }
+
+    /* ═══ 温馨提示 ═══ */
+    .disclaimer {
+      padding: 32px 16px 56px;
+      text-align: center;
+    }
+
+    .disclaimer span {
+      font-size: 24px;
+      color: #AAAAAA;
+      line-height: 1.6;
+      letter-spacing: 0.5px;
+    }
+
+    /* 预览标注 */
+    .preview-note {
+      position: fixed;
+      top: 20px; left: 20px;
+      background: rgba(139,115,85,0.9);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 24px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-note">📱 分享图预览（和结果展示页完全一致）</div>
+
+  <div class="share-image">
+
+    <!-- 金额主卡片（深色渐变） -->
+    <div class="amount-card">
+      <div class="amount-card-label">每月可领取养老金</div>
+      <div class="amount-card-row">
+        <span class="amount-card-symbol">¥</span>
+        <span class="amount-card-value">4,285</span>
+      </div>
+      <div class="retire-tag">
+        <span>60岁法定年龄退休（2034年06月）</</span>
+      </div>
+    </div>
+
+    <!-- 地区标签 -->
+    <span class="region-text">辽宁省 · 沈阳市</span>
+
+    <!-- 养老金构成明细 -->
+    <div class="card">
+      <div class="card-title">养老金构成</div>
+      <div class="card-body">
+        <div class="card-row">
+          <span class="card-label">基础养老金</span>
+          <span class="card-value">¥2,185 元</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">过渡性养老金</span>
+          <span class="card-value">¥450 元</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">个人账户养老金</span>
+          <span class="card-value">¥1,650 元</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 计算参数 -->
+    <div class="card">
+      <div class="card-title">计算参数</div>
+      <div class="card-body">
+        <div class="card-row">
+          <span class="card-label">累计缴费年限</span>
+          <span class="card-value">32.5 年</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">实际缴费年限</span>
+          <span class="card-value">25.0 年</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">视同缴费年限</span>
+          <span class="card-value">7.5 年</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">平均缴费指数</span>
+          <span class="card-value">0.85</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">个人账户余额</span>
+          <span class="card-value">127,350 元</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">计发月数</span>
+          <span class="card-value">139</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-row">
+          <span class="card-label">退休地计发基数</span>
+          <span class="card-value">8,418 元</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 温馨提示 -->
+    <div class="disclaimer">
+      <span>⚠️ 温馨提示：本测算结果仅供参考<br>实际养老金以社保部门核定为准</span>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -27,8 +27,6 @@ Page({
     showDetail: true,
     // 精确退休年龄
     exactAge: '',
-    // 小程序码路径（缓存）
-    qrCodePath: '',
   },
 
   onLoad() {
@@ -61,9 +59,6 @@ Page({
     }
 
     this.setData({ hasValidData: true })
-
-    // 异步加载小程序码（不阻塞页面渲染）
-    this.loadQRCode()
 
     // 退休方式：优先用缓存里的 retirePlan，其次用 r.retirementType
     const retirementType = r.retirePlan || r.retirementType || 'normal'
@@ -239,52 +234,6 @@ Page({
     })
   },
 
-  /**
-   * 加载小程序码（优先读缓存，无缓存则调用云函数）
-   */
-  loadQRCode() {
-    // 1. 先读缓存
-    const cached = wx.getStorageSync('share_qrcode')
-    if (cached) {
-      // 验证文件是否存在
-      const fm = wx.getFileSystemManager()
-      try {
-        fm.accessSync(cached)
-        this.setData({ qrCodePath: cached })
-        console.log('[QRCode] 使用缓存:', cached)
-        return
-      } catch (e) {
-        // 缓存文件不存在，清除缓存
-        wx.removeStorageSync('share_qrcode')
-      }
-    }
-
-    // 2. 调用云函数获取小程序码
-    wx.cloud.callFunction({
-      name: 'getQRCode',
-      data: {}
-    }).then(res => {
-      const result = res.result
-      if (!result || !result.success) {
-        console.error('[QRCode] 云函数失败:', result?.error)
-        return
-      }
-
-      // 3. 将 base64 写入临时文件
-      const base64 = result.buffer
-      const filePath = `${wx.env.USER_DATA_PATH}/qrcode_share.png`
-      const fm = wx.getFileSystemManager()
-      fm.writeFileSync(filePath, base64, 'base64')
-
-      // 4. 缓存路径
-      wx.setStorageSync('share_qrcode', filePath)
-      this.setData({ qrCodePath: filePath })
-      console.log('[QRCode] 已生成并缓存:', filePath)
-    }).catch(err => {
-      console.error('[QRCode] 调用云函数失败:', err)
-    })
-  },
-
   // 保存分享图到相册
   saveShareImage() {
     const path = this.data.shareImagePath
@@ -340,8 +289,7 @@ Page({
 
   /**
    * 生成分享图（Canvas 2D）
-   * 动态绘制：根据结果字段自动显示/隐藏对应行
-   * 支持小程序码绘制
+   * 和结果展示页视觉完全一致，不依赖小程序码
    */
   generateShareImage() {
     const query = this.createSelectorQuery()
@@ -359,49 +307,33 @@ Page({
         canvas.height = 1400 * dpr
         ctx.scale(dpr, dpr)
 
-        const d = this.data
-        const finishDraw = (qrImg) => {
-          this._drawShare(ctx, d, qrImg)
-          // 导出临时文件
-          wx.canvasToTempFilePath({
-            canvas: canvas,
-            fileType: 'png',
-            quality: 1,
-            success: (res) => {
-              this.setData({ shareImagePath: res.tempFilePath })
-              console.log('[share] 分享图已生成:', res.tempFilePath)
-              wx.showToast({ title: '分享图已生成', icon: 'success', duration: 1500 })
-            },
-            fail: (err) => {
-              console.error('[share] 导出失败:', err)
-              wx.showToast({ title: '分享图生成失败', icon: 'none' })
-            }
-          })
-        }
+        // 直接绘制，无需等待小程序码
+        this._drawShare(ctx, this.data)
 
-        // 加载小程序码
-        const qrPath = d.qrCodePath
-        if (qrPath) {
-          const img = canvas.createImage()
-          img.onload = () => finishDraw(img)
-          img.onerror = () => {
-            console.error('[share] 小程序码加载失败')
-            finishDraw(null)
+        // 导出临时文件
+        wx.canvasToTempFilePath({
+          canvas: canvas,
+          fileType: 'png',
+          quality: 1,
+          success: (res) => {
+            this.setData({ shareImagePath: res.tempFilePath })
+            console.log('[share] 分享图已生成:', res.tempFilePath)
+            wx.showToast({ title: '分享图已生成', icon: 'success', duration: 1500 })
+          },
+          fail: (err) => {
+            console.error('[share] 导出失败:', err)
+            wx.showToast({ title: '分享图生成失败', icon: 'none' })
           }
-          img.src = qrPath
-        } else {
-          finishDraw(null)
-        }
+        })
       })
   },
 
   /**
-   * 绘制分享图内容（动态布局）
+   * 绘制分享图内容（和结果展示页视觉完全一致）
    * @param {CanvasRenderingContext2D} ctx
    * @param {Object} d - this.data
-   * @param {Image|null} qrImg - 小程序码图片对象（可选）
    */
-  _drawShare(ctx, d, qrImg = null) {
+  _drawShare(ctx, d) {
     const W = 750, H = 1400
 
     // ═══ 设计规范（和结果页完全一致） ═══
@@ -505,7 +437,7 @@ Page({
 
     const detailH = items.length * 56 + 32
     ctx.fillStyle = C.white
-    this._roundRect(ctx, 40, y, cardW, detailH, 20)
+    this._roundRect(ctx, 40, y, cardW, detailH, 32)
     ctx.fill()
 
     ctx.strokeStyle = C.line
@@ -548,7 +480,7 @@ Page({
 
     const paramCardH = params.length * 56 + 32
     ctx.fillStyle = C.white
-    this._roundRect(ctx, 40, y, cardW, paramCardH, 20)
+    this._roundRect(ctx, 40, y, cardW, paramCardH, 32)
     ctx.fill()
 
     ctx.strokeStyle = C.line
@@ -579,23 +511,6 @@ Page({
     ctx.fillText('💡 温馨提示：本测算结果仅供参考', W / 2, y)
     y += 28
     ctx.fillText('实际养老金以社保部门核定为准', W / 2, y)
-    y += 50
-
-    // ── 7. 小程序码（右下角）──
-    if (qrImg) {
-      const qs = 130, qx = W - 60 - qs
-      ctx.drawImage(qrImg, qx, y - 10, qs, qs)
-      ctx.fillStyle = C.faint
-      ctx.font = F.note
-      ctx.textAlign = 'center'
-      ctx.fillText('长按识别小程序码', qx + qs / 2, y + qs + 16)
-    }
-
-    // ── 8. 底部品牌 ──
-    ctx.fillStyle = '#CCCCCC'
-    ctx.font = F.brand
-    ctx.textAlign = 'center'
-    ctx.fillText('养老金计算平台 · 数据来源各省人社厅', W / 2, H - 35)
   },
 
 
