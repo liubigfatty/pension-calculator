@@ -307,7 +307,10 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
     const baseY = getBase(city, fYear, config)
     const monthPayY = baseY * avgIndex * 0.08
     const accRateY = getAccRate(fYear, config)
-    totalAcc = (totalAcc + monthPayY * firstMonths) * (1 + accRateY)
+    // 第一甲不足一年，缴费额按单利计息
+    const payFirst = monthPayY * firstMonths
+    totalAcc = totalAcc + payFirst
+    totalAcc = totalAcc * (1 + accRateY * firstMonths / 12)
   }
 
   // 中间年份（完整年度，复利计息）
@@ -315,7 +318,8 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
     const baseYear = getBase(city, y, config)
     const annualPay = baseYear * avgIndex * 0.08 * 12
     const accRate = getAccRate(y, config)
-    totalAcc = (totalAcc + annualPay) * (1 + accRate)
+    // 正确逻辑：只有上年累计额算利息，本年存入额不算全年利息
+    totalAcc = totalAcc * (1 + accRate) + annualPay
   }
 
   // 最后一年（从退休月初到退休月，按月计提并单利计息）
@@ -324,7 +328,8 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
     const baseRetire = getBase(city, retireDate.year, config)
     const monthPay = baseRetire * avgIndex * 0.08
     const rate = getAccRate(retireDate.year, config)
-    totalAcc = (totalAcc + monthPay * lastMonths) * Math.pow(1 + rate, lastMonths / 12)
+    // 正确逻辑：先算利息（上年累计按实际月数单利计息），再加本年存入额
+    totalAcc = totalAcc * Math.pow(1 + rate, lastMonths / 12) + monthPay * lastMonths
   }
 
   totalAcc = Math.round(totalAcc * 100) / 100
