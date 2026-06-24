@@ -5,9 +5,9 @@
 
     <!-- 计发基数（所有省份都显示） -->
     <view class="form-item">
-      <text class="form-label"><text class="form-required">*</text> 计发基数</text>
+      <text class="form-label">计发基数</text>
       <!-- 双基数省份：显示picker选择 -->
-      <picker wx:if="{{baseRateNames.length > 1}}" mode="selector" range="{{baseRateNames}}" value="{{baseRateIndex}}" bindchange="onBaseRateChange" class="form-picker">
+      <picker wx:if="{{baseRateNames.length > 1}}" mode="selector" range="{{baseRateNames}}" value="{{baseRateIndex}}" bindchange="onBaseRateChange" class="form-picker {{baseRateIndex >= 0 ? 'selected' : ''}}">
         <view class="picker-content">{{baseRateNames[baseRateIndex] || '请选择计发基数'}}</view>
         <text class="picker-arrow">▼</text>
       </picker>
@@ -17,8 +17,8 @@
 
     <!-- 缴费档次（灵活就业） -->
     <view class="form-item" wx:if="{{isFlexible}}">
-      <text class="form-label"><text class="form-required">*</text> 缴费档次</text>
-      <picker mode="selector" range="{{levelNames}}" value="{{levelIndex}}" bindchange="onLevelChange" class="form-picker">
+      <text class="form-label">缴费档次</text>
+      <picker mode="selector" range="{{levelNames}}" value="{{levelIndex}}" bindchange="onLevelChange" class="form-picker {{levelIndex >= 0 ? 'selected' : ''}}">
         <view class="picker-content {{levelIndex >= 0 ? '' : 'placeholder'}}">{{levelIndex >= 0 ? levelNames[levelIndex] : '请选择缴费档次'}}</view>
         <text class="picker-arrow">▼</text>
       </picker>

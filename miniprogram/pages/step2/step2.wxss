@@ -1,3 +1,11 @@
+/* 页面容器 - 与 step1 统一 */
+.step-container {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
 /* pages/step2/step2.wxss - 卡片式表单样式 v4 */
 
 /* ═══════════════════════════════════════════════════════
@@ -5,7 +13,7 @@
    ═══════════════════════════════════════════════════════ */
 .form-card {
   background: #FFFFFF;
-  border-radius: 32rpx;
+  border-radius: 24rpx;
   padding: 40rpx 36rpx 36rpx;
   box-shadow:
     0 4rpx 20rpx rgba(0,0,0,0.06),
@@ -22,6 +30,11 @@
   padding-bottom: 28rpx;
   border-bottom: 1rpx solid #F0EDE8;
   display: block;
+}
+
+/* 去掉必填星号（用户要求） */
+.form-required {
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -74,6 +87,11 @@
 .form-picker:active {
   border-color: #8B7355;
   background: #FFFFFF;
+}
+
+.form-picker.selected {
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
 }
 
 .picker-content {
@@ -144,7 +162,7 @@
 }
 
 .radio-item.active {
-  background: linear-gradient(135deg, #8B7355, #A08566);
+  background: linear-gradient(135deg, #8B7355 0%, #A08566 100%);
   color: #FFFFFF;
   border-color: transparent;
   box-shadow: 0 4rpx 14rpx rgba(139,115,85,0.25);
