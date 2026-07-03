@@ -894,7 +894,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 女干部延迟36个月
         break
       case 'fw55':
-        baseYear = 1975; step = 2; cap = 60  // 灵活就业女55岁退休
+        baseYear = 1970; step = 4; cap = 36  // 灵活就业女55岁退休（延迟至58岁最多36个月）
         break
       case 'fw':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
@@ -1375,6 +1375,7 @@ function calculate(config, inputData) {
   switch (data.genderType) {
     case 'male': originalAge = 60; break
     case 'fc':   originalAge = 55; break
+    case 'fw55': originalAge = 55; break
     case 'fw':   originalAge = 50; break
     default:     originalAge = 60
   }
