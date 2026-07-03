@@ -43,11 +43,11 @@ const PROVINCE_NAMES = ['北京','天津','河北','山西','内蒙古','辽宁'
 // 退休类型索引 → { gender, identity }
 // step1 retireTypeNames: ['企业职工男','企业职工女（原50岁）','企业职工女（原55岁）','灵活就业男','灵活就业女']
 const RETIRE_TYPE_MAP = [
-  { gender: 'male',   identity: 'worker', genderType: 'male' },           // 0: 企业职工男
-  { gender: 'female', identity: 'worker', genderType: 'fw50' },            // 1: 企业职工女(50)
-  { gender: 'female', identity: 'worker', genderType: 'fw55' },            // 2: 企业职工女(55)
+  { gender: 'male',   identity: 'employee', genderType: 'male' },         // 0: 企业职工男
+  { gender: 'female', identity: 'employee', genderType: 'fw50' },          // 1: 企业职工女(50)
+  { gender: 'female', identity: 'employee', genderType: 'fw55' },          // 2: 企业职工女(55)
   { gender: 'male',   identity: 'flexible', genderType: 'male' },          // 3: 灵活就业男
-  { gender: 'female', identity: 'flexible', genderType: 'fw55' }     // 4: 灵活就业女(55岁退休)
+  { gender: 'female', identity: 'flexible', genderType: 'fw55' }          // 4: 灵活就业女(55岁退休)
 ]
 
 Page({
@@ -249,7 +249,20 @@ Page({
       cityType = d.baseRateValues[d.baseRateIndex]
     }
 
-    console.log('[onCalculate] 映射后参数:', { province, gender, birthDate, workStartDate, averageIndex, cityType })
+    console.log('[onCalculate] 映射后参数:', { province, gender, identity, genderType, birthDate, workStartDate, averageIndex, cityType })
+
+    // 存 calcInput 供 step3 页面读取（用于余额估算时的 genderType 判断）
+    app.globalData.calcInput = {
+      province,
+      identity,
+      gender,
+      genderType,
+      cityType: cityType || 'prov',
+      birthYear: parseInt(birthDate.split('-')[0]),
+      birthMonth: parseInt(birthDate.split('-')[1]),
+      workYear: parseInt(workStartDate.split('-')[0]),
+      workMonth: parseInt(workStartDate.split('-')[1]),
+    }
 
     // 调用云函数
     wx.showLoading({ title: '计算中...' })

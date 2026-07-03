@@ -1,15 +1,18 @@
 /**
  * 根据 calcInput 计算 genderType（引擎直接使用的类型标识）
+ *  优先直接用 input.genderType（step2 已存好），否则按规则推断
  *  male         → 'male'
  *  female+flexible → 'fw55'（灵活就业女性，55岁）
- *  female+employee+55 → 'fc'（女干部，55岁）
- *  female+employee+50 → 'fw50'（女工人，50岁）
+ *  female+employee+55 → 'fw55'（企业女职工原55岁退休）
+ *  female+employee+50 → 'fw50'（企业女职工原50岁退休）
+ *  female+cadre → 'fc'（女干部/管理岗）
  */
 function getGenderType(input) {
   if (!input) return 'male'
+  if (input.genderType) return input.genderType   // ← 优先用 step2 传来的
   if (input.gender === 'male') return 'male'
   if (input.identity === 'flexible') return 'fw55'
-  if (input.gender === 'female' && input.identity === 'employee' && input.femaleEmployeeAge === '55') return 'fc'
+  if (input.gender === 'female' && input.identity === 'cadre') return 'fc'
   return 'fw50'
 }
 

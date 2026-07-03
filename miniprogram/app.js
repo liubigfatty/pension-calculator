@@ -11,13 +11,13 @@ App({
     console.log('[app.js] 小程序启动')
     
     // 初始化云开发环境
-    // 不传 env 参数，让微信自动使用开发者工具当前选中的环境
-    // 这样可以避免 envId 不匹配的问题
+    // 强制指定云环境 ID，确保云函数调用打到正确的环境
     if (wx.cloud) {
       wx.cloud.init({
+        env: 'cyz0813-d0go10t7vfbe3bc47',
         traceUser: true
       })
-      console.log('[app.js] 云开发初始化成功（使用当前环境）')
+      console.log('[app.js] 初始化完成（env: cyz0813-d0go10t7vfbe3bc47）')
     } else {
       console.error('[app.js] wx.cloud 不存在，云开发初始化失败')
     }
