@@ -257,14 +257,56 @@ Page({
   },
 
   /**
-   * 查看详细退休计划报告（暂未实现）
+   * 查看方案对比和退休建议（0.99元）
+   *
+   * 支付流程（一次云函数搞定）：
+   *   1. 调用云函数 createOrder → 统一下单 + 生成签名参数
+   *   2. 调起 wx.requestPayment
+   *   3. 支付成功 → 标记已购买 → 跳转报告页
    */
   goReport() {
-    wx.showModal({
-      title: '详细退休计划报告',
-      content: '该功能正在开发中，敬请期待！\n\n报告将包含：\n• 退休年龄精确计算\n• 缴费年限明细\n• 养老金构成分析\n• 提前退休 vs 正常退休对比',
-      showCancel: false,
-      confirmText: '知道了'
+    const startTime = Date.now()
+    wx.showLoading({ title: '创建订单...', mask: true })
+
+    wx.cloud.callFunction({
+      name: 'createOrder',
+      data: { total_fee: 100 }
+    }).then(res => {
+      wx.hideLoading()
+
+      if (res.result.code !== 0) {
+        wx.showToast({ title: res.result.msg || '下单失败，请重试', icon: 'none' })
+        return
+      }
+
+      const params = res.result.data.paymentParams
+      wx.requestPayment({
+        timeStamp: params.timeStamp,
+        nonceStr: params.nonceStr,
+        package: params.package,
+        signType: params.signType,
+        paySign: params.paySign,
+        success: () => {
+          console.log('✅ 支付成功，耗时', (Date.now() - startTime) / 1000, '秒')
+          wx.showToast({ title: '支付成功', icon: 'success', duration: 1500 })
+          wx.setStorageSync('report_paid', '1')
+          setTimeout(() => {
+            wx.navigateTo({ url: '/pages/report/report' })
+          }, 1500)
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.includes('cancel')) {
+            wx.showToast({ title: '已取消支付', icon: 'none' })
+          } else {
+            console.error('❌ 支付失败:', err)
+            wx.showToast({ title: '支付失败，请重试', icon: 'none' })
+          }
+        }
+      })
+    }).catch(err => {
+      wx.hideLoading()
+      console.error('❌ 支付流程异常:', err)
+      wx.showToast({ title: '网络错误，请重试', icon: 'none' })
     })
   },
 

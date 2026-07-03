@@ -72,7 +72,12 @@ const SHENZHEN_BASE = {
   2023: 10795, // 深人社发〔2023〕?号
   2024: 11181, // 深人社发〔2024〕57号（企业）
   2025: 11560, // 预估3.4%增长
-};
+    // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
+    delay_retirement: {
+      effective_date: '2025-01-01',
+      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
+    },
+  };
 
 // 广东省历年平均工资（元/月，用于计算缴费指数）
 // 数据来源：用户提供近十年平均工资表（2026-06-18）

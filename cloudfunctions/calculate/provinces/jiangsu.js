@@ -228,6 +228,11 @@ function getEngineConfig() {
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '2023年基数8613元，2024年基数8785元（苏人社发〔2023/2024〕XX号）',
+      // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
+    delay_retirement: {
+      effective_date: '2025-01-01',
+      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
+    },
   };
 }
 

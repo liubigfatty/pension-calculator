@@ -13,17 +13,6 @@
       </picker>
     </view>
 
-    <!-- 参保城市（双基数省份） -->
-    <view class="form-item" wx:if="{{showCityType}}">
-      <text class="form-label"><text class="form-required">*</text> 参保城市</text>
-      <picker mode="selector" range="{{cityTypeNames}}" value="{{cityTypeIndex}}" bindchange="onCityTypeChange">
-        <view class="picker-box {{cityTypeIndex >= 0 ? 'selected' : ''}}">
-          <text class="picker-value">{{cityTypeIndex >= 0 ? cityTypeNames[cityTypeIndex] : '请选择参保城市'}}</text>
-          <text class="picker-arrow">▼</text>
-        </view>
-      </picker>
-    </view>
-
     <!-- 人员类型（整合性别+人员类型） -->
     <view class="form-item">
       <text class="form-label">人员类型</text>

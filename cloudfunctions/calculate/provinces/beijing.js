@@ -187,6 +187,11 @@ function getEngineConfig() {
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '2023年基数11525元，2024年基数11883元（来源：北京市人社局）',
+      // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
+    delay_retirement: {
+      effective_date: '2025-01-01',
+      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
+    },
   };
 }
 

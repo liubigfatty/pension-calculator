@@ -55,7 +55,12 @@ const PROV_BASE = {
   2023: 6919,
   2024: 7410,
   2025: 7483,
-};
+    // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
+    delay_retirement: {
+      effective_date: '2025-01-01',
+      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
+    },
+  };
 
 const BASE_PARAMS = {
   PROV_2025: 7300,

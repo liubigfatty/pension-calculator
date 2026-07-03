@@ -60,7 +60,12 @@ const PROV_BASE = {
   2023: 7914,
   2024: 8433,
   2025: 8559,
-};
+    // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
+    delay_retirement: {
+      effective_date: '2025-01-01',
+      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
+    },
+  };
 
 // 浙江省基数增长预测参数
 const BASE_PARAMS = {
