@@ -65,12 +65,7 @@ const PROV_BASE = {
 // 郑州市单独计发基数（郑州市人社局2024年第5号通告）
 // 2024年基数6757元，与全省6738元相差19元（约0.3%）
 // 历史年份暂用全省基数代替，待补充官方数据
-const ZHENGZHOU_BASE = { ...PROV_BASE     // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
-    delay_retirement: {
-      effective_date: '2025-01-01',
-      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
-    },
-  };
+const ZHENGZHOU_BASE = { ...PROV_BASE };
 ZHENGZHOU_BASE[2024] = 6757;  // 郑州市人社局2024年第5号通告
 ZHENGZHOU_BASE[2025] = 6950;  // 预估3%增长
 

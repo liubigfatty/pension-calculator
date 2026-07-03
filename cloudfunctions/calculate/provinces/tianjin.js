@@ -106,12 +106,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true     // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
-    delay_retirement: {
-      effective_date: '2025-01-01',
-      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
-    },
-  };
+    modules.transitional_pension = { enabled: true };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;

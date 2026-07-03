@@ -293,11 +293,6 @@ function getEngineConfig() {
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '2024年基数7010元（黑人社函〔2024〕XX号）',
-      // 延迟退休参数（fw55 通过 delayKeyMap 映射到 female_worker）
-    delay_retirement: {
-      effective_date: '2025-01-01',
-      female_worker: { base_year: 1970, step: 4, cap_months: 36 }
-    },
   };
 }
 
