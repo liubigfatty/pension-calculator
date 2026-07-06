@@ -18,7 +18,7 @@ function calcExactAge(birthYear, birthMonth, retireYear, retireMonth) {
   return months > 0 ? `${years}岁${months}个月` : `${years}岁`
 }
 
-var shareTpl = require('./share-template.js')
+var shareCanvas = require('./share-canvas.js')
 
 Page({
   data: {
@@ -258,11 +258,6 @@ Page({
     wx.reLaunch({ url: '/pages/index/index' })
   },
 
-  onReady() {
-    // 初始化 wxml-to-canvas 组件
-    this._shareWidget = this.selectComponent('.shareWidget')
-  },
-
   /**
    * 查看方案对比和退休建议（0.99元）
    *
@@ -368,7 +363,7 @@ Page({
   },
 
   /**
-   * 绘制分享图（wxml-to-canvas）— 返回 Promise<tempFilePath>
+   * 绘制分享图（原生 Canvas 2D）— 返回 Promise<tempFilePath>
    */
   _drawShareImage() {
     var self = this
@@ -380,20 +375,19 @@ Page({
         srcPath: '/images/minicode.png',
         destPath: tmpQr,
         success: function() {
-          self._renderWithWxmlToCanvas(tmpQr, resolve, reject)
+          self._renderCanvas(tmpQr, resolve, reject)
         },
         fail: function() {
-          self._renderWithWxmlToCanvas(null, resolve, reject)
+          self._renderCanvas(null, resolve, reject)
         }
       })
     })
   },
 
-  _renderWithWxmlToCanvas(qrPath, resolve, reject) {
+  _renderCanvas(qrPath, resolve, reject) {
     var self = this
     var d = this.data
 
-    // 构建数据
     var data = {
       totalAmount: d.totalAmount,
       basePension: d.basePension,
@@ -413,27 +407,34 @@ Page({
       qrPath: qrPath
     }
 
-    var tpl = shareTpl.build(data)
-    var wxml = tpl.wxml
-    var style = tpl.style
+    var query = wx.createSelectorQuery().in(this)
+    query.select('#shareCanvas').fields({ node: true, size: true }).exec(function (res) {
+      if (!res || !res[0] || !res[0].node) {
+        console.error('[share] canvas node not found')
+        reject(new Error('canvas node not found'))
+        return
+      }
+      var canvas = res[0].node
+      var ctx = canvas.getContext('2d')
+      var dpr = 2
+      try {
+        dpr = (wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : wx.getSystemInfoSync().pixelRatio) || 2
+      } catch (e) { dpr = 2 }
 
-    var widget = this._shareWidget
-    if (!widget) {
-      console.error('[share] widget not found')
-      reject(new Error('widget not found'))
-      return
-    }
-
-    widget.renderToCanvas({ wxml: wxml, style: style }).then(function(container) {
-      self._container = container
-      return widget.canvasToTempFilePath()
-    }).then(function(res) {
-      self._shareImageReady = true
-      self.setData({ shareImagePath: res.tempFilePath })
-      resolve(res.tempFilePath)
-    }).catch(function(err) {
-      console.error('[share] wxml-to-canvas fail:', err)
-      reject(err)
+      shareCanvas.draw(data, canvas, ctx, dpr, function () {
+        wx.canvasToTempFilePath({
+          canvas: canvas,
+          success: function (r) {
+            self._shareImageReady = true
+            self.setData({ shareImagePath: r.tempFilePath })
+            resolve(r.tempFilePath)
+          },
+          fail: function (err) {
+            console.error('[share] canvasToTempFilePath fail:', JSON.stringify(err))
+            reject(err)
+          }
+        })
+      })
     })
   },
 
