@@ -190,7 +190,6 @@ function getEngineConfig() {
       "_note": "缴费指数=个人缴费基数÷当年社平工资。1995-2004来自统计局公开数据，2005-2024来自用户直接提供的年值换算。",
     },
     
-      base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
     province: PROV_TAG,
