@@ -259,11 +259,11 @@ Page({
   },
 
   /**
-   * 查看方案对比和退休建议（0.99元）
+   * 查看方案对比和退休建议（¥1.00，虚拟支付）
    *
-   * 支付流程（一次云函数搞定）：
-   *   1. 调用云函数 createOrder → 统一下单 + 生成签名参数
-   *   2. 调起 wx.requestPayment
+   * 支付流程：
+   *   1. wx.login 拿 code → 调用云函数 createOrder 换 session_key + 生成虚拟支付签名
+   *   2. 调起 wx.requestVirtualPayment（道具直购，内部自动下单）
    *   3. 支付成功 → 标记已购买 → 跳转报告页
    */
   goReport() {
@@ -281,54 +281,68 @@ Page({
     var self = this
     wx.showLoading({ title: '加载支付中...', mask: true })
 
-    wx.cloud.callFunction({
-      name: 'createOrder',
-      data: { total_fee: 99 },
-      success: function(res) {
-        wx.hideLoading()
-        var result = res.result
-        if (result.code !== 0 || !result.data || !result.data.paymentParams) {
-          wx.showModal({ title: '下单失败', content: result.msg || '未知错误', showCancel: false })
+    // 虚拟支付：先 wx.login 拿 code，云函数据此换 session_key 并生成签名
+    wx.login({
+      success: function(loginRes) {
+        if (!loginRes.code) {
+          wx.hideLoading()
+          wx.showModal({ title: '登录失败', content: '无法获取登录凭证', showCancel: false })
           return
         }
-        // 安卓微信对 wx.requestPayment 参数类型严格：timeStamp/nonceStr/package 必须为字符串，
-        // signType 必须大写（iOS 容错，安卓会直接失败）。强制转换避免安卓「不能生成订单」。
-        var pp = result.data.paymentParams
-        wx.requestPayment({
-          timeStamp: String(pp.timeStamp),
-          nonceStr: String(pp.nonceStr),
-          package: String(pp.package),
-          signType: (pp.signType || 'MD5').toString().toUpperCase(),
-          paySign: String(pp.paySign),
-          success: function() {
-            wx.setStorageSync('report_paid', '1')
-            wx.navigateTo({ url: '/pages/report/report' })
+        wx.cloud.callFunction({
+          name: 'createOrder',
+          data: { loginCode: loginRes.code, productId: 'pension_report' },
+          success: function(res) {
+            wx.hideLoading()
+            var result = res.result
+            if (result.code !== 0 || !result.data) {
+              wx.showModal({ title: '下单失败', content: result.msg || '未知错误', showCancel: false })
+              return
+            }
+            var d = result.data
+            // wx.requestVirtualPayment 内部自动下单，仅需传签名参数（道具直购模式）
+            wx.requestVirtualPayment({
+              signData: d.signData,
+              paySig: d.paySig,
+              signature: d.signature,
+              mode: 'short_series_goods',
+              success: function() {
+                wx.setStorageSync('report_paid', '1')
+                // 记录订单（best-effort，不影响解锁）
+                wx.cloud.callFunction({
+                  name: 'payCallback',
+                  data: { orderNo: d.orderNo, productId: d.productId }
+                }).catch(function() {})
+                wx.navigateTo({ url: '/pages/report/report' })
+              },
+              fail: function(err) {
+                console.error('[pay] requestVirtualPayment fail:', JSON.stringify(err))
+                if (err.errMsg && err.errMsg.indexOf('cancel') >= 0) {
+                  wx.showToast({ title: '已取消支付', icon: 'none' })
+                } else {
+                  wx.showModal({
+                    title: '支付失败',
+                    content: (err.errMsg || '请重试') + '\n（如反复失败请截屏反馈）',
+                    showCancel: false
+                  })
+                }
+              }
+            })
           },
           fail: function(err) {
-            console.error('[pay] requestPayment fail:', JSON.stringify(err), 'params:', JSON.stringify({
-              timeStamp: String(pp.timeStamp), nonceStr: String(pp.nonceStr),
-              package: String(pp.package), signType: (pp.signType || 'MD5').toString().toUpperCase()
-            }))
-            if (err.errMsg && err.errMsg.indexOf('cancel') >= 0) {
-              wx.showToast({ title: '已取消支付', icon: 'none' })
-            } else {
-              wx.showModal({
-                title: '支付失败',
-                content: (err.errMsg || '请重试') + '\n（如反复失败请截屏反馈）',
-                showCancel: false
-              })
-            }
+            wx.hideLoading()
+            console.error('[pay] createOrder callFunction fail:', JSON.stringify(err))
+            wx.showModal({
+              title: '下单失败',
+              content: (err.errMsg || '无法连接支付服务') + '\n（如反复失败请截屏反馈）',
+              showCancel: false
+            })
           }
         })
       },
-      fail: function(err) {
+      fail: function() {
         wx.hideLoading()
-        console.error('[pay] createOrder callFunction fail:', JSON.stringify(err))
-        wx.showModal({
-          title: '下单失败',
-          content: (err.errMsg || '无法连接支付服务') + '\n（如反复失败请截屏反馈）',
-          showCancel: false
-        })
+        wx.showToast({ title: '登录失败', icon: 'none' })
       }
     })
   },
