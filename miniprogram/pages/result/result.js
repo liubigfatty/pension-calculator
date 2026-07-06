@@ -300,6 +300,16 @@ Page({
               return
             }
             var d = result.data
+            // 防御：签名参数缺失说明云端 createOrder 还是旧版（标准支付），需重新上传虚拟支付版本
+            if (!d.signData || !d.paySig || !d.signature) {
+              console.error('[pay] 签名参数缺失:', JSON.stringify(Object.keys(d||{})))
+              wx.showModal({
+                title: '支付服务升级中',
+                content: '签名参数缺失，请确认云函数 createOrder 已重新上传（虚拟支付版本）并配置了 VP_APP_SECRET 环境变量',
+                showCancel: false
+              })
+              return
+            }
             // wx.requestVirtualPayment 内部自动下单，仅需传签名参数（道具直购模式）
             wx.requestVirtualPayment({
               signData: d.signData,
