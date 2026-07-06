@@ -296,28 +296,44 @@ Page({
           wx.showModal({ title: '下单失败', content: result.msg || '未知错误', showCancel: false })
           return
         }
+        // 安卓微信对 wx.requestPayment 参数类型严格：timeStamp/nonceStr/package 必须为字符串，
+        // signType 必须大写（iOS 容错，安卓会直接失败）。强制转换避免安卓「不能生成订单」。
+        var pp = result.data.paymentParams
         wx.requestPayment({
-          timeStamp: result.data.paymentParams.timeStamp,
-          nonceStr: result.data.paymentParams.nonceStr,
-          package: result.data.paymentParams.package,
-          signType: result.data.paymentParams.signType || 'MD5',
-          paySign: result.data.paymentParams.paySign,
+          timeStamp: String(pp.timeStamp),
+          nonceStr: String(pp.nonceStr),
+          package: String(pp.package),
+          signType: (pp.signType || 'MD5').toString().toUpperCase(),
+          paySign: String(pp.paySign),
           success: function() {
             wx.setStorageSync('report_paid', '1')
             wx.navigateTo({ url: '/pages/report/report' })
           },
           fail: function(err) {
+            console.error('[pay] requestPayment fail:', JSON.stringify(err), 'params:', JSON.stringify({
+              timeStamp: String(pp.timeStamp), nonceStr: String(pp.nonceStr),
+              package: String(pp.package), signType: (pp.signType || 'MD5').toString().toUpperCase()
+            }))
             if (err.errMsg && err.errMsg.indexOf('cancel') >= 0) {
               wx.showToast({ title: '已取消支付', icon: 'none' })
             } else {
-              wx.showModal({ title: '支付失败', content: err.errMsg || '请重试', showCancel: false })
+              wx.showModal({
+                title: '支付失败',
+                content: (err.errMsg || '请重试') + '\n（如反复失败请截屏反馈）',
+                showCancel: false
+              })
             }
           }
         })
       },
       fail: function(err) {
         wx.hideLoading()
-        wx.showModal({ title: '网络错误', content: '无法连接支付服务', showCancel: false })
+        console.error('[pay] createOrder callFunction fail:', JSON.stringify(err))
+        wx.showModal({
+          title: '下单失败',
+          content: (err.errMsg || '无法连接支付服务') + '\n（如反复失败请截屏反馈）',
+          showCancel: false
+        })
       }
     })
   },

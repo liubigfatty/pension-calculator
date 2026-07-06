@@ -344,24 +344,33 @@ Page({
       return widget.canvasToTempFilePath({ fileType: 'png' })
     }).then(function(res) {
       wx.hideLoading()
-      wx.saveImageToPhotosAlbum({
-        filePath: res.tempFilePath,
+      var filePath = res.tempFilePath
+      // 优先用预览大图展示：用户在预览里「长按」即可保存到相册 / 转发（iOS、安卓微信原生能力，最稳）
+      // 避免 wx.saveImageToPhotosAlbum 因相册授权被拒而静默失败（尤其 iOS 首次拒绝后不再弹窗）
+      wx.previewImage({
+        urls: [filePath],
+        current: filePath,
         success: function() {
-          wx.showToast({ title: '已保存到相册', icon: 'success' })
+          console.log('[report] 预览已弹出，可长按保存')
         },
-        fail: function(err) {
-          if (err.errMsg && err.errMsg.indexOf('auth deny') >= 0) {
-            wx.showModal({
-              title: '需要授权',
-              content: '请授权保存图片到相册',
-              confirmText: '去设置',
-              success: function(m) {
-                if (m.confirm) wx.openSetting()
+        fail: function() {
+          // 预览兜底：极少数机型预览失败，则尝试直接保存
+          wx.saveImageToPhotosAlbum({
+            filePath: filePath,
+            success: function() { wx.showToast({ title: '已保存到相册', icon: 'success' }) },
+            fail: function(err2) {
+              if (err2.errMsg && err2.errMsg.indexOf('auth deny') >= 0) {
+                wx.showModal({
+                  title: '需要授权',
+                  content: '请授权保存图片到相册',
+                  confirmText: '去设置',
+                  success: function(m) { if (m.confirm) wx.openSetting() }
+                })
+              } else {
+                wx.showToast({ title: '保存失败', icon: 'none' })
               }
-            })
-          } else {
-            wx.previewImage({ urls: [res.tempFilePath] })
-          }
+            }
+          })
         }
       })
     }).catch(function(err) {
