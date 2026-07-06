@@ -254,7 +254,47 @@ function getEngineConfig() {
     modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
   }
 
-  return {    account_start: ACCOUNT_START,
+  return {
+    avg_salary_history: {
+      "1995": 5635,
+      "1996": 6075,
+      "1997": 6822,
+      "1998": 7550,
+      "1999": 8681,
+      "2000": 10521,
+      "2001": 11723,
+      "2002": 13056,
+      "2003": 14709,
+      "2004": 17211,
+      "2005": 21239,
+      "2006": 26210,
+      "2007": 30719,
+      "2008": 34083,
+      "2009": 39144,
+      "2010": 44574,
+      "2011": 48961,
+      "2012": 52185,
+      "2013": 56811,
+      "2014": 62482,
+      "2015": 67830,
+      "2016": 72779,
+      "2017": 78384,
+      "2018": 82620,
+      "2019": 67142,
+      "2020": 73320,
+      "2021": 85252,
+      "2022": 91993,
+      "2023": 97054,
+      "2024": 98424,
+      "2025": 102149,
+      "_source": "用户提供官方数据",
+    },
+    base_rates: {
+      prov: PROV_BASE
+    },
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
     base_rates: { prov: PROV_BASE },
 

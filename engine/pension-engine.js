@@ -267,6 +267,26 @@ function calcExtraPension(params) {
  * @param {number} [params.personalAccInput] - 用户直接输入的个人账户余额（可选）
  * @returns {Object} 计算结果 { amount, balance, description }
  */
+/**
+ * 获取缴费基数（用于个人账户余额估算）
+ * 优先使用 avg_salary_history（社平工资），没有则用 base_rates（计发基数）
+ * 注意：大部分省份的 PROV_BASE ≈ 社平工资（如四川数据验证比值=1.0）
+ * @param {string} city - 城市标识
+ * @param {number} year - 年份
+ * @param {Object} config - 省份配置
+ * @returns {number} 月缴费基数（元/月）
+ */
+function getSalaryBase(city, year, config) {
+  // 1. 尝试获取社平工资（avg_salary_history）
+  let avgSalary = getBase(city, year, config, 'avg_salary_history')
+  if (avgSalary && avgSalary > 0) {
+    // avg_salary_history 单位通常是元/年（>1000），转为月均值
+    return avgSalary > 1000 ? Math.round(avgSalary / 12 * 100) / 100 : avgSalary
+  }
+  // 2. 降级到计发基数（PROV_BASE），单位已是元/月
+  return getBase(city, year, config, 'base_rates') || 0
+}
+
 function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, config, months, personalAccInput) {
 
   if (personalAccInput != null && personalAccInput > 0) {
@@ -327,10 +347,11 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   // 最后一年（从退休月初到退休月，按月计提并单利计息）
   const lastMonths = retireDate.month - 1
   if (lastMonths > 0) {
-    const baseRetire = getBase(city, retireDate.year, config)
+    const baseRetire = getSalaryBase(city, retireDate.year, config)
     const monthPay = baseRetire * avgIndex * 0.08
     const rate = getAccRate(retireDate.year, config)
-    totalAcc = (totalAcc + monthPay * lastMonths) * Math.pow(1 + rate, lastMonths / 12)
+    // 正确逻辑：先算利息（上年累计按实际月数单利计息），再加本年存入额
+    totalAcc = totalAcc * Math.pow(1 + rate, lastMonths / 12) + monthPay * lastMonths
   }
 
   totalAcc = Math.round(totalAcc * 100) / 100
@@ -934,6 +955,7 @@ function getRetireTotalMonths(birthYear, birthMonth, type, config, skipDelay) {
       break
     case 'fw':           // 女性工人，50岁退休（默认女性类型，来自parseInput）
     case 'fw50':         // 女性工人，50岁退休
+    case 'ef50':         // 企业女职工，50岁退休
       baseAge = 50
       break
     case 'fw55':         // 灵活就业女性，55岁退休
