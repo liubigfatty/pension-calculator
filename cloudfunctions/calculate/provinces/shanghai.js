@@ -117,6 +117,48 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/shanghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1990: 2343,
+  1991: 2460,
+  1992: 2583,
+  1993: 2712,
+  1994: 2848,
+  1995: 2990,
+  1996: 3139,
+  1997: 3296,
+  1998: 3461,
+  1999: 3634,
+  2000: 3816,
+  2001: 4007,
+  2002: 4207,
+  2003: 4418,
+  2004: 4638,
+  2005: 4870,
+  2006: 5114,
+  2007: 5370,
+  2008: 5638,
+  2009: 5920,
+  2010: 6216,
+  2011: 6527,
+  2012: 6853,
+  2013: 7196,
+  2014: 7555,
+  2015: 7933,
+  2016: 8330,
+  2017: 8746,
+  2018: 9184,
+  2019: 9643,
+  2020: 10338,
+  2021: 11396.42,
+  2022: 12183,
+  2023: 12307,
+  2024: 12307,
+  2025: 12307,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -152,6 +194,7 @@ function getEngineConfig() {
       province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
       name: '上海市',
+    avg_salary_history: AVG_SALARY_HISTORY,
     modules: modules,
     
     cutoff_date: CUTOFF_DATE,

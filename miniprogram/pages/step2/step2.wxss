@@ -297,6 +297,11 @@
   box-sizing: border-box;
 }
 
+.input-placeholder {
+  font-size: 26rpx;
+  color: var(--color-text-hint);
+}
+
 .input-suffix {
   position: absolute;
   right: 24rpx;

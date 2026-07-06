@@ -97,6 +97,46 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/chongqing.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1991: 275,
+  1992: 220.75,
+  1993: 262.08,
+  1994: 355.17,
+  1995: 404.17,
+  1996: 447.92,
+  1997: 458.5,
+  1998: 475.83,
+  1999: 525,
+  2000: 581.67,
+  2001: 695,
+  2002: 821.92,
+  2003: 1036.67,
+  2004: 1196.42,
+  2005: 1385.83,
+  2006: 1601.25,
+  2007: 1924.83,
+  2008: 2248.75,
+  2009: 2580.42,
+  2010: 2943.83,
+  2011: 3336.83,
+  2012: 3782.67,
+  2013: 4251.25,
+  2014: 4737.67,
+  2015: 5174.25,
+  2016: 5616,
+  2017: 6106,
+  2018: 5469,
+  2019: 5819,
+  2020: 6164.83,
+  2021: 6594.42,
+  2022: 6862.33,
+  2023: 7264.08,
+  2024: 8160,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -115,6 +155,7 @@ function getEngineConfig() {
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

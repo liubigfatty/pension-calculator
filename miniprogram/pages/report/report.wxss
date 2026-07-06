@@ -1,0 +1,455 @@
+/* 报告页面样式 */
+.report-wrap {
+  min-height: 100vh;
+  background: #F5F3F0;
+  padding: 16px 12px 40px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300rpx;
+  color: #888;
+  font-size: 14px;
+}
+
+.report-scroll {
+  max-width: 700rpx;
+  margin: 0 auto;
+}
+
+/* ===== 模块通用 ===== */
+.section {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 0.5px solid #E8E4DE;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 0.5px solid #F0EDE8;
+  cursor: pointer;
+}
+
+.section-num {
+  width: 22px;
+  height: 22px;
+  background: #8B7355;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  text-align: center;
+  line-height: 22px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.section-arrow {
+  font-size: 12px;
+  color: #999;
+}
+
+.section-body {
+  padding: 12px 16px 16px;
+}
+
+/* ===== 信息网格 ===== */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.info-item {
+  background: #F8F6F4;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 11px;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.info-value.highlight {
+  color: #8B7355;
+}
+
+/* ===== 对比卡片 ===== */
+.compare-cards {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.compare-card {
+  flex: 1;
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: 10px;
+}
+
+.compare-card.normal {
+  background: #F8F6F4;
+}
+
+.compare-card.early {
+  background: #F0F5EE;
+}
+
+.compare-label {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.compare-amount {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+
+.compare-card.early .compare-amount {
+  color: #4A8C5C;
+}
+
+.compare-desc {
+  font-size: 11px;
+  color: #999;
+  display: block;
+  margin-top: 4px;
+}
+
+/* ===== 数据表格 ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tr {
+  display: flex;
+  border-bottom: 0.5px solid #F0EDE8;
+}
+
+.tr.header {
+  background: #F8F6F4;
+  font-weight: 500;
+}
+
+.tr.breakeven {
+  background: #FFF8E8;
+}
+
+.td {
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+}
+
+.td.name {
+  flex: 2;
+  color: #666;
+}
+
+.td.num {
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+.td.num.early-color {
+  color: #4A8C5C;
+}
+
+.td.num.green {
+  color: #4A8C5C;
+}
+
+.td.num.red {
+  color: #D85A30;
+}
+
+.td.num.note {
+  font-size: 11px;
+  color: #999;
+}
+
+.breakeven-tip {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #FFF8E8;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #8B7355;
+  text-align: center;
+}
+
+.highlight {
+  color: #8B7355;
+  font-weight: 600;
+}
+
+/* ===== 特色分析 ===== */
+.feature-section {
+  margin-top: 10px;
+  padding: 12px;
+  background: #F8F6F4;
+  border-radius: 8px;
+}
+.feature-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: block;
+}
+.feature-item {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid #EDE8E0;
+}
+.feature-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.feature-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  display: block;
+  margin-bottom: 2px;
+}
+.feature-desc {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  display: block;
+}
+.advice-suggest {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.blue-suggest { background: #E6F1FB; color: #0C447C; }
+.green-suggest { background: #E1F5EE; color: #0F6E56; }
+.rate-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+}
+.rate-row.highlight-row {
+  padding: 8px 0;
+  border-top: 0.5px solid #EDE8E0;
+  margin-top: 4px;
+}
+.rate-label { color: #888; }
+.rate-value { font-weight: 500; }
+.rate-desc {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  margin-top: 6px;
+  display: block;
+}
+.green-color { color: #4A8C5C; }
+
+/* ===== 咨询引导 ===== */
+.consult-card {
+  margin-top: 12px;
+  padding: 12px;
+  background: #FFF8E8;
+  border-radius: 8px;
+  border: 0.5px solid #F0E0C0;
+}
+.consult-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8B7355;
+  display: block;
+  margin-bottom: 6px;
+}
+.consult-item {
+  font-size: 11px;
+  color: #A08860;
+  display: block;
+  line-height: 1.7;
+  padding-left: 4px;
+}
+.consult-footer {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8B7355;
+  display: block;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 0.5px solid #F0E0C0;
+}
+
+.consult-image {
+  width: 100%;
+  max-width: 300rpx;
+  height: auto;
+  display: block;
+  margin: 8px auto;
+  border-radius: 8px;
+}
+
+/* ===== 建议卡片 ===== */
+.advice-card {
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.advice-card.blue {
+  background: #F0F4F8;
+  color: #3A5A7A;
+}
+
+.advice-card.green {
+  background: #F0F5EE;
+  color: #3A6A4A;
+}
+
+.advice-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.advice-text {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.advice-suggest {
+  display: block;
+  font-weight: 500;
+}
+
+/* ===== 计算明细 ===== */
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.calc-label {
+  font-size: 13px;
+  color: #333;
+}
+
+.calc-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.calc-desc {
+  font-size: 11px;
+  color: #999;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  padding: 0 0 4px 0;
+  display: block;
+}
+
+.extra-detail {
+  padding: 6px 10px;
+  background: #F8F6F4;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.extra-line {
+  font-size: 11px;
+  color: #888;
+  display: block;
+  line-height: 1.6;
+}
+
+.calc-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0 0;
+  border-top: 1px solid #E8E4DE;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.total-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #8B7355;
+}
+
+/* ===== 终身领取 ===== */
+
+/* ===== 免责 ===== */
+.disclaimer {
+  margin: 16px 0;
+  padding: 12px;
+  background: #F8F6F4;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #999;
+  line-height: 1.6;
+}
+
+/* ===== 按钮 ===== */
+.btn-bar {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 40px;
+}
+
+.btn-save {
+  flex: 1;
+  padding: 12px;
+  background: #8B7355;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-back {
+  flex: 1;
+  padding: 12px;
+  background: #fff;
+  color: #8B7355;
+  border: 0.5px solid #8B7355;
+  border-radius: 24px;
+  font-size: 14px;
+}

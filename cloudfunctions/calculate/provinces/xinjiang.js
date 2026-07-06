@@ -102,6 +102,42 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/xinjiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1995: 5348,
+  1996: 5987,
+  1997: 6558,
+  1998: 6837,
+  1999: 7453,
+  2000: 8610,
+  2001: 10318,
+  2002: 11660,
+  2003: 1099.17,
+  2004: 1207,
+  2005: 1296.5,
+  2006: 1484.92,
+  2007: 1786.17,
+  2008: 2057,
+  2009: 2145.67,
+  2010: 2466.08,
+  2011: 3004.42,
+  2012: 3470.17,
+  2013: 3816.5,
+  2014: 4132.58,
+  2015: 4417,
+  2016: 4740.17,
+  2017: 5032.17,
+  2018: 5392,
+  2019: 5738,
+  2020: 6531,
+  2021: 7088.83,
+  2022: 7625.08,
+  2023: 8332,
+  2024: 8321,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -120,6 +156,7 @@ function getEngineConfig() {
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

@@ -194,6 +194,49 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/hunan.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1990: 169.8,
+  1991: 181.4,
+  1992: 210.5,
+  1993: 261.8,
+  1994: 342,
+  1995: 399.8,
+  1996: 425,
+  1997: 443.8,
+  1998: 446.04,
+  1999: 489.79,
+  2000: 558.32,
+  2001: 630,
+  2002: 713.93,
+  2003: 1000.1,
+  2004: 1135.3,
+  2005: 1275.5,
+  2006: 1450,
+  2007: 1755,
+  2008: 2012.2,
+  2009: 2211.2,
+  2010: 2472.5,
+  2011: 2882.2,
+  2012: 3247.6,
+  2013: 3560.5,
+  2014: 3926.4,
+  2015: 4363.1,
+  2016: 4853.4,
+  2017: 4851.35,
+  2018: 4576.81,
+  2019: 4839.52,
+  2020: 5460,
+  2021: 5977,
+  2022: 6284,
+  2023: 6711,
+  2024: 7618,
+  2025: 6090,
+  2026: 6258,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -213,6 +256,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '湖南省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

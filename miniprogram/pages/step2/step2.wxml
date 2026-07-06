@@ -28,7 +28,7 @@
     <view class="form-item" wx:if="{{!isFlexible}}">
       <text class="form-label"><text class="form-required">*</text> 本人平均缴费指数</text>
       <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="请输入（一般0.6-3.0）" bindinput="onIndexInput"/>
+        <input class="input-field" type="digit" value="{{averageIndexInput}}" placeholder="请输入（一般0.6-3.0）" placeholder-class="input-placeholder" bindinput="onIndexInput"/>
         <text class="input-suffix">指数</text>
       </view>
       <text class="form-hint">可在社保账户查询，或咨询12333</text>
@@ -53,7 +53,7 @@
     <view class="form-item">
       <text class="form-label">个人账户余额</text>
       <view class="input-wrap">
-        <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="如不清楚可留空，系统将自动估算" bindinput="onBalanceInput"/>
+        <input class="input-field" type="digit" value="{{accountBalanceInput}}" placeholder="如不清楚可留空，系统将自动估算" placeholder-class="input-placeholder" bindinput="onBalanceInput"/>
         <text class="input-suffix">元</text>
       </view>
       <view class="form-hint-row">
@@ -74,7 +74,7 @@
   <!-- 小贴士弹窗 -->
   <view class="tip-mask" wx:if="{{showBalanceTip}}" bindtap="onCloseBalanceTip">
     <view class="tip-popup" catchtap="stopProp">
-      <view class="tip-title">💡 个人账户余额小贴士</view>
+      <view class="tip-title">[提示] 个人账户余额小贴士</view>
         <view class="tip-content">
           <view class="tip-line">• 个人账户余额 = 历年个人缴费累计本息</view>
           <view class="tip-line">• 个人缴费比例一般为缴费基数的 <text class="tip-highlight">8%</text></view>

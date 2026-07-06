@@ -145,6 +145,42 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/gansu.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1995: 457.75,
+  1996: 490.17,
+  1997: 515.17,
+  1998: 534.83,
+  1999: 577.33,
+  2000: 659.42,
+  2001: 764.75,
+  2002: 856,
+  2003: 951.58,
+  2004: 1059.25,
+  2005: 1181,
+  2006: 1380.42,
+  2007: 1679.75,
+  2008: 1941.75,
+  2009: 2214.75,
+  2010: 2465.67,
+  2011: 2742.17,
+  2012: 3203.33,
+  2013: 3675.75,
+  2014: 4039.17,
+  2015: 4537.83,
+  2016: 4962.42,
+  2017: 5477.17,
+  2018: 5155.75,
+  2019: 5542,
+  2020: 6063,
+  2021: 6400,
+  2022: 6816,
+  2023: 7194,
+  2024: 7594,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -180,6 +216,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '甘肃省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

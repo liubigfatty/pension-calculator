@@ -186,6 +186,42 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/jiangsu.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1995: 7016,
+  1996: 8012,
+  1997: 8848,
+  1998: 9452,
+  1999: 10296,
+  2000: 11900,
+  2001: 1175.33,
+  2002: 1175.33,
+  2003: 1421.33,
+  2004: 1568,
+  2005: 2445,
+  2006: 2705,
+  2007: 2705,
+  2008: 3014,
+  2009: 3635,
+  2010: 4065,
+  2011: 4559.33,
+  2012: 4559.33,
+  2013: 5400,
+  2014: 5400,
+  2015: 5600,
+  2016: 6057,
+  2017: 6645,
+  2018: 6129.5,
+  2019: 5614,
+  2020: 6333.33,
+  2021: 7083.33,
+  2022: 7490,
+  2023: 8014,
+  2024: 8785,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -221,6 +257,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '江苏省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

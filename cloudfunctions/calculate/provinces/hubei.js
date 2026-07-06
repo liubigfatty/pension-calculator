@@ -83,12 +83,46 @@ const MODULE_LABELS = {
 
 const cases = []
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/hubei.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1998: 706,
+  1999: 734,
+  2000: 811,
+  2001: 943,
+  2002: 1081,
+  2003: 1144,
+  2004: 1331,
+  2005: 1542,
+  2006: 1869,
+  2007: 2239,
+  2008: 2370,
+  2009: 2842,
+  2010: 3401,
+  2011: 3923,
+  2012: 4255,
+  2013: 4615,
+  2014: 5291,
+  2015: 5901,
+  2016: 6488,
+  2017: 6640,
+  2018: 7361,
+  2019: 8170,
+  2020: 5925.83,
+  2021: 8206.92,
+  2022: 8609,
+  2023: 9177.83,
+  2024: 9022,
+};
+
 function getEngineConfig() {
   return {    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: {},
   }
 }

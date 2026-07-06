@@ -185,6 +185,44 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/yunnan.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1995: 429,
+  1996: 519,
+  1997: 586,
+  1998: 639,
+  1999: 690,
+  2000: 769,
+  2001: 878,
+  2002: 999,
+  2003: 1073,
+  2004: 1215,
+  2005: 1345,
+  2006: 1559,
+  2007: 1707,
+  2008: 2003,
+  2009: 2250,
+  2010: 2515,
+  2011: 2949,
+  2012: 3242,
+  2013: 3682,
+  2014: 3984,
+  2015: 4585,
+  2016: 5297,
+  2017: 6126,
+  2018: 6126,
+  2019: 6710,
+  2020: 6284,
+  2021: 6622,
+  2022: 6906,
+  2023: 7177,
+  2024: 8183,
+  2025: 8265,
+  2026: 8265,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -227,6 +265,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '云南省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

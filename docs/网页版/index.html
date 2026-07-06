@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正元养老金测算 - 桌面版</title>
+<style>
+:root {
+  --primary: #8B7355;
+  --primary-dark: #6D5A42;
+  --primary-light: #B8977D;
+  --primary-bg: #FEF0D6;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6C584B;
+  --text-hint: #A0988E;
+  --text-white: #FFFFFF;
+  --bg-page: #F7F5F2;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: #F0EDE8;
+  --bg-input: #FAF8F5;
+  --bg-hover: #F0ECE6;
+  --border: #E0D8CC;
+  --border-focus: #8B7355;
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --shadow-sm: 0 1px 3px rgba(30,25,20,0.08);
+  --shadow-md: 0 4px 12px rgba(30,25,20,0.10);
+  --shadow-lg: 0 8px 30px rgba(30,25,20,0.12);
+  --shadow-primary: 0 4px 20px rgba(139,115,85,0.25);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --sidebar-w: 280px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-page); color: var(--text-primary); line-height:1.6; min-height:100vh;
+}
+.app { display:flex; min-height:100vh; }
+
+/* Sidebar */
+.sidebar {
+  width:var(--sidebar-w); background:var(--bg-sidebar); border-right:1px solid var(--border);
+  padding:32px 24px; position:sticky; top:0; height:100vh;
+  display:flex; flex-direction:column; flex-shrink:0;
+}
+.sidebar-brand {
+  font-size:18px; font-weight:700; color:var(--primary);
+  display:flex; align-items:center; gap:10px; margin-bottom:40px;
+}
+.sidebar-brand .logo {
+  width:28px; height:28px; background:var(--primary); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:16px; font-weight:700; flex-shrink:0;
+}
+.steps { flex:1; }
+.step-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 16px; border-radius:var(--radius); margin-bottom:4px; cursor:default;
+  transition:background 0.2s;
+}
+.step-item.active { background:var(--bg-card); box-shadow:var(--shadow-sm); }
+.step-num {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600;
+  background:var(--border); color:var(--text-hint); flex-shrink:0; transition:all 0.3s;
+}
+.step-item.active .step-num { background:var(--primary); color:#fff; }
+.step-item.done .step-num { background:var(--primary); color:#fff; }
+.step-title { font-size:14px; font-weight:600; color:var(--text-hint); }
+.step-item.active .step-title { color:var(--text-primary); }
+.step-desc { font-size:12px; color:var(--text-hint); margin-top:2px; }
+
+/* Sidebar summary */
+.sidebar-summary {
+  padding:16px; background:var(--bg-card); border-radius:var(--radius);
+  border:1px solid var(--border); margin-top:auto; display:none;
+}
+.sidebar-summary.visible { display:block; }
+.summary-title { font-size:12px; font-weight:600; color:var(--text-hint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:12px; }
+.summary-row { display:flex; justify-content:space-between; font-size:13px; padding:4px 0; }
+.summary-label { color:var(--text-secondary); }
+.summary-value { font-weight:500; color:var(--text-primary); }
+
+/* Content */
+.content { flex:1; padding:48px 64px; max-width:900px; }
+.content-header { margin-bottom:32px; }
+.content-title { font-size:32px; font-weight:600; line-height:1.25; letter-spacing:-0.01em; }
+.content-desc { font-size:15px; color:var(--text-secondary); margin-top:8px; }
+.step-content { display:none; animation:fadeIn 0.3s ease; }
+.step-content.active { display:block; }
+
+/* Form */
+.form-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:32px; box-shadow:var(--shadow-sm);
+}
+.form-group { margin-bottom:24px; }
+.form-group:last-child { margin-bottom:0; }
+.form-label { display:block; font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:8px; }
+.form-hint { font-size:12px; color:var(--text-hint); margin-top:6px; }
+
+/* Custom Select */
+.select-box {
+  background:var(--bg-input); border:1.5px solid var(--border);
+  border-radius:var(--radius); padding:12px 16px;
+  cursor:pointer; transition:all 0.2s; position:relative;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:15px; color:var(--text-primary); user-select:none;
+}
+.select-box:hover { border-color:var(--primary-light); }
+.select-box.active { border-color:var(--border-focus); background:var(--bg-card); }
+.select-box .arrow { font-size:10px; color:var(--text-hint); transition:transform 0.2s; }
+.select-box.open .arrow { transform:rotate(180deg); }
+.select-box.placeholder { color:var(--text-hint); }
+.dropdown {
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow-lg);
+  max-height:240px; overflow-y:auto; z-index:100; display:none;
+}
+.dropdown.open { display:block; }
+.dropdown-item {
+  padding:10px 16px; font-size:14px; cursor:pointer; transition:background 0.15s;
+}
+.dropdown-item:hover { background:var(--bg-hover); }
+.dropdown-item:first-child { border-radius:var(--radius) var(--radius) 0 0; }
+.dropdown-item:last-child { border-radius:0 0 var(--radius) var(--radius); }
+
+/* Input */
+input[type="text"], input[type="number"], input[type="month"] {
+  background:var(--bg-input); border:1.5px solid var(--border);
+  border-radius:var(--radius); padding:12px 16px;
+  font-size:15px; color:var(--text-primary);
+  width:100%; transition:all 0.2s; font-family:inherit;
+  -moz-appearance:textfield;
+}
+input[type="text"]:focus, input[type="number"]:focus, input[type="month"]:focus {
+  border-color:var(--border-focus);
+  box-shadow:0 0 0 3px rgba(139,115,85,0.12);
+  background:var(--bg-card); outline:none;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+input::placeholder { color:var(--text-hint); }
+
+/* Radio */
+.radio-group { display:flex; gap:12px; flex-wrap:wrap; }
+.radio-item {
+  padding:10px 20px; border:1.5px solid var(--border);
+  border-radius:var(--radius); cursor:pointer; user-select:none;
+  font-size:14px; color:var(--text-secondary);
+  background:var(--bg-input); transition:all 0.2s;
+}
+.radio-item:hover { border-color:var(--primary-light); }
+.radio-item.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+/* Result */
+.result-section { margin-bottom:20px; }
+.result-hero {
+  background:linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+  border-radius:var(--radius-xl); padding:40px; text-align:center; margin-bottom:20px;
+  box-shadow:var(--shadow-lg);
+}
+.result-label-top { font-size:15px; color:rgba(139,115,85,0.9); font-weight:500; }
+.result-amount {
+  font-size:56px; font-weight:700; color:var(--primary-light);
+  letter-spacing:-0.03em; margin:16px 0 8px;
+}
+.result-amount .unit { font-size:24px; font-weight:400; }
+.result-meta { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
+.result-retire-tag {
+  display:inline-block; background:rgba(139,115,85,0.15);
+  color:var(--primary-light); font-size:14px;
+  padding:6px 16px; border-radius:20px; margin-top:12px; font-weight:500;
+}
+.result-region { text-align:center; font-size:15px; color:var(--text-secondary); margin-bottom:20px; }
+
+.result-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius-lg); overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.result-card-title {
+  font-size:16px; font-weight:600; padding:16px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:8px;
+}
+.result-card-title .badge {
+  font-size:11px; font-weight:600; padding:2px 10px;
+  border-radius:10px; margin-left:auto;
+}
+.badge-legal { background:var(--primary-bg); color:var(--primary); }
+.badge-flex { background:#EEF2FF; color:#6366F1; }
+.result-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 24px;
+}
+.result-row + .result-row { border-top:1px solid #F0ECE6; }
+.result-row-label { font-size:14px; color:var(--text-secondary); }
+.result-row-value { font-size:15px; font-weight:600; color:var(--text-primary); }
+.result-compare-row {
+  background:#F9F5F0; padding:16px 24px; display:flex; gap:20px;
+  justify-content:center; border-top:1px solid var(--border);
+}
+.compare-item { text-align:center; }
+.compare-item .label { font-size:12px; color:var(--text-hint); }
+.compare-item .value { font-size:20px; font-weight:700; color:var(--primary); margin-top:4px; }
+.compare-item .diff { font-size:13px; color:var(--text-secondary); margin-top:2px; }
+.compare-item .diff.less { color:var(--warning); }
+
+/* Actions */
+.actions {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:32px; padding-top:24px; border-top:1px solid var(--border);
+}
+.actions-right { display:flex; gap:12px; }
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 32px; border-radius:var(--radius);
+  font-size:15px; font-weight:500; cursor:pointer;
+  transition:all 0.2s; border:none; font-family:inherit;
+  text-decoration:none;
+}
+.btn:active { transform:scale(0.98); }
+.btn-primary {
+  background:linear-gradient(135deg, #8B7355 0%, #A08566 100%);
+  color:#fff; box-shadow:var(--shadow-primary);
+}
+.btn-primary:hover { opacity:0.92; transform:translateY(-1px); box-shadow:0 6px 24px rgba(139,115,85,0.30); }
+.btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-secondary {
+  background:var(--bg-card); color:var(--primary); border:1.5px solid var(--primary);
+}
+.btn-secondary:hover { background:var(--primary-bg); }
+.btn-ghost {
+  background:transparent; color:var(--text-secondary); padding:14px 16px;
+}
+.btn-ghost:hover { background:var(--bg-hover); }
+
+/* Tip */
+.tip-box {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:14px 18px; background:#FEFCFA;
+  border-radius:var(--radius); border-left:4px solid var(--primary-light);
+  margin-bottom:20px; font-size:13px; color:var(--text-secondary); line-height:1.5;
+}
+
+/* Loading */
+.loading { text-align:center; padding:60px; color:var(--text-hint); font-size:15px; }
+.spinner {
+  display:inline-block; width:32px; height:32px; border:3px solid var(--border);
+  border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite;
+  margin-bottom:16px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Animation */
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* Responsive */
+@media (max-width:1024px) {
+  .sidebar { width:220px; padding:24px 16px; }
+  .content { padding:32px; }
+}
+@media (max-width:768px) {
+  .app { flex-direction:column; }
+  .sidebar { width:100%; height:auto; position:static; flex-direction:row; padding:16px; gap:8px; }
+  .sidebar-brand { margin-bottom:0; }
+  .steps { display:flex; gap:4px; flex:1; }
+  .step-item { flex:1; padding:8px 12px; flex-direction:column; align-items:center; text-align:center; }
+  .step-info { display:none; }
+  .sidebar-summary { display:none!important; }
+  .content { padding:24px 16px; }
+  .form-card { padding:20px; }
+  .result-hero { padding:32px 20px; }
+  .result-amount { font-size:40px; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- ═══ Sidebar ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo">正</div>
+      正元养老金测算
+    </div>
+    <div class="steps">
+      <div class="step-item active" data-step="0">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <div class="step-title">参保信息</div>
+          <div class="step-desc">省份 · 人员类型 · 出生</div>
+        </div>
+      </div>
+      <div class="step-item" data-step="1">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <div class="step-title">缴费信息</div>
+          <div class="step-desc">指数 · 年限</div>
+        </div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <div class="step-title">计算结果</div>
+          <div class="step-desc">养老金明细</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-summary" id="sidebarSummary">
+      <div class="summary-title">已填信息</div>
+      <div class="summary-row"><span class="summary-label">参保地</span><span class="summary-value" id="sumProvince">—</span></div>
+      <div class="summary-row"><span class="summary-label">人员类型</span><span class="summary-value" id="sumType">—</span></div>
+      <div class="summary-row"><span class="summary-label">出生年月</span><span class="summary-value" id="sumBirth">—</span></div>
+      <div class="summary-row"><span class="summary-label">参加工作</span><span class="summary-value" id="sumWork">—</span></div>
+      <div class="summary-row"><span class="summary-label">缴费指数</span><span class="summary-value" id="sumIndex">—</span></div>
+    </div>
+  </aside>
+
+  <!-- ═══ Content ═══ -->
+  <main class="content" id="mainContent">
+    <!-- ═══ Step 1 ═══ -->
+    <div class="step-content active" data-step="0">
+      <div class="content-header">
+        <h1 class="content-title">参保信息</h1>
+        <p class="content-desc">选择参保省份、人员类型和出生信息</p>
+      </div>
+      <div class="form-card">
+        <div class="form-group">
+          <label class="form-label">参保省份</label>
+          <div class="select-box placeholder" id="provinceSelect">
+            <span id="provinceText">请选择参保省份</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="dropdown" id="provinceDropdown"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">参保城市</label>
+          <div class="select-box placeholder" id="citySelect">
+            <span id="cityText">请先选择省份</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="dropdown" id="cityDropdown"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">人员类型</label>
+          <div class="radio-group" id="personType">
+            <div class="radio-item active" data-value="enterprise">企业职工</div>
+            <div class="radio-item" data-value="flexible">灵活就业</div>
+            <div class="radio-item" data-value="cadre">女干部</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">性别</label>
+          <div class="radio-group" id="genderGroup">
+            <div class="radio-item active" data-value="male">男</div>
+            <div class="radio-item" data-value="female">女</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生年月</label>
+          <input type="month" id="birthMonth" min="1960-01" max="2006-12" value="1976-02">
+        </div>
+        <div class="form-group">
+          <label class="form-label">参加工作时间</label>
+          <input type="month" id="workStart" min="1980-01" max="2025-12" value="1998-07">
+        </div>
+      </div>
+      <div class="actions">
+        <div></div>
+        <div class="actions-right">
+          <button class="btn btn-primary" id="btnStep1Next">下一步 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Step 2 ═══ -->
+    <div class="step-content" data-step="1">
+      <div class="content-header">
+        <h1 class="content-title">缴费信息</h1>
+        <p class="content-desc">输入缴费情况，用于计算养老金</p>
+      </div>
+      <div class="form-card">
+        <div class="form-group" id="indexGroup">
+          <label class="form-label">本人平均缴费指数</label>
+          <input type="number" id="avgIndex" value="1.0" step="0.01" min="0.4" max="3.0" placeholder="一般0.6-3.0">
+          <div class="form-hint">可在社保账户查询，或咨询12333。不清楚选1.0即可</div>
+        </div>
+        <div class="form-group" id="flexLevelGroup" style="display:none">
+          <label class="form-label">缴费档次（灵活就业）</label>
+          <div class="select-box placeholder" id="flexLevelSelect">
+            <span id="flexLevelText">请选择缴费档次</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="dropdown" id="flexLevelDropdown"></div>
+        </div>
+        <div class="tip-box">
+          <span>💡</span>
+          <span>缴费指数越高、年限越长，退休后每月领取的养老金就越多。<strong>多缴多得、长缴多得</strong>。</span>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="actions-right" style="justify-content:space-between;width:100%">
+          <button class="btn btn-ghost" id="btnStep2Back">← 上一步</button>
+          <button class="btn btn-primary" id="btnCalculate">开始测算 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Step 3: Result ═══ -->
+    <div class="step-content" data-step="2">
+      <div class="content-header">
+        <h1 class="content-title">测算结果</h1>
+        <p class="content-desc">以下是根据您提供的信息计算出的养老金估算</p>
+      </div>
+
+      <div class="loading" id="resultLoading" style="display:none">
+        <div class="spinner"></div>
+        <div>正在计算...</div>
+      </div>
+
+      <div id="resultArea" style="display:none">
+        <!-- Hero -->
+        <div class="result-hero">
+          <div class="result-label-top">每月可领取养老金</div>
+          <div class="result-amount" id="totalAmount">¥<span class="unit">—</span></div>
+          <div class="result-retire-tag" id="retireTag">法定年龄退休</div>
+          <div class="result-meta" id="resultMeta"></div>
+        </div>
+        <div class="result-region" id="resultRegion"></div>
+
+        <!-- Comparison -->
+        <div id="flexCompare" style="display:none">
+          <div class="result-card" style="margin-bottom:20px">
+            <div class="result-card-title">
+              📊 方案对比
+            </div>
+            <div class="result-compare-row" id="compareRow"></div>
+            <div class="result-row" id="flexAdvice" style="border-top:1px solid var(--border);font-size:13px;color:var(--text-secondary);justify-content:center;"></div>
+          </div>
+        </div>
+
+        <!-- Pension Breakdown -->
+        <div class="result-section">
+          <div class="result-card">
+            <div class="result-card-title">
+              法定退休方案 <span class="badge badge-legal">法定</span>
+            </div>
+            <div id="legalBreakdown"></div>
+          </div>
+        </div>
+
+        <div class="result-section" id="flexSection" style="display:none">
+          <div class="result-card">
+            <div class="result-card-title">
+              弹性提前退休方案 <span class="badge badge-flex">弹性</span>
+            </div>
+            <div id="flexBreakdown"></div>
+          </div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="result-section">
+          <div class="result-card">
+            <div class="result-card-title">计算参数</div>
+            <div id="calcParams"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="actions-right" style="justify-content:space-between;width:100%">
+          <button class="btn btn-ghost" id="btnResultBack">← 修改参数</button>
+          <button class="btn btn-secondary" id="btnPrint">🖨️ 打印结果</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════════
+// 数据
+// ════════════════════════════════════
+const PROVINCES = [
+  {name:'北京市',code:'beijing',cities:['全市']},
+  {name:'天津市',code:'tianjin',cities:['全市']},
+  {name:'河北省',code:'hebei',cities:['全省']},
+  {name:'山西省',code:'shanxi',cities:['全省']},
+  {name:'内蒙古自治区',code:'neimenggu',cities:['全区']},
+  {name:'辽宁省',code:'liaoning',cities:['全省','沈阳市','大连市']},
+  {name:'吉林省',code:'jilin',cities:['全省','长春市']},
+  {name:'黑龙江省',code:'heilongjiang',cities:['全省']},
+  {name:'上海市',code:'shanghai',cities:['全市']},
+  {name:'江苏省',code:'jiangsu',cities:['全省']},
+  {name:'浙江省',code:'zhejiang',cities:['全省']},
+  {name:'安徽省',code:'anhui',cities:['全省']},
+  {name:'福建省',code:'fujian',cities:['全省']},
+  {name:'江西省',code:'jiangxi',cities:['全省']},
+  {name:'山东省',code:'shandong',cities:['全省']},
+  {name:'河南省',code:'henan',cities:['全省','郑州市']},
+  {name:'湖北省',code:'hubei',cities:['全省']},
+  {name:'湖南省',code:'hunan',cities:['全省']},
+  {name:'广东省',code:'guangdong',cities:['全省（除深圳）','深圳市（独立体系）']},
+  {name:'广西自治区',code:'guangxi',cities:['全区']},
+  {name:'海南省',code:'hainan',cities:['全省']},
+  {name:'重庆市',code:'chongqing',cities:['全市']},
+  {name:'四川省',code:'sichuan',cities:['全省']},
+  {name:'贵州省',code:'guizhou',cities:['全省']},
+  {name:'云南省',code:'yunnan',cities:['全省']},
+  {name:'西藏自治区',code:'xizang',cities:['全区']},
+  {name:'陕西省',code:'shaanxi',cities:['全省']},
+  {name:'甘肃省',code:'gansu',cities:['全省']},
+  {name:'青海省',code:'qinghai',cities:['全省']},
+  {name:'宁夏自治区',code:'ningxia',cities:['全区']},
+  {name:'新疆自治区',code:'xinjiang',cities:['全区']}
+];
+
+const FLEX_LEVELS = [
+  {label:'60%档（最低）',value:0.6},
+  {label:'80%档',value:0.8},
+  {label:'100%档（基准）',value:1.0},
+  {label:'150%档',value:1.5},
+  {label:'200%档',value:2.0},
+  {label:'300%档（最高）',value:3.0}
+];
+
+const TYPE_NAMES = {enterprise:'企业职工',flexible:'灵活就业',cadre:'女干部'};
+
+// ════════════════════════════════════
+// State
+// ════════════════════════════════════
+const S = {
+  province: null, city: null,
+  personType: 'enterprise', gender: 'male',
+  birthMonth: '1976-02', workStart: '1998-07',
+  avgIndex: 1.0, currentStep: 0
+};
+
+// ════════════════════════════════════
+// Init
+// ════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Detect file:// protocol
+  if (window.location.protocol === 'file:') {
+    document.getElementById('resultLoading').style.display = 'block';
+    document.getElementById('resultLoading').innerHTML = `
+      <div style="text-align:center;padding:40px;color:#6C584B">
+        <div style="font-size:48px;margin-bottom:16px">🖥️</div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:8px">请使用本地服务器打开</div>
+        <div style="font-size:14px;line-height:1.8">
+          双击 <strong style="color:#8B7355">启动服务器.bat</strong><br>
+          然后在浏览器访问<br>
+          <strong style="color:#8B7355;font-size:16px">http://localhost:8080</strong>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Engine load
+  const script = document.createElement('script');
+  script.src = './js/pension-engine-browser.js';
+  script.onload = () => { console.log('✅ Engine loaded'); };
+  script.onerror = () => { document.getElementById('resultLoading').innerHTML = '<div style="color:var(--error)">⚠️ 引擎加载失败，请检查 js/pension-engine-browser.js 是否存在</div>'; };
+  document.head.appendChild(script);
+
+  renderProvinceList();
+  renderFlexLevels();
+  bindEvents();
+  updateSummary();
+});
+
+// ════════════════════════════════════
+// Events
+// ════════════════════════════════════
+function bindEvents() {
+  // Province select
+  document.getElementById('provinceSelect').addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown('province'); });
+  document.getElementById('citySelect').addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown('city'); });
+
+  // Person type
+  document.querySelectorAll('#personType .radio-item').forEach(el => {
+    el.addEventListener('click', () => selectPersonType(el.dataset.value));
+  });
+
+  // Gender
+  document.querySelectorAll('#genderGroup .radio-item').forEach(el => {
+    el.addEventListener('click', () => selectGender(el.dataset.value));
+  });
+
+  // Month inputs
+  document.getElementById('birthMonth').addEventListener('change', function() { S.birthMonth = this.value; updateSummary(); });
+  document.getElementById('workStart').addEventListener('change', function() { S.workStart = this.value; });
+
+  // Flex level
+  document.getElementById('flexLevelSelect').addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown('flexLevel'); });
+
+  // Nav buttons
+  document.getElementById('btnStep1Next').addEventListener('click', () => { if (S.province) goStep(1); else alert('请先选择参保省份'); });
+  document.getElementById('btnStep2Back').addEventListener('click', () => goStep(0));
+  document.getElementById('btnCalculate').addEventListener('click', calculate);
+  document.getElementById('btnResultBack').addEventListener('click', () => goStep(1));
+  document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', closeAllDropdowns);
+}
+
+// ════════════════════════════════════
+// Dropdown
+// ════════════════════════════════════
+function toggleDropdown(type) {
+  const dd = document.getElementById(type + 'Dropdown');
+  if (!dd) return;
+  closeAllDropdowns();
+  dd.classList.add('open');
+  const box = type === 'flexLevel' ? document.getElementById('flexLevelSelect')
+    : type === 'province' ? document.getElementById('provinceSelect')
+    : document.getElementById('citySelect');
+  if (box) box.classList.add('open');
+
+  // 自动检测位置：如果下拉框超出视口底部，改为向上弹出
+  setTimeout(() => {
+    const rect = dd.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.top;
+    const spaceAbove = rect.top - (rect.height - 240);
+    if (spaceBelow < rect.height && spaceAbove > rect.height) {
+      dd.style.top = 'auto';
+      dd.style.bottom = 'calc(100% + 4px)';
+    } else {
+      dd.style.top = 'calc(100% + 4px)';
+      dd.style.bottom = 'auto';
+    }
+  }, 0);
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.select-box').forEach(s => s.classList.remove('open'));
+}
+
+// ════════════════════════════════════
+// Province
+// ════════════════════════════════════
+function renderProvinceList() {
+  const dd = document.getElementById('provinceDropdown');
+  dd.innerHTML = PROVINCES.map((p,i) =>
+    `<div class="dropdown-item" data-idx="${i}">${p.name}</div>`
+  ).join('');
+  dd.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => selectProvince(parseInt(el.dataset.idx)));
+  });
+}
+
+function selectProvince(idx) {
+  S.province = PROVINCES[idx];
+  document.getElementById('provinceText').textContent = S.province.name;
+  const box = document.getElementById('provinceSelect');
+  box.classList.remove('placeholder'); box.classList.add('active');
+  closeAllDropdowns();
+  renderCities();
+  updateSummary();
+}
+
+function renderCities() {
+  const dd = document.getElementById('cityDropdown');
+  if (!S.province) { dd.innerHTML = '<div class="dropdown-item">请先选择省份</div>'; return; }
+  dd.innerHTML = S.province.cities.map(c =>
+    `<div class="dropdown-item">${c}</div>`
+  ).join('');
+  dd.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => selectCity(el.textContent));
+  });
+  selectCity(S.province.cities[0]);
+}
+
+function selectCity(name) {
+  S.city = name;
+  document.getElementById('cityText').textContent = name;
+  const box = document.getElementById('citySelect');
+  box.classList.remove('placeholder'); box.classList.add('active');
+  closeAllDropdowns();
+  updateSummary();
+}
+
+// ════════════════════════════════════
+// Person Type / Gender
+// ════════════════════════════════════
+function selectPersonType(val) {
+  document.querySelectorAll('#personType .radio-item').forEach(r => r.classList.remove('active'));
+  document.querySelector(`#personType .radio-item[data-value="${val}"]`).classList.add('active');
+  S.personType = val;
+  const isFlex = val === 'flexible';
+  document.getElementById('genderGroup').style.display = isFlex ? 'none' : 'flex';
+  document.getElementById('flexLevelGroup').style.display = isFlex ? 'block' : 'none';
+  document.getElementById('indexGroup').style.display = isFlex ? 'none' : 'block';
+  if (isFlex) { S.gender = 'female'; }
+  updateSummary();
+}
+
+function selectGender(val) {
+  document.querySelectorAll('#genderGroup .radio-item').forEach(r => r.classList.remove('active'));
+  document.querySelector(`#genderGroup .radio-item[data-value="${val}"]`).classList.add('active');
+  S.gender = val;
+  updateSummary();
+}
+
+// ════════════════════════════════════
+// Flex Levels
+// ════════════════════════════════════
+function renderFlexLevels() {
+  const dd = document.getElementById('flexLevelDropdown');
+  dd.innerHTML = FLEX_LEVELS.map((f,i) =>
+    `<div class="dropdown-item" data-idx="${i}">${f.label}</div>`
+  ).join('');
+  dd.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => selectFlexLevel(parseInt(el.dataset.idx)));
+  });
+}
+
+function selectFlexLevel(idx) {
+  const f = FLEX_LEVELS[idx];
+  document.getElementById('flexLevelText').textContent = f.label;
+  const box = document.getElementById('flexLevelSelect');
+  box.classList.remove('placeholder'); box.classList.add('active');
+  S.avgIndex = f.value;
+  closeAllDropdowns();
+  updateSummary();
+}
+
+// ════════════════════════════════════
+// Sidebar
+// ════════════════════════════════════
+function updateSummary() {
+  document.getElementById('sumProvince').textContent = S.province ? S.province.name : '—';
+  document.getElementById('sumType').textContent = TYPE_NAMES[S.personType] || '—';
+  document.getElementById('sumBirth').textContent = S.birthMonth || '—';
+  document.getElementById('sumWork').textContent = S.workStart || '—';
+  document.getElementById('sumIndex').textContent = S.personType === 'flexible' ? '档次切换' : (S.avgIndex || '—');
+  document.getElementById('sidebarSummary').classList.add('visible');
+}
+
+// ════════════════════════════════════
+// Step Nav
+// ════════════════════════════════════
+function goStep(n) {
+  S.currentStep = n;
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.step-content[data-step="${n}"]`).classList.add('active');
+  document.querySelectorAll('.step-item').forEach(el => {
+    el.classList.remove('active');
+    const s = parseInt(el.dataset.step);
+    if (s === n) el.classList.add('active');
+    if (s < n) el.classList.add('done');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════
+// Calculate
+// ════════════════════════════════════
+async function calculate() {
+  const engine = window.PensionEngine;
+  if (!engine) {
+    document.getElementById('resultLoading').style.display = 'block';
+    document.getElementById('resultLoading').innerHTML = '<div style="color:var(--error)">⏳ 引擎加载中，请稍后重试</div>';
+    return;
+  }
+
+  // Read index
+  if (S.personType !== 'flexible') {
+    const idx = parseFloat(document.getElementById('avgIndex').value);
+    if (isNaN(idx) || idx < 0.4 || idx > 3.0) {
+      document.getElementById('avgIndex').classList.add('error');
+      document.getElementById('avgIndex').focus();
+      setTimeout(() => document.getElementById('avgIndex').classList.remove('error'), 2000);
+      return;
+    }
+    S.avgIndex = idx;
+  }
+
+  // Determine genderType for engine
+  let genderType = 'male';
+  if (S.gender === 'female') {
+    if (S.personType === 'cadre') genderType = 'fc';
+    else if (S.personType === 'flexible') genderType = 'fw55';
+    else genderType = 'fw50'; // enterprise female worker
+  }
+
+  const [by, bm] = S.birthMonth.split('-').map(Number);
+  const [wy, wm] = S.workStart.split('-').map(Number);
+
+  // City type mapping
+  const cityMap = {
+    '长春市':'cc','深圳市（独立体系）':'sz','沈阳市':'sy',
+    '大连市':'dl','郑州市':'zz'
+  };
+  const cityType = cityMap[S.city] || 'prov';
+
+  // Show loading
+  document.getElementById('resultArea').style.display = 'none';
+  document.getElementById('resultLoading').style.display = 'block';
+
+  // Load province config
+  const cfg = await loadProvinceConfig(S.province.code);
+  if (!cfg) {
+    document.getElementById('resultLoading').innerHTML = '<div style="color:var(--error)">⚠️ 省份数据加载失败</div>';
+    return;
+  }
+
+  // Calculate
+  let result;
+  try {
+    result = engine.calculate(cfg, {
+      birthYear: by, birthMonth: bm,
+      workYear: wy, workMonth: wm,
+      genderType: genderType,
+      avgIndex: S.avgIndex,
+      cityType: cityType
+    });
+  } catch(e) {
+    console.error(e);
+    document.getElementById('resultLoading').innerHTML = `<div style="color:var(--error)">⚠️ 计算出错: ${e.message}</div>`;
+    return;
+  }
+
+  document.getElementById('resultLoading').style.display = 'none';
+  displayResult(result);
+  goStep(2);
+}
+
+async function loadProvinceConfig(code) {
+  try {
+    const resp = await fetch(`./provinces/${code}.json`);
+    if (!resp.ok) throw new Error('Not found');
+    return await resp.json();
+  } catch(e) {
+    console.warn('Cannot load:', code);
+    return null;
+  }
+}
+
+// ════════════════════════════════════
+// Display Result
+// ════════════════════════════════════
+function displayResult(r) {
+  const legal = r.legal || {};
+  const flex = r.flex || {};
+  const comp = r.comparison || {};
+
+  const fmt = (v) => v != null ? '¥' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+  const fmtInt = (v) => v != null ? '¥' + Math.round(v).toLocaleString() : '—';
+
+  // Hero
+  document.getElementById('totalAmount').innerHTML = fmt(legal.total);
+  const ageStr = legal.ageStr || (legal.age ? legal.age.toFixed(1) + '岁' : '—');
+  const d = legal.date || {};
+  document.getElementById('retireTag').textContent = `${d.year || '—'}年${d.month || '—'}月 · ${ageStr}`;
+  document.getElementById('resultMeta').textContent = `个人账户余额 ${fmtInt(legal.personalAccount?.balance)}`;
+  document.getElementById('resultRegion').textContent = `${S.province.name} · ${S.city}`;
+
+  // Flex comparison
+  const canFlex = comp.canFlex;
+  document.getElementById('flexCompare').style.display = canFlex ? 'block' : 'none';
+  if (canFlex && flex.total) {
+    const diff = comp.amountDiff;
+    const pct = comp.diffPercent;
+    document.getElementById('compareRow').innerHTML = `
+      <div class="compare-item">
+        <div class="label">法定退休</div>
+        <div class="value">${fmt(legal.total)}</div>
+        <div class="diff">${legal.ageStr || ''}</div>
+      </div>
+      <div class="compare-item">
+        <div class="label">弹性提前 ${comp.flexAdvance ? (comp.flexAdvance/12).toFixed(1) + '年' : ''}</div>
+        <div class="value">${fmt(flex.total)}</div>
+        <div class="diff ${diff < 0 ? 'less' : ''}">${diff < 0 ? '少' : '多'} ${fmt(Math.abs(diff))} (${pct > 0 ? '+' : ''}${pct}%)</div>
+      </div>
+    `;
+    document.getElementById('flexAdvice').textContent = canFlex
+      ? `💡 可提前最多${comp.flexAdvance ? Math.floor(comp.flexAdvance/12*10)/10 + '年' : ''}退休。提前退休每月少拿一些，但可以更早领取。`
+      : '';
+  }
+
+  // Legal breakdown
+  document.getElementById('legalBreakdown').innerHTML = rows([
+    {label:'基础养老金', val: fmt(legal.basicPension?.amount)},
+    {label:'个人账户养老金', val: fmt(legal.personalAccount?.amount)},
+    {label:'过渡性养老金', val: legal.transitionalPension?.amount > 0 ? fmt(legal.transitionalPension.amount) : null},
+    {label:'其他加发', val: (legal.extraPension?.amount > 0 || legal.specialAddition?.amount > 0 || legal.adjustmentFund?.amount > 0) ? fmt((legal.extraPension?.amount||0)+(legal.specialAddition?.amount||0)+(legal.adjustmentFund?.amount||0)) : null},
+  ], legal.total);
+
+  // Flex breakdown
+  if (canFlex && flex.total) {
+    document.getElementById('flexSection').style.display = 'block';
+    document.getElementById('flexBreakdown').innerHTML = rows([
+      {label:'基础养老金', val: fmt(flex.basicPension?.amount)},
+      {label:'个人账户养老金', val: fmt(flex.personalAccount?.amount)},
+      {label:'过渡性养老金', val: flex.transitionalPension?.amount > 0 ? fmt(flex.transitionalPension.amount) : null},
+      {label:'其他加发', val: (flex.extraPension?.amount > 0 || flex.specialAddition?.amount > 0 || flex.adjustmentFund?.amount > 0) ? fmt((flex.extraPension?.amount||0)+(flex.specialAddition?.amount||0)+(flex.adjustmentFund?.amount||0)) : null},
+    ], flex.total);
+  } else {
+    document.getElementById('flexSection').style.display = 'none';
+  }
+
+  // Parameters
+  const baseRetire = legal.baseRetire || legal.baseProv || 0;
+  document.getElementById('calcParams').innerHTML = `
+    <div class="result-row"><span class="result-row-label">参保省份</span><span class="result-row-value">${S.province.name}</span></div>
+    <div class="result-row"><span class="result-row-label">城市</span><span class="result-row-value">${S.city}</span></div>
+    <div class="result-row"><span class="result-row-label">退休年龄</span><span class="result-row-value">${ageStr}</span></div>
+    <div class="result-row"><span class="result-row-label">计发月数</span><span class="result-row-value">${legal.months || '—'}</span></div>
+    <div class="result-row"><span class="result-row-label">个人账户余额</span><span class="result-row-value">${fmtInt(legal.personalAccount?.balance)}</span></div>
+    <div class="result-row"><span class="result-row-label">退休地计发基数</span><span class="result-row-value">${fmtInt(baseRetire)}/月</span></div>
+    <div class="result-row"><span class="result-row-label">累计缴费年限</span><span class="result-row-value">${legal.totalYears ? legal.totalYears.toFixed(1) + '年' : '—'}</span></div>
+  `;
+
+  // Show result area
+  document.getElementById('resultArea').style.display = 'block';
+}
+
+function rows(items, total) {
+  let html = '';
+  items.forEach(item => {
+    if (item.val == null) return;
+    html += `<div class="result-row"><span class="result-row-label">${item.label}</span><span class="result-row-value">${item.val}</span></div>`;
+  });
+  if (total != null) {
+    html += `<div class="result-row" style="background:var(--primary-bg);border-top:2px solid var(--primary);margin-top:8px;"><span class="result-row-label" style="font-weight:600">合计</span><span class="result-row-value" style="color:var(--primary);font-size:18px;font-weight:700">${'¥' + Number(total).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span></div>`;
+  }
+  return html;
+}
+</script>
+</body>
+</html>

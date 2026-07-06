@@ -152,6 +152,7 @@ function getEngineConfig() {
       prov: PROV_BASE,
       shenzhen: SHENZHEN_BASE,
     },
+    avg_salary_history: AVG_SALARY_HISTORY,
     modules: {},
   }
 }

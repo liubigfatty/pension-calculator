@@ -101,6 +101,48 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/tianjin.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1990: 1757,
+  1991: 1845,
+  1992: 1937,
+  1993: 2034,
+  1994: 2136,
+  1995: 2243,
+  1996: 2355,
+  1997: 2473,
+  1998: 2596,
+  1999: 2726,
+  2000: 2863,
+  2001: 3006,
+  2002: 3156,
+  2003: 3314,
+  2004: 3479,
+  2005: 3653,
+  2006: 3836,
+  2007: 4028,
+  2008: 4229,
+  2009: 4441,
+  2010: 4663,
+  2011: 4896,
+  2012: 5141,
+  2013: 5398,
+  2014: 5668,
+  2015: 5951,
+  2016: 6249,
+  2017: 6561,
+  2018: 6889,
+  2019: 7234,
+  2020: 6777,
+  2021: 7478,
+  2022: 7919,
+  2023: 8355,
+  2024: 9232,
+  2025: 9509,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -119,6 +161,7 @@ function getEngineConfig() {
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

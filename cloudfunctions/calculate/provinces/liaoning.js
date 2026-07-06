@@ -247,6 +247,48 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/liaoning.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1990: 1371,
+  1991: 1439,
+  1992: 1511,
+  1993: 1587,
+  1994: 1666,
+  1995: 1749,
+  1996: 1837,
+  1997: 1929,
+  1998: 2025,
+  1999: 2126,
+  2000: 2233,
+  2001: 2344,
+  2002: 2462,
+  2003: 2585,
+  2004: 2714,
+  2005: 2850,
+  2006: 2992,
+  2007: 3142,
+  2008: 3299,
+  2009: 3464,
+  2010: 3637,
+  2011: 3819,
+  2012: 4010,
+  2013: 4210,
+  2014: 4421,
+  2015: 4642,
+  2016: 4874,
+  2017: 5118,
+  2018: 5373,
+  2019: 5642,
+  2020: 5709,
+  2021: 6383,
+  2022: 6843,
+  2023: 7121,
+  2024: 7201,
+  2025: 7417,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -283,6 +325,7 @@ function getEngineConfig() {
       shenyang: SY_BASE,
       dalian: DL_BASE,
     },
+    avg_salary_history: AVG_SALARY_HISTORY,
     modules: modules,
     cities: CITY_LIST || [],
     cases: cases || [],

@@ -11,11 +11,11 @@ exports.main = async (event, context) => {
       isHyaline: false          // 是否透明底色
     })
 
-    // result 是 Buffer，转成 base64 返回
+    // result 本身就是 Buffer（PNG 图片数据），直接转 base64
     return {
       success: true,
       contentType: 'image/png',
-      buffer: result.buffer.toString('base64')
+      buffer: result.toString('base64')
     }
   } catch (err) {
     console.error('[getQRCode] 生成小程序码失败:', err)

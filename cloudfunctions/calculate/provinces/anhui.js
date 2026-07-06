@@ -84,12 +84,48 @@ const MODULE_LABELS = {
 
 const cases = []
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/anhui.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1996: 685.82,
+  1997: 1321,
+  1998: 1258,
+  1999: 1321,
+  2000: 1397,
+  2001: 1456,
+  2002: 1550,
+  2003: 1873,
+  2004: 2061,
+  2005: 2419,
+  2006: 2912,
+  2007: 1496,
+  2008: 1848.33,
+  2009: 2196.92,
+  2010: 2471.5,
+  2011: 2861.75,
+  2012: 3386.67,
+  2013: 3841,
+  2014: 3983.83,
+  2015: 4365.67,
+  2016: 4747.83,
+  2017: 5107.42,
+  2018: 5660.58,
+  2019: 5028.39,
+  2020: 5975.17,
+  2021: 6386.92,
+  2022: 6698.33,
+  2023: 7043.83,
+  2024: 7842,
+};
+
 function getEngineConfig() {
   return {    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: {},
   }
 }

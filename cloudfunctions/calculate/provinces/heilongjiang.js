@@ -251,6 +251,49 @@ const base_rates = {
   prov: PROV_BASE,
 };
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/heilongjiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1990: 154.2,
+  1991: 172.5,
+  1992: 191.3,
+  1993: 221.8,
+  1994: 281.3,
+  1995: 345.4,
+  1996: 380.3,
+  1997: 407.4,
+  1998: 519.8,
+  1999: 591.2,
+  2000: 652.9,
+  2001: 742.5,
+  2002: 827.2,
+  2003: 919.8,
+  2004: 1046.4,
+  2005: 1204.8,
+  2006: 1375.4,
+  2007: 1615.5,
+  2008: 1920.5,
+  2009: 2211.3,
+  2010: 2031,
+  2011: 2278,
+  2012: 2541,
+  2013: 2843,
+  2014: 3181,
+  2015: 3558,
+  2016: 3920,
+  2017: 4315,
+  2018: 4645,
+  2019: 4735,
+  2020: 4835,
+  2021: 5865,
+  2022: 6430,
+  2023: 7010,
+  2024: 7010,
+  2025: 7570,
+  2026: 7705,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -286,6 +329,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '黑龙江省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

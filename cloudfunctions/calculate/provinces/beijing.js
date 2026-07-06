@@ -146,6 +146,44 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/beijing.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  1995: 608.03,
+  1996: 701.92,
+  1997: 754.12,
+  1998: 769.95,
+  1999: 845.47,
+  2000: 963.77,
+  2001: 1087.5,
+  2002: 1232.38,
+  2003: 1376.05,
+  2004: 1582.56,
+  2005: 1876.55,
+  2006: 2323.38,
+  2007: 2760.32,
+  2008: 3190.48,
+  2009: 3587.3,
+  2010: 4075.59,
+  2011: 4590.7,
+  2012: 5144.48,
+  2013: 5757.95,
+  2014: 6338.92,
+  2015: 7032.14,
+  2016: 7680.4,
+  2017: 8374.36,
+  2018: 7855,
+  2019: 9262,
+  2020: 9407.17,
+  2021: 10628,
+  2022: 11297,
+  2023: 11761,
+  2024: 11937,
+  2025: 12049,
+  2026: 13092,
+};
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -181,6 +219,7 @@ function getEngineConfig() {
     province: PROV_TAG,
     name: '北京市',
     base_rates: { prov: PROV_BASE },
+    avg_salary_history: AVG_SALARY_HISTORY,
     modules: modules,
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,

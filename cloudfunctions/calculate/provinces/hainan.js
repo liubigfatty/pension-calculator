@@ -102,6 +102,37 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/hainan.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+const AVG_SALARY_HISTORY = {
+  2000: 617,
+  2001: 693,
+  2002: 790,
+  2003: 866,
+  2004: 1054,
+  2005: 1201,
+  2006: 1324,
+  2007: 1613,
+  2008: 1822,
+  2009: 2078,
+  2010: 2585,
+  2011: 3060,
+  2012: 3338,
+  2013: 3798,
+  2014: 4216,
+  2015: 4867,
+  2016: 5214,
+  2017: 5755,
+  2018: 6473,
+  2019: 7055,
+  2020: 6543,
+  2021: 7088.83,
+  2022: 7625.08,
+  2023: 8050,
+  2024: 8131,
+};
+
 function getEngineConfig() {
   const modules = {};
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
@@ -120,6 +151,7 @@ function getEngineConfig() {
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,

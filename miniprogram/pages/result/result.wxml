@@ -105,7 +105,7 @@
         </view>
         <view class="card-row">
           <text class="card-label">退休地计发基数</text>
-          <text class="card-value">{{cityLabel || '--'}}</text>
+          <text class="card-value">{{baseNumber || '--'}}</text>
         </view>
       </view>
     </view>
@@ -119,27 +119,6 @@
       <text>计算结果仅供参考，实际待遇以社保部门核定为准</text>
     </view>
 
-    <!-- 分享图预览弹窗 -->
-    <view class="share-preview-mask" wx:if="{{showSharePreview}}" bindtap="closeSharePreview">
-      <view class="share-preview-body" catchtap="stopProp">
-        <view class="share-preview-header">
-          <text class="share-preview-title">分享图片预览</text>
-          <view class="share-preview-close" bindtap="closeSharePreview">✕</view>
-        </view>
-        <scroll-view class="share-preview-scroll" scroll-y="true">
-          <image
-            class="share-preview-img"
-            src="{{shareImagePath}}"
-            mode="widthFix"
-            bindtap="onShareImagePreview"
-          />
-        </scroll-view>
-        <view class="share-preview-footer">
-          <button class="share-preview-btn share" open-type="share">发送给朋友</button>
-        </view>
-      </view>
-    </view>
-
-    <canvas type="2d" id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:750px;height:1400px;"></canvas>
+    <wxml-to-canvas class="shareWidget" width="375" height="700" style="position:absolute;left:-9999px;top:0;"></wxml-to-canvas>
   </block>
 </view>

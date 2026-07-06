@@ -1,6 +1,8 @@
 {
-  "rules": [{
-    "action": "allow",
-    "page": "*"
-  }]
+  "rules": [
+    { "action": "allow", "page": "pages/index/index", "priority": 1.0 },
+    { "action": "allow", "page": "pages/result/result", "priority": 0.9 },
+    { "action": "allow", "page": "pages/step1/step1", "priority": 0.7 },
+    { "action": "allow", "page": "pages/*", "priority": 0.5 }
+  ]
 }
