@@ -28,7 +28,7 @@ const CONFIG = {
   APP_KEY_PROD: 'WC52oAh5z4veWT3de3wvn2Q5ANNEwmIy',     // 现网 AppKey
   APP_KEY_SANDBOX: 'Ci1GCEVPChncatS5aNrZLypWADRUnAJV',  // 沙箱 AppKey
   PRODUCT_ID: 'pension_report',                       // 后台道具ID（需一致）
-  GOODS_PRICE: 100,                                   // 道具单价：分（=¥1.00，需与后台道具价格一致）
+  GOODS_PRICE: 100,                                  // 道具单价（单位：分）。微信 signData.goodsPrice 单位为「分」；后台「价格(元)」=1 即 100 分，须与微信后台道具价格一致（官方文档明确 goodsPrice 单位=分）
   ENV: 0,                                             // 0=现网 1=沙箱
 }
 
@@ -76,16 +76,28 @@ exports.main = async (event) => {
     const sessionKey = sessionRes.session_key
 
     // 2) 构造 signData（字段顺序敏感，勿调整）
+    //    ★ 字段类型权威依据（微信官方 API 文档 wx.requestVirtualPayment）：
+    //      offerId:      string   米大师应用ID
+    //      buyQuantity:  number   购买数量
+    //      env:          number   0=正式环境 1=沙箱
+    //      currencyType: string   CNY
+    //      productId:    string   道具ID（mode=short_series_goods 时必填）
+    //      goodsPrice:   number   道具单价，单位=分（官方文档：goodsPrice 单位"分"；本小程序后台「价格(元)」=1 即 100 分，goodsPrice 须传 100）
+    //      outTradeNo:   string   业务订单号
+    //      attach:       string   透传数据
+    //    来源: https://developers.weixin.qq.com/miniprogram/dev/api/payment/wx.requestVirtualPayment.html
+    //    真机实测（基础库 3.3.5）：buyQuantity/env/goodsPrice 传字符串报 -15016 "doesn't expect a string value" → 三者须 number
+    //    校验脚本: scripts/check-vpay-signData.js（每次改完自动比对上表）
     const outTradeNo = 'RP' + Date.now() + Math.random().toString(36).slice(-4).toUpperCase()
     const signDataObj = {
-      buyQuantity: 1,
-      env: CONFIG.ENV,
-      offerId: CONFIG.OFFER_ID,
-      currencyType: 'CNY',
-      productId: pid,
-      goodsPrice: CONFIG.GOODS_PRICE,
-      outTradeNo: outTradeNo,
-      attach: JSON.stringify({ productId: pid }),
+      offerId: CONFIG.OFFER_ID,                   // string（米大师应用ID）
+      buyQuantity: 1,                             // number（购买数量）
+      env: CONFIG.ENV,                            // number: 0=正式环境 1=沙箱
+      currencyType: 'CNY',                        // string
+      productId: pid,                             // string（道具ID）
+      goodsPrice: CONFIG.GOODS_PRICE,             // number，单位=分（官方文档 goodsPrice 单位为分；后台 1元=100分 → 传 100；实测传字符串报 -15016）
+      outTradeNo: outTradeNo,                      // string（业务订单号）
+      attach: JSON.stringify({ productId: pid }),  // string（透传）
     }
     const signData = JSON.stringify(signDataObj)
 
