@@ -11,10 +11,10 @@
   "personal_account": 66801.75,
   "months": 195,
   "expected": {
-    "basic_pension": 1903.11,
+    "basic_pension": 1649.54,
     "personal_pension": 342.57,
-    "transitional_pension": 92.63,
-    "total": 2338.31
+    "transitional_pension": 80.29,
+    "total": 2072.4
   },
   "notes": "江西南昌，女1974-08生，1994-03参工，2024-08退休(50岁)。建账1995-10。视同19月(1995-03至1995-09)。累计366月=30.5年。过渡系数1.3%确认。预核定：2024基数6525（官方2025年度缴费基数，已重标定）",
   "birth_year": 1974,
