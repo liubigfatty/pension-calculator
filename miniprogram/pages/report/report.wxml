@@ -84,8 +84,8 @@
         <view class="data-table">
           <view class="tr header"><text class="td name">领到年龄</text><text class="td num">正常退休</text><text class="td num early-color">弹性提前</text><text class="td num">差额</text></view>
           <view wx:for="{{cumulativeItems}}" wx:key="age">
-            <view class="tr {{item.isBreakEven ? 'breakeven' : ''}}">
-              <text class="td name">{{item.age}}岁</text>
+            <view class="tr {{item.isNormalStart ? 'normal-start' : ''}} {{item.isBreakEven ? 'breakeven' : ''}}">
+              <text class="td name">{{item.age}}岁{{item.isNormalStart ? '（正常起领）' : ''}}</text>
               <text class="td num">¥{{item.legalTotal}}</text>
               <text class="td num early-color">¥{{item.flexTotal}}</text>
               <text class="td num" style="{{item.isBreakEven ? 'color:#8B7355;font-weight:600' : (item.diff.indexOf('+')===0 ? 'color:#4A8C5C' : 'color:#D85A30')}}">{{item.diff}}</text>
@@ -266,6 +266,6 @@
       <button class="btn-save" bindtap="onSaveImage">保存报告到相册</button>
       <button class="btn-back" bindtap="onBack">返回结果</button>
     </view>
-    <wxml-to-canvas class="reportWidget" width="375" height="2700" style="position:absolute;left:-9999px;top:0;"></wxml-to-canvas>
+    <canvas type="2d" id="reportCanvas" class="reportWidget" style="position:absolute;left:-9999px;top:0;width:375px;height:2600px;"></canvas>
   </view>
 </view>

@@ -263,6 +263,11 @@
   background: #FFF9EB;
 }
 
+.tr.normal-start {
+  background: #EDEFF4;
+  border-left: 6rpx solid #8B7355;
+}
+
 .td {
   padding: 18rpx 10rpx;
   display: flex;

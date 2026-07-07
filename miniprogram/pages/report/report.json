@@ -1,6 +1,3 @@
 {
-  "navigationBarTitleText": "退休规划深度报告",
-  "usingComponents": {
-    "wxml-to-canvas": "../../components/wxml-to-canvas/index"
-  }
+  "navigationBarTitleText": "退休规划深度报告"
 }

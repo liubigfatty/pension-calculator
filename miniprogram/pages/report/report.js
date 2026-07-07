@@ -1,6 +1,6 @@
 // pages/report/report.js - 退休规划深度报告
 var app = getApp()
-var reportTpl = require('./report-template.js')
+var reportCanvas = require('./report-canvas.js')
 
 Page({
   data: {
@@ -88,8 +88,9 @@ Page({
     const legalAnnual = legalTotal * 12
 
     // 弹性退休数据
-    // 优先使用云函数返回的 legalOriginal（原法定年龄退休），作为弹性提前退休对比
-    // fallback：其次用 flex（旧版引擎无legalOriginal时）
+    // 弹性提前退休对比基准：优先取 raw.legalOriginal（原法定年龄退休方案）。
+    // 经核查 cloudfunctions/calculate 引擎当前并未返回 legalOriginal 键，故恒走 flex 兜底。
+    // 注释修正：此处并非"原法定年龄退休"，而是以 flex 方案（弹性提前）作为对比基准。
     const legalOrig = raw.legalOriginal || flex
     const hasEarlyRetire = legalOrig.age > 0 && legalOrig.age < legalAge && legalOrig.total > 0
     const flexAge = hasEarlyRetire ? (legalOrig.age || 0) : 0
@@ -152,7 +153,6 @@ Page({
     // 回本周期
     const paybackYears = (hasEarlyRetire && diffMonthly > 0) ? Math.round(totalEarlyBenefitNum / diffMonthly / 12) : 0
     // 指数优化数据（按比例估算）
-    const basePensionPercent = legalBaseRetire > 0 ? Math.round(legalBase / legalTotal * 100) : 50
     const index06 = '¥' + Math.round(legalBaseRetire * 0.8 * legalTotalYears * 0.01 + legalPersonal).toLocaleString()
     const index08 = '¥' + Math.round(legalBaseRetire * 0.9 * legalTotalYears * 0.01 + legalPersonal).toLocaleString()
     const index15 = '¥' + Math.round(legalBaseRetire * 1.25 * legalTotalYears * 0.01 + legalPersonal).toLocaleString()
@@ -275,7 +275,7 @@ Page({
   },
 
   onReady() {
-    this._reportWidget = this.selectComponent('.reportWidget')
+    // Canvas 2D 节点在 onSaveImage 时通过选择器获取，无需 selectComponent
   },
 
   onSaveImage() {
@@ -284,26 +284,20 @@ Page({
 
     // 提前提取 this.data，避免异步回调中 this 丢失
     var d = this.data
-    var widget = this._reportWidget
 
-    if (!widget) {
-      wx.hideLoading()
-      wx.showToast({ title: '组件未就绪', icon: 'none' })
-      return
-    }
-
-    // 拷贝二维码图片到 USER_DATA_PATH（wxml-to-canvas 需要绝对路径）
+    // 拷贝二维码图片到 USER_DATA_PATH（Canvas 2D 的 createImage 需要绝对路径）
     var fs = wx.getFileSystemManager()
     var tmpQr = wx.env.USER_DATA_PATH + '/consult-wechat.jpg'
     fs.copyFile({
       srcPath: '/images/consult-wechat.jpg',
       destPath: tmpQr,
-      success: function() { self._doRenderReport(d, widget, tmpQr) },
-      fail: function() { self._doRenderReport(d, widget, null) }
+      success: function() { self._renderReport(d, tmpQr) },
+      fail: function() { self._renderReport(d, null) }
     })
   },
 
-  _doRenderReport(d, widget, qrPath) {
+  _renderReport(d, qrPath) {
+    var self = this
     var hasEarly = d.flexTotalStr !== '--'
     var adviceType = d.isFlexible ? 'flexible' : 'worker'
 
@@ -317,6 +311,10 @@ Page({
       avgIndex: d.avgIndexStr,
       balance: d.personalBalanceStr,
       base: d.baseRetireStr,
+      // Hero 卡
+      legalTotalStr: d.legalTotalStr,
+      legalAgeShow: d.legalAgeShow,
+      legalYearsShow: d.legalYearsShow,
       // 模块2 表格行
       legalTotal: d.legalTotalStr,
       flexTotal: d.flexTotalStr,
@@ -339,8 +337,9 @@ Page({
       salary3year: d.salary3year || '',
       fund3year: d.fund3year || '',
       medicareYears: d.medicareYears || 0,
-      medicareMet: d.medicareMet,
+      medicareRequirement: d.medicareRequirement || 25,
       medicareLabel: d.medicareLabel || '',
+      medicareMet: d.medicareMet,
       savePremium: d.savePremium || '0',
       earlyPension: d.earlyPension || '0',
       totalEarlyBenefit: d.totalEarlyBenefit || '0',
@@ -348,9 +347,10 @@ Page({
       diffMonthly: d.diffMonthly || 0,
       paybackYears: d.paybackYears || 0,
       replaceRate: d.replaceRate || '',
-      baseRetireStr: d.baseRetireStr || '',
+      estPreRetireSalary: d.estPreRetireSalary || '',
+      replaceRateDesc: d.replaceRateDesc || '',
       // 模块5
-      consultImg: qrPath || '',
+      qrPath: qrPath || '',
       indexOpts: [
         { label: '0.6', pension: '¥' + d.index06, inc: '--', isCurrent: false },
         { label: '0.8', pension: '¥' + d.index08, inc: '+¥' + d.index08inc, isCurrent: false },
@@ -368,44 +368,67 @@ Page({
       totalPension: d.totalPensionStr
     }
 
-    var tpl = reportTpl.build(data)
+    var query = wx.createSelectorQuery().in(this)
+    query.select('#reportCanvas').fields({ node: true, size: true }).exec(function (res) {
+      if (!res || !res[0] || !res[0].node) {
+        wx.hideLoading()
+        wx.showToast({ title: '画布未就绪', icon: 'none' })
+        return
+      }
+      var canvas = res[0].node
+      var ctx = canvas.getContext('2d')
+      var dpr = 2
+      try {
+        dpr = (wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : wx.getSystemInfoSync().pixelRatio) || 2
+      } catch (e) { dpr = 2 }
 
-    widget.renderToCanvas({ wxml: tpl.wxml, style: tpl.style }).then(function(container) {
-      return widget.canvasToTempFilePath({ fileType: 'png' })
-    }).then(function(res) {
-      wx.hideLoading()
-      var filePath = res.tempFilePath
-      // 优先用预览大图展示：用户在预览里「长按」即可保存到相册 / 转发（iOS、安卓微信原生能力，最稳）
-      // 避免 wx.saveImageToPhotosAlbum 因相册授权被拒而静默失败（尤其 iOS 首次拒绝后不再弹窗）
-      wx.previewImage({
-        urls: [filePath],
-        current: filePath,
-        success: function() {
-          console.log('[report] 预览已弹出，可长按保存')
-        },
-        fail: function() {
-          // 预览兜底：极少数机型预览失败，则尝试直接保存
-          wx.saveImageToPhotosAlbum({
-            filePath: filePath,
-            success: function() { wx.showToast({ title: '已保存到相册', icon: 'success' }) },
-            fail: function(err2) {
-              if (err2.errMsg && err2.errMsg.indexOf('auth deny') >= 0) {
-                wx.showModal({
-                  title: '需要授权',
-                  content: '请授权保存图片到相册',
-                  confirmText: '去设置',
-                  success: function(m) { if (m.confirm) wx.openSetting() }
-                })
-              } else {
-                wx.showToast({ title: '保存失败', icon: 'none' })
-              }
+      try {
+        reportCanvas.draw(data, canvas, ctx, dpr, function () {
+          wx.canvasToTempFilePath({
+            canvas: canvas,
+            success: function (r) {
+              wx.hideLoading()
+              var filePath = r.tempFilePath
+              // 优先用预览大图展示：用户在预览里「长按」即可保存到相册 / 转发（iOS、安卓微信原生能力，最稳）
+              // 避免 wx.saveImageToPhotosAlbum 因相册授权被拒而静默失败（尤其 iOS 首次拒绝后不再弹窗）
+              wx.previewImage({
+                urls: [filePath],
+                current: filePath,
+                success: function () { console.log('[report] 预览已弹出，可长按保存') },
+                fail: function () { self._saveFallback(filePath) }
+              })
+            },
+            fail: function (err) {
+              wx.hideLoading()
+              console.error('[report] canvasToTempFilePath fail:', JSON.stringify(err))
+              wx.showToast({ title: '生成失败', icon: 'none' })
             }
           })
+        })
+      } catch (e) {
+        wx.hideLoading()
+        console.error('[report] render error:', e)
+        wx.showToast({ title: '生成失败', icon: 'none' })
+      }
+    })
+  },
+
+  _saveFallback(filePath) {
+    wx.saveImageToPhotosAlbum({
+      filePath: filePath,
+      success: function () { wx.showToast({ title: '已保存到相册', icon: 'success' }) },
+      fail: function (err2) {
+        if (err2.errMsg && err2.errMsg.indexOf('auth deny') >= 0) {
+          wx.showModal({
+            title: '需要授权',
+            content: '请授权保存图片到相册',
+            confirmText: '去设置',
+            success: function (m) { if (m.confirm) wx.openSetting() }
+          })
+        } else {
+          wx.showToast({ title: '保存失败', icon: 'none' })
         }
-      })
-    }).catch(function(err) {
-      wx.hideLoading()
-      wx.showToast({ title: '生成失败', icon: 'none' })
+      }
     })
   },
 
