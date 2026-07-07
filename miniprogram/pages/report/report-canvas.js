@@ -358,7 +358,13 @@ function bodyModule4(ctx, x, y, mode, data) {
     featItems.push(['回本分析', '合计好处约¥' + (data.totalEarlyBenefit || '0') + '元，正常退休每月多领¥' + (data.diffMonthly || '0') + '元，需约' + (data.paybackYears || 0) + '年追平'])
     if (data.medicareYears > 0) featItems.push(['医疗保险', (data.medicareLabel || '') + '职工医保缴费年限要求约' + (data.medicareRequirement || 25) + '年（' + (data.medicareYears || 0) + '年），弹性提前退休后可直接享受退休医保待遇'])
   }
-  const featBlockH = 18 + 8 + featItems.length * 50
+  // 关键差异分析 — 动态高度（按实际文本换行计算，避免截断）
+  let featBlockH = 18 + 8 // 标题区
+  for (let i = 0; i < featItems.length; i++) {
+    const itemH = 8 + 12 + 8 // label区: 上间距+字体+下间距
+    const descH = drawWrapped(ctx, featItems[i][1], 0, 0, CONTENT_W - 20, 14, "400 11px 'PingFang SC', sans-serif", '#888', 'left', mode)
+    featBlockH += itemH + descH + 4 // 每项: label区 + 描述文本 + 项间距
+  }
   if (mode === 'draw') {
     ctx.fillStyle = '#F8F6F4'
     roundRectPath(ctx, x, yy, CONTENT_W, featBlockH, 8)
@@ -367,8 +373,9 @@ function bodyModule4(ctx, x, y, mode, data) {
     let fy = yy + 10 + 18 + 8
     for (let i = 0; i < featItems.length; i++) {
       drawText(ctx, featItems[i][0], x + 10, fy + 8, "700 12px 'PingFang SC', sans-serif", '#333', 'left', 'draw')
-      drawWrapped(ctx, featItems[i][1], x + 10, fy + 16, CONTENT_W - 20, 14, "400 11px 'PingFang SC', sans-serif", '#888', 'left', 'draw')
-      fy += 50
+      fy += 8 + 12 + 8
+      fy += drawWrapped(ctx, featItems[i][1], x + 10, fy, CONTENT_W - 20, 14, "400 11px 'PingFang SC', sans-serif", '#888', 'left', 'draw')
+      fy += 4
     }
   }
   yy += featBlockH + 8
@@ -582,9 +589,12 @@ function drawDisclaimer(ctx, yTop, data, mode) {
   return h
 }
 
-// Hero 金额卡
+// Hero 金额卡（高度动态计算，避免硬编码导致文字重叠/截断）
 function drawHero(ctx, yTop, data, mode) {
-  const amountH = 28 + 20 + 56 + 26 + 22 // padTop + label + value + tags + padBottom
+  const hasTags = !!(data.identity || data.legalAgeShow)
+  // 标签区高度：gap + tag1行 + 间距 + tag2行（每行≈字体13px+上下各约2px余量=17px）
+  const tagsH = hasTags ? (13 + 17 + 13 + 17) : 0
+  const amountH = 28 + 20 + 56 + tagsH + 22
   if (mode === 'draw') {
     ctx.save()
     ctx.shadowColor = 'rgba(40,41,43,0.25)'
@@ -604,7 +614,7 @@ function drawHero(ctx, yTop, data, mode) {
 
     let ay = yTop + 28
     drawText(ctx, '每月可领取养老金', PAGE_W / 2, ay + 10, "400 14px 'PingFang SC', sans-serif", 'rgba(139,115,85,0.9)', 'center', 'draw')
-    ay += 20 + 28
+    ay += 20
     const total = data.legalTotalStr || (data.legalTotal || '--')
     ctx.font = "700 48px 'PingFang SC', sans-serif"
     const symW = ctx.measureText('¥').width
@@ -616,12 +626,17 @@ function drawHero(ctx, yTop, data, mode) {
     ctx.textBaseline = 'middle'
     ctx.fillText('¥', sx, ay + 28)
     ctx.fillText(total, sx + symW + 8, ay + 28)
-    ay += 28 + 13
-    const tag1 = (data.identity || '') + ' · ' + (data.province || '') + (data.city ? ' · ' + data.city : '')
-    const tag2 = (data.legalAgeShow || '') + '起领 · ' + (data.legalYearsShow || '')
-    drawText(ctx, tag1, PAGE_W / 2, ay, "400 13px 'PingFang SC', sans-serif", 'rgba(255,255,255,0.85)', 'center', 'draw')
-    ay += 13 + 13
-    drawText(ctx, tag2, PAGE_W / 2, ay, "400 13px 'PingFang SC', sans-serif", 'rgba(255,255,255,0.85)', 'center', 'draw')
+    ay += 56
+
+    if (hasTags) {
+      ay += 13 // gap before tag1
+      const tag1 = (data.identity || '') + ' · ' + (data.province || '') + (data.city ? ' · ' + data.city : '')
+      const tag2 = (data.legalAgeShow || '') + '起领 · ' + (data.legalYearsShow || '')
+      drawText(ctx, tag1, PAGE_W / 2, ay + 8, "400 13px 'PingFang SC', sans-serif", 'rgba(255,255,255,0.85)', 'center', 'draw')
+      ay += 17 // tag1 line height (13 font + 4 padding)
+      ay += 5 // spacing between tag lines
+      drawText(ctx, tag2, PAGE_W / 2, ay + 8, "400 13px 'PingFang SC', sans-serif", 'rgba(255,255,255,0.85)', 'center', 'draw')
+    }
   }
   return amountH
 }

@@ -266,6 +266,6 @@
       <button class="btn-save" bindtap="onSaveImage">保存报告到相册</button>
       <button class="btn-back" bindtap="onBack">返回结果</button>
     </view>
-    <canvas type="2d" id="reportCanvas" class="reportWidget" style="position:absolute;left:-9999px;top:0;width:375px;height:2600px;"></canvas>
+    <canvas type="2d" id="reportCanvas" class="reportWidget" style="position:absolute;left:-9999px;top:0;width:375px;height:4000px;"></canvas>
   </view>
 </view>
