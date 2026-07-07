@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>养老金测算 · 31 省计算器</title>
+  <meta name="description" content="基于各省官方计发基数与记账利率的养老金测算工具，与小程序同款计算引擎，支持法定退休与弹性提前退休双方案对比。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <h1>养老金测算</h1>
+      <p>31 省官方计发基数 · 与小程序同款计算引擎</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 表单 -->
+    <section class="card form-card">
+      <h2 class="card-title">填写参保信息</h2>
+
+      <div class="field">
+        <label for="province">参保地</label>
+        <select id="province"></select>
+      </div>
+
+      <div class="field">
+        <label for="retireType">人员类型</label>
+        <select id="retireType"></select>
+      </div>
+
+      <div class="field">
+        <label for="birthDate">出生年月</label>
+        <input type="month" id="birthDate" value="1970-06">
+      </div>
+
+      <div class="field">
+        <label for="workDate">参加工作时间</label>
+        <input type="month" id="workDate" value="1995-07">
+      </div>
+
+      <div class="field">
+        <label for="avgIndex">本人平均缴费指数</label>
+        <div class="chip-row" id="indexChips"></div>
+        <input type="number" id="avgIndex" step="0.01" min="0.4" max="3" value="1.0" placeholder="0.6 ~ 3.0，一般填 1.0">
+      </div>
+
+      <div class="field" id="cityField" hidden>
+        <label for="cityType">计发基数所在地</label>
+        <select id="cityType"></select>
+      </div>
+
+      <div class="field" id="transIndexField" hidden>
+        <label for="transIndex">过渡性养老金平均缴费指数<span class="opt">（选填）</span></label>
+        <input type="number" id="transIndex" step="0.01" placeholder="双指数省份选填，默认同平均指数">
+      </div>
+
+      <div class="field">
+        <label for="balance">个人账户余额（元）<span class="opt">（选填）</span></label>
+        <div class="input-with-btn">
+          <input type="number" id="balance" placeholder="留空则自动估算">
+          <button type="button" id="estimateBtn" class="ghost-btn">估算</button>
+        </div>
+      </div>
+
+      <button class="primary-btn" id="calcBtn">开始测算</button>
+    </section>
+
+    <!-- 结果 -->
+    <section class="card result-card" id="resultCard" hidden>
+      <div class="scenario-tabs" id="scenarioTabs">
+        <button class="tab active" data-sc="legal">法定退休</button>
+        <button class="tab" data-sc="flex">弹性提前退休</button>
+      </div>
+
+      <div class="amount-hero">
+        <div class="amount-label">预计每月养老金</div>
+        <div class="amount-value" id="totalAmount">¥0</div>
+        <div class="amount-sub" id="replaceRate"></div>
+      </div>
+
+      <div class="info-grid">
+        <div><span>退休时间</span><b id="retireDate">—</b></div>
+        <div><span>退休年龄</span><b id="retireAge">—</b></div>
+        <div><span>计发月数</span><b id="retireMonths">—</b></div>
+        <div><span>替代率</span><b id="rate">—</b></div>
+      </div>
+
+      <div class="block">
+        <h3>养老金构成</h3>
+        <div class="break-row"><span>基础养老金</span><b id="basePension">—</b></div>
+        <div class="break-row" id="transRow"><span>过渡性养老金</span><b id="transPension">—</b></div>
+        <div class="break-row"><span>个人账户养老金</span><b id="personalPension">—</b></div>
+        <div class="break-row" id="extraRow"><span>增发 / 加发</span><b id="extraPension">—</b></div>
+        <div class="break-row total"><span>每月合计</span><b id="totalRow">—</b></div>
+      </div>
+
+      <div class="block">
+        <h3>缴费年限</h3>
+        <div class="break-row"><span>累计缴费年限</span><b id="totalYears">—</b></div>
+        <div class="break-row"><span>实际缴费年限</span><b id="actualYears">—</b></div>
+        <div class="break-row"><span>视同缴费年限</span><b id="sightYears">—</b></div>
+        <div class="break-row" id="minRow"><span>最低缴费年限要求</span><b id="minYears">—</b></div>
+      </div>
+
+      <div class="compare-box" id="compareBox"></div>
+
+      <p class="disclaimer">* 测算结果为估算值，实际待遇以社保经办机构核定为准。数据来源于各省人社部门公布的养老金计发基数与记账利率。</p>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>数据本地计算 · 无需联网 · 与微信小程序同源引擎</p>
+  </footer>
+
+  <script src="engine.js"></script>
+  <script src="provinces-bundle.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
