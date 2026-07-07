@@ -15,12 +15,27 @@ const CARD_BG = '#F4F0E8'
 const PAGE_BG = '#F5F3F0'
 const DIVIDER = '#E0D8CC'
 
-// 圆角矩形路径（兼容部分基础库无 roundRect）
+// 圆角矩形路径（兼容部分基础库无 roundRect / 仅接受数组 radii 的绑定）
 function roundRectPath(ctx, x, y, w, h, r) {
-  r = Math.min(r, w / 2, h / 2)
+  w = Number(w) || 0
+  h = Number(h) || 0
+  r = Number(r) || 0
+  r = Math.max(0, Math.min(r, w / 2, h / 2))
+  if (r <= 0) {
+    ctx.beginPath()
+    ctx.rect(x, y, w, h)
+    return
+  }
   if (typeof ctx.roundRect === 'function') {
     ctx.beginPath()
-    ctx.roundRect(x, y, w, h, r)
+    try {
+      // 多数标准/小程序绑定接受数组形式的 radii（length=1 即四角同半径）
+      ctx.roundRect(x, y, w, h, [r])
+    } catch (e) {
+      // 个别绑定仅接受数字 radii，回退
+      ctx.beginPath()
+      ctx.roundRect(x, y, w, h, r)
+    }
     return
   }
   ctx.beginPath()
