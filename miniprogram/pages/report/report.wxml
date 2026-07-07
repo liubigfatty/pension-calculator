@@ -178,13 +178,13 @@
           </view>
           <view class="rate-row">
             <text class="rate-label">退休前月工资（按缴费基数推算）</text>
-            <text class="rate-value">约¥{{baseRetireStr}}</text>
+            <text class="rate-value">约¥{{estPreRetireSalary}}</text>
           </view>
           <view class="rate-row highlight-row">
             <text class="rate-label">替代率</text>
             <text class="rate-value highlight">{{replaceRate}}%</text>
           </view>
-          <text class="rate-desc">替代率 = 养老金÷退休前工资。国际劳工组织建议最低55%，世界银行建议70%+维持生活水平。您处于全国平均水平（40-45%），建议提前规划补充养老。</text>
+          <text class="rate-desc">替代率 = 月养老金 ÷ 推算退休前工资。{{replaceRateDesc}}</text>
         </view>
 
       </view>

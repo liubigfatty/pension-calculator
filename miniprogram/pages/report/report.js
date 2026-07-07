@@ -191,6 +191,7 @@ Page({
       medicareYears,
       medicareMet,
       medicareLabel,  // '男' or '女'，用于医保建议文案
+      medicareRequirement,  // 医保最低缴费年限（年），屏显医保建议行需用到
       estPreRetireSalary: estPreRetireSalary.toLocaleString(),  // 推算退休前工资（用于替代率说明）
       salary3year,
       fund3year,
