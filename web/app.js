@@ -8,24 +8,24 @@
   var E = window.PensionEngine
   var C = window.PROVINCE_CONFIGS
 
-  // 省份：中文名 → 拼音 slug（顺序与小程序一致）
+  // 省份：完整行政区划全称 → 拼音 slug（4直辖市 + 22省 + 5自治区）
   var PROVINCES = [
-    { name: '北京', slug: 'beijing' }, { name: '天津', slug: 'tianjin' },
-    { name: '河北', slug: 'hebei' }, { name: '山西', slug: 'shanxi' },
-    { name: '内蒙古', slug: 'neimenggu' }, { name: '辽宁', slug: 'liaoning' },
-    { name: '吉林', slug: 'jilin' }, { name: '黑龙江', slug: 'heilongjiang' },
-    { name: '上海', slug: 'shanghai' }, { name: '江苏', slug: 'jiangsu' },
-    { name: '浙江', slug: 'zhejiang' }, { name: '安徽', slug: 'anhui' },
-    { name: '福建', slug: 'fujian' }, { name: '江西', slug: 'jiangxi' },
-    { name: '山东', slug: 'shandong' }, { name: '河南', slug: 'henan' },
-    { name: '湖北', slug: 'hubei' }, { name: '湖南', slug: 'hunan' },
-    { name: '广东', slug: 'guangdong' }, { name: '广西', slug: 'guangxi' },
-    { name: '海南', slug: 'hainan' }, { name: '重庆', slug: 'chongqing' },
-    { name: '四川', slug: 'sichuan' }, { name: '贵州', slug: 'guizhou' },
-    { name: '云南', slug: 'yunnan' }, { name: '西藏', slug: 'xizang' },
-    { name: '陕西', slug: 'shaanxi' }, { name: '甘肃', slug: 'gansu' },
-    { name: '青海', slug: 'qinghai' }, { name: '宁夏', slug: 'ningxia' },
-    { name: '新疆', slug: 'xinjiang' }
+    { name: '北京市', slug: 'beijing' }, { name: '天津市', slug: 'tianjin' },
+    { name: '河北省', slug: 'hebei' }, { name: '山西省', slug: 'shanxi' },
+    { name: '内蒙古自治区', slug: 'neimenggu' }, { name: '辽宁省', slug: 'liaoning' },
+    { name: '吉林省', slug: 'jilin' }, { name: '黑龙江省', slug: 'heilongjiang' },
+    { name: '上海市', slug: 'shanghai' }, { name: '江苏省', slug: 'jiangsu' },
+    { name: '浙江省', slug: 'zhejiang' }, { name: '安徽省', slug: 'anhui' },
+    { name: '福建省', slug: 'fujian' }, { name: '江西省', slug: 'jiangxi' },
+    { name: '山东省', slug: 'shandong' }, { name: '河南省', slug: 'henan' },
+    { name: '湖北省', slug: 'hubei' }, { name: '湖南省', slug: 'hunan' },
+    { name: '广东省', slug: 'guangdong' }, { name: '广西壮族自治区', slug: 'guangxi' },
+    { name: '海南省', slug: 'hainan' }, { name: '重庆市', slug: 'chongqing' },
+    { name: '四川省', slug: 'sichuan' }, { name: '贵州省', slug: 'guizhou' },
+    { name: '云南省', slug: 'yunnan' }, { name: '西藏自治区', slug: 'xizang' },
+    { name: '陕西省', slug: 'shaanxi' }, { name: '甘肃省', slug: 'gansu' },
+    { name: '青海省', slug: 'qinghai' }, { name: '宁夏回族自治区', slug: 'ningxia' },
+    { name: '新疆维吾尔自治区', slug: 'xinjiang' }
   ]
 
   // 人员类型 → 引擎 genderType（与小程序 RETIRE_TYPE_MAP 一致）
