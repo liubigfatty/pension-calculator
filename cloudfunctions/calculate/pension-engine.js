@@ -280,8 +280,8 @@ function getSalaryBase(city, year, config) {
   // 1. 尝试获取社平工资（avg_salary_history）
   let avgSalary = getBase(city, year, config, 'avg_salary_history')
   if (avgSalary && avgSalary > 0) {
-    // avg_salary_history 单位通常是元/年（>1000），转为月均值
-    return avgSalary > 1000 ? Math.round(avgSalary / 12 * 100) / 100 : avgSalary
+    // avg_salary_history 单位已是元/月（与首/中年份一致，B5 统一后全量均为元/月）
+    return avgSalary
   }
   // 2. 降级到计发基数（PROV_BASE），单位已是元/月
   return getBase(city, year, config, 'base_rates') || 0

@@ -20,6 +20,7 @@ const ROOT       = path.resolve(__dirname, '..')
 const ENGINE_PATH = path.join(ROOT, 'engine/pension-engine.js')
 const CASES_DIR   = path.join(ROOT, 'cases')
 const CONFIGS_DIR = path.join(ROOT, 'provinces')
+const JS_PROV_DIR = path.join(ROOT, 'cloudfunctions/calculate/provinces')
 const REPORTS_DIR = path.join(ROOT, 'reports')
 
 // ═══════════════════════════════════════════════════════
@@ -197,6 +198,75 @@ function loadConfig(provinceKey) {
 // ═══════════════════════════════════════════════════════
 //  案例文件收集
 // ═══════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════
+//  A6：加载生产副本（cloudfunctions/calculate/provinces/*.js）
+//  校验其 getEngineConfig() 的 base_rates / avg_salary_history
+//  格式与单位（元/月），并与对应 json 比对一致性。
+//  分叉仅输出 [WARN]，不阻塞现有案例验证。
+// ═════════════════════════════════════════════════════
+function loadJsConfig(provinceKey) {
+  const pk = mapProvinceKey(provinceKey)
+  if (!pk) return null
+  const p = path.join(JS_PROV_DIR, `${pk}.js`)
+  if (!fs.existsSync(p)) return null
+  try {
+    delete require.cache[require.resolve(p)]
+    const m = require(p)
+    if (m && m.getEngineConfig) return m.getEngineConfig()
+    if (m && m.default && m.default.getEngineConfig) return m.default.getEngineConfig()
+    return null
+  } catch (e) {
+    return { __error: e.message }
+  }
+}
+
+function auditJsCopies() {
+  console.log('\n' + '─'.repeat(72))
+  console.log('【A6】生产副本(js)校验 + 与 json 双份一致性比对')
+  let warnCount = 0, errCount = 0, checked = 0
+  const tol = 0.5 // 元/月 容差
+  for (const prov of CONFIGURED_PROVINCES) {
+    const js = loadJsConfig(prov)
+    const jp = path.join(CONFIGS_DIR, `${prov}.json`)
+    if (!js) { console.log(`  [WARN] ${prov}: 生产副本 js 缺失或加载失败`); warnCount++; continue }
+    if (js.__error) { console.log(`  [WARN] ${prov}: js 加载异常 ${js.__error}`); errCount++; continue }
+    if (!fs.existsSync(jp)) continue
+    const j = JSON.parse(fs.readFileSync(jp, 'utf8'))
+    checked++
+
+    // 1) 单位/格式校验：avg_salary_history 与 base_rates.prov 应为元/月（典型 100~40000）
+    const checkUnit = (obj, label) => {
+      if (!obj) return
+      for (const k of Object.keys(obj)) {
+        const v = obj[k]
+        if (typeof v !== 'number' || v <= 0 || v > 40000) {
+          console.log(`  [WARN] ${prov}.${label}[${k}]=${v} 单位/格式疑似非元/月`)
+          warnCount++
+        }
+      }
+    }
+    checkUnit(js.avg_salary_history, 'avg_salary_history')
+    checkUnit(js.base_rates && js.base_rates.prov, 'base_rates.prov')
+
+    // 2) 与 json 比对一致性（共享年份，单位已统一为元/月）
+    const cmp = (jobj, jsn, label) => {
+      if (!jobj || !jsn) return
+      for (const k of Object.keys(jobj)) {
+        const a = jobj[k], b = jsn[k]
+        if (typeof a !== 'number' || typeof b !== 'number') continue
+        if (Math.abs(a - b) > tol) {
+          console.log(`  [WARN] ${prov}.${label}[${k}]: json=${a} js=${b} 差=${Math.abs(a - b).toFixed(2)}`)
+          warnCount++
+        }
+      }
+    }
+    cmp(j.avg_salary_history, js.avg_salary_history, 'avg_salary_history')
+    cmp(j.base_rates && j.base_rates.prov, js.base_rates && js.base_rates.prov, 'base_rates.prov')
+  }
+  console.log(`  已校验 ${checked} 省；[WARN] ${warnCount} 条；[ERROR] ${errCount} 条（以上不阻塞案例验证）`)
+  console.log('─'.repeat(72))
+}
+
 function collectCaseFiles(targetProvinces) {
   const results = []
   const dirs = targetProvinces.length > 0
@@ -536,6 +606,9 @@ function main() {
       expected: getExpected(c),
     })
   }
+
+  // A6：生产副本一致性校验（不阻塞案例验证）
+  auditJsCopies()
 
   // ═══════ 汇总统计 ═══════
   const stats = { pass: 0, fail: 0, skip: 0, error: 0 }

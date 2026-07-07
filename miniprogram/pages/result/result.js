@@ -327,7 +327,9 @@ Page({
               },
               fail: function(err) {
                 console.error('[pay] requestVirtualPayment fail:', JSON.stringify(err))
-                if (err.errMsg && err.errMsg.indexOf('cancel') >= 0) {
+                // 取消判定：部分基础库 errMsg 含 'cancel'，部分仅返回 errno === -2
+                var isCancel = (err.errMsg && err.errMsg.indexOf('cancel') >= 0) || err.errno === -2
+                if (isCancel) {
                   wx.showToast({ title: '已取消支付', icon: 'none' })
                 } else {
                   wx.showModal({

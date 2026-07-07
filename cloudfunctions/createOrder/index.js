@@ -25,8 +25,8 @@ const CONFIG = {
   APPID: 'wx76075ba352d5333c',
   APP_SECRET: process.env.VP_APP_SECRET || '',  // ⚠️小程序密钥(敏感)：上传云函数后须在云函数控制台配置环境变量 VP_APP_SECRET，勿将明文写在此处/commit
   OFFER_ID: '1450568626',                             // 虚拟支付 OfferID
-  APP_KEY_PROD: 'WC52oAh5z4veWT3de3wvn2Q5ANNEwmIy',     // 现网 AppKey
-  APP_KEY_SANDBOX: 'Ci1GCEVPChncatS5aNrZLypWADRUnAJV',  // 沙箱 AppKey
+  APP_KEY_PROD: process.env.VP_APP_KEY || '',            // 现网 AppKey（敏感）：上传云函数后须配置环境变量 VP_APP_KEY，勿明文入仓
+  APP_KEY_SANDBOX: process.env.VP_APP_KEY_SANDBOX || '',  // 沙箱 AppKey（敏感）：同上，配置环境变量 VP_APP_KEY_SANDBOX
   PRODUCT_ID: 'pension_report',                       // 后台道具ID（需一致）
   GOODS_PRICE: 100,                                  // 道具单价（单位：分）。微信 signData.goodsPrice 单位为「分」；后台「价格(元)」=1 即 100 分，须与微信后台道具价格一致（官方文档明确 goodsPrice 单位=分）
   ENV: 0,                                             // 0=现网 1=沙箱

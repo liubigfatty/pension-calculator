@@ -503,23 +503,24 @@ exports.main = async (event, context) => {
 }
 ```
 
-#### 2. 微信支付（付费报告）
+#### 2. 微信虚拟支付（付费报告）
+
+> 说明：本项目采用微信**虚拟支付**（`wx.requestVirtualPayment` 道具直购），无需商户号/企业资质，由微信后台配置道具价格（1 元 = 100 分）。以下为签名生成示意，真实实现见云函数 `createOrder`。
 
 ```javascript
 // 云函数：创建支付订单
 exports.main = async (event, context) => {
-  const { reportId } = event;
-  
-  // 调用微信支付统一下单API
-  const paymentParams = await wxPay.unifiedOrder({
-    body: '养老金计算详细报告',
-    out_trade_no: reportId,
-    total_fee: 990,  // 9.9元 = 990分
-    spbill_create_ip: context.sourceIp,
-    notify_url: 'https://your-domain.com/api/pay-notify',
+  const { loginCode } = event;
+
+  // 虚拟支付：用 wx.login 的 code 换 session_key，构造 signData 并计算双签名
+  // （wx.requestVirtualPayment 道具直购，内部自动下单，无需商户号/企业资质）
+  const { signData, paySig, signature } = await createVpaySign({
+    loginCode,
+    productId: 'pension_report',
+    goodsPrice: 100, // 单位：分，后台道具价格 1 元 = 100 分
   });
-  
-  return paymentParams;  // 返回给小程序调起支付
+
+  return { signData, paySig, signature };  // 返回给小程序调起虚拟支付
 };
 ```
 
