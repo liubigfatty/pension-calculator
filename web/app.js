@@ -117,16 +117,20 @@
     var cfg = C[slug]
     elCity.innerHTML = ''
     if (!cfg || !cfg.base_rates) { elCityField.hidden = true; return }
-    var keys = Object.keys(cfg.base_rates)
-    var others = keys.filter(function (k) { return k !== 'prov' })
-    if (others.length === 0) { elCityField.hidden = true; return }
+    // 只展示 CITY_LABELS 中有中文标签的规范 slug（cc/shenzhen/zhengzhou 等）
+    // 忽略 base_rates 中的冗余键（如中文别名 '长春'、拼音别名 'changchun'）
+    var cityKeys = Object.keys(cfg.base_rates).filter(function (k) {
+      return k !== 'prov' && CITY_LABELS[k]
+    })
+    if (cityKeys.length === 0) { elCityField.hidden = true; return }
 
+    // 默认选中 prov（全省），城市选项紧跟其后
     var o0 = document.createElement('option')
     o0.value = 'prov'; o0.textContent = '全省统一计发基数'
     elCity.appendChild(o0)
-    others.forEach(function (k) {
+    cityKeys.forEach(function (k) {
       var o = document.createElement('option')
-      o.value = k; o.textContent = (CITY_LABELS[k] || k) + '计发基数'
+      o.value = k; o.textContent = CITY_LABELS[k] + '计发基数'
       elCity.appendChild(o)
     })
     elCityField.hidden = false
