@@ -53,11 +53,11 @@ const PROV_BASE = {
   2019: 6956,
   2020: 7304,
   2021: 7669,
-  2022: 8053,
-  2023: 8455,
-  2024: 9056,
+  2022: 8261,
+  2023: 8591,
+  2024: 8878,
   2025: 9056,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 9100,
@@ -103,6 +103,44 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/qinghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1995: 479.42,
   1996: 557.25,
@@ -137,39 +175,8 @@ const AVG_SALARY_HISTORY = {
   2025: 9057,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

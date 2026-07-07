@@ -55,12 +55,13 @@ const PROV_BASE = {
   2018: 6201,
   2019: 6511,
   2020: 6837,
-  2021: 7178,
-  2022: 7537,
-  2023: 7914,
-  2024: 8433,
+  2021: 7437,
+  2022: 8020,
+  2023: 8310,
+  2024: 8310,
   2025: 8748,
-};
+  2026: 8975,
+};;
 
 // 浙江省基数增长预测参数
 const BASE_PARAMS = {
@@ -112,6 +113,27 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/zhejiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    name: '浙江省',
+    base_rates: { prov: PROV_BASE },
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: {},
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1992: 240.33,
   1993: 327.67,
@@ -148,22 +170,29 @@ const AVG_SALARY_HISTORY = {
   2024: 8310,
 };
 
-function getEngineConfig() {
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    name: '浙江省',
-    base_rates: { prov: PROV_BASE },
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

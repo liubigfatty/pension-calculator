@@ -29,38 +29,39 @@ const PROV_BASE = {
   1992: 1611,
   1993: 1692,
   1994: 1777,
-  1995: 1865,
-  1996: 1959,
-  1997: 2057,
-  1998: 2159,
-  1999: 2267,
-  2000: 2381,
-  2001: 2500,
-  2002: 2625,
-  2003: 2756,
-  2004: 2894,
-  2005: 3038,
-  2006: 3190,
-  2007: 3350,
-  2008: 3517,
-  2009: 3693,
-  2010: 3878,
-  2011: 4072,
-  2012: 4275,
-  2013: 4489,
-  2014: 4714,
-  2015: 4949,
-  2016: 5197,
-  2017: 5457,
-  2018: 5729,
-  2019: 6016,
-  2020: 6317,
-  2021: 6633,
-  2022: 6964,
-  2023: 7312,
-  2024: 7831,
+  1995: 419.33,
+  1996: 484.08,
+  1997: 520.08,
+  1998: 531,
+  1999: 583.08,
+  2000: 664.67,
+  2001: 750,
+  2002: 849.92,
+  2003: 949,
+  2004: 1091.42,
+  2005: 1294.17,
+  2006: 1602.33,
+  2007: 1903.67,
+  2008: 2200.33,
+  2009: 2474,
+  2010: 2810.75,
+  2011: 3166,
+  2012: 3547.92,
+  2013: 3971,
+  2014: 4371.67,
+  2015: 4849.75,
+  2016: 5296.83,
+  2017: 5775.42,
+  2018: 5448.58,
+  2019: 5761.33,
+  2020: 6242.17,
+  2021: 6633.08,
+  2022: 7069.25,
+  2023: 7468,
+  2024: 7678,
   2025: 7831,
-};
+  2026: 7831,
+};;
 
 // 山东省基数增长预测参数
 const BASE_PARAMS = {
@@ -114,6 +115,43 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/shandong.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年基数7678元（鲁人社字〔2024〕112号）。⚠️ 双指数：基础用avgIndex，过渡用transIndex（视同缴费指数）。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1996: 419.33,
   1997: 484.08,
@@ -146,38 +184,29 @@ const AVG_SALARY_HISTORY = {
   2024: 7678,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2024年基数7678元（鲁人社字〔2024〕112号）。⚠️ 双指数：基础用avgIndex，过渡用transIndex（视同缴费指数）。',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

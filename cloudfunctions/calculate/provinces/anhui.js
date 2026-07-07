@@ -51,11 +51,12 @@ const PROV_BASE = {
   2019: 6144,
   2020: 6452,
   2021: 6774,
-  2022: 7113,
-  2023: 7469,
-  2024: 7999,
+  2022: 7401,
+  2023: 7688,
+  2024: 7842,
   2025: 7999,
-};
+  2026: 7999,
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 7300,
@@ -87,8 +88,26 @@ const cases = []
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/anhui.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: {},
+  }
+}
+
+
 const AVG_SALARY_HISTORY = {
-  1996: 685.82,
+  1996: 685.83,
   1997: 1321,
   1998: 1258,
   1999: 1321,
@@ -111,7 +130,7 @@ const AVG_SALARY_HISTORY = {
   2016: 4747.83,
   2017: 5107.42,
   2018: 5660.58,
-  2019: 5028.39,
+  2019: 5028.42,
   2020: 5975.17,
   2021: 6386.92,
   2022: 6698.33,
@@ -119,19 +138,29 @@ const AVG_SALARY_HISTORY = {
   2024: 7842,
 };
 
-function getEngineConfig() {
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
-  }
-}
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

@@ -52,12 +52,12 @@ const PROV_BASE = {
   2018: 5426,
   2019: 5698,
   2020: 5983,
-  2021: 6282,
-  2022: 6596,
-  2023: 6926,
-  2024: 7325,
+  2021: 6797.5,
+  2022: 6857.58,
+  2023: 7272.25,
+  2024: 7272,
   2025: 7658.27,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 7500,
@@ -107,6 +107,44 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/guizhou.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1990: 172.5,
   1991: 174.17,
@@ -143,43 +181,12 @@ const AVG_SALARY_HISTORY = {
   2022: 6857.58,
   2023: 7272.25,
   2024: 7272,
-  2025: 7658.27,
-  2026: 7857.78,
+  2025: 7658.25,
+  2026: 7857.75,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

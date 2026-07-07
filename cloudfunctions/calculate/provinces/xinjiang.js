@@ -53,11 +53,11 @@ const PROV_BASE = {
   2019: 6528,
   2020: 6855,
   2021: 7197,
-  2022: 7557,
-  2023: 7935,
-  2024: 8448,
+  2022: 7089,
+  2023: 7625,
+  2024: 8321,
   2025: 8448,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 7800,
@@ -105,6 +105,44 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/xinjiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '⚠️ 2023-2025年基数待官方文件确认',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1995: 445.67,
   1996: 498.92,
@@ -138,39 +176,8 @@ const AVG_SALARY_HISTORY = {
   2024: 8321,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '⚠️ 2023-2025年基数待官方文件确认',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

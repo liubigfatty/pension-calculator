@@ -53,11 +53,11 @@ const PROV_BASE = {
   2019: 6956,
   2020: 7304,
   2021: 7669,
-  2022: 8053,
-  2023: 8455,
+  2022: 8261,
+  2023: 8591,
   2024: 8878,
-  2025: 9144,
-};
+  2025: 9056,
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 9100,
@@ -113,7 +113,9 @@ function getEngineConfig() {
     }
   }
 
-  return {    account_start: ACCOUNT_START,
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
@@ -130,6 +132,43 @@ function getEngineConfig() {
 
 // ==================== 导出 ====================
 
+
+const AVG_SALARY_HISTORY = {
+  1995: 479.42,
+  1996: 557.25,
+  1997: 590.92,
+  1998: 667.58,
+  1999: 756.75,
+  2000: 837.5,
+  2001: 1075.5,
+  2002: 1206,
+  2003: 1279.67,
+  2004: 1435.75,
+  2005: 1590.33,
+  2006: 1889.92,
+  2007: 2180.5,
+  2008: 2581.92,
+  2009: 2796.75,
+  2010: 3098.5,
+  2011: 3541.08,
+  2012: 3902.25,
+  2013: 4342.08,
+  2014: 4817,
+  2015: 5155.67,
+  2016: 5620.92,
+  2017: 6377.92,
+  2018: 5682.83,
+  2019: 6084.5,
+  2020: 7023.17,
+  2021: 7604.42,
+  2022: 8029,
+  2023: 8642.58,
+  2024: 8878,
+  2025: 9057,
+};
+
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

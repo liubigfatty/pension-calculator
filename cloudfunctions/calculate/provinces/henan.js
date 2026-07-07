@@ -57,10 +57,11 @@ const PROV_BASE = {
   2020: 5543,
   2021: 5821,
   2022: 6112,
-  2023: 6417,
-  2024: 6738,
+  2023: 6401,
+  2024: 6606,
   2025: 6738,
-};
+  2026: 6738,
+};;
 
 // 郑州市单独计发基数（郑州市人社局2024年第5号通告）
 // 2024年基数6757元，与全省6738元相差19元（约0.3%）
@@ -120,6 +121,28 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/henan.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '河南省',
+    base_rates: {
+      prov: PROV_BASE,
+      zhengzhou: ZHENGZHOU_BASE,
+    },
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: {},
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1995: 362,
   1996: 410.33,
@@ -129,8 +152,8 @@ const AVG_SALARY_HISTORY = {
   2000: 573.08,
   2001: 655.67,
   2002: 809.5,
-  2003: 886.57,
-  2004: 997.51,
+  2003: 886.58,
+  2004: 997.5,
   2005: 1190.17,
   2006: 1415.08,
   2007: 1744.58,
@@ -153,23 +176,29 @@ const AVG_SALARY_HISTORY = {
   2024: 6606,
 };
 
-function getEngineConfig() {
-  return {
-account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    province: PROV_TAG,
-    name: '河南省',
-    base_rates: {
-      prov: PROV_BASE,
-      zhengzhou: ZHENGZHOU_BASE,
-    },
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

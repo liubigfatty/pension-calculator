@@ -18,21 +18,39 @@ const PROV_BASE = {
   1989: 2231,
   1990: 2343,
   1991: 2460,
-  // 以下2013-2023年数据来自用户提供的直辖市对比表（2026-06-18）
-  2013: 5036,
-  2014: 5451,
-  2015: 5939,
-  2016: 6504,
-  2017: 7132,
-  2018: 8765,
-  2019: 9580,
-  2020: 10388,
-  2021: 11396,
-  2022: 12183,
-  2023: 12307,
-  2024: 12434,
+  1995: 595.45,
+  1996: 687.39,
+  1997: 738.51,
+  1998: 754.02,
+  1999: 827.97,
+  2000: 943.83,
+  2001: 1065,
+  2002: 1206.89,
+  2003: 1347.58,
+  2004: 1549.82,
+  2005: 1837.72,
+  2006: 2275.31,
+  2007: 2703.21,
+  2008: 3124.47,
+  2009: 3513.08,
+  2010: 3991.26,
+  2011: 4495.72,
+  2012: 5038.05,
+  2013: 5638.82,
+  2014: 6207.77,
+  2015: 6886.64,
+  2016: 7521.5,
+  2017: 8201.1,
+  2018: 7736.98,
+  2019: 8181.09,
+  2020: 9580,
+  2021: 10338,
+  2022: 11396,
+  2023: 12183,
+  2024: 12307,
   2025: 12434,
-};
+  2026: 12700,
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 15000,
@@ -120,6 +138,59 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/shanghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  // 将 MODULES 数组转换为 engines.modules 对象
+  const modules = {};
+  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('extra')) {
+    modules.extra_pension = { enabled: true };
+    if (EXTRA_PARAMS) {
+      modules.extra_pension.brackets = EXTRA_PARAMS.brackets;
+      modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
+    }
+  }
+  if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, formula_type: "shanghai" };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      } else if (typeof TRANS_COEF.get === 'function') {
+                // 引擎认 coefficient_over_20 / coefficient_under_20
+        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
+        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
+      } else if (TRANS_COEF.base !== undefined) {
+        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
+        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
+      }
+    }
+  }
+  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
+
+    return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+      province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+      name: '上海市',
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）',
+  };
+}
+
+
 const AVG_SALARY_HISTORY = {
   1990: 195.25,
   1991: 205,
@@ -159,54 +230,29 @@ const AVG_SALARY_HISTORY = {
   2025: 12307,
 };
 
-function getEngineConfig() {
-  // 将 MODULES 数组转换为 engines.modules 对象
-  const modules = {};
-  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('extra')) {
-    modules.extra_pension = { enabled: true };
-    if (EXTRA_PARAMS) {
-      modules.extra_pension.brackets = EXTRA_PARAMS.brackets;
-      modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
-    }
-  }
-  if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, formula_type: "shanghai" };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      } else if (typeof TRANS_COEF.get === 'function') {
-                // 引擎认 coefficient_over_20 / coefficient_under_20
-        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
-        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
-      } else if (TRANS_COEF.base !== undefined) {
-        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
-        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
-      }
-    }
-  }
-  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
-
-    return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-      province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
-      name: '上海市',
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）',
-  };
-}
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_BASE,
 getEngineConfig,

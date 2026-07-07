@@ -9,7 +9,6 @@
 // ==================== 计发基数 ====================
 
 const PROV_BASE = {
-  // 1978-1991年：暂无官方数据，暂时保留旧值
   1978: 979,
   1979: 1027,
   1980: 1079,
@@ -24,8 +23,6 @@ const PROV_BASE = {
   1989: 1674,
   1990: 1757,
   1991: 1845,
-  // ============ 1992-2024年：用户提供的官方数据（2026-06-18）============
-  // 数据来源：天津市历年在岗职工月平均工资大全
   1992: 260,
   1993: 334,
   1994: 447,
@@ -53,14 +50,15 @@ const PROV_BASE = {
   2016: 6731,
   2017: 7073,
   2018: 7540,
-  2019: 6323,  // ⚠️ 2019年及以后与全口径一致（津人社局数据）
-  2020: 6777,
-  2021: 7478,
-  2022: 7919,
-  2023: 8355,
-  2024: 9417,
-  2025: 9417,  // 预估：8540 × 1.026
-};
+  2019: 6323,
+  2020: 7940,
+  2021: 8324,
+  2022: 8672,
+  2023: 9016,
+  2024: 9232,
+  2025: 9417,
+  2026: 9600,
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 8762,  // 2024年8540，按2.6%增长预估
@@ -104,6 +102,44 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/tianjin.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数9016元（津人社局发〔2023〕15号），2024年基数9232元（津人社办发〔2024〕49号）',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1990: 146.42,
   1991: 153.75,
@@ -143,39 +179,29 @@ const AVG_SALARY_HISTORY = {
   2025: 9509,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数9016元（津人社局发〔2023〕15号），2024年基数9232元（津人社办发〔2024〕49号）',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

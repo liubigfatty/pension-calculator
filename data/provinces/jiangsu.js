@@ -51,11 +51,11 @@ const PROV_BASE = {
   2019: 6883,
   2020: 7227,
   2021: 7589,
-  2022: 7968,
-  2023: 8367,
+  2022: 8309,
+  2023: 8613,
   2024: 8785,
-  2025: 9049,
-};
+  2025: 8917,
+};;
 
 // 江苏省基数增长预测参数
 const BASE_PARAMS = {
@@ -215,7 +215,9 @@ function getEngineConfig() {
   }
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
-  return {    account_start: ACCOUNT_START,
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
@@ -231,6 +233,42 @@ function getEngineConfig() {
   };
 }
 
+
+const AVG_SALARY_HISTORY = {
+  1995: 584.67,
+  1996: 667.67,
+  1997: 737.33,
+  1998: 787.67,
+  1999: 858,
+  2000: 991.67,
+  2001: 1175.33,
+  2002: 1175.33,
+  2003: 1421.33,
+  2004: 1568,
+  2005: 2445,
+  2006: 2705,
+  2007: 2705,
+  2008: 3014,
+  2009: 3635,
+  2010: 4065,
+  2011: 4559.33,
+  2012: 4559.33,
+  2013: 5400,
+  2014: 5400,
+  2015: 5600,
+  2016: 6057,
+  2017: 6645,
+  2018: null,
+  2019: 5614,
+  2020: 6333.33,
+  2021: 7083.33,
+  2022: 7490,
+  2023: 8014,
+  2024: 8785,
+};
+
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_BASE,
 getEngineConfig,

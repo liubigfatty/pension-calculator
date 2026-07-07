@@ -10,41 +10,42 @@
 // ==================== 计发基数 ====================
 
 const PROV_BASE = {
-  1992: 226,  // liaoning 历年计发基数（元/月，来源：avgSalaryHistory 年鉴数据）
+  1992: 226,
   1993: 275,
   1994: 356,
-  1995: 406,
-  1996: 439,
-  1997: 466,
-  1998: 470,
-  1999: 506,
-  2000: 553,
-  2001: 620,
-  2002: 741,
-  2003: 849,
-  2004: 993,
-  2005: 1444,
-  2006: 1635,
-  2007: 1934,
-  2008: 2311,
+  1995: 406.42,
+  1996: 439.08,
+  1997: 465.92,
+  1998: 469.75,
+  1999: 505.58,
+  2000: 553.25,
+  2001: 620.33,
+  2002: 740.67,
+  2003: 848.67,
+  2004: 992.58,
+  2005: 1444.25,
+  2006: 1635.33,
+  2007: 1933.5,
+  2008: 2310.75,
   2009: 2592,
-  2010: 2921,
-  2011: 3226,
-  2012: 3542,
-  2013: 3859,
-  2014: 4093,
-  2015: 4455,
-  2016: 4762,
-  2017: 5212,
+  2010: 2921.42,
+  2011: 3226.08,
+  2012: 3541.92,
+  2013: 3859.17,
+  2014: 4092.5,
+  2015: 4454.83,
+  2016: 4762.33,
+  2017: 5212.08,
   2018: 4801,
-  2019: 5238,
-  2020: 5709,
-  2021: 6383,
-  2022: 6843,
-  2023: 7121,
-  2024: 7346,
-
-  2025: 7346,};
+  2019: 5238.25,
+  2020: 6057,
+  2021: 6340,
+  2022: 6720,
+  2023: 6987,
+  2024: 7201,
+  2025: 7346,
+  2026: 7346,
+};;
 ;
 
 // 沈阳市单独计发基数（沈人社发）
@@ -251,6 +252,57 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/liaoning.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+  if (MODULES.includes('extra')) {
+    modules.extra_pension = { enabled: true, type: 'transition_subsidy', ...EXTRA_PARAMS };
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '辽宁省',
+    base_rates: {
+      prov: PROV_BASE,
+      '沈阳': SY_BASE,
+      '大连': DL_BASE,
+      // 兼容拼音键（小程序 cityType 可能传拼音）
+      shenyang: SY_BASE,
+      dalian: DL_BASE,
+    },
+    // 城市计发基数（新格式，供引擎 getBase() 新格式分支使用）
+    CITY_BASE: {
+      '沈阳': SY_BASE,
+      '大连': DL_BASE,
+      shenyang: SY_BASE,
+      dalian: DL_BASE,
+    },
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: modules,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年基数：全省7201元、沈阳8266元、大连8823元（辽人社〔2024〕17号）。⚠️ 沈阳、大连基数需根据用户选择的城市动态匹配。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1990: 114.25,
   1991: 119.92,
@@ -290,52 +342,29 @@ const AVG_SALARY_HISTORY = {
   2025: 7417,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-  if (MODULES.includes('extra')) {
-    modules.extra_pension = { enabled: true, type: 'transition_subsidy', ...EXTRA_PARAMS };
-  }
-
-  return {
-account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    province: PROV_TAG,
-    name: '辽宁省',
-    base_rates: {
-      prov: PROV_BASE,
-      '沈阳': SY_BASE,
-      '大连': DL_BASE,
-      // 兼容拼音键（小程序 cityType 可能传拼音）
-      shenyang: SY_BASE,
-      dalian: DL_BASE,
-    },
-    // 城市计发基数（新格式，供引擎 getBase() 新格式分支使用）
-    CITY_BASE: {
-      '沈阳': SY_BASE,
-      '大连': DL_BASE,
-      shenyang: SY_BASE,
-      dalian: DL_BASE,
-    },
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: modules,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2024年基数：全省7201元、沈阳8266元、大连8823元（辽人社〔2024〕17号）。⚠️ 沈阳、大连基数需根据用户选择的城市动态匹配。',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

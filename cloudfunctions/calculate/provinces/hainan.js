@@ -31,33 +31,33 @@ const PROV_BASE = {
   1997: 2178,
   1998: 2287,
   1999: 2401,
-  2000: 2521,
-  2001: 2647,
-  2002: 2780,
-  2003: 2919,
-  2004: 3064,
-  2005: 3218,
-  2006: 3379,
-  2007: 3548,
-  2008: 3725,
-  2009: 3911,
-  2010: 4107,
-  2011: 4312,
-  2012: 4528,
-  2013: 4754,
-  2014: 4992,
-  2015: 5241,
-  2016: 5503,
-  2017: 5779,
-  2018: 6067,
-  2019: 6371,
-  2020: 6689,
-  2021: 7024,
-  2022: 7375,
-  2023: 7744,
-  2024: 8188,
+  2000: 617,
+  2001: 693,
+  2002: 790,
+  2003: 866,
+  2004: 1054,
+  2005: 1201,
+  2006: 1324,
+  2007: 1613,
+  2008: 1822,
+  2009: 2078,
+  2010: 2585,
+  2011: 3060,
+  2012: 3338,
+  2013: 3798,
+  2014: 4216,
+  2015: 4867,
+  2016: 5214,
+  2017: 5755,
+  2018: 6473,
+  2019: 7055,
+  2020: 7470,
+  2021: 7200,
+  2022: 7599,
+  2023: 8050,
+  2024: 8131,
   2025: 8131,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 8300,
@@ -105,6 +105,44 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/hainan.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '⚠️ 2023-2025年基数待官方文件确认',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   2000: 617,
   2001: 693,
@@ -133,39 +171,18 @@ const AVG_SALARY_HISTORY = {
   2024: 8131,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '⚠️ 2023-2025年基数待官方文件确认',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+  2016: 0.0831,
+  2017: 0.0712,
+  2018: 0.0699,
+  2019: 0.0761,
+  2020: 0.065,
+  2021: 0.063,
+  2022: 0.063,
+  2023: 0.063,
+  2024: 0.0247,
+  2025: 0.0247,
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

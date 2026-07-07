@@ -52,12 +52,12 @@ const PROV_BASE = {
   2018: 6120,
   2019: 6426,
   2020: 6748,
-  2021: 7085,
-  2022: 7439,
-  2023: 7811,
-  2024: 8366,
+  2021: 7104.33,
+  2022: 7666.08,
+  2023: 8087.83,
+  2024: 8202,
   2025: 8512.46,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 8100,
@@ -201,6 +201,53 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/ningxia.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+        // 知识分子过渡系数增加（1.3% → 1.43%）
+        modules.transitional_pension.coefficient_intellectual = 0.0143;
+      }
+    }
+  }
+  if (MODULES.includes('special')) {
+    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
+  }
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: {
+      prov: PROV_BASE
+    },
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    base_rates: { prov: PROV_BASE },
+
+    province: PROV_TAG,
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '宁夏有知识分子补贴：过渡系数1.3%→1.43%（需传入intellectual:true），固定补贴18.5元/月（工龄补贴10元+地区补贴8.5元）。使用建账前缴费年限（preAccountYears）。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
 const AVG_SALARY_HISTORY = {
   1995: 469.58,
   1996: 506.25,
@@ -232,52 +279,12 @@ const AVG_SALARY_HISTORY = {
   2022: 7666.08,
   2023: 8087.83,
   2024: 8202,
-  2025: 8512.46,
+  2025: 8512.42,
   2026: 8737.59,
 };
 
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-        // 知识分子过渡系数增加（1.3% → 1.43%）
-        modules.transitional_pension.coefficient_intellectual = 0.0143;
-      }
-    }
-  }
-  if (MODULES.includes('special')) {
-    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
-  }
-
-  return {
-base_rates: {
-      prov: PROV_BASE
-    },
-    
-      base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    base_rates: { prov: PROV_BASE },
-
-    province: PROV_TAG,
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '宁夏有知识分子补贴：过渡系数1.3%→1.43%（需传入intellectual:true），固定补贴18.5元/月（工龄补贴10元+地区补贴8.5元）。使用建账前缴费年限（preAccountYears）。',
-  }
-}
-
-// ==================== 导出 ====================
-
+const INTEREST_RATES = {
+};
 module.exports = {
   PROV_TAG,
   PROV_BASE,

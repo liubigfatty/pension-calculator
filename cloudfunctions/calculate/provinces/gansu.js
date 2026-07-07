@@ -55,7 +55,7 @@ const PROV_BASE = {
   2024: 7594,
   2025: 7594,
   2026: 8100,
-};
+};;
 
 const BASE_PARAMS = {
   PROV_2025: 7746,
@@ -149,6 +149,59 @@ const cases = [
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
 // 数据来源：provinces/gansu.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  // 将 MODULES 数组转换为 engines.modules 对象
+  const modules = {};
+  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('extra')) {
+    modules.extra_pension = { enabled: true };
+    if (EXTRA_PARAMS) {
+      modules.extra_pension.brackets = EXTRA_PARAMS.brackets;
+      modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
+    }
+  }
+  if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      } else if (typeof TRANS_COEF.get === 'function') {
+                // 引擎认 coefficient_over_20 / coefficient_under_20
+        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
+        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
+      } else if (TRANS_COEF.base !== undefined) {
+        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
+        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
+      }
+    }
+  }
+  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
+
+  return {
+  interest_rates: INTEREST_RATES,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+    name: '甘肃省',
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,  // 吉林省不用建账前缴费年限
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '官方数据(用户提供)：2023缴费基数6861/计发基数7359，2024缴费基数7194/计发基数7594，2025缴费基数7338(计发基数未公布沿用7594)',
+  };
+}
+
+
 const AVG_SALARY_HISTORY = {
   1995: 457.75,
   1996: 490.17,
@@ -184,54 +237,29 @@ const AVG_SALARY_HISTORY = {
   2026: 8100,
 };
 
-function getEngineConfig() {
-  // 将 MODULES 数组转换为 engines.modules 对象
-  const modules = {};
-  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('extra')) {
-    modules.extra_pension = { enabled: true };
-    if (EXTRA_PARAMS) {
-      modules.extra_pension.brackets = EXTRA_PARAMS.brackets;
-      modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
-    }
-  }
-  if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      } else if (typeof TRANS_COEF.get === 'function') {
-                // 引擎认 coefficient_over_20 / coefficient_under_20
-        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
-        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
-      } else if (TRANS_COEF.base !== undefined) {
-        modules.transitional_pension.coefficient_over_20 = TRANS_COEF.base;
-        modules.transitional_pension.coefficient_under_20 = TRANS_COEF.alt;
-      }
-    }
-  }
-  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
-
-  return {
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
-    name: '甘肃省',
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,  // 吉林省不用建账前缴费年限
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '官方数据(用户提供)：2023缴费基数6861/计发基数7359，2024缴费基数7194/计发基数7594，2025缴费基数7338(计发基数未公布沿用7594)',
-  };
-}
-
+const INTEREST_RATES = {
+  1995: 0.025,
+  1996: 0.025,
+  1997: 0.025,
+  1998: 0.025,
+  1999: 0.025,
+  2000: 0.025,
+  2001: 0.025,
+  2002: 0.025,
+  2003: 0.025,
+  2004: 0.025,
+  2005: 0.0226,
+  2006: 0.025,
+  2007: 0.025,
+  2008: 0.0393,
+  2009: 0.0225,
+  2010: 0.023,
+  2011: 0.025,
+  2012: 0.025,
+  2013: 0.0325,
+  2014: 0.025,
+  2015: 0.025,
+};
 module.exports = {
   PROV_BASE,
 getEngineConfig,
