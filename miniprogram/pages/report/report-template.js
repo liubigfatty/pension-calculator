@@ -577,7 +577,7 @@ function build(data) {
     w += '<text class="featureTitle">关键差异分析</text>'
     w += '<view class="featureItem"><text class="featureLabel">工资收入</text><text class="featureDesc">正常退休多领约¥' + data.salary3year + '元工资，弹性提前退休后无工资收入</text></view>'
     w += '<view class="featureItem"><text class="featureLabel">住房公积金</text><text class="featureDesc">正常退休继续缴存，单位和个人合计约¥' + data.fund3year + '；弹性提前退休停缴</text></view>'
-    w += '<view class="featureItem"><text class="featureLabel">医疗保险</text><text class="featureDesc">女满25年（' + data.medicareYears + '年已足），弹性提前退休后直接享受退休医保待遇，无需补缴</text></view>'
+    w += '<view class="featureItem"><text class="featureLabel">医疗保险</text><text class="featureDesc">' + (data.medicareLabel || '') + '职工医保缴费年限要求约25年（' + data.medicareYears + '年已' + (data.medicareYears >= 25 ? '满足' : '不足') + '），弹性提前退休后直接享受退休医保待遇，无需补缴</text></view>'
     if (data.breakEvenAge > 0) {
       w += '<view class="featureItemLast"><text class="featureLabel">盈亏平衡</text><text class="featureDesc">约' + data.breakEvenAge + '岁前弹性提前累计领取更高，此后正常退休反超</text></view>'
     }
@@ -597,7 +597,7 @@ function build(data) {
     w += '<view class="featureItem"><text class="featureLabel">早领养老金</text><text class="featureDesc">提前领取约' + data.earlyMonths + '个月，多领约¥' + data.earlyPension + '元</text></view>'
     w += '<view class="featureItem"><text class="featureLabel">回本分析</text><text class="featureDesc">合计好处约¥' + data.totalEarlyBenefit + '元，正常退休每月多领¥' + data.diffMonthly + '元，需约' + data.paybackYears + '年追平</text></view>'
     if (data.medicareYears > 0) {
-      w += '<view class="featureItemLast"><text class="featureLabel">医疗保险</text><text class="featureDesc">女满25年（' + data.medicareYears + '年），弹性提前退休后可直接享受退休医保待遇</text></view>'
+      w += '<view class="featureItemLast"><text class="featureLabel">医疗保险</text><text class="featureDesc">' + (data.medicareLabel || '') + '职工医保缴费年限要求约25年（' + data.medicareYears + '年），弹性提前退休后可直接享受退休医保待遇</text></view>'
     }
     w += '</view>'
 
@@ -662,7 +662,7 @@ function build(data) {
   w += '<text class="calcDesc">' + data.personalDesc + '</text>'
 
   if (data.extraPension) {
-    w += '<view class="calcRow"><text class="calcLabel">增发养老金（吉林省）</text><text class="calcAmount">' + data.extraPension + '</text></view>'
+    w += '<view class="calcRow"><text class="calcLabel">增发养老金（' + data.province + '）</text><text class="calcAmount">' + data.extraPension + '</text></view>'
     if (data.extraDetails && data.extraDetails.length > 0) {
       w += '<view class="calcExtraDetail">'
       data.extraDetails.forEach(function(d) {
@@ -677,7 +677,7 @@ function build(data) {
   w += '</view></view>'  // close sectionBody, section
 
   // === 免责声明 ===
-  w += '<view class="disclaimer"><text class="disclaimerText">本报告依据国务院渐进式延迟退休政策（国办发〔2025〕5号）及吉林省现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text></view>'
+  w += '<view class="disclaimer"><text class="disclaimerText">本报告依据国务院渐进式延迟退休政策（国办发〔2025〕5号）及' + data.province + '现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text></view>'
 
   w += '</view>'  // close page
 

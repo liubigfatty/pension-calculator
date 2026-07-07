@@ -3,6 +3,22 @@
 
   <view wx:else class="report-scroll">
 
+    <!-- ===== Hero 金额卡 ===== -->
+    <view class="hero-card">
+      <view class="hero-inner">
+        <text class="hero-label">每月可领取养老金</text>
+        <view class="hero-amount-row">
+          <text class="hero-symbol">¥</text>
+          <text class="hero-amount">{{legalTotalStr}}</text>
+        </view>
+        <view class="hero-tags">
+          <text class="hero-tag">{{identity}} · {{provinceName}}{{cityLabel ? ' · ' + cityLabel : ''}}</text>
+          <text class="hero-tag">{{legalAgeShow}}起领 · {{legalYearsShow}}</text>
+        </view>
+      </view>
+      <view class="hero-glow"></view>
+    </view>
+
     <!-- ===== 模块1：退休画像 ===== -->
     <view class="section">
       <view class="section-header" bindtap="toggleSection" data-key="profile">
@@ -108,7 +124,7 @@
             </view>
             <view class="feature-item">
               <text class="feature-label">医疗保险</text>
-              <text class="feature-desc">女满25年（{{medicareYears}}年已足），弹性提前退休后直接享受退休医保待遇，无需补缴</text>
+              <text class="feature-desc">{{medicareLabel}}职工医保缴费年限要求约{{medicareRequirement}}年（{{medicareYears}}年已{{medicareMet ? '满足' : '不足'}}），弹性提前退休后可直接享受退休医保待遇，无需补缴</text>
             </view>
             <view class="feature-item" wx:if="{{breakEvenAge > 0}}">
               <text class="feature-label">盈亏平衡</text>
@@ -144,7 +160,7 @@
             </view>
             <view class="feature-item" wx:if="{{medicareYears > 0}}">
               <text class="feature-label">医疗保险</text>
-              <text class="feature-desc">女满25年（{{medicareYears}}年），弹性提前退休后可直接享受退休医保待遇</text>
+              <text class="feature-desc">{{medicareLabel}}职工医保缴费年限要求约{{medicareRequirement}}年（{{medicareYears}}年），弹性提前退休后可直接享受退休医保待遇</text>
             </view>
           </view>
 
@@ -232,7 +248,7 @@
         <view class="calc-row"><text class="calc-label">个人账户养老金</text><text class="calc-amount">{{personalPensionStr}}</text></view>
         <text class="calc-desc">{{personalDesc}}</text>
 
-        <view class="calc-row" wx:if="{{extraPensionStr}}"><text class="calc-label">增发养老金（吉林省）</text><text class="calc-amount">{{extraPensionStr}}</text></view>
+        <view class="calc-row" wx:if="{{extraPensionStr}}"><text class="calc-label">增发养老金（{{provinceName}}）</text><text class="calc-amount">{{extraPensionStr}}</text></view>
         <view class="extra-detail" wx:if="{{extraDetails.length > 0}}">
           <text class="extra-line" wx:for="{{extraDetails}}" wx:key="label">{{item.label}} → {{item.amount}}</text>
         </view>
@@ -243,7 +259,7 @@
 
     <!-- ===== 免责 ===== -->
     <view class="disclaimer" wx:if="{{showSection.disclaimer}}">
-      <text>本报告依据国务院渐进式延迟退休政策（国办发〔2025〕5号）及吉林省现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text>
+      <text>本报告依据国务院渐进式延迟退休政策（国办发〔2025〕5号）及{{provinceName}}现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text>
     </view>
 
     <view class="btn-bar">

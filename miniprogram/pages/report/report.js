@@ -110,12 +110,16 @@ Page({
     const cumulative = hasEarlyRetire ? this._calcCumulative(legalAge, flexAge, legalAnnual, flexAnnual) : { items: [], breakEvenAge: 0 }
 
     // === 衍生计算：特色分析数据 ===
-    // 替代率（按计发基数推算退休前工资）
-    const replaceRate = legalBaseRetire > 0 ? Math.round(legalTotal / legalBaseRetire * 100) : 0
-    // 医保年限（女满25年）
+    // 替代率（按缴费基数×平均指数 推算退休前税前工资，比用计发基数更接近本人收入）
+    const estPreRetireSalary = Math.round(legalBaseRetire * avgIndex)
+    const replaceRate = estPreRetireSalary > 0 ? Math.round(legalTotal / estPreRetireSalary * 100) : 0
+    // 医保年限（男职工一般20-25年，女职工一般20-25年，各地政策不同；此处按通用最低标准）
     const medicareYears = Math.floor(legalTotalYears)
-    const medicareRequirement = isFlexible ? 25 : 25
+    const retireIdxGender = retireIdx !== undefined ? retireIdx : (isFlexible ? 4 : 0)
+    const isFemale = retireIdxGender === 2 || retireIdxGender === 4  // 企业女(55退)/灵活就业女
+    const medicareRequirement = 25  // 多数地区男女统一最低25年（男部分地区要求更高）
     const medicareMet = medicareYears >= medicareRequirement
+    const medicareLabel = isFemale ? '女' : '男'
     // 企业职工：3年工资收入（按计发基数×0.92扣除个人8%社保 估算）
     const monthlyNetSalary = Math.round(legalBaseRetire * 0.92)
     const salary3year = hasEarlyRetire ? Math.round(monthlyNetSalary * flexMonths).toLocaleString() : '0'
@@ -171,6 +175,8 @@ Page({
       replaceRate,
       medicareYears,
       medicareMet,
+      medicareLabel,  // '男' or '女'，用于医保建议文案
+      estPreRetireSalary: estPreRetireSalary.toLocaleString(),  // 推算退休前工资（用于替代率说明）
       salary3year,
       fund3year,
       savePremium,
@@ -311,6 +317,8 @@ Page({
       salary3year: d.salary3year || '',
       fund3year: d.fund3year || '',
       medicareYears: d.medicareYears || 0,
+      medicareMet: d.medicareMet,
+      medicareLabel: d.medicareLabel || '',
       savePremium: d.savePremium || '0',
       earlyPension: d.earlyPension || '0',
       totalEarlyBenefit: d.totalEarlyBenefit || '0',
