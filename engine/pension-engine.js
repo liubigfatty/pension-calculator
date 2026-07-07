@@ -866,7 +866,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   // 防御：config 可能未传入
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
-  if (type === 'fw50' || type === 'fw') return 0;
+  if (type === 'fw50' || type === 'fw' || type === 'ef50') return 0;
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
   const delayConfig = config.delay_retirement || {}
@@ -984,7 +984,9 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
     case 'fw55':       // 灵活就业女性，55岁退休
       baseAge = 55
       break
+    case 'fw':         // 女性工人，50岁退休
     case 'fw50':       // 女工人，50岁退休
+    case 'ef50':       // 企业女职工，50岁退休
       baseAge = 50
       break
     default:
@@ -1397,7 +1399,10 @@ function calculate(config, inputData) {
   switch (data.genderType) {
     case 'male': originalAge = 60; break
     case 'fc':   originalAge = 55; break
+    case 'fw55': originalAge = 55; break
     case 'fw':   originalAge = 50; break
+    case 'fw50': originalAge = 50; break   // 企业女职工(50岁退休)
+    case 'ef50': originalAge = 50; break   // 企业女职工(50岁退休)
     default:     originalAge = 60
   }
   const flexTotalMonths = Math.max(originalAge * 12, legalTotalMonths - 36)
