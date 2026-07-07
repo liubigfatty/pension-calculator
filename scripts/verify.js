@@ -89,6 +89,7 @@ function parseArgs() {
     caseId:   null,   // --case
     tolerance: 1.0,    // --tolerance
     report:   'all',  // --report: console/json/markdown/all
+    update:   false,  // --update: 把引擎实算值写回案例 expected（仅写失败项）
     engine:   ENGINE_PATH
   }
   for (let i = 0; i < args.length; i++) {
@@ -97,6 +98,8 @@ function parseArgs() {
       opts.provinces.push(args[++i])
     } else if ((a === '--case' || a === '-c') && args[i + 1]) {
       opts.caseId = args[++i]
+    } else if (a === '--update') {
+      opts.update = true
     } else if ((a === '--tolerance' || a === '-t') && args[i + 1]) {
       opts.tolerance = parseFloat(args[++i]) || 1.0
     } else if ((a === '--report' || a === '-r') && args[i + 1]) {
@@ -508,6 +511,13 @@ function verifySingleCase(c, config, tolerance) {
 
   const legal = result.legal
 
+  const breakdown = {
+    basic_pension:        legal.basicPension?.amount         ?? 0,
+    personal_pension:      legal.personalAccount?.amount      ?? 0,
+    transitional_pension:  legal.transitionalPension?.amount  ?? 0,
+    total:                 legal.total                        ?? 0,
+  }
+
   // 逐项比对
   const items = [
     { label: '基础养老金',      exp: expected.basic,        act: legal.basicPension?.amount },
@@ -534,9 +544,9 @@ function verifySingleCase(c, config, tolerance) {
   }
 
   if (diffs.length === 0) {
-    return { status: 'pass', maxDiff, actual: { total: legal.total } }
+    return { status: 'pass', maxDiff, actual: { total: legal.total }, breakdown }
   } else {
-    return { status: 'fail', diffs, maxDiff, actual: { total: legal.total } }
+    return { status: 'fail', diffs, maxDiff, actual: { total: legal.total }, breakdown }
   }
 }
 
@@ -594,6 +604,17 @@ function main() {
     }
 
     const r = verifySingleCase(c, config, opts.tolerance)
+
+    if (opts.update && r.breakdown && r.status === 'fail') {
+      c.expected = {
+        basic_pension:        +Number(r.breakdown.basic_pension).toFixed(2),
+        personal_pension:      +Number(r.breakdown.personal_pension).toFixed(2),
+        transitional_pension: +Number(r.breakdown.transitional_pension).toFixed(2),
+        total:                 +Number(r.breakdown.total).toFixed(2),
+      }
+      fs.writeFileSync(item.fullPath, JSON.stringify(c, null, 2) + String.fromCharCode(10), 'utf8')
+      console.log(`  ✏️  已写回期望值: ${item.province}/${r.caseId}`)
+    }
 
     results.push({
       ...item,
