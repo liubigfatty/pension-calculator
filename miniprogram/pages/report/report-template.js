@@ -208,6 +208,21 @@ var style = {
   },
 
   // 盈亏平衡
+  cumCaption: {
+    width: IBW, height: 18,
+    marginBottom: 6
+  },
+  cumCaptionText: {
+    width: IBW, height: 18,
+    fontSize: 11, color: '#8B7355',
+    lineHeight: 18
+  },
+  tableRow4Normal: {
+    width: IBW, height: 26,
+    flexDirection: 'row', backgroundColor: '#EDEFF4',
+    borderBottomWidth: 1, borderColor: '#D8DEE8',
+    borderLeftWidth: 3, borderLeftColor: '#8B7355'
+  },
   breakevenTip: {
     width: IBW, height: 36,
     marginTop: 8,
@@ -541,16 +556,18 @@ function build(data) {
   // === 模块3: 累计领取对比 ===
   if (data.hasEarly && data.cumulativeItems && data.cumulativeItems.length > 0) {
     w += sectionStart(s, '3', '累计领取对比')
+    w += '<view class="cumCaption"><text class="cumCaptionText">弹性提前退休（' + data.flexAgeShow + '起领） vs 正常退休（' + data.legalAgeShow + '起领）累计领取对比</text></view>'
     w += '<view class="tableHeader4"><text class="tdName4">领到年龄</text><text class="tdNum4">正常退休</text><text class="tdNum4Early">弹性提前</text><text class="tdNum4">差额</text></view>'
 
     data.cumulativeItems.forEach(function(item) {
-      var rowClass = item.isBreakEven ? 'tableRow4Gold' : 'tableRow4'
+      var rowClass = item.isNormalStart ? 'tableRow4Normal' : (item.isBreakEven ? 'tableRow4Gold' : 'tableRow4')
       var diffClass = 'tdDiffGray'
       if (item.isBreakEven) diffClass = 'tdDiffGold'
       else if (item.diff && item.diff.indexOf('+') === 0) diffClass = 'tdDiffGreen'
       else diffClass = 'tdDiffRed'
+      var ageLabel = item.age + '岁' + (item.isNormalStart ? '（正常起领）' : '')
       w += '<view class="' + rowClass + '">'
-      w += '<text class="tdName4">' + item.age + '岁</text>'
+      w += '<text class="tdName4">' + ageLabel + '</text>'
       w += '<text class="tdNum4">¥' + item.legalTotal + '</text>'
       w += '<text class="tdNum4Early">¥' + item.flexTotal + '</text>'
       w += '<text class="' + diffClass + '">' + item.diff + '</text>'
@@ -608,9 +625,9 @@ function build(data) {
   w += '<view class="rateSection">'
   w += '<text class="featureTitle">养老金替代率分析</text>'
   w += '<view class="rateRow"><text class="rateLabel">月养老金</text><text class="rateValue">' + data.legalTotal + '</text></view>'
-  w += '<view class="rateRow"><text class="rateLabel">退休前月工资（按缴费基数推算）</text><text class="rateValue">约¥' + data.baseRetireStr + '</text></view>'
+  w += '<view class="rateRow"><text class="rateLabel">退休前月工资（按缴费基数×指数推算）</text><text class="rateValue">约¥' + data.estPreRetireSalary + '</text></view>'
   w += '<view class="rateRowHL"><text class="rateLabel">替代率</text><text class="rateValueHL">' + data.replaceRate + '%</text></view>'
-  w += '<text class="rateDesc">替代率 = 养老金÷退休前工资。国际劳工组织建议最低55%，世界银行建议70%+维持生活水平。您处于全国平均水平（40-45%），建议提前规划补充养老。</text>'
+  w += '<text class="rateDesc">替代率 = 月养老金÷退休前工资。' + data.replaceRateDesc + '</text>'
   w += '</view>'
 
   w += '</view></view>'  // close sectionBody, section

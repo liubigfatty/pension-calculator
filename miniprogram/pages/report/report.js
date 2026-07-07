@@ -100,7 +100,10 @@ Page({
     const flexTotalYears = hasEarlyRetire ? (legalOrig.totalYears || 0) : 0
     const flexYearsStr = flexTotalYears > 0 ? Math.floor(flexTotalYears) + '年' + Math.round((flexTotalYears % 1) * 12) + '个月' : ''
     const flexTotal = hasEarlyRetire ? (legalOrig.total || 0) : 0
-    const flexMonths = hasEarlyRetire ? (legalOrig.months || 0) : 0
+    const flexMonths = hasEarlyRetire ? (legalOrig.months || 0) : 0  // 计发月数，仅用于展示
+    // 提前退休期间（月）= 正常退休年龄 − 弹性提前退休年龄 = comparison.flexAdvance（如提前3年=36个月）
+    // ⚠️ 此前误用 flexMonths(计发月数,约139) 当期间，导致"工资/公积金/保费"虚高约4倍
+    const gapMonths = hasEarlyRetire ? (comparison.flexAdvance || Math.round((legalAge - flexAge) * 12)) : 0
     const flexAnnual = flexTotal * 12
 
     // 平均指数
@@ -113,6 +116,17 @@ Page({
     // 替代率（按缴费基数×平均指数 推算退休前税前工资，比用计发基数更接近本人收入）
     const estPreRetireSalary = Math.round(legalBaseRetire * avgIndex)
     const replaceRate = estPreRetireSalary > 0 ? Math.round(legalTotal / estPreRetireSalary * 100) : 0
+    // 替代率说明：按实际替代率区间动态生成，不再写死"40-45%"
+    let replaceRateDesc
+    if (replaceRate >= 70) {
+      replaceRateDesc = '替代率≥70%，达到世界银行建议的"维持退休前生活水平"标准（70%+），养老保障充足，一般无需额外补充。'
+    } else if (replaceRate >= 55) {
+      replaceRateDesc = '替代率处于55%-70%，接近国际劳工组织建议的最低标准（55%），保障较充分。'
+    } else if (replaceRate >= 40) {
+      replaceRateDesc = '替代率处于全国平均水平（约40%-55%），基本保障尚可，建议适度补充养老（企业年金/个人养老金）。'
+    } else {
+      replaceRateDesc = '替代率低于40%，明显低于全国平均水平，退休后收入替代不足，建议重点规划补充养老（企业年金/商业养老保险）。'
+    }
     // 医保年限（男职工一般20-25年，女职工一般20-25年，各地政策不同；此处按通用最低标准）
     const medicareYears = Math.floor(legalTotalYears)
     const retireIdxGender = retireIdx !== undefined ? retireIdx : (isFlexible ? 4 : 0)
@@ -120,19 +134,19 @@ Page({
     const medicareRequirement = 25  // 多数地区男女统一最低25年（男部分地区要求更高）
     const medicareMet = medicareYears >= medicareRequirement
     const medicareLabel = isFemale ? '女' : '男'
-    // 企业职工：3年工资收入（按计发基数×0.92扣除个人8%社保 估算）
+    // 企业职工：提前退休期间继续工作的工资收入（按计发基数×0.92扣除个人8%社保估算）
     const monthlyNetSalary = Math.round(legalBaseRetire * 0.92)
-    const salary3year = hasEarlyRetire ? Math.round(monthlyNetSalary * flexMonths).toLocaleString() : '0'
-    // 公积金3年（单位12%+个人12%）
-    const fund3year = hasEarlyRetire ? Math.round(legalBaseRetire * 0.24 * flexMonths).toLocaleString() : '0'
-    // 灵活就业：省下的保费
+    const salary3year = hasEarlyRetire ? Math.round(monthlyNetSalary * gapMonths).toLocaleString() : '0'
+    // 公积金（单位12%+个人12%）
+    const fund3year = hasEarlyRetire ? Math.round(legalBaseRetire * 0.24 * gapMonths).toLocaleString() : '0'
+    // 灵活就业：提前退休期间省下的保费
     const monthlyPremium = isFlexible ? Math.round(legalBaseRetire * avgIndex * 0.2) : 0
-    const savePremium = hasEarlyRetire ? Math.round(monthlyPremium * flexMonths).toLocaleString() : '0'
-    // 早领养老金
-    const earlyPension = hasEarlyRetire ? Math.round(flexTotal * flexMonths).toLocaleString() : '0'
+    const savePremium = hasEarlyRetire ? Math.round(monthlyPremium * gapMonths).toLocaleString() : '0'
+    // 早领养老金（提前期间领取的养老金）
+    const earlyPension = hasEarlyRetire ? Math.round(flexTotal * gapMonths).toLocaleString() : '0'
     const totalEarlyBenefitNum = hasEarlyRetire ? (parseInt(savePremium.replace(/,/g,'')) + parseInt(earlyPension.replace(/,/g,''))) : 0
     const totalEarlyBenefit = totalEarlyBenefitNum.toLocaleString()
-    const earlyMonths = hasEarlyRetire ? flexMonths : 0
+    const earlyMonths = hasEarlyRetire ? gapMonths : 0
     // 月差额
     const diffMonthly = hasEarlyRetire ? Math.round(legalTotal - flexTotal) : 0
     // 回本周期
@@ -173,6 +187,7 @@ Page({
       // 模块4
       adviceType: isFlexible ? 'flexible' : 'worker',
       replaceRate,
+      replaceRateDesc,
       medicareYears,
       medicareMet,
       medicareLabel,  // '男' or '女'，用于医保建议文案
@@ -214,17 +229,22 @@ Page({
     const items = []
     let breakEvenAge = 0
     let prevDiff = 0
-    const startAge = Math.min(Math.floor(legalAge), Math.floor(flexAge || 99))
+    const startAge = Math.floor(flexAge || legalAge)
+    const endAge = 90
+    // 关键年龄点：每5岁 + 正常退休年龄（让"第二个对比点=正常退休年龄"在表中显式可见）
+    const ageSet = new Set()
+    for (let age = startAge; age <= endAge; age += 5) ageSet.add(age)
+    ageSet.add(Math.round(legalAge))
+    const ages = Array.from(ageSet).sort(function(a, b) { return a - b })
 
-    for (let age = startAge; age <= 90; age += 5) {
+    ages.forEach(function(age) {
       const legalYrs = Math.max(0, age - legalAge)
       const flexYrs = Math.max(0, age - flexAge)
-      if (flexYrs === 0 && age > flexAge) continue
       const legalTotal = Math.round(legalYrs * legalAnnual)
       const flexTotal = Math.round(flexYrs * flexAnnual)
       const diff = flexTotal - legalTotal
 
-      let diffStr = ''
+      const isNormalStart = Math.abs(age - legalAge) < 0.5
       let isBreakEven = false
       if (breakEvenAge === 0 && prevDiff > 0 && diff <= 0) {
         breakEvenAge = age
@@ -232,13 +252,14 @@ Page({
       }
       if (breakEvenAge > 0 && age === breakEvenAge) isBreakEven = true
 
+      let diffStr = ''
       if (isBreakEven) diffStr = '追平'
       else if (diff > 0) diffStr = '+' + this._fmtWan(diff)
       else diffStr = '-' + this._fmtWan(Math.abs(diff))
 
       prevDiff = diff
-      items.push({ age, legalTotal: this._fmtWan(legalTotal), flexTotal: this._fmtWan(flexTotal), diff: diffStr, isBreakEven })
-    }
+      items.push({ age, legalTotal: this._fmtWan(legalTotal), flexTotal: this._fmtWan(flexTotal), diff: diffStr, isBreakEven, isNormalStart })
+    }.bind(this))
     return { items, breakEvenAge: Math.round(breakEvenAge) }
   },
 
