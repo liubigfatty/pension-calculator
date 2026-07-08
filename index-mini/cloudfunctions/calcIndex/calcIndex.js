@@ -63,6 +63,14 @@ function getSocialAvg(avgSalaryHistory, year) {
 function calculateIndex({ provinceConfig, contribution, granularity = 'A' }) {
   const salaryHist = provinceConfig.avg_salary_history || {}
 
+  // ── C 颗粒度无基数数据，正向无法计算 ──>
+  if (granularity === 'C') {
+    return {
+      error: 'C 颗粒度（最简）仅支持反推模式。请切换到"反推"模式并填写账户余额，或改用 A/B 颗粒度输入逐年缴费基数。',
+      code: 'C_GRANULARITY_FORWARD_NOT_SUPPORTED'
+    }
+  }
+
   // ── 根据颗粒度解析为统一年记录格式 ──>
   const yearlyRecords = normalizeToYearly(contribution, granularity)
 

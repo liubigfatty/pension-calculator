@@ -87,6 +87,18 @@ Page({
   calc() {
     const { provinces, provIndex, granularity, mode } = this.data
     const province = provinces[provIndex].slug
+
+    // ── C 颗粒度仅支持反推 ──>
+    if (granularity === 'C' && mode === 'forward') {
+      wx.showModal({
+        title: '提示',
+        content: 'C 颗粒度（最简）只有起止时间和月数，没有缴费基数，无法正向计算指数。\n\n请切换到"反推"模式（需填写账户余额），或改用 A/B 颗粒度输入缴费基数。',
+        showCancel: false,
+        confirmText: '我知道了'
+      })
+      return
+    }
+
     let contribution = {}
     let knownBalance = undefined
 
@@ -124,7 +136,12 @@ Page({
         this.setData({ loading: false })
         const r = res.result
         if (!r || !r.success) {
-          wx.showToast({ title: (r && r.error) || '计算失败', icon: 'none' })
+          const errMsg = (r && r.error) || '计算失败'
+          if (errMsg.length > 20) {
+            wx.showModal({ title: '计算失败', content: errMsg, showCancel: false })
+          } else {
+            wx.showToast({ title: errMsg, icon: 'none' })
+          }
           return
         }
         getApp().globalData.result = r
