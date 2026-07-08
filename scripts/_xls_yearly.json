@@ -1,0 +1,135 @@
+{
+  "province": "jilin",
+  "start_year": 1998,
+  "start_month": 7,
+  "total_months": 295,
+  "monthly_avg": 6182.51,
+  "principal_sum": 146486.02,
+  "yearly": [
+    {
+      "year": 1998,
+      "months": 6,
+      "baseAvg": 353.0
+    },
+    {
+      "year": 1999,
+      "months": 12,
+      "baseAvg": 353.0
+    },
+    {
+      "year": 2000,
+      "months": 12,
+      "baseAvg": 436.8
+    },
+    {
+      "year": 2001,
+      "months": 12,
+      "baseAvg": 2154.0
+    },
+    {
+      "year": 2002,
+      "months": 12,
+      "baseAvg": 488.0
+    },
+    {
+      "year": 2003,
+      "months": 12,
+      "baseAvg": 589.0
+    },
+    {
+      "year": 2004,
+      "months": 13,
+      "baseAvg": 1500.0
+    },
+    {
+      "year": 2005,
+      "months": 12,
+      "baseAvg": 1500.0
+    },
+    {
+      "year": 2006,
+      "months": 12,
+      "baseAvg": 1500.0
+    },
+    {
+      "year": 2007,
+      "months": 12,
+      "baseAvg": 2200.0
+    },
+    {
+      "year": 2008,
+      "months": 12,
+      "baseAvg": 2183.33
+    },
+    {
+      "year": 2009,
+      "months": 12,
+      "baseAvg": 1598.67
+    },
+    {
+      "year": 2010,
+      "months": 12,
+      "baseAvg": 1522.0
+    },
+    {
+      "year": 2011,
+      "months": 12,
+      "baseAvg": 1786.0
+    },
+    {
+      "year": 2012,
+      "months": 12,
+      "baseAvg": 2074.0
+    },
+    {
+      "year": 2013,
+      "months": 12,
+      "baseAvg": 10941.0
+    },
+    {
+      "year": 2014,
+      "months": 12,
+      "baseAvg": 11174.0
+    },
+    {
+      "year": 2015,
+      "months": 12,
+      "baseAvg": 8300.38
+    },
+    {
+      "year": 2016,
+      "months": 12,
+      "baseAvg": 11351.97
+    },
+    {
+      "year": 2017,
+      "months": 12,
+      "baseAvg": 10857.65
+    },
+    {
+      "year": 2018,
+      "months": 12,
+      "baseAvg": 14714.6
+    },
+    {
+      "year": 2019,
+      "months": 12,
+      "baseAvg": 15151.17
+    },
+    {
+      "year": 2020,
+      "months": 13,
+      "baseAvg": 14475.01
+    },
+    {
+      "year": 2021,
+      "months": 12,
+      "baseAvg": 16639.75
+    },
+    {
+      "year": 2022,
+      "months": 11,
+      "baseAvg": 18532.95
+    }
+  ]
+}
