@@ -1,0 +1,55 @@
+<view class="container">
+  <view class="card" wx:if="{{mode==='forward'}}">
+    <view class="title">正向计算结果</view>
+    <view class="metric">
+      <text class="m-label">本人平均缴费工资指数</text>
+      <text class="m-value big">{{avgIndex}}</text>
+    </view>
+    <view class="metric">
+      <text class="m-label">个人账户余额（估算）</text>
+      <text class="m-value">¥{{accountBalance}}</text>
+    </view>
+    <view class="metric">
+      <text class="m-label">累计缴费</text>
+      <text class="m-value">{{totalMonths}} 个月（{{totalYears}} 年）</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{mode==='infer'}}">
+    <view class="title">反推结果</view>
+    <view class="metric">
+      <text class="m-label">推算本人平均缴费工资指数</text>
+      <text class="m-value big">{{inferredIndex}}</text>
+    </view>
+    <view class="metric">
+      <text class="m-label">对应账户余额</text>
+      <text class="m-value">¥{{calculatedBalance}}</text>
+    </view>
+    <view class="metric">
+      <text class="m-label">收敛状态</text>
+      <text class="m-value">{{converged ? '已收敛' : '未完全收敛'}}{{residual ? '（误差'+residual+'）' : ''}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="title">逐年明细</view>
+    <view class="tbl">
+      <view class="tr th">
+        <text class="td">年份</text>
+        <text class="td">月数</text>
+        <text class="td">月均基数</text>
+        <text class="td">指数</text>
+        <text class="td">年末余额</text>
+      </view>
+      <view class="tr" wx:for="{{detail}}" wx:key="year">
+        <text class="td">{{item.year}}</text>
+        <text class="td">{{item.months}}</text>
+        <text class="td">{{item.baseAvg}}</text>
+        <text class="td">{{item.index}}</text>
+        <text class="td">{{item.balance}}</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="btn-primary" bindtap="back">返回修改</button>
+</view>

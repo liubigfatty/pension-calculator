@@ -1,0 +1,41 @@
+/* pages/result/result.wxss */
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.m-label {
+  color: #4b5563;
+  font-size: 28rpx;
+}
+.m-value {
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.m-value.big {
+  color: #1d4ed8;
+  font-size: 52rpx;
+  font-weight: 700;
+}
+
+.tbl {
+  font-size: 22rpx;
+  margin-top: 10rpx;
+}
+.tr {
+  display: flex;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.tr.th {
+  font-weight: 600;
+  color: #6b7280;
+}
+.td {
+  flex: 1;
+  text-align: center;
+}
+.td:first-child { flex: 0.8; text-align: left; }
