@@ -25,3 +25,6 @@ nul
 .vscode/
 .idea/
 reports/
+
+# 微信开发者工具本地私有配置（不入库）
+index-mini/project.private.config.json
