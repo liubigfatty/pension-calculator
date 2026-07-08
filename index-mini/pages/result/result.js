@@ -43,7 +43,11 @@ Page({
         accountBalance: fwd.accountBalance !== undefined ? fwd.accountBalance.toFixed(2) : '-',
         totalMonths: fwd.totalMonths || 0,
         totalYears: fwd.totalYears || 0,
-        forwardSource: fwd._source === 'uniform' ? '基于您填的月均基数估算' : '基于逐年明细计算',
+        forwardSource: fwd._source === 'current'
+          ? '按您当前工资估算（假设历年按相同比例缴费）'
+          : '基于逐年明细计算（最准确）',
+        forwardIsCurrent: fwd._source === 'current',
+        forwardCurrentIndex: (fwd._currentIndex != null) ? fwd._currentIndex.toFixed(4) : ''
         detail
       })
     }

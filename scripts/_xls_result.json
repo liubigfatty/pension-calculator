@@ -9,9 +9,10 @@
     "avgIndex": 1.7836,
     "balance": 204822.85
   },
-  "uniform": {
-    "avgIndex": 4.2085,
-    "balance": 277072.18
+  "current": {
+    "avgIndex": 0.929,
+    "balance": 95674.26,
+    "currentIndex": 0.929
   },
   "infer_from_std": 1.9888,
   "infer_from_principal": 1.4224,

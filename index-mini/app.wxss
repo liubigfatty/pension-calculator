@@ -44,3 +44,9 @@ page {
   color: #6b7280;
   line-height: 1.6;
 }
+
+.hint.strong,
+.strong {
+  color: #b45309;
+  font-weight: 600;
+}

@@ -28,10 +28,10 @@
   <view class="card">
     <view class="title">缴费基数（能填多少填多少）</view>
     <view class="row">
-      <text class="lbl">月均缴费基数</text>
-      <input class="inp" value="{{monthlyBase}}" data-field="monthlyBase" bindinput="onInput" placeholder="每月都差不多就填这个数" type="digit"/>
+      <text class="lbl">当前月缴费基数</text>
+      <input class="inp" value="{{monthlyBase}}" data-field="monthlyBase" bindinput="onInput" placeholder="按你现在的工资填，如18533" type="digit"/>
     </view>
-    <view class="hint">不知道每年变化、或一直按同一档缴，填上面的「月均缴费基数」即可。</view>
+    <view class="hint">填你<text class="strong">现在的</text>月工资基数即可。系统用「当前基数 ÷ 当前社平」算出当下指数，把它当作平均缴费指数，反推往年基数，再估算账户余额。</view>
 
     <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我有某些年份的明细（点开填）'}}</view>
 
