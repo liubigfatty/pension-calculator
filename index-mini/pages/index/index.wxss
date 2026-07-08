@@ -63,3 +63,26 @@
   font-size: 28rpx;
   padding: 16rpx 0 24rpx;
 }
+
+.inline {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.inp-s {
+  width: 120rpx;
+  background: #f3f4f6;
+  border-radius: 10rpx;
+  padding: 16rpx 12rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+.sep {
+  color: #6b7280;
+  margin: 0 8rpx;
+}
+.link {
+  color: #1d4ed8;
+  font-size: 26rpx;
+  margin: 14rpx 0;
+}

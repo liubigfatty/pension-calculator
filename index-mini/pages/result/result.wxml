@@ -1,6 +1,8 @@
 <view class="container">
-  <view class="card" wx:if="{{mode==='forward'}}">
-    <view class="title">正向计算结果</view>
+
+  <!-- 正向结果 -->
+  <view class="card" wx:if="{{hasForward}}">
+    <view class="title">平均缴费工资指数（正向）</view>
     <view class="metric">
       <text class="m-label">本人平均缴费工资指数</text>
       <text class="m-value big">{{avgIndex}}</text>
@@ -13,10 +15,12 @@
       <text class="m-label">累计缴费</text>
       <text class="m-value">{{totalMonths}} 个月（{{totalYears}} 年）</text>
     </view>
+    <view class="hint">{{forwardSource}}</view>
   </view>
 
-  <view class="card" wx:if="{{mode==='infer'}}">
-    <view class="title">反推结果</view>
+  <!-- 反推结果 -->
+  <view class="card" wx:if="{{hasInfer}}">
+    <view class="title">推算平均指数（反推）</view>
     <view class="metric">
       <text class="m-label">推算本人平均缴费工资指数</text>
       <text class="m-value big">{{inferredIndex}}</text>
@@ -31,7 +35,13 @@
     </view>
   </view>
 
-  <view class="card">
+  <!-- 两者对照提示 -->
+  <view class="note" wx:if="{{hasForward && hasInfer}}">
+    正向与反推两个指数若接近，说明数据吻合；差异较大时建议核对输入。
+  </view>
+
+  <!-- 逐年明细 -->
+  <view class="card" wx:if="{{hasForward && detail.length > 0}}">
     <view class="title">逐年明细</view>
     <view class="tbl">
       <view class="tr th">

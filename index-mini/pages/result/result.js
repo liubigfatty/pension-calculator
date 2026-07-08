@@ -2,10 +2,13 @@
 Page({
   data: {
     mode: 'forward',
+    hasForward: false,
+    hasInfer: false,
     avgIndex: '-',
     accountBalance: '-',
     totalMonths: 0,
     totalYears: 0,
+    forwardSource: '',
     inferredIndex: '-',
     calculatedBalance: '-',
     converged: false,
@@ -20,28 +23,41 @@ Page({
       return
     }
     const d = r.data
-    const detail = (d.yearsDetail || [])
-      .filter(y => y.index !== null && y.index !== undefined)
-      .map(y => ({
-        year: y.year,
-        months: y.months,
-        baseAvg: (y.baseAvg || 0).toFixed(0),
-        index: y.index.toFixed(4),
-        balance: (y.balanceAfterYear || 0).toFixed(2)
-      }))
+    const fwd = d.forward
+    const inf = d.infer
 
-    this.setData({
-      mode: r.mode,
-      avgIndex: d.avgIndex !== undefined ? d.avgIndex.toFixed(4) : '-',
-      accountBalance: d.accountBalance !== undefined ? d.accountBalance.toFixed(2) : '-',
-      totalMonths: d.totalMonths || 0,
-      totalYears: d.totalYears || 0,
-      inferredIndex: d.inferredIndex !== undefined ? d.inferredIndex.toFixed(4) : '-',
-      calculatedBalance: d.calculatedBalance !== undefined ? d.calculatedBalance.toFixed(2) : '-',
-      converged: !!d.converged,
-      residual: d.residual ? '¥' + d.residual.toFixed(0) : '',
-      detail
-    })
+    const patch = { mode: r.mode, hasForward: !!fwd, hasInfer: !!inf }
+
+    if (fwd) {
+      const detail = (fwd.yearsDetail || [])
+        .filter(y => y.index !== null && y.index !== undefined)
+        .map(y => ({
+          year: y.year,
+          months: y.months,
+          baseAvg: (y.baseAvg || 0).toFixed(0),
+          index: y.index.toFixed(4),
+          balance: (y.balanceAfterYear || 0).toFixed(2)
+        }))
+      Object.assign(patch, {
+        avgIndex: fwd.avgIndex !== undefined ? fwd.avgIndex.toFixed(4) : '-',
+        accountBalance: fwd.accountBalance !== undefined ? fwd.accountBalance.toFixed(2) : '-',
+        totalMonths: fwd.totalMonths || 0,
+        totalYears: fwd.totalYears || 0,
+        forwardSource: fwd._source === 'uniform' ? '基于您填的月均基数估算' : '基于逐年明细计算',
+        detail
+      })
+    }
+
+    if (inf) {
+      Object.assign(patch, {
+        inferredIndex: inf.inferredIndex !== undefined ? inf.inferredIndex.toFixed(4) : '-',
+        calculatedBalance: inf.calculatedBalance !== undefined ? inf.calculatedBalance.toFixed(2) : '-',
+        converged: !!inf.converged,
+        residual: inf.residual ? '¥' + inf.residual.toFixed(0) : ''
+      })
+    }
+
+    this.setData(patch)
   },
 
   back() { wx.navigateBack() }

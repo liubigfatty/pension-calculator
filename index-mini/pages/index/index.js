@@ -33,112 +33,84 @@ const PROVINCES = [
   { slug: 'xinjiang', name: '新疆维吾尔自治区' }
 ]
 
-// 各颗粒度示例数据
-const SAMPLE = {
-  A: JSON.stringify([
-    { year: 2020, months: 12, baseAvg: 4980.5 },
-    { year: 2021, months: 12, baseAvg: 5450.3 },
-    { year: 2022, months: 11, baseAvg: 5890.1 }
-  ], null, 2),
-  B: JSON.stringify([
-    { year: 2020, months: 12, baseAvg: 4980.5 },
-    { year: 2021, months: 12, baseAvg: 5450.3 },
-    { year: 2022, months: 11, baseAvg: 5890.1 }
-  ], null, 2)
-}
-
 Page({
   data: {
     provinces: PROVINCES,
     provIndex: 6,            // 默认吉林省
-    granularity: 'A',        // A详细 / B中等 / C最简
-    mode: 'forward',         // forward 正向 / infer 反推
-    aJson: '',
-    bStartYear: '', bTotalMonths: '', bJson: '',
-    cStartYear: '', cStartMonth: '', cTotalMonths: '', cBalance: '',
+    // 基础信息
+    startYear: '', startMonth: '', totalMonths: '',
+    // 缴费基数（能填多少填多少）
+    monthlyBase: '',         // 月均缴费基数（统一值）
+    showDetail: false,       // 是否展开逐年明细
+    yearlyJson: '',          // 逐年明细 JSON
+    // 账户余额（选填）
+    balance: '',
     loading: false
   },
 
   onProvChange(e) { this.setData({ provIndex: Number(e.detail.value) }) },
-  onGranChange(e) { this.setData({ granularity: e.currentTarget.dataset.g }) },
-  onModeChange(e) { this.setData({ mode: e.currentTarget.dataset.m }) },
-
   onInput(e) {
     const field = e.currentTarget.dataset.field
     this.setData({ [field]: e.detail.value })
   },
+  toggleDetail() { this.setData({ showDetail: !this.data.showDetail }) },
 
   fillSample() {
-    const g = this.data.granularity
-    if (g === 'A') {
-      this.setData({ aJson: SAMPLE.A })
-    } else if (g === 'B') {
-      this.setData({
-        bStartYear: '2020', bTotalMonths: '35', bJson: SAMPLE.B
-      })
-    } else {
-      this.setData({
-        cStartYear: '2020', cStartMonth: '1', cTotalMonths: '35', cBalance: '80000'
-      })
-    }
+    this.setData({
+      startYear: '1998', startMonth: '7', totalMonths: '295',
+      monthlyBase: '5000',
+      balance: '204822.97'
+    })
     wx.showToast({ title: '已填入示例', icon: 'none' })
   },
 
   calc() {
-    const { provinces, provIndex, granularity, mode } = this.data
+    const { provinces, provIndex, startYear, startMonth, totalMonths,
+            monthlyBase, showDetail, yearlyJson, balance } = this.data
     const province = provinces[provIndex].slug
 
-    // ── C 颗粒度仅支持反推 ──>
-    if (granularity === 'C' && mode === 'forward') {
-      wx.showModal({
-        title: '提示',
-        content: 'C 颗粒度（最简）只有起止时间和月数，没有缴费基数，无法正向计算指数。\n\n请切换到"反推"模式（需填写账户余额），或改用 A/B 颗粒度输入缴费基数。',
-        showCancel: false,
-        confirmText: '我知道了'
-      })
+    const sy = Number(startYear) || 0
+    const sm = Number(startMonth) || 0
+    const tm = Number(totalMonths) || 0
+    const mb = Number(monthlyBase) || 0
+    const kb = Number(balance) || 0
+
+    if (!sy || !sm) {
+      wx.showToast({ title: '请填写参加工作时间', icon: 'none' })
+      return
+    }
+    if (tm <= 0 && mb <= 0 && kb <= 0) {
+      wx.showToast({ title: '请至少填写累计月数/月均基数/余额之一', icon: 'none' })
+      return
+    }
+    if (tm <= 0 && (mb > 0 || kb > 0)) {
+      wx.showToast({ title: '请填写累计缴费月数', icon: 'none' })
       return
     }
 
-    let contribution = {}
-    let knownBalance = undefined
-
-    try {
-      if (granularity === 'A') {
-        if (!this.data.aJson.trim()) throw new Error('请填写缴费数据')
-        contribution = JSON.parse(this.data.aJson)
-      } else if (granularity === 'B') {
-        contribution = {
-          startYear: Number(this.data.bStartYear) || 0,
-          totalMonths: Number(this.data.bTotalMonths) || 0,
-          yearlyData: this.data.bJson.trim() ? JSON.parse(this.data.bJson) : []
-        }
-      } else {
-        contribution = {
-          startYear: Number(this.data.cStartYear) || 0,
-          startMonth: Number(this.data.cStartMonth) || 0,
-          totalMonths: Number(this.data.cTotalMonths) || 0
-        }
-        if (mode === 'infer') {
-          if (!this.data.cBalance.trim()) throw new Error('反推需填写当前账户余额')
-          knownBalance = Number(this.data.cBalance)
-        }
+    // 逐年明细（可选）
+    let yearlyData = []
+    if (showDetail && yearlyJson.trim()) {
+      try {
+        yearlyData = JSON.parse(yearlyJson)
+        if (!Array.isArray(yearlyData)) throw new Error('需为数组')
+      } catch (e) {
+        wx.showToast({ title: '逐年明细格式错误', icon: 'none' })
+        return
       }
-    } catch (e) {
-      wx.showToast({ title: '数据格式错误: ' + e.message, icon: 'none' })
-      return
     }
 
     this.setData({ loading: true })
     wx.cloud.callFunction({
       name: 'calcIndex',
-      data: { province, granularity, contribution, mode, knownBalance },
+      data: { province, startYear: sy, startMonth: sm, totalMonths: tm, monthlyBase: mb, yearlyData, knownBalance: kb },
       success: res => {
         this.setData({ loading: false })
         const r = res.result
         if (!r || !r.success) {
           const errMsg = (r && r.error) || '计算失败'
           if (errMsg.length > 20) {
-            wx.showModal({ title: '计算失败', content: errMsg, showCancel: false })
+            wx.showModal({ title: '提示', content: errMsg, showCancel: false })
           } else {
             wx.showToast({ title: errMsg, icon: 'none' })
           }

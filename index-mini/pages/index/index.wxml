@@ -1,64 +1,54 @@
 <view class="container">
 
-  <!-- 省份选择 -->
+  <!-- 基础信息 -->
   <view class="card">
-    <view class="title">参保省份</view>
-    <picker mode="selector" range="{{provinces}}" range-key="name" value="{{provIndex}}" bindchange="onProvChange">
-      <view class="picker">{{provinces[provIndex].name}} ▾</view>
-    </picker>
-  </view>
-
-  <!-- 计算模式 -->
-  <view class="card">
-    <view class="title">计算模式</view>
-    <view class="seg">
-      <view class="seg-item {{mode==='forward'?'on':''}}" data-m="forward" bindtap="onModeChange">正向（缴费→指数）</view>
-      <view class="seg-item {{mode==='infer'?'on':''}}" data-m="infer" bindtap="onModeChange">反推（余额→指数）</view>
-    </view>
-  </view>
-
-  <!-- 数据颗粒度 -->
-  <view class="card">
-    <view class="title">数据颗粒度</view>
-    <view class="seg">
-      <view class="seg-item {{granularity==='A'?'on':''}}" data-g="A" bindtap="onGranChange">A 详细</view>
-      <view class="seg-item {{granularity==='B'?'on':''}}" data-g="B" bindtap="onGranChange">B 中等</view>
-      <view class="seg-item {{granularity==='C'?'on':''}}" data-g="C" bindtap="onGranChange">C 最简</view>
-    </view>
-    <view class="hint" style="margin-top:16rpx">
-      A：逐年月均缴费基数（最准）｜ B：参加时间+月数+部分年明细 ｜ C：仅起止时间+月数（只能反推）
-    </view>
-  </view>
-
-  <!-- 输入区：A 详细 -->
-  <view class="card" wx:if="{{granularity==='A'}}">
-    <view class="title">逐年缴费数据（A）</view>
-    <view class="hint">JSON 数组，每项：{ year 年, months 当年缴费月数, baseAvg 月均缴费基数 }</view>
-    <textarea class="ta" value="{{aJson}}" data-field="aJson" bindinput="onInput" placeholder="见下方示例" auto-height></textarea>
-  </view>
-
-  <!-- 输入区：B 中等 -->
-  <view class="card" wx:if="{{granularity==='B'}}">
-    <view class="title">缴费概况（B）</view>
+    <view class="title">参保信息</view>
     <view class="row">
-      <text class="lbl">参加年份</text>
-      <input class="inp" value="{{bStartYear}}" data-field="bStartYear" bindinput="onInput" placeholder="如 2020" type="number"/>
+      <text class="lbl">参保省份</text>
+      <picker mode="selector" range="{{provinces}}" range-key="name" value="{{provIndex}}" bindchange="onProvChange">
+        <view class="picker">{{provinces[provIndex].name}} ▾</view>
+      </picker>
     </view>
     <view class="row">
-      <text class="lbl">累计月数</text>
-      <input class="inp" value="{{bTotalMonths}}" data-field="bTotalMonths" bindinput="onInput" placeholder="如 35" type="number"/>
+      <text class="lbl">参加工作时间</text>
+      <view class="inline">
+        <input class="inp-s" value="{{startYear}}" data-field="startYear" bindinput="onInput" placeholder="年" type="number"/>
+        <text class="sep">年</text>
+        <input class="inp-s" value="{{startMonth}}" data-field="startMonth" bindinput="onInput" placeholder="月" type="number"/>
+        <text class="sep">月</text>
+      </view>
     </view>
-    <view class="hint" style="margin:12rpx 0">有明细的年份（JSON 数组）：</view>
-    <textarea class="ta" value="{{bJson}}" data-field="bJson" bindinput="onInput" placeholder="见示例" auto-height></textarea>
+    <view class="row">
+      <text class="lbl">累计缴费月数</text>
+      <input class="inp" value="{{totalMonths}}" data-field="totalMonths" bindinput="onInput" placeholder="如 295" type="number"/>
+    </view>
   </view>
 
-  <!-- 输入区：C 最简 -->
-  <view class="card" wx:if="{{granularity==='C'}}">
-    <view class="title">缴费概况（C）</view>
-    <view class="row"><text class="lbl">参加年份</text><input class="inp" value="{{cStartYear}}" data-field="cStartYear" bindinput="onInput" type="number"/></view>
-    <view class="row"><text class="lbl">参加月份</text><input class="inp" value="{{cStartMonth}}" data-field="cStartMonth" bindinput="onInput" type="number"/></view>
-    <view class="row"><text class="lbl">累计月数</text><input class="inp" value="{{cTotalMonths}}" data-field="cTotalMonths" bindinput="onInput" type="number"/></view>
-    <view class="row" wx:if="{{mode==='infer'}}"><text class="lbl">当前余额</text><input class="inp" value="{{cBalance}}" data-field="cBalance" bindinput="onInput" type="digit" placeholder="个人账户余额(元)"/></view>
+  <!-- 缴费基数 -->
+  <view class="card">
+    <view class="title">缴费基数（能填多少填多少）</view>
+    <view class="row">
+      <text class="lbl">月均缴费基数</text>
+      <input class="inp" value="{{monthlyBase}}" data-field="monthlyBase" bindinput="onInput" placeholder="每月都差不多就填这个数" type="digit"/>
+    </view>
+    <view class="hint">不知道每年变化、或一直按同一档缴，填上面的「月均缴费基数」即可。</view>
+
+    <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我有某些年份的明细（点开填）'}}</view>
+
+    <block wx:if="{{showDetail}}">
+      <view class="hint">逐年明细（JSON 数组，优先级高于上面的月均值）：</view>
+      <textarea class="ta" value="{{yearlyJson}}" data-field="yearlyJson" bindinput="onInput" placeholder='[{"year":2020,"months":12,"baseAvg":4980.5}]' auto-height></textarea>
+    </block>
+  </view>
+
+  <!-- 账户余额 -->
+  <view class="card">
+    <view class="title">账户余额（选填）</view>
+    <view class="row">
+      <text class="lbl">当前余额</text>
+      <input class="inp" value="{{balance}}" data-field="balance" bindinput="onInput" placeholder="社保App查到的个人账户余额" type="digit"/>
+    </view>
+    <view class="hint">填了余额会自动反推平均指数，与上面正向结果互相印证。</view>
   </view>
 
   <view class="sample-btn" bindtap="fillSample">填入示例数据</view>
@@ -66,6 +56,6 @@
   <button class="btn-primary" bindtap="calc" loading="{{loading}}" disabled="{{loading}}">计算</button>
 
   <view class="hint" style="margin-top:20rpx">
-    示例（A/B 逐年数据）：[{ "year":2020, "months":12, "baseAvg":4980.5 }, { "year":2021, "months":12, "baseAvg":5450.3 }]
+    说明：填了基数就出「平均指数+估算余额+逐年明细」；只填余额就出「推算指数」；都填则两边都给。
   </view>
 </view>
