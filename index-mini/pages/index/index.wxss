@@ -7,27 +7,6 @@
   color: #111827;
 }
 
-.seg {
-  display: flex;
-  gap: 16rpx;
-  flex-wrap: wrap;
-}
-.seg-item {
-  flex: 1;
-  min-width: 30%;
-  text-align: center;
-  padding: 18rpx 8rpx;
-  border-radius: 12rpx;
-  background: #f3f4f6;
-  color: #374151;
-  font-size: 26rpx;
-}
-.seg-item.on {
-  background: #1d4ed8;
-  color: #fff;
-  font-weight: 600;
-}
-
 .row {
   display: flex;
   align-items: center;
@@ -44,24 +23,6 @@
   border-radius: 10rpx;
   padding: 16rpx 20rpx;
   font-size: 28rpx;
-}
-
-.ta {
-  width: 100%;
-  min-height: 200rpx;
-  background: #f3f4f6;
-  border-radius: 10rpx;
-  padding: 18rpx 20rpx;
-  font-size: 26rpx;
-  font-family: Menlo, Consolas, monospace;
-  box-sizing: border-box;
-}
-
-.sample-btn {
-  text-align: center;
-  color: #1d4ed8;
-  font-size: 28rpx;
-  padding: 16rpx 0 24rpx;
 }
 
 .inline {
@@ -81,25 +42,27 @@
   color: #6b7280;
   margin: 0 8rpx;
 }
-.link {
-  color: #1d4ed8;
-  font-size: 26rpx;
-  margin: 14rpx 0;
-}
 
-/* 逐年明细逐行表单（年份/月数自动生成，只填基数） */
+/* 逐年缴费清单 */
+.list-tip {
+  color: #6b7280;
+  font-size: 24rpx;
+  margin: 18rpx 0 6rpx;
+  line-height: 1.5;
+}
 .yr-head, .yr-row {
   display: flex;
   align-items: center;
-  margin-top: 12rpx;
+  margin-top: 10rpx;
 }
 .yr-head {
   color: #6b7280;
-  font-size: 24rpx;
+  font-size: 22rpx;
 }
 .yr-c1 { flex: 1; }
 .yr-c2 { flex: 1; }
-.yr-c3 { flex: 1.5; }
+.yr-c3 { flex: 1.6; }
+.yr-c4 { width: 48rpx; text-align: center; }
 .yr-text {
   font-size: 26rpx;
   text-align: center;
@@ -111,8 +74,13 @@
   padding: 14rpx 8rpx;
   font-size: 26rpx;
   text-align: center;
-  margin-right: 10rpx;
+  margin-right: 8rpx;
 }
+.yr-del {
+  color: #ef4444;
+  font-size: 30rpx;
+}
+
 .gen-btn {
   text-align: center;
   color: #1d4ed8;
@@ -120,6 +88,27 @@
   padding: 14rpx 0;
   border: 1rpx solid #c7d2fe;
   border-radius: 10rpx;
-  margin-top: 12rpx;
+  margin-top: 14rpx;
   background: #eef2ff;
+}
+.add-btn {
+  text-align: center;
+  color: #1d4ed8;
+  font-size: 26rpx;
+  padding: 14rpx 0;
+  margin-top: 10rpx;
+}
+.sample-btn {
+  text-align: center;
+  color: #6b7280;
+  font-size: 26rpx;
+  padding: 18rpx 0 8rpx;
+}
+
+.btn-primary {
+  margin-top: 24rpx;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 32rpx;
+  border-radius: 12rpx;
 }

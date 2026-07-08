@@ -1,7 +1,7 @@
 <view class="container">
 
   <view class="row">
-    <text class="lbl">参保省份</text>
+    <text class="lbl">参保地</text>
     <picker mode="selector" range="{{provinces}}" range-key="name" value="{{provIndex}}" bindchange="onProvChange">
       <view class="picker">{{provinces[provIndex].name}} ▾</view>
     </picker>
@@ -17,39 +17,26 @@
     </view>
   </view>
 
-  <view class="row">
-    <text class="lbl">累计缴费月数</text>
-    <input class="inp" value="{{totalMonths}}" data-field="totalMonths" bindinput="onInput" placeholder="如 295" type="number"/>
+  <view class="list-tip">逐年缴费明细（从首年起每年一行；有缴的年份填「月均缴费基数」，没缴的年份留空）</view>
+
+  <view class="yr-head">
+    <text class="yr-c1">年份</text>
+    <text class="yr-c2">月数</text>
+    <text class="yr-c3">月均缴费基数</text>
+    <text class="yr-c4"></text>
+  </view>
+  <view class="yr-row" wx:for="{{yearlyList}}" wx:key="year">
+    <text class="yr-text yr-c1">{{item.year}}年</text>
+    <input class="yr-inp yr-c2" value="{{item.months}}" data-idx="{{index}}" data-sub="months" bindinput="onYearlyInput" type="number"/>
+    <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{index}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="如4980" type="digit"/>
+    <text class="yr-del yr-c4" data-idx="{{index}}" bindtap="delRow">✕</text>
   </view>
 
-  <view class="row">
-    <text class="lbl">当前月缴费基数</text>
-    <input class="inp" value="{{monthlyBase}}" data-field="monthlyBase" bindinput="onInput" placeholder="按现在的工资填，如18533" type="digit"/>
-  </view>
+  <view class="gen-btn" bindtap="genYearly">↻ 按首次缴费年月重新生成年份行</view>
+  <view class="add-btn" bindtap="addYear">＋ 添加一年</view>
 
-  <view class="row">
-    <text class="lbl">账户余额</text>
-    <input class="inp" value="{{balance}}" data-field="balance" bindinput="onInput" placeholder="个人账户累计存储额（含息）" type="digit"/>
-  </view>
+  <view class="sample-btn" bindtap="fillSample">填入示例数据（吉林 1998-2022）</view>
 
-  <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年缴费明细' : '▾ 展开逐年缴费明细'}}</view>
-
-  <block wx:if="{{showDetail}}">
-    <view class="gen-btn" bindtap="genYearly">↻ 按首次缴费时间生成/重排年份</view>
-    <view class="yr-head">
-      <text class="yr-c1">年份</text>
-      <text class="yr-c2">缴费月数</text>
-      <text class="yr-c3">月均基数(填)</text>
-    </view>
-    <view class="yr-row" wx:for="{{yearlyList}}" wx:key="year">
-      <text class="yr-text yr-c1">{{item.year}}年</text>
-      <text class="yr-text yr-c2">{{item.months}}月</text>
-      <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{index}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="如4980" type="digit"/>
-    </view>
-  </block>
-
-  <view class="sample-btn" bindtap="fillSample">填入示例数据</view>
-
-  <button class="btn-primary" bindtap="calc" loading="{{loading}}" disabled="{{loading}}">计算</button>
+  <button class="btn-primary" bindtap="calc" loading="{{loading}}" disabled="{{loading}}">计算平均缴费指数</button>
 
 </view>
