@@ -53,21 +53,39 @@ Page({
     const field = e.currentTarget.dataset.field
     this.setData({ [field]: e.detail.value })
   },
-  toggleDetail() { this.setData({ showDetail: !this.data.showDetail }) },
+  toggleDetail() {
+    const show = !this.data.showDetail
+    if (show) {
+      const empty = this.data.yearlyList.every(r => !r.year && !r.months && !r.baseAvg)
+      if (empty) this.genYearly(true)
+    }
+    this.setData({ showDetail: show })
+  },
 
-  // 逐年明细：逐行输入，不需要 JSON
+  // 逐年明细：按参加工作时间自动生成年份行，用户只需填月均基数
+  genYearly(silent) {
+    const sy = Number(this.data.startYear) || 0
+    const sm = Number(this.data.startMonth) || 0
+    const tm = Number(this.data.totalMonths) || 0
+    if (!sy || !sm) { wx.showToast({ title: '请先填参加工作时间', icon: 'none' }); return }
+    if (tm <= 0) { wx.showToast({ title: '请先填累计缴费月数', icon: 'none' }); return }
+    // 保留已填的基数（按年份匹配），重新生成行
+    const oldMap = {}
+    this.data.yearlyList.forEach(r => { if (r.year && r.baseAvg) oldMap[r.year] = r.baseAvg })
+    const rows = []
+    let rem = tm, y = sy, m = sm
+    while (rem > 0) {
+      const mty = 13 - m
+      const mm = Math.min(rem, mty > 0 ? mty : 12)
+      rows.push({ year: y, months: mm, baseAvg: oldMap[y] || '' })
+      rem -= mm; y += 1; m = 1
+    }
+    this.setData({ yearlyList: rows })
+    if (!silent) wx.showToast({ title: '已生成 ' + rows.length + ' 行', icon: 'none' })
+  },
   onYearlyInput(e) {
     const { idx, sub } = e.currentTarget.dataset
     this.setData({ [`yearlyList[${idx}].${sub}`]: e.detail.value })
-  },
-  addYearly() {
-    this.setData({ yearlyList: this.data.yearlyList.concat([{ year: '', months: '', baseAvg: '' }]) })
-  },
-  removeYearly(e) {
-    const idx = Number(e.currentTarget.dataset.idx)
-    const list = this.data.yearlyList.slice()
-    if (list.length > 1) list.splice(idx, 1)
-    this.setData({ yearlyList: list })
   },
 
   fillSample() {

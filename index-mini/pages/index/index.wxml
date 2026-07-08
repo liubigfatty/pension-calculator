@@ -36,20 +36,18 @@
     <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我有某些年份的明细（点开填）'}}</view>
 
     <block wx:if="{{showDetail}}">
-      <view class="hint">每年都不同就逐行填（每行=一年，优先级高于上面的月均值）：</view>
+      <view class="hint">年份和月数已按你填的参加时间自动排好（从 {{startYear}}年 一直到缴费结束），你只需在每行填当年的「月均缴费基数」，没缴的年份留空即可。</view>
+      <view class="gen-btn" bindtap="genYearly">↻ 按参加时间重新生成/重排</view>
       <view class="yr-head">
         <text class="yr-c1">年份</text>
         <text class="yr-c2">缴费月数</text>
-        <text class="yr-c3">月均基数</text>
-        <text class="yr-c4"></text>
+        <text class="yr-c3">月均基数(填)</text>
       </view>
-      <view class="yr-row" wx:for="{{yearlyList}}" wx:key="idx" wx:for-index="i">
-        <input class="yr-inp yr-c1" value="{{item.year}}" data-idx="{{i}}" data-sub="year" bindinput="onYearlyInput" placeholder="如2020" type="number"/>
-        <input class="yr-inp yr-c2" value="{{item.months}}" data-idx="{{i}}" data-sub="months" bindinput="onYearlyInput" placeholder="12" type="number"/>
-        <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{i}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="4980" type="digit"/>
-        <text class="yr-del yr-c4" data-idx="{{i}}" bindtap="removeYearly">✕</text>
+      <view class="yr-row" wx:for="{{yearlyList}}" wx:key="year">
+        <text class="yr-text yr-c1">{{item.year}}年</text>
+        <text class="yr-text yr-c2">{{item.months}}月</text>
+        <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{index}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="如4980" type="digit"/>
       </view>
-      <view class="add-row" bindtap="addYearly">＋ 再加一行</view>
     </block>
   </view>
 
