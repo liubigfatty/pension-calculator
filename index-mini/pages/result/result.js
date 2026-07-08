@@ -47,7 +47,7 @@ Page({
           ? '按您当前工资估算（假设历年按相同比例缴费）'
           : '基于逐年明细计算（最准确）',
         forwardIsCurrent: fwd._source === 'current',
-        forwardCurrentIndex: (fwd._currentIndex != null) ? fwd._currentIndex.toFixed(4) : ''
+        forwardCurrentIndex: (fwd._currentIndex != null) ? fwd._currentIndex.toFixed(4) : '',
         detail
       })
     }
