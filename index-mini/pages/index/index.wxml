@@ -32,7 +32,7 @@
     <input class="inp" value="{{balance}}" data-field="balance" bindinput="onInput" placeholder="个人账户累计存储额（含息）" type="digit"/>
   </view>
 
-  <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年缴费明细' : '▾ 我有逐年缴费明细（点开填，算得最准）'}}</view>
+  <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年缴费明细' : '▾ 展开逐年缴费明细'}}</view>
 
   <block wx:if="{{showDetail}}">
     <view class="gen-btn" bindtap="genYearly">↻ 按首次缴费时间生成/重排年份</view>

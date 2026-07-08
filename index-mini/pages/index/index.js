@@ -41,8 +41,8 @@ Page({
     startYear: '', startMonth: '', totalMonths: '',
     // 缴费基数（能填多少填多少）
     monthlyBase: '',         // 月均缴费基数（统一值）
-    showDetail: false,       // 是否展开逐年明细
-    yearlyList: [{ year: '', months: '', baseAvg: '' }],  // 逐年明细（逐行表单）
+    showDetail: true,        // 逐年明细默认展开
+    yearlyList: [],          // 逐年明细（首次缴费时间+月数填好后自动生成行）
     // 账户余额（选填）
     balance: '',
     loading: false
@@ -51,7 +51,16 @@ Page({
   onProvChange(e) { this.setData({ provIndex: Number(e.detail.value) }) },
   onInput(e) {
     const field = e.currentTarget.dataset.field
-    this.setData({ [field]: e.detail.value })
+    this.setData({ [field]: e.detail.value }, () => {
+      // 首次缴费时间 + 累计月数都填好、且年份行还没生成时，自动生成
+      if (['startYear', 'startMonth', 'totalMonths'].includes(field)) {
+        const { startYear, startMonth, totalMonths, yearlyList } = this.data
+        const sy = Number(startYear) || 0, sm = Number(startMonth) || 0, tm = Number(totalMonths) || 0
+        if (sy && sm && tm > 0 && yearlyList.every(r => !r.year)) {
+          this.genYearly(true)
+        }
+      }
+    })
   },
   toggleDetail() {
     const show = !this.data.showDetail
@@ -93,8 +102,10 @@ Page({
       startYear: '1998', startMonth: '7', totalMonths: '295',
       monthlyBase: '5000',
       balance: '204822.97'
+    }, () => {
+      this.genYearly(true)
+      wx.showToast({ title: '已填入示例并生成逐年行', icon: 'none' })
     })
-    wx.showToast({ title: '已填入示例', icon: 'none' })
   },
 
   calc() {
