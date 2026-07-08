@@ -1,16 +1,20 @@
 <view class="container">
 
-  <!-- 基础信息 -->
+  <!-- 顶部说明：照单据填 -->
+  <view class="top-tip">照着你的《个人权益记录单》或《社会保险参保证明》填下面各项，没有的留空即可。填什么就出什么结果。</view>
+
+  <!-- 一、基本信息 -->
   <view class="card">
-    <view class="title">参保信息</view>
+    <view class="title">一、参保基本信息</view>
     <view class="row">
       <text class="lbl">参保省份</text>
       <picker mode="selector" range="{{provinces}}" range-key="name" value="{{provIndex}}" bindchange="onProvChange">
         <view class="picker">{{provinces[provIndex].name}} ▾</view>
       </picker>
     </view>
+
     <view class="row">
-      <text class="lbl">参加工作时间</text>
+      <text class="lbl">首次缴费年月</text>
       <view class="inline">
         <input class="inp-s" value="{{startYear}}" data-field="startYear" bindinput="onInput" placeholder="年" type="number"/>
         <text class="sep">年</text>
@@ -18,26 +22,30 @@
         <text class="sep">月</text>
       </view>
     </view>
+    <view class="field-hint">↳ 权益记录单上的「本人首次缴费年月」</view>
+
     <view class="row">
       <text class="lbl">累计缴费月数</text>
       <input class="inp" value="{{totalMonths}}" data-field="totalMonths" bindinput="onInput" placeholder="如 295" type="number"/>
     </view>
+    <view class="field-hint">↳ 权益记录单「截至本年末实际缴费月数」/ 参保证明「总月数」</view>
   </view>
 
-  <!-- 缴费基数 -->
+  <!-- 二、缴费基数 -->
   <view class="card">
-    <view class="title">缴费基数（能填多少填多少）</view>
+    <view class="title">二、缴费基数（有就填）</view>
     <view class="row">
       <text class="lbl">当前月缴费基数</text>
       <input class="inp" value="{{monthlyBase}}" data-field="monthlyBase" bindinput="onInput" placeholder="按你现在的工资填，如18533" type="digit"/>
     </view>
-    <view class="hint">填你<text class="strong">现在的</text>月工资基数即可。系统用「当前基数 ÷ 当前社平」算出当下指数，把它当作平均缴费指数，反推往年基数，再估算账户余额。</view>
+    <view class="field-hint">↳ 权益记录单上的「个人缴费基数」（填现在的就行）</view>
+    <view class="hint">系统用「当前基数 ÷ 当前社平」算当下指数，当作平均指数反推往年、估算余额。</view>
 
-    <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我有某些年份的明细（点开填）'}}</view>
+    <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我还有逐年缴费明细（点开填）'}}</view>
 
     <block wx:if="{{showDetail}}">
-      <view class="hint">年份和月数已按你填的参加时间自动排好（从 {{startYear}}年 一直到缴费结束），你只需在每行填当年的「月均缴费基数」，没缴的年份留空即可。</view>
-      <view class="gen-btn" bindtap="genYearly">↻ 按参加时间重新生成/重排</view>
+      <view class="hint">年份和月数已按你填的首次缴费时间自动排好（从 {{startYear}}年 一直到缴费结束），你只需在每行填当年的「月均缴费基数」，没缴的年份留空即可。</view>
+      <view class="gen-btn" bindtap="genYearly">↻ 按首次缴费时间重新生成/重排</view>
       <view class="yr-head">
         <text class="yr-c1">年份</text>
         <text class="yr-c2">缴费月数</text>
@@ -48,17 +56,19 @@
         <text class="yr-text yr-c2">{{item.months}}月</text>
         <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{index}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="如4980" type="digit"/>
       </view>
+      <view class="field-hint">↳ 参保证明里的「近年参保费用明细」可逐年填，算得最准</view>
     </block>
   </view>
 
-  <!-- 账户余额 -->
+  <!-- 三、账户余额 -->
   <view class="card">
-    <view class="title">账户余额（选填）</view>
+    <view class="title">三、账户余额（有就填）</view>
     <view class="row">
-      <text class="lbl">当前余额</text>
+      <text class="lbl">账户余额</text>
       <input class="inp" value="{{balance}}" data-field="balance" bindinput="onInput" placeholder="社保App查到的个人账户余额" type="digit"/>
     </view>
-    <view class="hint">填了余额会自动反推平均指数，与上面正向结果互相印证。</view>
+    <view class="field-hint">↳ 权益记录单「截至本年末累计余额」/ 社保App「个人账户累计存储额」（含息）</view>
+    <view class="hint">填了余额会自动反推平均指数，和上面的结果互相印证。</view>
   </view>
 
   <view class="sample-btn" bindtap="fillSample">填入示例数据</view>

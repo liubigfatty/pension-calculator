@@ -1,4 +1,20 @@
 /* pages/index/index.wxss */
+.top-tip {
+  background: #eef2ff;
+  border: 1rpx solid #c7d2fe;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 26rpx;
+  color: #3730a3;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+.field-hint {
+  font-size: 22rpx;
+  color: #9ca3af;
+  line-height: 1.5;
+  margin: -6rpx 0 14rpx 160rpx;
+}
 .picker {
   background: #f3f4f6;
   border-radius: 12rpx;

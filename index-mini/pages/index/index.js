@@ -67,7 +67,7 @@ Page({
     const sy = Number(this.data.startYear) || 0
     const sm = Number(this.data.startMonth) || 0
     const tm = Number(this.data.totalMonths) || 0
-    if (!sy || !sm) { wx.showToast({ title: '请先填参加工作时间', icon: 'none' }); return }
+    if (!sy || !sm) { wx.showToast({ title: '请先填首次缴费时间', icon: 'none' }); return }
     if (tm <= 0) { wx.showToast({ title: '请先填累计缴费月数', icon: 'none' }); return }
     // 保留已填的基数（按年份匹配），重新生成行
     const oldMap = {}
@@ -109,7 +109,7 @@ Page({
     const kb = Number(balance) || 0
 
     if (!sy || !sm) {
-      wx.showToast({ title: '请填写参加工作时间', icon: 'none' })
+      wx.showToast({ title: '请填写首次缴费时间', icon: 'none' })
       return
     }
     if (tm <= 0 && mb <= 0 && kb <= 0) {
