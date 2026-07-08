@@ -221,7 +221,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -275,8 +274,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8785,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,

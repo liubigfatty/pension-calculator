@@ -90,7 +90,6 @@
     "2023": 8014,
     "2024": 8785
   },
-  "interest_rates": {},
   "modules": {
     "basic_pension": {
       "enabled": true,

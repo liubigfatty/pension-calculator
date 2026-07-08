@@ -121,7 +121,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -171,18 +170,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8131,
 };
 
-const INTEREST_RATES = {
-  2016: 0.0831,
-  2017: 0.0712,
-  2018: 0.0699,
-  2019: 0.0761,
-  2020: 0.065,
-  2021: 0.063,
-  2022: 0.063,
-  2023: 0.063,
-  2024: 0.0247,
-  2025: 0.0247,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,

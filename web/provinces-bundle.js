@@ -97,7 +97,6 @@ const cases = []
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -143,29 +142,7 @@ const AVG_SALARY_HISTORY = {
   2024: 7842,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -363,7 +340,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -418,29 +394,7 @@ const AVG_SALARY_HISTORY = {
   2026: 13092,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -582,7 +536,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -641,8 +594,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8160,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -775,7 +727,6 @@ const cases = [
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -841,29 +792,7 @@ const AVG_SALARY_HISTORY = {
   2024: 7776,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -1063,7 +992,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -1119,29 +1047,7 @@ const AVG_SALARY_HISTORY = {
   2026: 8100,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -1298,7 +1204,6 @@ const cases = [
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
@@ -1352,29 +1257,7 @@ const AVG_SALARY_HISTORY = {
   2025: 9905,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -1525,7 +1408,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -1580,29 +1462,7 @@ const AVG_SALARY_HISTORY = {
   2024: 6847,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -1744,7 +1604,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -1806,8 +1665,7 @@ const AVG_SALARY_HISTORY = {
   2026: 7857.75,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -1947,7 +1805,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -1997,18 +1854,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8131,
 };
 
-const INTEREST_RATES = {
-  2016: 0.0831,
-  2017: 0.0712,
-  2018: 0.0699,
-  2019: 0.0761,
-  2020: 0.065,
-  2021: 0.063,
-  2022: 0.063,
-  2023: 0.063,
-  2024: 0.0247,
-  2025: 0.0247,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -2118,7 +1964,6 @@ const cases = []
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -2167,29 +2012,7 @@ const AVG_SALARY_HISTORY = {
   2024: 7265,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -2496,7 +2319,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -2557,23 +2379,7 @@ const AVG_SALARY_HISTORY = {
   2026: 7705,
 };
 
-const INTEREST_RATES = {
-  2010: 0.025,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.025,
-  2014: 0.05,
-  2015: 0.05,
-  2016: 0.0831,
-  2017: 0.0712,
-  2018: 0.0829,
-  2019: 0.0761,
-  2020: 0.0604,
-  2021: 0.0669,
-  2022: 0.0612,
-  2023: 0.0397,
-  2024: 0.0262,
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -2725,7 +2531,6 @@ const cases = [
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
@@ -2776,29 +2581,7 @@ const AVG_SALARY_HISTORY = {
   2024: 6606,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -2908,7 +2691,6 @@ const cases = []
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -2952,29 +2734,7 @@ const AVG_SALARY_HISTORY = {
   2024: 9022,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -3203,7 +2963,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -3264,29 +3023,7 @@ const AVG_SALARY_HISTORY = {
   2026: 6258,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
   BASE_PARAMS,
@@ -3529,7 +3266,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -3583,8 +3319,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8785,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -3743,7 +3478,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -3804,8 +3538,7 @@ const AVG_SALARY_HISTORY = {
   2026: 6655,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -4122,7 +3855,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
     province: PROV_TAG,
     name: '吉林省',
@@ -4178,29 +3910,7 @@ const AVG_SALARY_HISTORY = {
   2026: 7642.79,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
   CC_BASE,
@@ -4499,7 +4209,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
@@ -4570,29 +4279,7 @@ const AVG_SALARY_HISTORY = {
   2025: 7417,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -4737,7 +4424,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -4798,8 +4484,7 @@ const AVG_SALARY_HISTORY = {
   2025: 8179,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -5040,7 +4725,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: {
       prov: PROV_BASE
@@ -5101,8 +4785,7 @@ const AVG_SALARY_HISTORY = {
   2026: 8737.59,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -5240,7 +4923,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -5296,8 +4978,7 @@ const AVG_SALARY_HISTORY = {
   2025: 9057,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -5444,7 +5125,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -5502,29 +5182,7 @@ const AVG_SALARY_HISTORY = {
   2024: 7727,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -5673,7 +5331,6 @@ function getEngineConfig() {
     }
   }
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -5727,29 +5384,7 @@ const AVG_SALARY_HISTORY = {
   2024: 7678,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -5938,7 +5573,6 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
     return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -5998,29 +5632,7 @@ const AVG_SALARY_HISTORY = {
   2025: 12307,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -6175,7 +5787,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -6234,29 +5845,7 @@ const AVG_SALARY_HISTORY = {
   2025: 7111,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -6475,7 +6064,6 @@ const NOTES = {
  */
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
     province: 'sichuan',
     name: '四川省',
@@ -6692,28 +6280,7 @@ const AVG_SALARY_HISTORY = {
   2026: 8792,
 };
 
-const INTEREST_RATES = {
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
   AVG_SALARY_HISTORY,
@@ -6858,7 +6425,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -6919,29 +6485,7 @@ const AVG_SALARY_HISTORY = {
   2025: 9509,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -7081,7 +6625,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -7136,8 +6679,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8321,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -7278,7 +6820,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -7324,8 +6865,7 @@ const AVG_SALARY_HISTORY = {
   2025: 11777,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
@@ -7571,7 +7111,6 @@ function getEngineConfig() {
   }
 
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -7627,29 +7166,7 @@ const AVG_SALARY_HISTORY = {
   2026: 8265,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.0325,
-  2011: 0.0325,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
@@ -7792,7 +7309,6 @@ const cases = [
 
 function getEngineConfig() {
   return {
-  interest_rates: INTEREST_RATES,
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
       account_start: ACCOUNT_START,
@@ -7845,29 +7361,7 @@ const AVG_SALARY_HISTORY = {
   2024: 8310,
 };
 
-const INTEREST_RATES = {
-  1995: 0.025,
-  1996: 0.025,
-  1997: 0.025,
-  1998: 0.025,
-  1999: 0.025,
-  2000: 0.025,
-  2001: 0.025,
-  2002: 0.025,
-  2003: 0.025,
-  2004: 0.025,
-  2005: 0.0226,
-  2006: 0.025,
-  2007: 0.025,
-  2008: 0.0393,
-  2009: 0.0225,
-  2010: 0.023,
-  2011: 0.025,
-  2012: 0.025,
-  2013: 0.0325,
-  2014: 0.025,
-  2015: 0.025,
-};
+
 module.exports = {
   PROV_TAG,
   PROV_BASE,
