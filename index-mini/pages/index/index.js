@@ -42,7 +42,7 @@ Page({
     // 缴费基数（能填多少填多少）
     monthlyBase: '',         // 月均缴费基数（统一值）
     showDetail: false,       // 是否展开逐年明细
-    yearlyJson: '',          // 逐年明细 JSON
+    yearlyList: [{ year: '', months: '', baseAvg: '' }],  // 逐年明细（逐行表单）
     // 账户余额（选填）
     balance: '',
     loading: false
@@ -55,6 +55,21 @@ Page({
   },
   toggleDetail() { this.setData({ showDetail: !this.data.showDetail }) },
 
+  // 逐年明细：逐行输入，不需要 JSON
+  onYearlyInput(e) {
+    const { idx, sub } = e.currentTarget.dataset
+    this.setData({ [`yearlyList[${idx}].${sub}`]: e.detail.value })
+  },
+  addYearly() {
+    this.setData({ yearlyList: this.data.yearlyList.concat([{ year: '', months: '', baseAvg: '' }]) })
+  },
+  removeYearly(e) {
+    const idx = Number(e.currentTarget.dataset.idx)
+    const list = this.data.yearlyList.slice()
+    if (list.length > 1) list.splice(idx, 1)
+    this.setData({ yearlyList: list })
+  },
+
   fillSample() {
     this.setData({
       startYear: '1998', startMonth: '7', totalMonths: '295',
@@ -66,7 +81,7 @@ Page({
 
   calc() {
     const { provinces, provIndex, startYear, startMonth, totalMonths,
-            monthlyBase, showDetail, yearlyJson, balance } = this.data
+            monthlyBase, showDetail, balance } = this.data
     const province = provinces[provIndex].slug
 
     const sy = Number(startYear) || 0
@@ -88,16 +103,12 @@ Page({
       return
     }
 
-    // 逐年明细（可选）
+    // 逐年明细（逐行表单，可选）
     let yearlyData = []
-    if (showDetail && yearlyJson.trim()) {
-      try {
-        yearlyData = JSON.parse(yearlyJson)
-        if (!Array.isArray(yearlyData)) throw new Error('需为数组')
-      } catch (e) {
-        wx.showToast({ title: '逐年明细格式错误', icon: 'none' })
-        return
-      }
+    if (showDetail) {
+      yearlyData = this.data.yearlyList
+        .map(r => ({ year: Number(r.year), months: Number(r.months), baseAvg: Number(r.baseAvg) }))
+        .filter(r => r.year > 0 && r.months > 0 && r.baseAvg > 0)
     }
 
     this.setData({ loading: true })

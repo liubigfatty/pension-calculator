@@ -86,3 +86,39 @@
   font-size: 26rpx;
   margin: 14rpx 0;
 }
+
+/* 逐年明细逐行表单 */
+.yr-head, .yr-row {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+.yr-head {
+  color: #6b7280;
+  font-size: 24rpx;
+}
+.yr-c1 { flex: 1.1; }
+.yr-c2 { flex: 1; }
+.yr-c3 { flex: 1.2; }
+.yr-c4 { flex: 0.5; text-align: center; }
+.yr-inp {
+  background: #f3f4f6;
+  border-radius: 10rpx;
+  padding: 14rpx 8rpx;
+  font-size: 26rpx;
+  text-align: center;
+  margin-right: 10rpx;
+}
+.yr-del {
+  color: #ef4444;
+  font-size: 30rpx;
+}
+.add-row {
+  text-align: center;
+  color: #1d4ed8;
+  font-size: 26rpx;
+  padding: 16rpx 0 4rpx;
+  border: 1rpx dashed #c7d2fe;
+  border-radius: 10rpx;
+  margin-top: 12rpx;
+}

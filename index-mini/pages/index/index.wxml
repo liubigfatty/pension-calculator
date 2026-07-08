@@ -36,8 +36,20 @@
     <view class="link" bindtap="toggleDetail">{{showDetail ? '▴ 收起逐年明细' : '▾ 我有某些年份的明细（点开填）'}}</view>
 
     <block wx:if="{{showDetail}}">
-      <view class="hint">逐年明细（JSON 数组，优先级高于上面的月均值）：</view>
-      <textarea class="ta" value="{{yearlyJson}}" data-field="yearlyJson" bindinput="onInput" placeholder='[{"year":2020,"months":12,"baseAvg":4980.5}]' auto-height></textarea>
+      <view class="hint">每年都不同就逐行填（每行=一年，优先级高于上面的月均值）：</view>
+      <view class="yr-head">
+        <text class="yr-c1">年份</text>
+        <text class="yr-c2">缴费月数</text>
+        <text class="yr-c3">月均基数</text>
+        <text class="yr-c4"></text>
+      </view>
+      <view class="yr-row" wx:for="{{yearlyList}}" wx:key="idx" wx:for-index="i">
+        <input class="yr-inp yr-c1" value="{{item.year}}" data-idx="{{i}}" data-sub="year" bindinput="onYearlyInput" placeholder="如2020" type="number"/>
+        <input class="yr-inp yr-c2" value="{{item.months}}" data-idx="{{i}}" data-sub="months" bindinput="onYearlyInput" placeholder="12" type="number"/>
+        <input class="yr-inp yr-c3" value="{{item.baseAvg}}" data-idx="{{i}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="4980" type="digit"/>
+        <text class="yr-del yr-c4" data-idx="{{i}}" bindtap="removeYearly">✕</text>
+      </view>
+      <view class="add-row" bindtap="addYearly">＋ 再加一行</view>
     </block>
   </view>
 
