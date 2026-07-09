@@ -16,6 +16,7 @@
       <text class="m-value">{{totalMonths}} 个月（{{totalYears}} 年）</text>
     </view>
     <view class="hint">{{forwardSource}}</view>
+    <view class="warn" wx:if="{{gapNote}}">{{gapNote}}</view>
     <view class="hint strong" wx:if="{{forwardIsCurrent}}">当下指数 = 当前基数 ÷ 当前社平 = {{forwardCurrentIndex}}，已作为平均缴费指数反推各年基数并算出余额。</view>
   </view>
 

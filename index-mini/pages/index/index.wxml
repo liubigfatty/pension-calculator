@@ -5,6 +5,7 @@
     <picker mode="selector" range="{{provinces}}" range-key="name" value="{{provIndex}}" bindchange="onProvChange">
       <view class="picker">{{provinces[provIndex].name}} ▾</view>
     </picker>
+    <view class="warn" wx:if="{{gapHint}}">{{gapHint}}</view>
   </view>
 
   <view class="row">

@@ -60,7 +60,7 @@ function getSocialAvg(avgSalaryHistory, year) {
  * @param {string} params.granularity - 'A'详细(逐月) / 'B'中等(年汇总+部分明细) / 'C'最简(仅起止)
  * @returns {Object} { avgIndex, accountBalance, totalMonths, totalYears, yearsDetail }
  */
-function calculateIndex({ provinceConfig, contribution, granularity = 'A' }) {
+function calculateIndex({ provinceConfig, contribution, granularity = 'A', gapYearCountsInAvg = false }) {
   const salaryHist = provinceConfig.avg_salary_history || {}
 
   // ── C 颗粒度无基数数据，正向无法计算 ──>
@@ -88,6 +88,31 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A' }) {
 
   for (const rec of yearlyRecords) {
     const year = rec.year
+
+    // ── 断缴年份处理（仅当该年无缴费基数 baseAvg<=0）──>
+    if (rec.baseAvg <= 0) {
+      const gapSocial = getSocialAvg(salaryHist, year)
+      if (gapYearCountsInAvg && gapSocial && gapSocial > 0) {
+        // 断缴年计入平均指数分母（指数记0），已有余额照常计息
+        const grate = getRate(year)
+        accountBalance = accountBalance * (1 + grate)
+        totalWeight += rec.months
+        yearsDetail.push({
+          year, months: rec.months, baseAvg: 0,
+          socialAvg: gapSocial, index: 0, weightedIndex: 0, rate: grate,
+          accountContribution: 0, balanceAfterYear: accountBalance, gap: true
+        })
+      } else {
+        // 多数省份：断缴年直接忽略（不计入公式）
+        yearsDetail.push({
+          year, months: rec.months, baseAvg: 0,
+          socialAvg: (gapSocial && gapSocial > 0) ? gapSocial : null,
+          index: null, gap: true, skipped: true,
+          note: (gapSocial && gapSocial > 0) ? '断缴年份（不计入平均指数）' : `缺少${year}年社平`
+        })
+      }
+      continue
+    }
 
     // 取当年社平作为分母（官方公式字面口径：当年缴费工资额 / 当年全省职工平均工资）
     const socialAvg = getSocialAvg(salaryHist, year)
@@ -149,7 +174,9 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A' }) {
     _meta: {
       granularity,
       province: provinceConfig.name || 'unknown',
-      rateSource: '剪刀财经 UNIFIED_RATES 1996-2025'
+      rateSource: '剪刀财经 UNIFIED_RATES 1996-2025',
+      gapYearCountsInAvg,
+      gapYears: yearsDetail.filter(y => y.gap && !y.skipped).length
     }
   }
 }

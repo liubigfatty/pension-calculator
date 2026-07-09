@@ -38,6 +38,13 @@ Page({
           index: y.index.toFixed(4),
           balance: (y.balanceAfterYear || 0).toFixed(2)
         }))
+      const meta = fwd._meta || {}
+      const gapRule = !!meta.gapYearCountsInAvg
+      const gapYears = meta.gapYears || 0
+      let gapNote = ''
+      if (gapRule && gapYears > 0) {
+        gapNote = `您选择的${meta.province || '该地区'}执行“断缴年份按指数0计入平均指数”规则：本次有 ${gapYears} 个断缴年份已计入分母，平均指数因此被拉低。`
+      }
       Object.assign(patch, {
         avgIndex: fwd.avgIndex !== undefined ? fwd.avgIndex.toFixed(4) : '-',
         accountBalance: fwd.accountBalance !== undefined ? fwd.accountBalance.toFixed(2) : '-',
@@ -48,6 +55,7 @@ Page({
           : '基于逐年明细计算（最准确）',
         forwardIsCurrent: fwd._source === 'current',
         forwardCurrentIndex: (fwd._currentIndex != null) ? fwd._currentIndex.toFixed(4) : '',
+        gapNote,
         detail
       })
     }

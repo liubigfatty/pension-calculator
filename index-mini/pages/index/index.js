@@ -71,6 +71,7 @@ Page({
   data: {
     provinces: PROVINCES,
     provIndex: 6,            // 默认吉林省
+    gapHint: '',             // 断缴计入省份提示
     // 基础信息
     startYear: '', startMonth: '',
     // 逐年缴费明细（从首次缴费年起自动铺行）
@@ -78,7 +79,16 @@ Page({
     loading: false
   },
 
-  onProvChange(e) { this.setData({ provIndex: Number(e.detail.value) }) },
+  onProvChange(e) {
+    const provIndex = Number(e.detail.value)
+    const prov = this.data.provinces[provIndex]
+    // 断缴年份按0计入平均指数的省份：北京/天津/陕西/浙江/云南
+    const GAP_SET = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
+    const gapHint = GAP_SET.has(prov.slug)
+      ? '提示：' + prov.name + '执行“断缴年份按指数0计入平均指数”规则——中间断缴的年份会拉低您的平均指数，请如实逐年填写。'
+      : ''
+    this.setData({ provIndex, gapHint })
+  },
 
   onInput(e) {
     const field = e.currentTarget.dataset.field
@@ -155,12 +165,12 @@ Page({
       return
     }
 
-    // 只收「填了月均基数」的年份；没填的（没缴/空）跳过
+    // 发送所有年份行（含空行/断缴年）。空行 baseAvg=0，由云函数按省份规则决定是否计入分母
     const yearlyData = this.data.yearlyList
-      .map(r => ({ year: Number(r.year), months: Number(r.months), baseAvg: Number(r.baseAvg) }))
-      .filter(r => r.year > 0 && r.months > 0 && r.baseAvg > 0)
+      .filter(r => Number(r.year) > 0 && Number(r.months) > 0)
+      .map(r => ({ year: Number(r.year), months: Number(r.months), baseAvg: Number(r.baseAvg) || 0 }))
 
-    if (yearlyData.length === 0) {
+    if (!yearlyData.some(r => r.baseAvg > 0)) {
       wx.showToast({ title: '请至少填写一年的月均缴费基数', icon: 'none' })
       return
     }
