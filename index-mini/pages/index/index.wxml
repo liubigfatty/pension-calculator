@@ -15,32 +15,26 @@
       <view class="warn" wx:if="{{gapHint}}">{{gapHint}}</view>
     </view>
 
-    <!-- 首次缴费年月 -->
+    <!-- 首次缴费年月（复用养老金主程序的年月时间选择器） -->
     <view class="form-item">
       <text class="form-label">首次缴费年月</text>
-      <view class="date-row">
-        <view class="input-wrap">
-          <input class="input-field" value="{{startYear}}" data-field="startYear" bindinput="onInput" placeholder="年" type="number"/>
-          <text class="input-suffix">年</text>
+      <picker mode="date" fields="month" value="{{startDate}}" start="1990-01" end="{{today}}" bindchange="onStartDateChange">
+        <view class="picker-box {{startDate ? 'selected' : ''}}">
+          <text class="picker-value">{{startDate || '请选择首次缴费年月'}}</text>
+          <text class="picker-arrow">▼</text>
         </view>
-        <view class="input-wrap">
-          <input class="input-field" value="{{startMonth}}" data-field="startMonth" bindinput="onInput" placeholder="月" type="number"/>
-          <text class="input-suffix">月</text>
-        </view>
-      </view>
-      <text class="form-hint">清单自动从首年起铺到今年（{{curYear}}年）；有缴的年份填月均缴费基数，没缴的年份留空。</text>
+      </picker>
     </view>
   </view>
 
   <!-- 逐年缴费明细卡片 -->
   <view class="form-card">
-    <text class="form-card-title">逐年缴费明细</text>
+    <text class="form-card-title">逐年缴费明细（未缴年份留空）</text>
 
     <view class="yr-head">
       <text class="yr-c1">年份</text>
       <text class="yr-c2">月数</text>
       <text class="yr-c3">月均缴费基数</text>
-      <text class="yr-c4"></text>
     </view>
 
     <view class="yr-row" wx:for="{{yearlyList}}" wx:key="year">
@@ -51,12 +45,7 @@
       <view class="input-wrap yr-wrap yr-c3">
         <input class="input-field yr-field" value="{{item.baseAvg}}" data-idx="{{index}}" data-sub="baseAvg" bindinput="onYearlyInput" placeholder="如4980" type="digit"/>
       </view>
-      <text class="yr-del yr-c4" data-idx="{{index}}" bindtap="delRow">✕</text>
     </view>
-
-    <view class="gen-btn" bindtap="genYearly">↻ 重新生成（首年 → 今年）</view>
-    <view class="add-btn" bindtap="addYear">＋ 添加一年</view>
-    <view class="sample-btn" bindtap="fillSample">填入示例数据（吉林 1998-2022）</view>
   </view>
 
   <button class="btn-primary" bindtap="calc" loading="{{loading}}" disabled="{{loading}}">计算平均缴费指数</button>

@@ -94,25 +94,6 @@
   line-height: 88rpx;
   text-align: center;
 }
-.input-suffix {
-  font-size: 26rpx;
-  color: var(--color-text-hint);
-  margin-left: 8rpx;
-}
-
-/* 并排日期（年/月） */
-.date-row {
-  display: flex;
-  gap: 20rpx;
-}
-
-.form-hint {
-  display: block;
-  font-size: 24rpx;
-  color: var(--color-text-hint);
-  line-height: 1.5;
-  margin-top: 12rpx;
-}
 
 /* 断缴提示（暖金） */
 .warn {
@@ -142,7 +123,6 @@
 .yr-c1 { flex: 1; }
 .yr-c2 { flex: 1; }
 .yr-c3 { flex: 1.6; }
-.yr-c4 { width: 48rpx; text-align: center; }
 
 .yr-text {
   font-size: 26rpx;
@@ -156,29 +136,8 @@
   line-height: 64rpx;
   font-size: 24rpx;
 }
-.yr-del {
-  color: var(--color-danger);
-  font-size: 30rpx;
-}
 
 /* 操作按钮 */
-.gen-btn {
-  text-align: center;
-  color: var(--color-primary);
-  font-size: 26rpx;
-  padding: 16rpx 0;
-  border: 1rpx solid var(--color-border);
-  border-radius: var(--radius-round);
-  margin-top: 18rpx;
-  background: rgba(139,115,85,0.06);
-}
-.add-btn {
-  text-align: center;
-  color: var(--color-primary);
-  font-size: 26rpx;
-  padding: 16rpx 0;
-  margin-top: 12rpx;
-}
 .sample-btn {
   text-align: center;
   color: var(--color-text-hint);

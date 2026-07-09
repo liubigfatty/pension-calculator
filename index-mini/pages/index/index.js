@@ -2,7 +2,7 @@
 // 设计（v3）：只服务「有逐年缴费明细」的人，UI 与养老金主程序（正元金）统一
 //   第一行：参保地（省份）—— 决定用哪套社平工资
 //   第二行：首次缴费年月 —— 锚定清单起点（含首年实际缴费月数）
-//   逐年缴费明细：从首次缴费年自动铺到今年（去掉截止年份，清单即覆盖全部应缴年）
+//   逐年缴费明细：从首次缴费年自动铺到当前年份（去掉截止年份，清单即覆盖全部应缴年）
 //   有缴的年份填月均基数，没缴的年份留空（5省按应缴费年限计入断缴=0，其余省忽略）
 const PROVINCES = [
   { slug: 'beijing', name: '北京市' },
@@ -38,44 +38,23 @@ const PROVINCES = [
   { slug: 'xinjiang', name: '新疆维吾尔自治区' }
 ]
 
-const SAMPLE_YEARLY = [
-  { year: 1998, months: 6, baseAvg: 353.0 },
-  { year: 1999, months: 12, baseAvg: 353.0 },
-  { year: 2000, months: 12, baseAvg: 436.8 },
-  { year: 2001, months: 12, baseAvg: 2154.0 },
-  { year: 2002, months: 12, baseAvg: 488.0 },
-  { year: 2003, months: 12, baseAvg: 589.0 },
-  { year: 2004, months: 13, baseAvg: 1500.0 },
-  { year: 2005, months: 12, baseAvg: 1500.0 },
-  { year: 2006, months: 12, baseAvg: 1500.0 },
-  { year: 2007, months: 12, baseAvg: 2200.0 },
-  { year: 2008, months: 12, baseAvg: 2183.33 },
-  { year: 2009, months: 12, baseAvg: 1598.67 },
-  { year: 2010, months: 12, baseAvg: 1522.0 },
-  { year: 2011, months: 12, baseAvg: 1786.0 },
-  { year: 2012, months: 12, baseAvg: 2074.0 },
-  { year: 2013, months: 12, baseAvg: 10941.0 },
-  { year: 2014, months: 12, baseAvg: 11174.0 },
-  { year: 2015, months: 12, baseAvg: 8300.38 },
-  { year: 2016, months: 12, baseAvg: 11351.97 },
-  { year: 2017, months: 12, baseAvg: 10857.65 },
-  { year: 2018, months: 12, baseAvg: 14714.6 },
-  { year: 2019, months: 12, baseAvg: 15151.17 },
-  { year: 2020, months: 13, baseAvg: 14475.01 },
-  { year: 2021, months: 12, baseAvg: 16639.75 },
-  { year: 2022, months: 11, baseAvg: 18532.95 }
-]
-
 Page({
   data: {
     provinces: PROVINCES,
     provIndex: 6,
     gapHint: '',
-    curYear: new Date().getFullYear(),
+    today: '',
+    startDate: '',
     startYear: '',
     startMonth: '',
     yearlyList: [],
     loading: false
+  },
+
+  onLoad() {
+    const now = new Date()
+    const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
+    this.setData({ today })
   },
 
   onProvChange(e) {
@@ -89,27 +68,22 @@ Page({
     this.setData({ provIndex, gapHint })
   },
 
-  onInput(e) {
-    const field = e.currentTarget.dataset.field
-    this.setData({ [field]: e.detail.value }, () => {
-      if (['startYear', 'startMonth'].includes(field)) {
-        const { startYear, startMonth, yearlyList } = this.data
-        const sy = Number(startYear) || 0
-        const sm = Number(startMonth) || 0
-        // 首年月填好后，若清单尚未生成或已生成，则自动从首年铺到今年（保留已填基数）
-        if (sy && sm && (yearlyList.length === 0 || yearlyList.some(r => r.year))) {
-          this.genYearly(true)
-        }
-      }
+  // 首次缴费年月：复用养老金主程序的「年月」时间选择器（picker mode=date fields=month）
+  onStartDateChange(e) {
+    const ym = e.detail.value.substring(0, 7)  // 形如 "1995-07"（detail.value 为 "1995-07-01"）
+    const [y, m] = ym.split('-').map(Number)
+    this.setData({ startDate: ym, startYear: String(y), startMonth: String(m) }, () => {
+      this.genYearly(true)
     })
   },
 
-  // 逐年明细：从「首次缴费年」自动铺到今年（去掉了截止年份）
+  // 逐年明细：从「首次缴费年」自动铺到当前年份（去掉了截止年份，清单即覆盖全部应缴年）
+  //   endYear 每次都按 new Date().getFullYear() 实时取，确保跨年（今年2026、明年2027…）始终正确
   //   endYearOverride 仅用于示例按钮（示例数据止于2022）
   genYearly(silent, endYearOverride) {
     const sy = Number(this.data.startYear) || 0
     const sm = Number(this.data.startMonth) || 1
-    const ey = Number(endYearOverride) || this.data.curYear
+    const ey = Number(endYearOverride) || new Date().getFullYear()
     if (!sy) {
       if (!silent) wx.showToast({ title: '请先填写首次缴费年月', icon: 'none' })
       return
@@ -132,44 +106,9 @@ Page({
     if (!silent) wx.showToast({ title: '已生成 ' + rows.length + ' 行', icon: 'none' })
   },
 
-  addYear() {
-    const list = this.data.yearlyList.slice()
-    const lastYear = list.length ? list[list.length - 1].year : (Number(this.data.startYear) || this.data.curYear)
-    list.push({ year: lastYear + 1, months: 12, baseAvg: '' })
-    this.setData({ yearlyList: list })
-  },
-
-  delRow(e) {
-    const idx = Number(e.currentTarget.dataset.idx)
-    const list = this.data.yearlyList.slice()
-    list.splice(idx, 1)
-    this.setData({ yearlyList: list })
-  },
-
   onYearlyInput(e) {
     const { idx, sub } = e.currentTarget.dataset
     this.setData({ ['yearlyList[' + idx + '].' + sub]: e.detail.value })
-  },
-
-  fillSample() {
-    const startYear = 1998
-    const startMonth = 7
-    const rows = []
-    let y = 1998
-    while (y <= 2022) {
-      const months = (y === 1998) ? (7 > 1 ? 13 - 7 : 12) : 12
-      const s = SAMPLE_YEARLY.find(r => r.year === y)
-      rows.push({ year: y, months, baseAvg: s ? String(s.baseAvg) : '' })
-      y += 1
-    }
-    this.setData({
-      provIndex: 6,
-      startYear: '1998',
-      startMonth: '7',
-      yearlyList: rows
-    }, () => {
-      wx.showToast({ title: '已填入吉林示例（25年）', icon: 'none' })
-    })
   },
 
   calc() {
