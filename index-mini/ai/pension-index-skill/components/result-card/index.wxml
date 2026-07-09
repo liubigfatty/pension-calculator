@@ -1,0 +1,19 @@
+<view class="ai-card">
+  <view class="ai-card__title">平均缴费指数测算结果</view>
+  <view wx:if="{{province}}" class="ai-card__prov">{{province}}</view>
+
+  <view class="ai-card__row">
+    <text class="ai-card__label">平均缴费工资指数</text>
+    <text class="ai-card__value">{{avgIndex}}</text>
+  </view>
+  <view class="ai-card__row">
+    <text class="ai-card__label">个人账户余额</text>
+    <text class="ai-card__value">{{accountBalance}}</text>
+  </view>
+  <view class="ai-card__row">
+    <text class="ai-card__label">累计缴费</text>
+    <text class="ai-card__value">{{totalYears}} 年</text>
+  </view>
+
+  <view class="ai-card__note">数据基于官方社平，仅供参考，不作待遇核定依据</view>
+</view>
