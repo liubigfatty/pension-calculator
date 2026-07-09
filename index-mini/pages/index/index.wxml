@@ -18,7 +18,20 @@
     </view>
   </view>
 
-  <view class="list-tip">逐年缴费明细（从首年起每年一行；有缴的年份填「月均缴费基数」，没缴的年份留空）</view>
+  <view class="row">
+    <text class="lbl">缴费年度范围</text>
+    <view class="inline">
+      <picker mode="selector" range="{{yearRange}}" value="{{listStartIdx < 0 ? 0 : listStartIdx}}" data-field="start" bindchange="onRangeChange">
+        <view class="picker-s">{{listStartYear || '起始'}}年 ▾</view>
+      </picker>
+      <text class="sep">至</text>
+      <picker mode="selector" range="{{yearRange}}" value="{{listEndIdx}}" data-field="end" bindchange="onRangeChange">
+        <view class="picker-s">{{listEndYear || '截止'}}年 ▾</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="list-tip">逐年缴费明细（按上方「缴费年度范围」自动生成年份行；有缴的年份填「月均缴费基数」，没缴的年份留空）</view>
 
   <view class="yr-head">
     <text class="yr-c1">年份</text>
@@ -33,7 +46,7 @@
     <text class="yr-del yr-c4" data-idx="{{index}}" bindtap="delRow">✕</text>
   </view>
 
-  <view class="gen-btn" bindtap="genYearly">↻ 按首次缴费年月重新生成年份行</view>
+  <view class="gen-btn" bindtap="genYearly">↻ 按年度范围重新生成年份行</view>
   <view class="add-btn" bindtap="addYear">＋ 添加一年</view>
 
   <view class="sample-btn" bindtap="fillSample">填入示例数据（吉林 1998-2022）</view>

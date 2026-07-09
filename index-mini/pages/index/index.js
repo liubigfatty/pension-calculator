@@ -1,9 +1,9 @@
 // pages/index/index.js
 // 设计（v2 简化版）：只服务「有逐年缴费明细」的人
 //   第一行：参保地（省份）—— 决定用哪套社平工资
-//   第二行：首次缴费年月 —— 锚定清单起点
-//   下面紧跟：逐年缴费明细（年份/月数自动生成，用户只填月均基数；没缴的年份留空）
-//   去掉了「累计缴费月数 / 当前月缴费基数 / 账户余额」三行（那是给没明细的人用的，本次先不做）
+//   第二行：首次缴费年月 —— 锚定清单起点（含首年实际缴费月数）
+//   第三行：缴费年度范围（起始年份 ~ 截止年份）—— 框定逐年清单覆盖的年份区间
+//   下面紧跟：逐年缴费明细（按年度范围自动生成年份行；有缴的年份填月均基数，没缴留空）
 const PROVINCES = [
   { slug: 'beijing', name: '北京市' },
   { slug: 'tianjin', name: '天津市' },
@@ -38,7 +38,6 @@ const PROVINCES = [
   { slug: 'xinjiang', name: '新疆维吾尔自治区' }
 ]
 
-// 示例：吉林 1998-07 ~ 2022-11 的真实逐年数据（来自《个人缴费信息查询》）
 const SAMPLE_YEARLY = [
   { year: 1998, months: 6, baseAvg: 353.0 },
   { year: 1999, months: 12, baseAvg: 353.0 },
@@ -70,19 +69,26 @@ const SAMPLE_YEARLY = [
 Page({
   data: {
     provinces: PROVINCES,
-    provIndex: 6,            // 默认吉林省
-    gapHint: '',             // 断缴计入省份提示
-    // 基础信息
+    provIndex: 6,
+    gapHint: '',
     startYear: '', startMonth: '',
-    // 逐年缴费明细（从首次缴费年起自动铺行）
+    yearRange: [],
+    listStartYear: '', listStartIdx: -1,
+    listEndYear: '',   listEndIdx: -1,
     yearlyList: [],
     loading: false
+  },
+
+  onLoad() {
+    const curY = new Date().getFullYear()
+    const yearRange = []
+    for (let y = 1990; y <= curY; y++) yearRange.push(y)
+    this.setData({ yearRange, listEndYear: curY, listEndIdx: yearRange.length - 1 })
   },
 
   onProvChange(e) {
     const provIndex = Number(e.detail.value)
     const prov = this.data.provinces[provIndex]
-    // 断缴年份按0计入平均指数的省份：北京/天津/陕西/浙江/云南
     const GAP_SET = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
     const gapHint = GAP_SET.has(prov.slug)
       ? '提示：' + prov.name + '执行“断缴年份按指数0计入平均指数”规则——中间断缴的年份会拉低您的平均指数，请如实逐年填写。'
@@ -93,31 +99,53 @@ Page({
   onInput(e) {
     const field = e.currentTarget.dataset.field
     this.setData({ [field]: e.detail.value }, () => {
-      // 首次缴费年月都填好、且清单还没生成时，自动铺年份行
       if (['startYear', 'startMonth'].includes(field)) {
-        const { startYear, startMonth, yearlyList } = this.data
+        const { startYear, startMonth, yearlyList, yearRange } = this.data
         const sy = Number(startYear) || 0, sm = Number(startMonth) || 0
-        if (sy && sm && yearlyList.every(r => !r.year)) {
+        if (sy) {
+          const idx = yearRange.indexOf(sy)
+          if (idx >= 0) this.setData({ listStartYear: sy, listStartIdx: idx })
+        }
+        if (yearlyList.length && yearlyList.some(r => r.year)) {
+          this.genYearly(true)
+        } else if (sy && sm && yearlyList.every(r => !r.year)) {
           this.genYearly(true)
         }
       }
     })
   },
 
-  // 逐年明细：从首次缴费年起，自动生成到今年；首年按起始月算部分月数，其余默认12个月
-  // 没缴的年份留空即可（计算时跳过）
+  onRangeChange(e) {
+    const field = e.currentTarget.dataset.field
+    const idx = Number(e.detail.value)
+    const year = this.data.yearRange[idx]
+    if (field === 'start') {
+      this.setData({ listStartIdx: idx, listStartYear: year }, () => this.maybeRegen())
+    } else {
+      this.setData({ listEndIdx: idx, listEndYear: year }, () => this.maybeRegen())
+    }
+  },
+
+  maybeRegen() {
+    const list = this.data.yearlyList
+    if (list.length && list.some(r => r.year)) this.genYearly(true)
+  },
+
   genYearly(silent) {
-    const sy = Number(this.data.startYear) || 0
-    const sm = Number(this.data.startMonth) || 0
-    if (!sy || !sm) { wx.showToast({ title: '请先填首次缴费年月', icon: 'none' }); return }
-    const curY = new Date().getFullYear()
-    const firstMonths = sm > 1 ? (13 - sm) : 12   // 首年部分月数（如 7 月起 → 6 个月）
+    const sy = Number(this.data.listStartYear) || Number(this.data.startYear) || 0
+    const ey = Number(this.data.listEndYear) || new Date().getFullYear()
+    const firstYear = Number(this.data.startYear) || sy
+    const firstMonth = Number(this.data.startMonth) || 1
+    if (!sy || !ey || sy > ey) {
+      if (!silent) wx.showToast({ title: '请先设置缴费年度范围', icon: 'none' })
+      return
+    }
     const oldMap = {}
     this.data.yearlyList.forEach(r => { if (r.year && r.baseAvg) oldMap[r.year] = r.baseAvg })
     const rows = []
     let y = sy
-    while (y <= curY) {
-      const months = (y === sy) ? firstMonths : 12
+    while (y <= ey) {
+      const months = (y === firstYear) ? (firstMonth > 1 ? 13 - firstMonth : 12) : 12
       rows.push({ year: y, months, baseAvg: oldMap[y] || '' })
       y += 1
     }
@@ -127,7 +155,7 @@ Page({
 
   addYear() {
     const list = this.data.yearlyList.slice()
-    const lastYear = list.length ? list[list.length - 1].year : (Number(this.data.startYear) || new Date().getFullYear())
+    const lastYear = list.length ? list[list.length - 1].year : (Number(this.data.listStartYear) || new Date().getFullYear())
     list.push({ year: lastYear + 1, months: 12, baseAvg: '' })
     this.setData({ yearlyList: list })
   },
@@ -141,13 +169,18 @@ Page({
 
   onYearlyInput(e) {
     const { idx, sub } = e.currentTarget.dataset
-    this.setData({ [`yearlyList[${idx}].${sub}`]: e.detail.value })
+    this.setData({ ['yearlyList[' + idx + '].' + sub]: e.detail.value })
   },
 
   fillSample() {
+    const yr = this.data.yearRange
+    const sIdx = yr.indexOf(1998)
+    const eIdx = yr.indexOf(2022)
     this.setData({
-      provIndex: 6,                 // 吉林省
+      provIndex: 6,
       startYear: '1998', startMonth: '7',
+      listStartYear: 1998, listStartIdx: sIdx,
+      listEndYear: 2022, listEndIdx: eIdx,
       yearlyList: SAMPLE_YEARLY.map(r => ({ year: r.year, months: r.months, baseAvg: String(r.baseAvg) }))
     }, () => {
       wx.showToast({ title: '已填入吉林示例（25年）', icon: 'none' })
@@ -165,7 +198,6 @@ Page({
       return
     }
 
-    // 发送所有年份行（含空行/断缴年）。空行 baseAvg=0，由云函数按省份规则决定是否计入分母
     const yearlyData = this.data.yearlyList
       .filter(r => Number(r.year) > 0 && Number(r.months) > 0)
       .map(r => ({ year: Number(r.year), months: Number(r.months), baseAvg: Number(r.baseAvg) || 0 }))
