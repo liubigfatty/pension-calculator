@@ -6,7 +6,7 @@
       "_meta": {
         "ui": {
           "componentPath": "ai/pension-index-skill/components/result-card",
-          "pagePath": "pages/result/result"
+          "pagePath": "/pages/result/result"
         }
       },
       "inputSchema": {
@@ -22,15 +22,31 @@
             "items": {
               "type": "object",
               "properties": {
-                "year": { "type": "number", "description": "缴费年份，如 2022" },
-                "months": { "type": "number", "description": "该年实际缴费月数，1-12" },
-                "baseAvg": { "type": "number", "description": "该年月均缴费工资基数（元/月）" }
+                "year": {
+                  "type": "number",
+                  "description": "缴费年份，如 2022"
+                },
+                "months": {
+                  "type": "number",
+                  "description": "该年实际缴费月数，1-12"
+                },
+                "baseAvg": {
+                  "type": "number",
+                  "description": "该年月均缴费工资基数（元/月）"
+                }
               },
-              "required": ["year", "months", "baseAvg"]
+              "required": [
+                "year",
+                "months",
+                "baseAvg"
+              ]
             }
           }
         },
-        "required": ["province", "yearlyData"]
+        "required": [
+          "province",
+          "yearlyData"
+        ]
       },
       "outputSchema": {}
     }

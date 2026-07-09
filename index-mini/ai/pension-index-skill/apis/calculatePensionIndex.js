@@ -1,6 +1,7 @@
 // 原子接口：calculatePensionIndex
 // 输入：{ province, yearlyData:[{year, months, baseAvg}] }
-// 输出：原子接口标准结构 { isError, content, structuredContent }
+// 输出：原子接口标准结构 { isError, content, structuredContent, handoff }
+// 2026-07-03 适配：新增 handoff，实现「账号卡片 → 接力到小程序结果页」
 
 const { calculateIndex } = require('../engine/calcIndex');
 const PROVINCES = require('../engine/provinces-data');
@@ -69,6 +70,14 @@ async function calculatePensionIndex({ province, yearlyData }) {
     '；个人账户余额：约 ¥' + Math.round(fwd.accountBalance).toLocaleString('zh-CN') +
     '；累计缴费：' + fwd.totalMonths + ' 个月（' + fwd.totalYears + ' 年）。';
 
+  // 接力 payload：携带完整 forward 结果，结果页可直接渲染逐年明细/断缴提示
+  const payload = {
+    result: {
+      mode: 'forward',
+      data: { forward: fwd }
+    }
+  };
+
   return {
     isError: false,
     content: [{ type: 'text', text }],
@@ -79,7 +88,12 @@ async function calculatePensionIndex({ province, yearlyData }) {
       totalMonths: fwd.totalMonths,
       totalYears: fwd.totalYears,
       gapYears: fwd._meta.gapYears
-    }
+    },
+    // 2026-07-03 新增：账号卡片点击后接力到小程序结果页
+    handoff: () => ({
+      query: 'from=ai&province=' + slug,
+      payload
+    })
   };
 }
 

@@ -16,8 +16,20 @@ Page({
     detail: []
   },
 
-  onLoad() {
-    const r = getApp().globalData.result
+  onLoad(query) {
+    // 微信 AI 开发模式：优先读取「接力到小程序页面」的 handoff payload
+    const app = getApp()
+    let r = null
+    const handoffs = (app.globalData && app.globalData.agentHandoffs) || {}
+    const key = (typeof this.getPageId === 'function') ? this.getPageId() : null
+    const ho = (key != null) ? handoffs[key] : null
+    if (ho && ho.payload && ho.payload.result && ho.payload.result.data) {
+      r = ho.payload.result
+      if (key != null) delete handoffs[key]
+    } else {
+      r = app.globalData.result
+    }
+
     if (!r || !r.data) {
       wx.showToast({ title: '无计算结果', icon: 'none' })
       return
