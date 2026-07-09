@@ -89,21 +89,21 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A' }) {
   for (const rec of yearlyRecords) {
     const year = rec.year
 
-    // 取上年度社平作为分母（官方规则：当年缴费/上年社平）
-    const socialAvg = getSocialAvg(salaryHist, year - 1)
+    // 取当年社平作为分母（官方公式字面口径：当年缴费工资额 / 当年全省职工平均工资）
+    const socialAvg = getSocialAvg(salaryHist, year)
     
     if (!socialAvg || socialAvg <= 0) {
       // 无社平数据，跳过该年或用当年兜底
       yearsDetail.push({
         year, months: rec.months, baseAvg: rec.baseAvg,
         socialAvg: null, index: null,
-        accountContribution: 0, note: `缺少${year - 1}年社平`
+        accountContribution: 0, note: `缺少${year}年社平`
       })
       continue
     }
 
     // ── 计算该年平均缴费指数 ──>
-    // 公式: 月均基数 ÷ 上年度社平 = 该年指数
+    // 公式: 月均基数 ÷ 当年社平 = 该年指数
     const yearIndex = rec.baseAvg / socialAvg
     
     // 加权累加（权重=该年月数）
@@ -192,7 +192,7 @@ function inferIndexFromBalance({ provinceConfig, contribution, granularity, know
   for (let iter = 0; iter < MAX_ITER; iter++) {
     const mid = (low + high) / 2
 
-    // 假设每年指数均为 mid → 基数 = mid × 上年度社平
+    // 假设每年指数均为 mid → 基数 = mid × 当年社平
     const synth = template.map(t => ({
       year: t.year,
       months: t.months,
@@ -243,7 +243,7 @@ function inferIndexFromBalance({ provinceConfig, contribution, granularity, know
 }
 
 /**
- * 构建反推模板：逐年 + 该年上年度社平
+ * 构建反推模板：逐年 + 该年当年社平
  * 仅保留有社平数据的年份（无社平无法合成基数）
  */
 function buildInferTemplate(contribution, granularity, salaryHist) {
@@ -259,7 +259,7 @@ function buildInferTemplate(contribution, granularity, salaryHist) {
     .map(y => ({
       year: y.year,
       months: y.months,
-      socialAvg: getSocialAvg(salaryHist, y.year - 1)
+      socialAvg: getSocialAvg(salaryHist, y.year)
     }))
     .filter(y => y.socialAvg && y.socialAvg > 0)
 }
