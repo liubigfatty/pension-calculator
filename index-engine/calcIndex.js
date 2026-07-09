@@ -86,29 +86,41 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A', gapYe
   // 按年份排序
   yearlyRecords.sort((a, b) => a.year - b.year)
 
+  // 首次有缴费的年份（用于5省断缴判定：自首次缴费年起的空年均计入「应缴费年限」分母；
+  // 首次缴费年之前的空年视为未开始，不计入）
+  const contribYears = yearlyRecords.filter(r => r.baseAvg > 0).map(r => r.year)
+  const firstContribYear = contribYears.length ? Math.min(...contribYears) : null
+
   for (const rec of yearlyRecords) {
     const year = rec.year
 
-    // ── 断缴年份处理（仅当该年无缴费基数 baseAvg<=0）──>
+    // ── 断缴/空年处理（仅当该年无缴费基数 baseAvg<=0）──>
     if (rec.baseAvg <= 0) {
       const gapSocial = getSocialAvg(salaryHist, year)
-      if (gapYearCountsInAvg && gapSocial && gapSocial > 0) {
-        // 断缴年计入平均指数分母（指数记0），已有余额照常计息
+      // 5省：断缴计入分母；自首次缴费年起的空年（含末次缴费后的年份，对应「应缴费年限」）均计入
+      const isGapYear = firstContribYear != null && year >= firstContribYear
+      if (gapYearCountsInAvg && isGapYear && gapSocial && gapSocial > 0) {
+        // 内部断缴年：计入平均指数分母（指数记0），已有余额照常计息
         const grate = getRate(year)
         accountBalance = accountBalance * (1 + grate)
         totalWeight += rec.months
         yearsDetail.push({
           year, months: rec.months, baseAvg: 0,
           socialAvg: gapSocial, index: 0, weightedIndex: 0, rate: grate,
-          accountContribution: 0, balanceAfterYear: accountBalance, gap: true
+          accountContribution: 0, balanceAfterYear: accountBalance, gap: true, gapCounted: true
         })
       } else {
-        // 多数省份：断缴年直接忽略（不计入公式）
+        // 多数省份：断缴年忽略；或5省的尾部/首部空年：视为未适用忽略
+        const note = (gapSocial && gapSocial > 0)
+          ? (gapYearCountsInAvg
+              ? (year >= firstContribYear ? '断缴年份（计入平均指数，指数记0）' : '未缴费年度（首次缴费年前，不计入）')
+              : '断缴年份（不计入平均指数）')
+          : `缺少${year}年社平`
         yearsDetail.push({
           year, months: rec.months, baseAvg: 0,
           socialAvg: (gapSocial && gapSocial > 0) ? gapSocial : null,
           index: null, gap: true, skipped: true,
-          note: (gapSocial && gapSocial > 0) ? '断缴年份（不计入平均指数）' : `缺少${year}年社平`
+          note
         })
       }
       continue

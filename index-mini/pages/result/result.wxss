@@ -16,7 +16,7 @@
   font-weight: 600;
 }
 .m-value.big {
-  color: #1d4ed8;
+  color: var(--color-primary, #8B7355);
   font-size: 52rpx;
   font-weight: 700;
 }
