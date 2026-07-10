@@ -560,6 +560,8 @@ function calcTransitionalPension(params) {
   // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
   // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
   if (mod.formula_type === "chongqing") {
+    // 重庆过渡性养老金=(计发基数+指数化工资)/2 × 建立个人账户前缴费年限 × 1.4%
+    // 渝办发〔2006〕205号：年限=建账前缴费年限(含视同+建账前实际)=effectiveYears(preAccountYears||sightYears)
     const retireBase = params?.retireBase || provBase
     const avgBase = (retireBase + retireBase * transIdx) / 2
     const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
