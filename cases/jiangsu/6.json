@@ -1,0 +1,31 @@
+{
+  "case_id": "6",
+  "province": "jiangsu",
+  "city": "苏州市",
+  "gender": "male",
+  "birth_year": 1970,
+  "birth_month": 11,
+  "work_year": 1990,
+  "work_month": 7,
+  "retire_year": 2026,
+  "retire_month": 2,
+  "actual_years": 29.4167,
+  "sight_years": 6.25,
+  "total_years": 35.6667,
+  "pre_1996_years": 6.25,
+  "avg_index": 1.3208,
+  "base_number": 8917,
+  "base_prov": 8917,
+  "personal_account": 213835.51,
+  "months": 168.5,
+  "trans_pension_old": 634.53,
+  "expected": {
+    "basic_pension": 3690.54,
+    "personal_pension": 1269.05,
+    "transitional_pension": 1510.23,
+    "total": 6469.82,
+    "extra_pension": 0
+  },
+  "notes": "苏州特殊工种男，2026-02退休，55.25岁，计发月数168.5。2025年江苏计发基数8917。平均缴费指数1.3208，过渡性养老金指数2.2582，建账前年限6.25年。新办法过渡性养老金634.53元，老办法1510.23元，按高值发放。",
+  "trans_index": 2.2582
+}

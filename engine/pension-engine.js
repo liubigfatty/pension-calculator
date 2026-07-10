@@ -1243,6 +1243,14 @@ function parseInput(inputData) {
   // monthsInput: 用户可显式指定计发月数（覆盖自动计算，用于提前退休验证场景）
   const monthsInput = inputData.months != null ? parseFloat(inputData.months) : null
 
+  // retireDateInput: 用户显式指定退休年月（覆盖法定退休计算，用于特殊工种提前退休等验证）
+  // 格式：{ year: 2026, month: 2 }
+  const retireDateInput = inputData.retireDateInput || inputData.retireDate || null
+
+  // retireAgeInput: 用户显式指定退休年龄（岁，可带小数，覆盖法定退休计算）
+  const retireAgeInput = inputData.retireAgeInput != null ? parseFloat(inputData.retireAgeInput)
+    : inputData.retireAge != null ? parseFloat(inputData.retireAge) : null
+
   // 江苏特殊参数：过渡性养老金平均缴费指数（与基础养老金指数可能不同）
   const transIndex = parseFloat(inputData.transIndex) || null
 
@@ -1287,6 +1295,8 @@ function parseInput(inputData) {
     cityType,
     skipDelay,
     monthsInput,     // 用户显式指定的计发月数（可为null，覆盖自动计算）
+    retireDateInput, // 用户显式指定的退休年月（可为null，覆盖法定退休计算）
+    retireAgeInput,  // 用户显式指定的退休年龄（可为null，覆盖法定退休计算）
     transIndex,       // 过渡性养老金平均缴费指数（可为null）
     pre1996Years,    // 1996年底前的缴费年限（可为null）
     transPensionOld, // 原办法过渡性养老金（可为null）
@@ -1385,9 +1395,19 @@ function calculate(config, inputData) {
   }
   // ============ 兼容结束 ============
 
-  // ===== 法定退休年龄 =====
-  const legalTotalMonths = getRetireTotalMonths(data.birth.year, data.birth.month, data.genderType, config, data.skipDelay)
-  const legalDate = getRetireDate(data.birth.year, data.birth.month, legalTotalMonths)
+  // ===== 法定退休年龄（可被用户显式输入覆盖） =====
+  let legalTotalMonths
+  let legalDate
+  if (data.retireDateInput && data.retireDateInput.year && data.retireDateInput.month) {
+    legalDate = { year: data.retireDateInput.year, month: data.retireDateInput.month }
+    legalTotalMonths = (legalDate.year - data.birth.year) * 12 + (legalDate.month - data.birth.month)
+  } else if (data.retireAgeInput != null && !isNaN(data.retireAgeInput)) {
+    legalTotalMonths = Math.round(data.retireAgeInput * 12)
+    legalDate = getRetireDate(data.birth.year, data.birth.month, legalTotalMonths)
+  } else {
+    legalTotalMonths = getRetireTotalMonths(data.birth.year, data.birth.month, data.genderType, config, data.skipDelay)
+    legalDate = getRetireDate(data.birth.year, data.birth.month, legalTotalMonths)
+  }
 
   // ===== 弹性提前退休年龄 =====
   let originalAge
