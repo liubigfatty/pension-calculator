@@ -78,7 +78,7 @@ function runCase(prov, c, file) {
     if (fs.existsSync(p)) { config = JSON.parse(fs.readFileSync(p, 'utf8')); break; }
     // 也支持 .js
     const jsPath = p.replace(/\.json$/, '.js');
-    if (fs.existsSync(jsPath)) { config = require(path.resolve(jsPath)); break; }
+    if (fs.existsSync(jsPath)) { const m = require(path.resolve(jsPath)); config = m.getEngineConfig ? m.getEngineConfig() : m; break; }
   }
   if (!config) return { ok: false, msg: `省份配置 ${prov} 不存在` };
 
@@ -103,10 +103,15 @@ function runCase(prov, c, file) {
 
   // 对比（允许1元误差）
   const diffs = [];
-  for (const key of ['basic_pension', 'personal_pension', 'transitional_pension', 'total']) {
+    for (const key of ['basic_pension', 'personal_pension', 'transitional_pension', 'total']) {
     if (exp[key] === undefined) continue;
-    const d = Math.abs(act[key] - exp[key]);
-    if (d > 1) diffs.push(`${key}: 预期${exp[key]} vs 实际${act[key].toFixed(2)}`);
+    const av = act[key];
+    if (av === null || av === undefined || Number.isNaN(av)) {
+      diffs.push(key + ': 预期' + exp[key] + ' vs 实际null/NaN(引擎未计算出)');
+      continue;
+    }
+    const d = Math.abs(av - exp[key]);
+    if (d > 1) diffs.push(key + ': 预期' + exp[key] + ' vs 实际' + av.toFixed(2));
   }
 
   return {

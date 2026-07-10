@@ -88,7 +88,7 @@ const PROV_TAG = 'xinjiang'
 
 // ==================== 模块配置 ====================
 
-const MODULES = ['base', 'personal', 'transition']
+const MODULES = ['base', 'personal', 'transition', 'other']
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
@@ -120,6 +120,11 @@ function getEngineConfig() {
         modules.transitional_pension.coefficient = TRANS_COEF;
       }
     }
+  }
+
+  // 冬季采暖补贴 120元/月（新政办发[2010]167号）
+  if (MODULES.includes('other')) {
+    modules.special_addition = { enabled: true, type: 'fixed', amount: 120, label: '冬季采暖补贴' };
   }
 
   return {
@@ -182,6 +187,7 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_TAG,
   PROV_BASE,
+  TRANS_COEF,
   CITY_LIST,
   MODULES,
   MODULE_LABELS,
