@@ -1124,6 +1124,18 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
+  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
+  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
+  if (year > lastYear) {
+    if (lastCityYear > lastProvYear) {
+      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    }
+    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+  }
+
   const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
   // 从城市表向前找
@@ -1152,8 +1164,6 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     return provRates[firstProvYear] || 0
   }
   // 4. 所有年份都小于查询年份 → 回退到最后已知年份（查询年份晚于数据结束）
-  const lastCityYear = cityKeys[cityKeys.length - 1]
-  const lastProvYear = provKeys[provKeys.length - 1]
   if (lastCityYear > lastProvYear) {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }

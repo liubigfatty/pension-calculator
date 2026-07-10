@@ -24,44 +24,45 @@
  * 完整数据覆盖 1996-2025 年
  */
 
-// 2016年起全国统一利率（人社部、财政部公布）
-const NATIONAL_INTEREST_RATES = {
-  2016: 0.0831,   // 8.31%
-  2017: 0.0712,   // 7.12%
-  2018: 0.0829,   // 8.29%
-  2019: 0.0761,   // 7.61%
-  2020: 0.0604,   // 6.04%
-  2021: 0.0669,   // 6.69%（全国统一值）
-  2022: 0.0397,   // 3.97%（全国统一值）
-  2023: 0.0397,   // 3.97%
-  2024: 0.0262,   // 2.62%
-  2025: 0.0150    // 1.50%
-}
-
-// 2016年之前全国记账利率（官方/权威来源）
-// 数据来源：剪刀财经整理《缴费基数&记账利率 1996-2025年》
-// 注：2016年前各省自行制定，此处为全国通用参考值
-const NATIONAL_PRE2016_INTEREST_RATES = {
-  1996: 0.0804,   // 8.04%
-  1997: 0.0567,   // 5.67%
-  1998: 0.0447,   // 4.47%
-  1999: 0.0225,   // 2.25%
-  2000: 0.0225,   // 2.25%
-  2001: 0.0225,   // 2.25%
-  2002: 0.0225,   // 2.25%
-  2003: 0.0198,   // 1.98%
-  2004: 0.0198,   // 1.98%
-  2005: 0.0225,   // 2.25%
-  2006: 0.0252,   // 2.52%
-  2007: 0.0414,   // 4.14%
-  2008: 0.0414,   // 4.14%
-  2009: 0.0225,   // 2.25%
-  2010: 0.0225,   // 2.25%
-  2011: 0.0350,   // 3.50%
-  2012: 0.0350,   // 3.50%
-  2013: 0.0300,   // 3.00%
-  2014: 0.0350,   // 3.50%
-  2015: 0.0350    // 3.50%
+// ════════════════════════════════════════════════════════
+//  全国统一记账利率表（1996-2025）
+//  数据来源：剪刀财经整理《缴费基数&记账利率 1996-2025年》
+//  2016年起人社部/财政部公布全国统一值；1996-2015为历史参考值
+//  注：此为唯一利率真相源，不再分 pre2016 / post2016 两套
+// ════════════════════════════════════════════════════════
+const UNIFIED_INTEREST_RATES = {
+  // ── 2016年前（各省自行制定时期，剪刀财经参考值）──>
+  1996: 0.0804,  // 8.04%
+  1997: 0.0567,  // 5.67%
+  1998: 0.0447,  // 4.47%
+  1999: 0.0225,  // 2.25%
+  2000: 0.0225,  // 2.25%
+  2001: 0.0225,  // 2.25%
+  2002: 0.0225,  // 2.25%
+  2003: 0.0198,  // 1.98%
+  2004: 0.0198,  // 1.98%
+  2005: 0.0225,  // 2.25%
+  2006: 0.0252,  // 2.52%
+  2007: 0.0414,  // 4.14%
+  2008: 0.0414,  // 4.14%
+  2009: 0.0225,  // 2.25%
+  2010: 0.0225,  // 2.25%
+  2011: 0.0350,  // 3.50%
+  2012: 0.0350,  // 3.50%
+  2013: 0.0300,  // 3.00%
+  2014: 0.0350,  // 3.50%
+  2015: 0.0350,  // 3.50%
+  // ── 2016年起（人社部/财政部公布全国统一值）──>
+  2016: 0.0831,  // 8.31%
+  2017: 0.0712,  // 7.12%
+  2018: 0.0829,  // 8.29%
+  2019: 0.0761,  // 7.61%
+  2020: 0.0604,  // 6.04%
+  2021: 0.0535,  // 5.35%（原错误值6.69%已修正）
+  2022: 0.0612,  // 6.12%（原错误值3.97%已修正）
+  2023: 0.0397,  // 3.97%
+  2024: 0.0262,  // 2.62%
+  2025: 0.0150   // 1.50%
 }
 
 // 国家标准计发月数表（国发〔2005〕38号）
@@ -118,6 +119,12 @@ function calcBasicPension(params) {
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
     const aDesc = aCoeff !== 1 ? `(a=${aCoeff.toFixed(4)})` : ''
     description = `(${retireBase.toLocaleString()}×${aCoeff.toFixed(4)}${aDesc} + ${indexSalary.toLocaleString(undefined, {maximumFractionDigits:2})}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'jilin') {
+    // 吉林特殊（长春/市县双基数）：基础养老金 = (退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    // 非长春地区 retireBase === provBase，公式退化为默认公式；长春地区 retireBase=市县基数，provBase=全省基数
+    const indexSalary = (provBase || retireBase) * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = '($\{retireBase.toLocaleString()} + $\{(provBase || retireBase).toLocaleString()} × $\{avgIndex.toFixed(2)}) / 2 × $\{totalYears.toFixed(2)}年 × $\{(rate * 100).toFixed(2)}% = $\{amount.toFixed(2)}元'
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -267,6 +274,26 @@ function calcExtraPension(params) {
  * @param {number} [params.personalAccInput] - 用户直接输入的个人账户余额（可选）
  * @returns {Object} 计算结果 { amount, balance, description }
  */
+/**
+ * 获取缴费基数（用于个人账户余额估算）
+ * 优先使用 avg_salary_history（社平工资），没有则用 base_rates（计发基数）
+ * 注意：大部分省份的 PROV_BASE ≈ 社平工资（如四川数据验证比值=1.0）
+ * @param {string} city - 城市标识
+ * @param {number} year - 年份
+ * @param {Object} config - 省份配置
+ * @returns {number} 月缴费基数（元/月）
+ */
+function getSalaryBase(city, year, config) {
+  // 1. 尝试获取社平工资（avg_salary_history）
+  let avgSalary = getBase(city, year, config, 'avg_salary_history')
+  if (avgSalary && avgSalary > 0) {
+    // avg_salary_history 单位已是元/月（与首/中年份一致，B5 统一后全量均为元/月）
+    return avgSalary
+  }
+  // 2. 降级到计发基数（PROV_BASE），单位已是元/月
+  return getBase(city, year, config, 'base_rates') || 0
+}
+
 function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, config, months, personalAccInput) {
 
   if (personalAccInput != null && personalAccInput > 0) {
@@ -327,10 +354,11 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   // 最后一年（从退休月初到退休月，按月计提并单利计息）
   const lastMonths = retireDate.month - 1
   if (lastMonths > 0) {
-    const baseRetire = getBase(city, retireDate.year, config)
+    const baseRetire = getSalaryBase(city, retireDate.year, config)
     const monthPay = baseRetire * avgIndex * 0.08
     const rate = getAccRate(retireDate.year, config)
-    totalAcc = (totalAcc + monthPay * lastMonths) * Math.pow(1 + rate, lastMonths / 12)
+    // 正确逻辑：先算利息（上年累计按实际月数单利计息），再加本年存入额
+    totalAcc = totalAcc * Math.pow(1 + rate, lastMonths / 12) + monthPay * lastMonths
   }
 
   totalAcc = Math.round(totalAcc * 100) / 100
@@ -538,6 +566,8 @@ function calcTransitionalPension(params) {
   // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
   // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
   if (mod.formula_type === "chongqing") {
+    // 重庆过渡性养老金=(计发基数+指数化工资)/2 × 建立个人账户前缴费年限 × 1.4%
+    // 渝办发〔2006〕205号：年限=建账前缴费年限(含视同+建账前实际)=effectiveYears(preAccountYears||sightYears)
     const retireBase = params?.retireBase || provBase
     const avgBase = (retireBase + retireBase * transIdx) / 2
     const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
@@ -845,7 +875,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   // 防御：config 可能未传入
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
-  if (type === 'fw50' || type === 'fw') return 0;
+  if (type === 'fw50' || type === 'fw' || type === 'ef50') return 0;
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
   const delayConfig = config.delay_retirement || {}
@@ -934,6 +964,7 @@ function getRetireTotalMonths(birthYear, birthMonth, type, config, skipDelay) {
       break
     case 'fw':           // 女性工人，50岁退休（默认女性类型，来自parseInput）
     case 'fw50':         // 女性工人，50岁退休
+    case 'ef50':         // 企业女职工，50岁退休
       baseAge = 50
       break
     case 'fw55':         // 灵活就业女性，55岁退休
@@ -962,7 +993,9 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
     case 'fw55':       // 灵活就业女性，55岁退休
       baseAge = 55
       break
+    case 'fw':         // 女性工人，50岁退休
     case 'fw50':       // 女工人，50岁退休
+    case 'ef50':       // 企业女职工，50岁退休
       baseAge = 50
       break
     default:
@@ -1091,6 +1124,18 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
+  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
+  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
+  if (year > lastYear) {
+    if (lastCityYear > lastProvYear) {
+      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    }
+    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+  }
+
   const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
   // 从城市表向前找
@@ -1119,8 +1164,6 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     return provRates[firstProvYear] || 0
   }
   // 4. 所有年份都小于查询年份 → 回退到最后已知年份（查询年份晚于数据结束）
-  const lastCityYear = cityKeys[cityKeys.length - 1]
-  const lastProvYear = provKeys[provKeys.length - 1]
   if (lastCityYear > lastProvYear) {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }
@@ -1129,33 +1172,26 @@ function getBase(city, year, config, sourceField = 'base_rates') {
 
 /**
  * 获取指定年份的个人账户记账利率
+ *
+ * 强制统一：所有省份均走 UNIFIED_INTEREST_RATES（剪刀财经 1996-2025）
+ * 不再保留"省份优先"逻辑，消除跨省利率不一致
+ *
  * @param {number} year - 年份
- * @param {Object} config - 省份配置
+ * @param {Object} config - 省份配置（保留参数兼容性，不再使用 interest_rates）
  * @returns {number} 记账利率
  */
 function getAccRate(year, config) {
-  // 2016年起使用全国统一利率（人社部、财政部公布）
-  if (year >= 2016 && NATIONAL_INTEREST_RATES[year] !== undefined) {
-    return NATIONAL_INTEREST_RATES[year]
+  // 统一表（1996-2025）
+  if (UNIFIED_INTEREST_RATES[year] !== undefined) {
+    return UNIFIED_INTEREST_RATES[year]
   }
+
+  // 未来年份 → 取最新已知（2025 = 1.50%）
   if (year > 2025) {
-    // 2026年及以后：使用最近已知利率（2025年 = 1.50%）
-    const keys = Object.keys(NATIONAL_INTEREST_RATES).map(Number).sort((a, b) => a - b)
-    const lastYear = keys[keys.length - 1]
-    return NATIONAL_INTEREST_RATES[lastYear]
+    return UNIFIED_INTEREST_RATES[2025]
   }
 
-  // 2016年之前：优先使用省份配置，无则用全国统一估算值
-  const table = config.interest_rates || NATIONAL_PRE2016_INTEREST_RATES
-  if (table[year] !== undefined) return table[year]
-
-  // 后向查找
-  const keys = Object.keys(table).map(Number).sort((a, b) => a - b)
-  for (let i = keys.length - 1; i >= 0; i--) {
-    if (keys[i] <= year) return table[keys[i]]
-  }
-
-  // 默认回退值
+  // 兜底
   return 0.025
 }
 
@@ -1375,7 +1411,10 @@ function calculate(config, inputData) {
   switch (data.genderType) {
     case 'male': originalAge = 60; break
     case 'fc':   originalAge = 55; break
+    case 'fw55': originalAge = 55; break
     case 'fw':   originalAge = 50; break
+    case 'fw50': originalAge = 50; break   // 企业女职工(50岁退休)
+    case 'ef50': originalAge = 50; break   // 企业女职工(50岁退休)
     default:     originalAge = 60
   }
   const flexTotalMonths = Math.max(originalAge * 12, legalTotalMonths - 36)
