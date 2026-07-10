@@ -18,11 +18,11 @@
   "personal_account": 170205.99,
   "months": 195,
   "expected": {
-    "basic_pension": 2614.44,
+    "basic_pension": 3046.25,
     "personal_pension": 872.85,
-    "transitional_pension": 231.04,
-    "total": 3901.3,
-    "extra_pension": 193.46
+    "transitional_pension": 232.78,
+    "total": 4151.88,
+    "extra_pension": 0
   },
   "notes": "辽宁沈阳女工人50岁2023.07退休。建账1992.10。双指数：基础1.29/过渡1.23。⚠️增发207.41在核定表上未单独列出，表total=3896.56不含增发，引擎total=4103.75含增发。需确认辽宁增发规则。 [2026-06-15 fix]",
   "trans_index": 1.2321

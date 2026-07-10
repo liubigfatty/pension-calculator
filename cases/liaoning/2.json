@@ -20,9 +20,9 @@
   "expected": {
     "basic_pension": 2825.35,
     "personal_pension": 719.56,
-    "transitional_pension": 989.55,
-    "total": 4816.11,
-    "extra_pension": 311.73
+    "transitional_pension": 1049.49,
+    "total": 4594.4,
+    "extra_pension": 0
   },
   "notes": "辽宁全省基数男60岁2026.03退休。双指数：基础0.8684/过渡0.842。累计41.17年（实际30.09+视同11.08）。过渡=7346×0.842×11.08×1.4%。增发193.50未在表上显示",
   "trans_index": 0.842

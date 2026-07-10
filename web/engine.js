@@ -1224,7 +1224,8 @@ function parseInput(inputData) {
 
   // totalYearsInput: 用户可显式指定累计缴费年限（精确值，覆盖自动计算结果）
   // 用于处理档案认定导致的不规则年限（如特殊工龄、中断认定等）
-  const totalYearsInput = inputData.totalYears != null ? parseFloat(inputData.totalYears) : null
+  const totalYearsInput = inputData.totalYears != null ? parseFloat(inputData.totalYears)
+    : inputData.totalYearsInput != null ? parseFloat(inputData.totalYearsInput) : null
 
   // baseRetire / baseProv: 用户可显式指定计发基数（覆盖自动查询）
   // 支持两种参数名（带Input后缀和不带）

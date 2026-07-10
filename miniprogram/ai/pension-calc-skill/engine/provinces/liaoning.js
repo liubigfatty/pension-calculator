@@ -43,9 +43,9 @@ const PROV_BASE = {
   2022: 6720,
   2023: 6987,
   2024: 7201,
-   2025: 7264,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
-;
+  2025: 7346,  // 辽人社〔2025〕17号：全省(不含沈阳､大连)月计发基数7346元
+};
+
 
 // 沈阳市单独计发基数（沈人社发）
 const SY_BASE = {
@@ -54,7 +54,7 @@ const SY_BASE = {
   2022: 8520,
   2023: 8690,
   2024: 8823,
-   2025: 8725,  // 按2024城市值×省2025/省2024官方比例推算(待各市官方2025计发基数)
+  2025: 8390,  // 辽人社〔2025〕17号：沈阳市月计发基数8390元
 };
 
 // 大连市单独计发基数（大人社发）
@@ -64,14 +64,13 @@ const DL_BASE = {
   2022: 8520,
   2023: 8690,
   2024: 8823,
-  2025: 8725,  // 按2024城市值×省2025/省2024官方比例推算(待各市官方2025计发基数)
+  2025: 8956,  // 辽人社〔2025〕17号：大连市月计发基数8956元
 };
 
 const BASE_PARAMS = {
-  
   PROV_GROWTH: 0.02,  // 预估年增长2%
   MERGE_YEAR: 2031,
-  PROV_2025: 7264,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 7346,  // 辽人社〔2025〕17号
 }
 
 // ==================== 城市列表 ====================
@@ -99,18 +98,17 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 辽宁省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 辽宁省过渡系数 1.4%（辽劳社发〔2006〕81号）
 
 const PROV_TAG = 'liaoning'
 
 // ==================== 模块配置 ====================
 
-const MODULES = ['base', 'personal', 'transition', 'extra']
+const MODULES = ['base', 'personal', 'transition']
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
-  extra:       '增发养老金',
 }
 
 // ==================== 增发养老金参数 ====================
@@ -259,7 +257,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'chongqing' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
