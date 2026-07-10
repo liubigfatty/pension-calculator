@@ -78,10 +78,11 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// 新疆个人账户建立时间：新政发〔1997〕107号 / 新政发〔2006〕59号，统一为1996年1月1日
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
 
-const TRANS_COEF = 0.014  // 新疆维吾尔自治区过渡系数 1.4000000000000001%
+const TRANS_COEF = 0.013  // 新疆维吾尔自治区过渡系数 1.3%（新政发〔2006〕59号）
 
 const PROV_TAG = 'xinjiang'
 
