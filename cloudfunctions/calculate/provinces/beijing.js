@@ -1,7 +1,8 @@
 // 数据来源：✅ 官方数据（用户提供北京市历年职工平均工资）
-// 2023年计发基数：11761元/月（2023年月平均工资）
-// 2024年计发基数：11883元/月（预估）
-// 更新时间：2026-06-18
+// 2024年计发基数：11883元/月
+// 2025年计发基数：12049元/月（2024年度全口径社平144588元/年，表上“上年职工平均工资”÷12）
+// 2026年计发基数：未公布；2026年退休者按2025年基数预发，年底公布后重算
+// 更新时间：2026-07-10
 
 // data/provinces/beijing.js
 // 北京市养老金计算数据模块
@@ -56,14 +57,14 @@ const PROV_BASE = {
   2022: 11082,
   2023: 11761,
   2024: 11883,
-   2025: 11937,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  2025: 12049,  // 2025年计发基数=2024年度全口径社平144588元/年÷12（北京核定表口径）
 };;
 
 const BASE_PARAMS = {
   PROV_GROWTH: 0.03,    // 3.0%
-  LATEST_BASE_YEAR: 2023,
-  LATEST_BASE_VALUE: 11761,  // 2023年官方值,
-  PROV_2025: 11937,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  LATEST_BASE_YEAR: 2025,
+  LATEST_BASE_VALUE: 12049,  // 2025年官方值（2024年度全口径社平144588元/年÷12）
+  PROV_2025: 12049,  // 2025年计发基数=2024年度全口径社平
 }
 
 // 北京市行政区划（直辖市，无地级市区分）
@@ -161,7 +162,7 @@ function getEngineConfig() {
   }
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'beijing' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -192,7 +193,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数11525元，2024年基数11883元（来源：北京市人社局）',
+    notes: '2024年基数11883元，2025年基数12049元（2024年度全口径社平144588元/年÷12）；2026年基数未公布，退休者按2025年基数预发'
   };
 }
 
@@ -228,7 +229,7 @@ const AVG_SALARY_HISTORY = {
   2022: 10543.33,
   2023: 11525,
   2024: 11883,
-  2025: 11937,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2025: 12049,  // 2025年度社保缴费基数·2024全口径社平144588元/年÷12（北京核定表口径）
 };
 
 

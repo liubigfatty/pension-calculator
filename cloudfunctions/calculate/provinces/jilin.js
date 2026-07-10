@@ -165,13 +165,16 @@ const cases = [
     name: '长春-男-1966-02（预核定表）',
     input: {
       birthYear: 1966, birthMonth: 2,
-      workYear: 1984, workMonth: 10,
+      workYear: 1984, workMonth: 7,
+      retireYear: 2026, retireMonth: 2,
       cityType: 'cc',
       avgIndex: 0.62,
       personalAccInput: 96750.01,
       totalYears: 41.67,
       sightYears: 11,
       skipDelay: true,
+      baseRetireInput: 7978.25,
+      baseProvInput: 7322.08,
     },
     expected: {
       base: 2608.11,
@@ -186,6 +189,7 @@ const cases = [
     input: {
       birthYear: 1976, birthMonth: 2,
       workYear: 2008, workMonth: 6,
+      retireYear: 2026, retireMonth: 2,
       cityType: 'prov',
       avgIndex: 0.75,
       personalAccInput: 112406.89,
@@ -271,7 +275,7 @@ const cases = [
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
-  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01, formula_type: 'jilin' };
   if (MODULES.includes('extra')) {
     modules.extra_pension = { enabled: true };
     if (EXTRA_PARAMS) {
@@ -347,7 +351,7 @@ const AVG_SALARY_HISTORY = {
   2020: 6004.75,
   2021: 6384.83,
   2022: 6655.33,
-  2023: 7178.5,
+  2023: 7058.67,
   2024: 7178.5,
   2025: 7322,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };

@@ -86,7 +86,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 浙江过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.014  // 浙江过渡系数固定 1.4%（浙劳社老〔2006〕142号）
 // TODO：补充官方文件编号（如：浙政发〔2006〕XX号）
 
 const PROV_TAG = 'zhejiang'
@@ -110,26 +110,27 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/zhejiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
 function getEngineConfig() {
   return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
+    avg_salary_history: AVG_SALARY_HISTORY,
+    base_rates: { prov: PROV_BASE },
+    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
-
     province: PROV_TAG,
     name: '浙江省',
-    base_rates: { prov: PROV_BASE },
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    usePreAccountYears: true,
+    viewing_start: { year: 1998, month: 1, _note: '过渡性养老金用1997年底前年限，calcYears截止1998-01代表含1997年12月在内' },
+    round_to_jiao: true,
+    modules: {
+      basic_pension: { enabled: true, rate_per_year: 0.01, formula: '全省计发基数与指数化工资均值乘以累计缴费年限乘以1%' },
+      personal_account: { enabled: true, formula: '个人账户累计储存额除以计发月数' },
+      transitional_pension: { enabled: true, coefficient: 0.014, formula: '全省计发基数乘以1997年底前平均缴费指数乘以1997年底前缴费年限乘以1.4%' },
+      extra_pension: { enabled: true, formula_type: 'zhejiang_subsidy', amount: 150, formula: '基本养老金补贴150元每月（浙人社发2011 146号）' },
+      adjustment_fund: { enabled: true, type: 'zhejiang', base_amount: 480, coefficient: 3, formula: '过渡调节金等于480加平均缴费指数乘以缴费年限乘以3（浙人社发2018 102号）' },
+      special_addition: { enabled: false }
+    }
   }
 }
-
 // ==================== 导出 ====================
 
 

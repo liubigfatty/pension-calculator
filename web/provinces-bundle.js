@@ -161,9 +161,10 @@ module.exports = {
   var module = { exports: {} };
   var exports = module.exports;
 // 数据来源：✅ 官方数据（用户提供北京市历年职工平均工资）
-// 2023年计发基数：11761元/月（2023年月平均工资）
-// 2024年计发基数：11883元/月（预估）
-// 更新时间：2026-06-18
+// 2024年计发基数：11883元/月
+// 2025年计发基数：12049元/月（2024年度全口径社平144588元/年，表上“上年职工平均工资”÷12）
+// 2026年计发基数：未公布；2026年退休者按2025年基数预发，年底公布后重算
+// 更新时间：2026-07-10
 
 // data/provinces/beijing.js
 // 北京市养老金计算数据模块
@@ -218,14 +219,14 @@ const PROV_BASE = {
   2022: 11082,
   2023: 11761,
   2024: 11883,
-   2025: 11937,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  2025: 12049,  // 2025年计发基数=2024年度全口径社平144588元/年÷12（北京核定表口径）
 };;
 
 const BASE_PARAMS = {
   PROV_GROWTH: 0.03,    // 3.0%
-  LATEST_BASE_YEAR: 2023,
-  LATEST_BASE_VALUE: 11761,  // 2023年官方值,
-  PROV_2025: 11937,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  LATEST_BASE_YEAR: 2025,
+  LATEST_BASE_VALUE: 12049,  // 2025年官方值（2024年度全口径社平144588元/年÷12）
+  PROV_2025: 12049,  // 2025年计发基数=2024年度全口径社平
 }
 
 // 北京市行政区划（直辖市，无地级市区分）
@@ -323,7 +324,7 @@ function getEngineConfig() {
   }
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'beijing' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -354,7 +355,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数11525元，2024年基数11883元（来源：北京市人社局）',
+    notes: '2024年基数11883元，2025年基数12049元（2024年度全口径社平144588元/年÷12）；2026年基数未公布，退休者按2025年基数预发'
   };
 }
 
@@ -390,7 +391,7 @@ const AVG_SALARY_HISTORY = {
   2022: 10543.33,
   2023: 11525,
   2024: 11883,
-  2025: 11937,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2025: 12049,  // 2025年度社保缴费基数·2024全口径社平144588元/年÷12（北京核定表口径）
 };
 
 
@@ -495,7 +496,7 @@ const CITY_LIST = []
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 重庆市过渡系数 1.3%
+const TRANS_COEF = 0.014  // 重庆市过渡系数 1.4%(渝办发〔2006〕205号)
 
 const PROV_TAG = 'chongqing'
 
@@ -2077,23 +2078,23 @@ const PROV_BASE = {
   2007: 1614,
   2008: 1814,
   2009: 2031,
-  2010: 2031,
-  2011: 2278,
-  2012: 2541,
-  2013: 2843,
-  2014: 3181,
-  2015: 3558,
-  2016: 3920,
-  2017: 4315,
-  2018: 4645,
-  2019: 4735,
-  2020: 4835,
-  2021: 5120,
-  2022: 5865,
-  2023: 6430,
-  2024: 7010,
+  2010: 2278,
+  2011: 2541,
+  2012: 2843,
+  2013: 3181,
+  2014: 3558,
+  2015: 3920,
+  2016: 4315,
+  2017: 4645,
+  2018: 4608,
+  2019: 4835,
+  2020: 5120,
+  2021: 5865,
+  2022: 6430,
+  2023: 7010,
+  2024: 7570,
+  2025: 7705,
   2027: 7906,
-   2025: 7570,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
 // 黑龙江省基数增长预测参数
@@ -2349,40 +2350,40 @@ base_rates: PROV_BASE,
 const AVG_SALARY_HISTORY = {
   1990: 154.17,
   1991: 172.5,
-  1992: 191.33,
-  1993: 221.83,
-  1994: 281.33,
-  1995: 345.42,
-  1996: 380.33,
-  1997: 407.42,
-  1998: 519.83,
-  1999: 591.17,
-  2000: 652.92,
-  2001: 742.5,
-  2002: 827.17,
-  2003: 919.83,
-  2004: 1046.42,
-  2005: 1204.83,
-  2006: 1375.42,
-  2007: 1615.5,
-  2008: 1920.5,
-  2009: 2211.33,
-  2010: 2031,
-  2011: 2278,
-  2012: 2541,
-  2013: 2843,
-  2014: 3181,
-  2015: 3558,
-  2016: 3920,
-  2017: 4315,
-  2018: 4645,
-  2019: 4735,
-  2020: 4835,
+  1992: 191,
+  1993: 222,
+  1994: 281,
+  1995: 345,
+  1996: 380,
+  1997: 407,
+  1998: 520,
+  1999: 591,
+  2000: 653,
+  2001: 743,
+  2002: 819,
+  2003: 920,
+  2004: 1046,
+  2005: 1205,
+  2006: 1375,
+  2007: 1614,
+  2008: 1814,
+  2009: 2031,
+  2010: 2278,
+  2011: 2541,
+  2012: 2843,
+  2013: 3181,
+  2014: 3558,
+  2015: 3920,
+  2016: 4315,
+  2017: 4645,
+  2018: 4608,
+  2019: 4835,
+  2020: 5120,
   2021: 5865,
   2022: 6430,
   2023: 7010,
-  2024: 7010,
-  2025: 7570,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2024: 7570,
+  2025: 7705,
 };
 
 
@@ -3105,7 +3106,7 @@ const PROV_BASE = {
   2022: 8309,
   2023: 8613,
   2024: 8785,
-   2025: 8254,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
 };;
 
 // 江苏省基数增长预测参数
@@ -3113,7 +3114,7 @@ const BASE_PARAMS = {
   
   PROV_GROWTH: 0.018,  // 1.8%
   MERGE_YEAR: 2031,
-  PROV_2025: 8254,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
 }
 
 // 江苏省历年社保缴费基数（元/月，来源：用户提供的江苏省历年社保缴费基数表）
@@ -3729,13 +3730,16 @@ const cases = [
     name: '长春-男-1966-02（预核定表）',
     input: {
       birthYear: 1966, birthMonth: 2,
-      workYear: 1984, workMonth: 10,
+      workYear: 1984, workMonth: 7,
+      retireYear: 2026, retireMonth: 2,
       cityType: 'cc',
       avgIndex: 0.62,
       personalAccInput: 96750.01,
       totalYears: 41.67,
       sightYears: 11,
       skipDelay: true,
+      baseRetireInput: 7978.25,
+      baseProvInput: 7322.08,
     },
     expected: {
       base: 2608.11,
@@ -3750,6 +3754,7 @@ const cases = [
     input: {
       birthYear: 1976, birthMonth: 2,
       workYear: 2008, workMonth: 6,
+      retireYear: 2026, retireMonth: 2,
       cityType: 'prov',
       avgIndex: 0.75,
       personalAccInput: 112406.89,
@@ -3835,7 +3840,7 @@ const cases = [
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
-  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01, formula_type: 'jilin' };
   if (MODULES.includes('extra')) {
     modules.extra_pension = { enabled: true };
     if (EXTRA_PARAMS) {
@@ -3911,7 +3916,7 @@ const AVG_SALARY_HISTORY = {
   2020: 6004.75,
   2021: 6384.83,
   2022: 6655.33,
-  2023: 7178.5,
+  2023: 7058.67,
   2024: 7178.5,
   2025: 7322,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
@@ -3987,9 +3992,9 @@ const PROV_BASE = {
   2022: 6720,
   2023: 6987,
   2024: 7201,
-   2025: 7264,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
-;
+  2025: 7346,  // 辽人社〔2025〕17号：全省(不含沈阳､大连)月计发基数7346元
+};
+
 
 // 沈阳市单独计发基数（沈人社发）
 const SY_BASE = {
@@ -3998,7 +4003,7 @@ const SY_BASE = {
   2022: 8520,
   2023: 8690,
   2024: 8823,
-   2025: 8725,  // 按2024城市值×省2025/省2024官方比例推算(待各市官方2025计发基数)
+  2025: 8390,  // 辽人社〔2025〕17号：沈阳市月计发基数8390元
 };
 
 // 大连市单独计发基数（大人社发）
@@ -4008,14 +4013,13 @@ const DL_BASE = {
   2022: 8520,
   2023: 8690,
   2024: 8823,
-  2025: 8725,  // 按2024城市值×省2025/省2024官方比例推算(待各市官方2025计发基数)
+  2025: 8956,  // 辽人社〔2025〕17号：大连市月计发基数8956元
 };
 
 const BASE_PARAMS = {
-  
   PROV_GROWTH: 0.02,  // 预估年增长2%
   MERGE_YEAR: 2031,
-  PROV_2025: 7264,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 7346,  // 辽人社〔2025〕17号
 }
 
 // ==================== 城市列表 ====================
@@ -4043,18 +4047,17 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 辽宁省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 辽宁省过渡系数 1.4%（辽劳社发〔2006〕81号）
 
 const PROV_TAG = 'liaoning'
 
 // ==================== 模块配置 ====================
 
-const MODULES = ['base', 'personal', 'transition', 'extra']
+const MODULES = ['base', 'personal', 'transition']
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
-  extra:       '增发养老金',
 }
 
 // ==================== 增发养老金参数 ====================
@@ -4203,7 +4206,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'chongqing' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -4486,7 +4489,7 @@ const AVG_SALARY_HISTORY = {
   2020: 6344,
   2021: 6751,
   2022: 7469.17,
-  2023: 8105,
+  2023: 7469,
   2024: 8105,
   2025: 8179,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
@@ -5637,7 +5640,7 @@ const AVG_SALARY_HISTORY = {
   2020: 10338,
   2021: 11396.42,
   2022: 12183,
-  2023: 12307,
+  2023: 12183,
   2024: 12307,
   2025: 12434,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
@@ -5853,7 +5856,7 @@ const AVG_SALARY_HISTORY = {
   2020: 5914,
   2021: 6438.08,
   2022: 6854.58,
-  2023: 7111,
+  2023: 6897,
   2024: 7111,
   2025: 6997,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
@@ -6593,16 +6596,17 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// 新疆个人账户建立时间：新政发〔1997〕107号 / 新政发〔2006〕59号，统一为1996年1月1日
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
 
-const TRANS_COEF = 0.014  // 新疆维吾尔自治区过渡系数 1.4000000000000001%
+const TRANS_COEF = 0.013  // 新疆维吾尔自治区过渡系数 1.3%（新政发〔2006〕59号）
 
 const PROV_TAG = 'xinjiang'
 
 // ==================== 模块配置 ====================
 
-const MODULES = ['base', 'personal', 'transition']
+const MODULES = ['base', 'personal', 'transition', 'other']
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
@@ -6634,6 +6638,11 @@ function getEngineConfig() {
         modules.transitional_pension.coefficient = TRANS_COEF;
       }
     }
+  }
+
+  // 冬季采暖补贴 120元/月（新政办发[2010]167号）
+  if (MODULES.includes('other')) {
+    modules.special_addition = { enabled: true, type: 'fixed', amount: 120, label: '冬季采暖补贴' };
   }
 
   return {
@@ -6696,6 +6705,7 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_TAG,
   PROV_BASE,
+  TRANS_COEF,
   CITY_LIST,
   MODULES,
   MODULE_LABELS,
@@ -6889,7 +6899,7 @@ const AVG_SALARY_HISTORY = {
   2021: 8839,       // ✅ 核验表 106068÷12（原9900❌错位）
   2022: 9900,       // ✅ 核验表 118800÷12（原10791❌错位）
   2023: 10791,      // ✅ 核验表 129492÷12（原11546❌错位）
-  2024: 11777,      // ✅ 核验表"退休时上年在岗月平均工资"=11777（原11546❌）,
+  2024: 11546,      // ✅ 核验表"退休时上年在岗月平均工资"=11777（原11546❌）,
   2025: 11777,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
 
@@ -7305,7 +7315,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 浙江过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.014  // 浙江过渡系数固定 1.4%（浙劳社老〔2006〕142号）
 // TODO：补充官方文件编号（如：浙政发〔2006〕XX号）
 
 const PROV_TAG = 'zhejiang'
@@ -7329,26 +7339,27 @@ const cases = [
 
 // ==================== 引擎配置 ====================
 
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/zhejiang.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
 function getEngineConfig() {
   return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
+    avg_salary_history: AVG_SALARY_HISTORY,
+    base_rates: { prov: PROV_BASE },
+    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
-
     province: PROV_TAG,
     name: '浙江省',
-    base_rates: { prov: PROV_BASE },
-    avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    usePreAccountYears: true,
+    viewing_start: { year: 1998, month: 1, _note: '过渡性养老金用1997年底前年限，calcYears截止1998-01代表含1997年12月在内' },
+    round_to_jiao: true,
+    modules: {
+      basic_pension: { enabled: true, rate_per_year: 0.01, formula: '全省计发基数与指数化工资均值乘以累计缴费年限乘以1%' },
+      personal_account: { enabled: true, formula: '个人账户累计储存额除以计发月数' },
+      transitional_pension: { enabled: true, coefficient: 0.014, formula: '全省计发基数乘以1997年底前平均缴费指数乘以1997年底前缴费年限乘以1.4%' },
+      extra_pension: { enabled: true, formula_type: 'zhejiang_subsidy', amount: 150, formula: '基本养老金补贴150元每月（浙人社发2011 146号）' },
+      adjustment_fund: { enabled: true, type: 'zhejiang', base_amount: 480, coefficient: 3, formula: '过渡调节金等于480加平均缴费指数乘以缴费年限乘以3（浙人社发2018 102号）' },
+      special_addition: { enabled: false }
+    }
   }
 }
-
 // ==================== 导出 ====================
 
 

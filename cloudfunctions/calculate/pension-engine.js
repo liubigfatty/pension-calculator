@@ -119,6 +119,12 @@ function calcBasicPension(params) {
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
     const aDesc = aCoeff !== 1 ? `(a=${aCoeff.toFixed(4)})` : ''
     description = `(${retireBase.toLocaleString()}×${aCoeff.toFixed(4)}${aDesc} + ${indexSalary.toLocaleString(undefined, {maximumFractionDigits:2})}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'jilin') {
+    // 吉林特殊（长春/市县双基数）：基础养老金 = (退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    // 非长春地区 retireBase === provBase，公式退化为默认公式；长春地区 retireBase=市县基数，provBase=全省基数
+    const indexSalary = (provBase || retireBase) * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = '($\{retireBase.toLocaleString()} + $\{(provBase || retireBase).toLocaleString()} × $\{avgIndex.toFixed(2)}) / 2 × $\{totalYears.toFixed(2)}年 × $\{(rate * 100).toFixed(2)}% = $\{amount.toFixed(2)}元'
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -560,6 +566,8 @@ function calcTransitionalPension(params) {
   // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
   // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
   if (mod.formula_type === "chongqing") {
+    // 重庆过渡性养老金=(计发基数+指数化工资)/2 × 建立个人账户前缴费年限 × 1.4%
+    // 渝办发〔2006〕205号：年限=建账前缴费年限(含视同+建账前实际)=effectiveYears(preAccountYears||sightYears)
     const retireBase = params?.retireBase || provBase
     const avgBase = (retireBase + retireBase * transIdx) / 2
     const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
@@ -1116,6 +1124,18 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
+  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
+  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
+  if (year > lastYear) {
+    if (lastCityYear > lastProvYear) {
+      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    }
+    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+  }
+
   const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
   // 从城市表向前找
@@ -1144,8 +1164,6 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     return provRates[firstProvYear] || 0
   }
   // 4. 所有年份都小于查询年份 → 回退到最后已知年份（查询年份晚于数据结束）
-  const lastCityYear = cityKeys[cityKeys.length - 1]
-  const lastProvYear = provKeys[provKeys.length - 1]
   if (lastCityYear > lastProvYear) {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }

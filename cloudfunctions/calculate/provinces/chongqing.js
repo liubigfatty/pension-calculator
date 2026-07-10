@@ -76,7 +76,7 @@ const CITY_LIST = []
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 重庆市过渡系数 1.3%
+const TRANS_COEF = 0.014  // 重庆市过渡系数 1.4%(渝办发〔2006〕205号)
 
 const PROV_TAG = 'chongqing'
 

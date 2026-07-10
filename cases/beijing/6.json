@@ -1,0 +1,28 @@
+{
+  "case_id": "6",
+  "province": "beijing",
+  "city": "东城区",
+  "gender": "male",
+  "birth_year": 1966,
+  "birth_month": 3,
+  "work_year": 1981,
+  "work_month": 6,
+  "retire_year": 2026,
+  "retire_month": 3,
+  "actual_years": 32.75,
+  "sight_years": 12.08,
+  "total_years": 44.83,
+  "pre_account_years": 5.0,
+  "avg_index": 1.1629,
+  "base_number": 12049,
+  "base_prov": 12049,
+  "personal_account": 230220.29,
+  "months": 139,
+  "expected": {
+    "basic_pension": 5841.52,
+    "personal_pension": 1656.26,
+    "transitional_pension": 2156.11,
+    "total": 9653.89
+  },
+  "notes": "北京市东城区基本养老保险待遇核算表。表上实际缴费年月32.09（32年9个月）、视同缴费年月12.01（12年1个月），按北京习惯折算为小数年并保留两位；2026年3月退休，2026年基数未公布，按2025年基数12049元/月预发（上年职工平均工资144588元/年÷12）。"
+}

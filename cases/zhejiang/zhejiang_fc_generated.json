@@ -12,11 +12,12 @@
   "personal_account": 96678.71,
   "months": 170,
   "expected": {
-    "basic_pension": 3225.78,
+    "basic_pension": 3064.27,
     "personal_pension": 568.7,
-    "transitional_pension": 1429.34,
-    "total": 6369.5,
-    "extra_pension": 150
+    "transitional_pension": 1759.51,
+    "total": 6115.3,
+    "extra_pension": 150,
+    "adjustment_fund": 572.76
   },
   "notes": "zhejiang 女干部55岁退休（自动生成）",
   "birth_year": 1970,
@@ -27,5 +28,6 @@
   "trans_index": 0.9307,
   "base_number": 8310,
   "genderType": "fc",
-  "generated": true
+  "generated": true,
+  "base_prov": 8310
 }

@@ -54,9 +54,8 @@ const PROV_BASE = {
   2022: 8309,
   2023: 8613,
   2024: 8785,
-   2025: 8254,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
 };
-
 ;
 
 // 江苏省基数增长预测参数
@@ -64,9 +63,8 @@ const BASE_PARAMS = {
   
   PROV_GROWTH: 0.018,  // 1.8%
   MERGE_YEAR: 2031,
-  PROV_2025: 8254,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
 };
-
 
 
 // 江苏省历年社保缴费基数（元/月，来源：用户提供的江苏省历年社保缴费基数表）
@@ -191,6 +189,11 @@ const cases = [
   },
 ]
 
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/jiangsu.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
@@ -221,13 +224,15 @@ function getEngineConfig() {
   if (MODULES.includes('other')) modules.special_addition = { enabled: true };
 
   return {
-  interest_rates: INTEREST_RATES,
-  avg_salary_history: AVG_SALARY_HISTORY,    account_start: ACCOUNT_START,
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
     name: '江苏省',
+ avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
@@ -273,8 +278,7 @@ const AVG_SALARY_HISTORY = {
   2025: 8254,
 };
 
-const INTEREST_RATES = {
-};
+
 module.exports = {
   PROV_BASE,
 getEngineConfig,
