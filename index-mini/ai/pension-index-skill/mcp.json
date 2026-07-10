@@ -52,7 +52,7 @@
     },
     {
       "name": "reverseIndexByBalance",
-      "description": "已知个人账户余额 + 参保地 + 首次缴费年月 + 累计缴费月数，反推本人平均缴费工资指数。当用户只知道账户里有多少钱、想知道平均缴费指数时使用。",
+      "description": "反推平均缴费指数。当用户只知道个人账户余额、想反推平均缴费指数时使用；需同时提供参保地、首次缴费年月与累计缴费月数。",
       "_meta": {
         "ui": {
           "componentPath": "ai/pension-index-skill/components/result-card",
@@ -95,7 +95,7 @@
     },
     {
       "name": "reverseYearlyByCurrentBase",
-      "description": "已知当前月缴费基数 + 参保地 + 首次缴费年月 + 累计缴费月数，反推历年缴费基数、平均缴费指数与个人账户余额（假设历年按当前比例缴费）。当用户只知道现在工资多少、想估算历年缴费水平和指数时使用。",
+      "description": "反推历年缴费情况。当用户只知道当前月缴费基数、想估算历年缴费基数与平均指数时使用；需提供参保地、首缴年月与缴费月数。结果假设历年按当前比例缴费。",
       "_meta": {
         "ui": {
           "componentPath": "ai/pension-index-skill/components/result-card",
@@ -138,7 +138,7 @@
     },
     {
       "name": "reverseYearlyByTargetIndex",
-      "description": "已知目标平均缴费指数 + 参保地 + 首次缴费年月 + 累计缴费月数，反推每年应缴基数（每年 = 当年社平 × 目标指数）。当用户想达到某个缴费指数水平、了解每年该缴多少基数时使用。",
+      "description": "反推目标缴费基数。当用户想达到某个平均缴费指数、了解每年应缴多少基数时使用；需提供参保地、首缴年月与缴费月数。每年应缴基数 = 当年社平 × 目标指数。",
       "_meta": {
         "ui": {
           "componentPath": "ai/pension-index-skill/components/result-card",
