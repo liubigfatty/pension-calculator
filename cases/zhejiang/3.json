@@ -11,11 +11,12 @@
   "personal_account": 110378.42,
   "months": 195,
   "expected": {
-    "basic_pension": 1862.38,
+    "basic_pension": 1769.13,
     "personal_pension": 566.04,
     "transitional_pension": 0,
-    "total": 3111,
-    "extra_pension": 150
+    "total": 3017.7,
+    "extra_pension": 150,
+    "adjustment_fund": 532.49
   },
   "notes": "浙江省女性'新人'，1975年生，2000年参工（建账1997年后），2025年8月50岁退休。无视同年限、无过渡性养老金。计发基数8310（2025年预核算用2024年基数）。此案例total不含调节金/补贴。 [2026-06-15 fix]",
   "birth_year": 1975,
@@ -23,5 +24,6 @@
   "work_year": 2000,
   "work_month": 8,
   "avg_index": 0.6977,
-  "base_number": 8310
+  "base_number": 8310,
+  "base_prov": 8310
 }

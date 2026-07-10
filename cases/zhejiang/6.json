@@ -12,11 +12,12 @@
   "personal_account": 96796.96,
   "months": 139,
   "expected": {
-    "basic_pension": 3104.33,
+    "basic_pension": 2992.55,
     "personal_pension": 696.38,
-    "transitional_pension": 1166.07,
-    "total": 6197.1,
-    "extra_pension": 150
+    "transitional_pension": 1613.7,
+    "total": 6025.1,
+    "extra_pension": 150,
+    "adjustment_fund": 572.41
   },
   "notes": "浙江省男性，1965年生，1985年参工，2025年11月60岁退休。视同=0但过渡≠0！建账前年限=1985-08至1997-12=12年5月=12.42年。1997年底指数1.1005。正式核算基数8433。total不含调节金/补贴。 [2026-06-15 fix]",
   "birth_year": 1965,
@@ -25,5 +26,6 @@
   "work_month": 8,
   "avg_index": 0.7668,
   "trans_index": 1.1005,
-  "base_number": 8433
+  "base_number": 8433,
+  "base_prov": 8433
 }

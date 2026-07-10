@@ -19,11 +19,12 @@
   "personal_account": 96678.71,
   "months": 139,
   "expected": {
-    "basic_pension": 3225.78,
+    "basic_pension": 3064.27,
     "personal_pension": 695.53,
-    "transitional_pension": 1436.7,
-    "total": 6496.4,
-    "extra_pension": 150
+    "transitional_pension": 1759.51,
+    "total": 6242.1,
+    "extra_pension": 150,
+    "adjustment_fund": 572.76
   },
   "notes": "浙江2025年2月核定表，男1965-02生，1981-10参工，42年10月缴费。视同14年3月。双指数(avg=0.7219,trans=0.9307)。三项福利：过渡调节金572.76 + 养老金补贴150 + 见分进角补足0.01(合计6242.1)。验证引擎过渡性用1997底前年限(16.25年)。"
 }

@@ -1,0 +1,31 @@
+{
+  "case_id": "zhejiang-hangzhou-female-2026-03",
+  "province": "zhejiang",
+  "city": "hangzhou",
+  "gender": "female",
+  "birth_year": 1975,
+  "birth_month": 9,
+  "work_year": 1994,
+  "work_month": 11,
+  "retire_year": 2026,
+  "retire_month": 2,
+  "actual_years": 19.33,
+  "sight_years": 12,
+  "total_years": 31.33,
+  "pre_account_years": 12,
+  "avg_index": 0.8794,
+  "trans_index": 1.279,
+  "base_number": 8433,
+  "base_prov": 8433,
+  "personal_account": 78149.09,
+  "months": 192.9,
+  "expected": {
+    "basic_pension": 2482.74,
+    "personal_pension": 405.13,
+    "transitional_pension": 1812.02,
+    "adjustment_fund": 562.65,
+    "extra_pension": 150,
+    "total": 5412.6
+  },
+  "notes": "杭州上城女性真实待遇核算表（2026-03制表，2026-02退休）。2026年基数未公布，按2025年基数8433预发。全程指数0.8794，1997年底前指数1.279，建账前（视同+改制前）年限12.00年。浙江三项福利：过渡调节金562.65+养老金补贴150+见分进角补足0.05。"
+}
