@@ -55,6 +55,9 @@ function mapCaseToInput(c, provConfig) {
     retireMonth,
     avgIndex:       c.avg_index ?? 1.0,
     personalAcc:    c.personal_account ?? 0,
+    // 仅在同时给出市县/全省基数时才显式传入（预发核定表场景），避免单字段脏数据干扰
+    baseRetire:     (c.base_number != null && c.base_prov != null) ? c.base_number : null,
+    baseProv:       (c.base_number != null && c.base_prov != null) ? c.base_prov : null,
     sightYears:      c.sight_years   ?? null,
     totalYears:      c.total_years    ?? null,
     preAccountYears: c.pre_account_years ?? null,

@@ -119,6 +119,12 @@ function calcBasicPension(params) {
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
     const aDesc = aCoeff !== 1 ? `(a=${aCoeff.toFixed(4)})` : ''
     description = `(${retireBase.toLocaleString()}×${aCoeff.toFixed(4)}${aDesc} + ${indexSalary.toLocaleString(undefined, {maximumFractionDigits:2})}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'jilin') {
+    // 吉林特殊（长春/市县双基数）：基础养老金 = (退休地计发基数 + 全省计发基数 × 指数) / 2 × 累计缴费年限 × 1%
+    // 非长春地区 retireBase === provBase，公式退化为默认公式；长春地区 retireBase=市县基数，provBase=全省基数
+    const indexSalary = (provBase || retireBase) * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = '($\{retireBase.toLocaleString()} + $\{(provBase || retireBase).toLocaleString()} × $\{avgIndex.toFixed(2)}) / 2 × $\{totalYears.toFixed(2)}年 × $\{(rate * 100).toFixed(2)}% = $\{amount.toFixed(2)}元'
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
