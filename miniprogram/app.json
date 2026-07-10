@@ -1,1 +1,36 @@
-{"pages": ["pages/index/index", "pages/step1/step1", "pages/step2/step2", "pages/step3/step3", "pages/result/result", "pages/report/report", "pages/privacy/privacy"], "lazyCodeLoading": "requiredComponents", "__usePrivacyCheck__": true, "window": {"navigationBarTitleText": "养老金测算", "navigationBarBackgroundColor": "#8B7355", "navigationBarTextStyle": "white", "backgroundColor": "#F5F3F0"}}
+{
+  "pages": [
+    "pages/index/index",
+    "pages/step1/step1",
+    "pages/step2/step2",
+    "pages/step3/step3",
+    "pages/result/result",
+    "pages/report/report",
+    "pages/privacy/privacy"
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "__usePrivacyCheck__": true,
+  "window": {
+    "navigationBarTitleText": "养老金测算",
+    "navigationBarBackgroundColor": "#8B7355",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F3F0"
+  },
+  "subPackages": [
+    {
+      "root": "ai",
+      "independent": true,
+      "pages": []
+    }
+  ],
+  "agent": {
+    "skills": [
+      {
+        "name": "pensionCalc",
+        "description": "测算退休时间、退休年龄与每月养老金",
+        "path": "ai/pension-calc-skill"
+      }
+    ],
+    "instruction": "AGENTS.md"
+  }
+}
