@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2078.91,
     "personal_pension": 774.33,
-    "transitional_pension": 138.71,
-    "total": 2991.95
+    "transitional_pension": 128.8,
+    "total": 2982.04
   },
   "notes": "陕西西安，女1968年生，1991-07参工，2023年退休(55岁)。视同1年6月=1.5年(1991-07至1996-07建账前)。累计29年6月=29.5年。2023年基数7489。单指数0.882。过渡系数1.4%确认：7489×0.882×1.5×1.4%=138.71。陕政发〔2006〕20号。",
   "birth_year": 1968,
@@ -22,5 +22,7 @@
   "work_year": 1991,
   "work_month": 7,
   "avg_index": 0.882,
-  "base_number": 7489
+  "base_number": 7489,
+  "recalibrated": true,
+  "verified": false
 }

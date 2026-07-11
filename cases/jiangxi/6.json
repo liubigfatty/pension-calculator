@@ -11,10 +11,10 @@
   "personal_account": 270296.65,
   "months": 139,
   "expected": {
-    "basic_pension": 4015.85,
+    "basic_pension": 3909.9,
     "personal_pension": 1944.58,
-    "transitional_pension": 2273.79,
-    "total": 8234.22
+    "transitional_pension": 2213.27,
+    "total": 8067.75
   },
   "notes": "江西南昌，男1963-04生，1981-12参工，2023-04退休(60岁)。高指数1.874，个人账户27万。视同166月(13.83年，1995-10前)，累计视同169月。过渡=6569×1.874×13.83×1.3%=2213.8，确认用1995-10前视同年限。",
   "birth_year": 1963,
@@ -22,5 +22,7 @@
   "work_year": 1981,
   "work_month": 12,
   "avg_index": 1.874,
-  "base_number": 6569
+  "base_number": 6569,
+  "recalibrated": true,
+  "verified": false
 }

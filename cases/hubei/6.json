@@ -1,0 +1,35 @@
+{
+  "case_id": "6",
+  "province": "hubei",
+  "city": "武汉市",
+  "gender": "男",
+  "birth_year": 1966,
+  "birth_month": 8,
+  "work_year": 1985,
+  "work_month": 9,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "total_years": 40.17,
+  "sight_years": 10.33,
+  "actual_years": 29.84,
+  "pre_account_years": 10.33,
+  "avg_index": 1.7699,
+  "base_number": 9022,
+  "base_prov": 9022,
+  "personal_account": 305222.92,
+  "months": 137.8,
+  "expected": {
+    "basic_pension": 5019.25,
+    "personal_pension": 2214.97,
+    "transitional_pension": 1979.4,
+    "total": 9213.62
+  },
+  "verified": true,
+  "notes": "湖北武汉，男性1966年8月生，1985年9月参工，1996年1月建账，2025年10月正常退休（60岁2个月，计发月数137.8）。视同缴费年限10.33年（124个月），实际缴费年限29.84年（358个月），累计缴费年限40.17年（482个月）。平均缴费指数1.7699，指数化月平均工资=9022×1.7699=15968.04。计发基数9022元（2024年武汉，退休上年度）。个人账户305222.92元，计发月数137.8。基础=(9022+15968.04)/2×40.17×1%=5019.25；过渡=9022×1.7699×10.33×1.2%=1979.4；个人=305222.92/137.8=2214.97；合计9213.62元。鄂政发〔2006〕42号。",
+  "data_source": "湖北省养老保险待遇计算表（武汉市人力资源和社会保障厅，2025-10）"
+}

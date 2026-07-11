@@ -12,10 +12,10 @@
   "months": 139,
   "skipDelay": true,
   "expected": {
-    "basic_pension": 3206.9,
+    "basic_pension": 2587.34,
     "personal_pension": 433.59,
-    "transitional_pension": 840.72,
-    "total": 4481.21
+    "transitional_pension": 678.3,
+    "total": 3699.23
   },
   "notes": "福建南平延平区，男1965-10生，1984-07参工，2025-10退休(60岁)。过渡性=7932×0.572×11.5×1.3%=678.30(用avgIndex非transIndex)。核定表显示建账前指数0.921但不用于过渡公式。基础养老金差10.60(引擎2576.74 vs 核定2587.34)，待确认基数精度。",
   "birth_year": 1965,
@@ -23,5 +23,7 @@
   "work_year": 1984,
   "work_month": 7,
   "avg_index": 0.572,
-  "base_number": 7932
+  "base_number": 7932,
+  "recalibrated": true,
+  "verified": false
 }

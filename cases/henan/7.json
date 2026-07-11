@@ -11,10 +11,10 @@
   "personal_account": 50290.23,
   "months": 195,
   "expected": {
-    "basic_pension": 1481.41,
+    "basic_pension": 1435.44,
     "personal_pension": 257.9,
-    "transitional_pension": 90.44,
-    "total": 1825.98
+    "transitional_pension": 0,
+    "total": 1693.34
   },
   "notes": "河南省女性，1974年出生，2024年1月50岁退休（预核定，用2023年基数6401）。视同21月=1.75年。低指数+短年限典型案例。",
   "birth_year": 1974,
@@ -23,5 +23,7 @@
   "work_month": 1,
   "avg_index": 0.6018,
   "trans_index": 0.5767,
-  "base_number": 6401
+  "base_number": 6401,
+  "recalibrated": true,
+  "verified": false
 }

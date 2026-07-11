@@ -1,0 +1,35 @@
+{
+  "case_id": "7",
+  "province": "hubei",
+  "city": "黄石市",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 5,
+  "work_year": 1981,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 5,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "total_years": 24.5,
+  "sight_years": 14.25,
+  "actual_years": 10.25,
+  "pre_account_years": 14.25,
+  "avg_index": 0.9729,
+  "base_number": 7048,
+  "base_prov": 7048,
+  "personal_account": 25843.25,
+  "months": 139,
+  "expected": {
+    "basic_pension": 1703.36,
+    "personal_pension": 185.92,
+    "transitional_pension": 1172.55,
+    "total": 3061.83
+  },
+  "verified": true,
+  "notes": "湖北黄石，男性1965年5月生，1981年10月参工，1996年1月建账，2025年5月正常退休（60岁）。单位名称：灵活就业缴费。视同缴费年限14.25年（171个月），实际缴费年限10.25年（123个月），累计缴费年限24.5年（294个月）。平均缴费指数0.9729，指数化月平均工资=7048×0.9729=6857。计发基数7048元（2024年黄石，退休上年度）。个人账户25843.25元，计发月数139。基础=(7048+6857)/2×24.5×1%=1703.36；过渡=7048×0.9729×14.25×1.2%=1172.55；个人=25843.25/139=185.92；合计3061.83元。鄂政发〔2006〕42号。",
+  "data_source": "湖北省养老保险待遇计算表（黄石市养老保险待遇审核专用章，2025-05）"
+}

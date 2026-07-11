@@ -13,10 +13,10 @@
   "personal_account": 91263.47,
   "months": 195,
   "expected": {
-    "basic_pension": 2055.91,
+    "basic_pension": 2076.07,
     "personal_pension": 468.02,
-    "transitional_pension": 24.08,
-    "total": 2548.01
+    "transitional_pension": 19.33,
+    "total": 2563.42
   },
   "notes": "重庆2025年11月退休女工（中人），1975-11生，1995-10参工。建账前0.25年(1995-10至1996-01)，缴费30年2月。低指数0.6702。使用2025年计发基数8240。独子待遇77.5元（表上未计入新办法）。渝人社发〔2013〕19号文。",
   "socialAvgBaseInput": 8240,
@@ -26,5 +26,7 @@
   "work_month": 10,
   "avg_index": 0.6702,
   "base_number": 8240,
-  "base_prov": 8240
+  "base_prov": 8240,
+  "recalibrated": true,
+  "verified": false
 }

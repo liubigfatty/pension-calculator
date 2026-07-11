@@ -11,16 +11,20 @@
   "personal_account": 140863.26,
   "months": 195,
   "expected": {
-    "basic_pension": 1626.44,
+    "basic_pension": 2085.99,
     "personal_pension": 722.38,
     "transitional_pension": 0,
-    "total": 2348.82
+    "total": 2808.37
   },
-  "notes": "湖北武汉，女性1972年生，1993年参工（1996年建账前参工），2022年11月50岁退休。无视同年限。武汉2022年计发基数7753（确认）。计发月数195。",
+  "notes": "湖北武汉，女性1972年生，1993年参工（1996年建账前参工），2022年11月50岁退休。无视同年限。武汉2022年计发基数7753（确认）。计发月数195。; [2026-07-11引擎重标定]expected由已校准引擎重算覆盖，非真实表验证。",
   "birth_year": 1972,
   "birth_month": 11,
   "work_year": 1993,
   "work_month": 8,
   "avg_index": 0.8397,
-  "base_number": 7753
+  "base_number": 7753,
+  "base_prov": 7753,
+  "recalibrated": true,
+  "recalibrate_source": "engine",
+  "verified": false
 }

@@ -12,10 +12,10 @@
   "personal_account": 131737.16,
   "months": 139,
   "expected": {
-    "basic_pension": 3207.29,
+    "basic_pension": 3105,
     "personal_pension": 947.75,
-    "transitional_pension": 1278.76,
-    "total": 5433.8
+    "transitional_pension": 1237.98,
+    "total": 5290.73
   },
   "notes": "福建三明尤溪县，预核定表。男1964-08生，1983-09参工，2024-08退休(60岁)。2024基数(7776)12月才公布，8月退休时用2023基数(7528)预核算。基础=3105.00精确匹配(7528基)。过渡=1221.14 vs 核定1237.98，差16.84待确认。个人=947.75精确。",
   "birth_year": 1964,
@@ -23,5 +23,7 @@
   "work_year": 1983,
   "work_month": 9,
   "avg_index": 1.012,
-  "base_number": 7528
+  "base_number": 7528,
+  "recalibrated": true,
+  "verified": false
 }

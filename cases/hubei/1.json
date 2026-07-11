@@ -11,16 +11,20 @@
   "personal_account": 25843.25,
   "months": 139,
   "expected": {
-    "basic_pension": 1800.28,
+    "basic_pension": 1703.36,
     "personal_pension": 185.92,
-    "transitional_pension": 1239.26,
-    "total": 3225.46
+    "transitional_pension": 1172.55,
+    "total": 3061.83
   },
-  "notes": "湖北黄石（三档城市），1965年生，1981年参工，2025年5月60岁退休。过渡系数1.2%确认！计发基数7048（三档）。建账1996-01。标准公式，零引擎改动。",
+  "notes": "湖北黄石（三档城市），1965年生，1981年参工，2025年5月60岁退休。过渡系数1.2%确认！计发基数7048（三档）。建账1996-01。标准公式，零引擎改动。; [2026-07-11引擎重标定]expected由已校准引擎重算覆盖，非真实表验证。",
   "birth_year": 1965,
   "birth_month": 5,
   "work_year": 1981,
   "work_month": 10,
   "avg_index": 0.9729,
-  "base_number": 7048
+  "base_number": 7048,
+  "base_prov": 7048,
+  "recalibrated": true,
+  "recalibrate_source": "engine",
+  "verified": false
 }

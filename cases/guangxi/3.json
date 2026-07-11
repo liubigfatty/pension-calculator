@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2122.39,
     "personal_pension": 552.63,
-    "transitional_pension": 439.92,
-    "total": 3114.94
+    "transitional_pension": 0,
+    "total": 2675.02
   },
   "notes": "广西北流，男1965-11生，1990-01参工，2025-12退休(60岁)。无视同，但建账前有6年6月=6.5年实缴(1990-01至1996-07)。过渡=6983×0.6923×6.5×1.4%=440.0精确。个人=76815.98/139=552.7。2025年基数6983。",
   "birth_year": 1965,
@@ -22,5 +22,7 @@
   "work_year": 1990,
   "work_month": 1,
   "avg_index": 0.6923,
-  "base_number": 6983
+  "base_number": 6983,
+  "recalibrated": true,
+  "verified": false
 }
