@@ -549,8 +549,6 @@ function calcTransitionalPension(params) {
   // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
   // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
   if (mod.formula_type === "chongqing") {
-    // 重庆过渡性养老金=(计发基数+指数化工资)/2 × 建立个人账户前缴费年限 × 1.4%
-    // 渝办发〔2006〕205号：年限=建账前缴费年限(含视同+建账前实际)=effectiveYears(preAccountYears||sightYears)
     const retireBase = params?.retireBase || provBase
     const avgBase = (retireBase + retireBase * transIdx) / 2
     const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
@@ -1177,6 +1175,8 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
+  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+
   // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
   // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
   const lastCityYear = cityKeys[cityKeys.length - 1]
@@ -1189,7 +1189,6 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     return provRates[lastProvYear] || cityRates[lastCityYear] || 0
   }
 
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
