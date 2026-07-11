@@ -619,14 +619,18 @@ function calcTransitionalPension(params) {
     // 旧格式：使用 coefficient_over_20 / coefficient_under_20
     coef = actualYears > 20 ? mod.coefficient_over_20 : mod.coefficient_under_20;
   }
-  const amount = Math.round(provBase * effectiveYears * transIdx * coef * 100) / 100;
+  // 指数封底：内蒙古等省份规定平均缴费工资指数<1时，过渡性养老金按1计算（基础养老金仍用真实指数）
+  const transIdxEff = (mod && mod.index_floor_one) ? Math.max(transIdx, 1) : transIdx;
+  const amount = Math.round(provBase * effectiveYears * transIdxEff * coef * 100) / 100;
 
   const yearsLabel = (preAccountYears != null && preAccountYears > 0) ? '建账前' : '视同'
   const yearsValue = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
 
+  const idxLabel = (mod && mod.index_floor_one && transIdx < 1)
+    ? `指数${transIdx.toFixed(2)}→封底1` : `指数${transIdxEff.toFixed(2)}`
   return {
     amount,
-    description: `${yearsLabel}${yearsValue.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × 指数${transIdx.toFixed(2)} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    description: `${yearsLabel}${yearsValue.toFixed(2)}年 × 全省基数${provBase.toLocaleString()} × ${idxLabel} × 系数${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
   }
 }
 

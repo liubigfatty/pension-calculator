@@ -57,8 +57,8 @@
     "2021": 7001,
     "2022": 7351,
     "2023": 7719,
-    "2024": 8179,
-    "2025": 8348,
+    "2024": 8105,
+    "2025": 8105,
     "prov": {
       "1978": 859,
       "1979": 902,
@@ -107,7 +107,7 @@
       "2022": 7351,
       "2023": 7469,
       "2024": 8105,
-      "2025": 8179
+      "2025": 8105
     }
   },
   "min_years": {
@@ -167,9 +167,10 @@
     },
     "transitional_pension": {
       "enabled": true,
-      "coefficient": 0.0149,
-      "formula_type": "chongqing",
-      "notes": "内蒙古过渡=(A+A×Q)/2×M1×1.5%。建账1996-01，usePreAccountYears=true。案例1确认。"
+      "coefficient": 0.012,
+      "formula_type": "standard",
+      "index_floor_one": true,
+      "notes": "内蒙古过渡=指数化月均工资×统账结合前(视同)年限×1.2%。平均缴费指数<1时按1计过渡。建账多数1996-01/最迟1998-01，视同至1997-12。"
     },
     "special_addition": {
       "enabled": false

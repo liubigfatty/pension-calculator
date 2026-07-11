@@ -69,6 +69,11 @@ const PROV_BASE = {
 
 
 
+
+
+
+
+
 ;
 
 const BASE_PARAMS = {
@@ -77,6 +82,11 @@ const BASE_PARAMS = {
   LATEST_BASE_VALUE: 12049,  // 2025年官方值（2024年度全口径社平144588元/年÷12）
   PROV_2025: 12049,  // 2025年计发基数=2024年度全口径社平
 };
+
+
+
+
+
 
 
 

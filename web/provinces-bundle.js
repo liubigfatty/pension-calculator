@@ -4459,14 +4459,14 @@ const PROV_BASE = {
   2022: 7351,
   2023: 7469,
   2024: 8105,
-   2025: 8179,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 8105,  // 2025年计发基数未公布，预发用2024基数8105（用户示例确认；官方公布后替换）
 };;
 
 const BASE_PARAMS = {
   
   PROV_GROWTH: 0.02,  // 预估年增长2%
   MERGE_YEAR: 2031,
-  PROV_2025: 8179,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 8105,  // 2025年计发基数未公布，预发用2024基数8105
 }
 
 // ==================== 城市列表 ====================
@@ -4485,11 +4485,12 @@ const CITY_LIST = [
 
 // ==================== 核心参数 ====================
 
-// 建账时间（个人账户制度建立时间）
+// 建账时间（个人账户制度建立时间）：多数1996-01，最迟1998-01（例：1984-07参工、1998-01建账）
+// 视同缴费年限固定至1997-12（统账结合前），与建账具体月份无关
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 内蒙古自治区过渡系数 1.3%
+const TRANS_COEF = 0.012  // 内蒙古自治区过渡系数 1.2%（内养老发〔2006〕?号）。过渡=指数化月均工资×统账结合前年限×1.2%；平均缴费指数<1时按1计过渡
 
 const PROV_TAG = 'neimenggu'
 
@@ -4521,7 +4522,8 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    // index_floor_one：内蒙古规定平均缴费工资指数<1时，过渡性养老金按1计算（基础养老金仍用真实指数）
+    modules.transitional_pension = { enabled: true, index_floor_one: true };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -4544,7 +4546,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '⚠️ 2023-2025年基数待官方文件确认',
+    notes: '内蒙古企业养老金：基础=(基数+基数×Q)/2×缴费年限×1%；个人=个账/计发月数；过渡=指数化月均工资×统账结合前(视同)年限×1.2%，平均缴费指数<1时按1计过渡。建账多数1996-01、最迟1998-01；视同=参加工作至1997-12。全口径社平=计发基数。2025基数未公布时(预发)用2024基数8105。',
   }
 }
 
