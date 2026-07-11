@@ -138,7 +138,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'hubei' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
