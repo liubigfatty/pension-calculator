@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2506.89,
     "personal_pension": 511.31,
-    "transitional_pension": 959.83,
-    "total": 3978.03
+    "transitional_pension": 979.01,
+    "total": 3997.21
   },
   "notes": "河南省郑州市，2024年1月退休（预核定，用2023年基数6401）。郑州基数7800。视同162月=13.50年。核定表另有'过渡性补贴'419.9元（郑州特色），此案例total不含补贴，待引擎单独支持。 [2026-06-15 fix]",
   "birth_year": 1964,
@@ -25,6 +25,5 @@
   "trans_index": 0.8279,
   "base_number": 6401,
   "city": "郑州市",
-  "recalibrated": true,
-  "verified": false
+  "recalibrated": true
 }

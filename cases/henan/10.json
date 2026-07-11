@@ -1,0 +1,36 @@
+{
+  "province": "henan",
+  "case_id": "henan-kaifeng-gulou-2026",
+  "gender": "男",
+  "birth_year": 1966,
+  "birth_month": 2,
+  "work_year": 1982,
+  "work_month": 2,
+  "retire_year": 2026,
+  "retire_month": 2,
+  "base_number": 6738,
+  "base_prov": 6738,
+  "city_type": "kaifeng",
+  "avg_index": 0.70066,
+  "trans_index": 0.6335,
+  "personal_account": 71028.64,
+  "months": 139,
+  "sight_years": 12.92,
+  "total_years": 44.08,
+  "pre_account_years": 12.92,
+  "retire_type": "standard",
+  "expected": {
+    "basic_pension": 2525.58,
+    "personal_pension": 511.00,
+    "transitional_pension": 679.38,
+    "total": 3715.96
+  },
+  "verified": true,
+  "source": {
+    "type": "核定表",
+    "region": "河南省开封市鼓楼区",
+    "date": "2026-02-04",
+    "notes": "豫政[2006]29号文；2026-02退休，使用2025年全省基数6738、开封本地基数6385"
+  },
+  "notes": "河南开封鼓楼男，1966-02生，1982-02参工，1995-01建账，2026-02退休（60岁）。视同缴费月数155=12.92年（表上取整），实际缴费月数374=31.17年，合计529月=44.08年。基础养老金用省基数6738、全程平均指数0.70066；过渡性养老金用本地基数6385、实际平均指数0.6335、视同年限12.92年、系数1.3%。"
+}

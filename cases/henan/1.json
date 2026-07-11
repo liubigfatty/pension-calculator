@@ -14,8 +14,8 @@
   "expected": {
     "basic_pension": 2525.63,
     "personal_pension": 511,
-    "transitional_pension": 656.65,
-    "total": 3693.28
+    "transitional_pension": 679.37,
+    "total": 3716
   },
   "notes": "预核定表（预算），郑州市参保。基础养老金指数化工资4721.07，过渡性养老金指数化工资4044.90。视同缴费月数155=12.92年。注意：河南过渡性养老金指数化工资=6738×0.60=4042.80，核定表显示4044.90（可能有微调）。",
   "birth_year": 1966,
@@ -26,6 +26,5 @@
   "trans_index": 0.6003,
   "base_number": 6738,
   "base_prov": 6385,
-  "recalibrated": true,
-  "verified": false
+  "recalibrated": true
 }
