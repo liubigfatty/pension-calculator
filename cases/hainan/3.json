@@ -8,17 +8,18 @@
   "retire_year": 2025,
   "retire_month": 11,
   "total_years": 36.25,
-  "sight_years": 6.33,
-  "pre_account_years": 9.33,
+  "sight_years": 6.3333,
+  "actual_years": 29.9167,
+  "pre_account_years": 9.3333,
   "personal_account": 94318.99,
   "months": 139,
   "expected": {
     "basic_pension": 2627.26,
     "personal_pension": 678.55,
-    "transitional_pension": 823.85,
-    "total": 4129.66
+    "transitional_pension": 824.14,
+    "total": 4129.95
   },
-  "notes": "海南2025年11月退休男职工，1965-11生，1988-09参工。视同6.33年+建账前实际3年=9.33年建账前年限。低指数0.7703。上年度全省在岗年均98256→月均8188。无补贴。琼府〔2022〕40号。",
+  "notes": "海南海口男，1965-11生，1988-09参工，1995-01开始缴费，1998-01建账，2025-11正常退休。视同76个月=6.3333年，建账前实际+视同共112个月=9.3333年，实际缴费359个月=29.9167年（含1年中断），累计435个月=36.25年。基数8188/月，指数0.7703，个账94318.99。基础=2627.26，个人=678.55，过渡=8188×0.7703×9.3333×1.4%=824.14，合计4129.95。琼府〔2022〕40号。",
   "birth_year": 1965,
   "birth_month": 11,
   "work_year": 1988,
@@ -27,5 +28,5 @@
   "base_number": 8188,
   "base_prov": 8188,
   "recalibrated": true,
-  "verified": false
+  "verified": true
 }
