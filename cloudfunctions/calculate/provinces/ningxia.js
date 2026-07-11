@@ -79,8 +79,8 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
 
 const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
 const PROV_TAG = 'ningxia'

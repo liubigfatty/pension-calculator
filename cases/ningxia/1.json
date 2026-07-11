@@ -1,7 +1,7 @@
 {
   "case_id": "ningxia-2024-male",
   "province": "ningxia",
-  "city": "宁夏",
+  "city": "石嘴山",
   "gender": "男",
   "birth": "1964年4月",
   "work_start": "1983年6月",
@@ -9,23 +9,24 @@
   "retire_month": 4,
   "total_years": 40.92,
   "sight_years": 7.58,
+  "actual_years": 33.33,
   "pre_account_years": 12.58,
   "personal_account": 95751.34,
   "months": 139,
+  "avg_index": 0.7382,
+  "base_number": 7953,
+  "base_prov": 7953,
   "expected": {
-    "basic_pension": 2830,
+    "basic_pension": 2828.37,
     "personal_pension": 688.86,
-    "transitional_pension": 961.43,
-    "total": 4480.29
+    "transitional_pension": 960.13,
+    "total": 4477.36
   },
-  "notes": "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数**1.3%**（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
   "birth_year": 1964,
   "birth_month": 4,
   "work_year": 1983,
   "work_month": 6,
-  "avg_index": 0.7392,
-  "base_number": 7953,
-  "base_prov": 7953,
-  "recalibrated": true,
-  "verified": false
+  "verified": true,
+  "source": "宁夏回族自治区退休基本养老金计算表（石嘴山市，2024-04-17核定，2024-04退休）；宁政办规发〔2020〕18号/自治区规定。基础2828.37/个人688.86/过渡960.13/合计4477.36。",
+  "notes": "宁夏石嘴山男，1964-04生，1983-06参工，2024-04正常退休(60岁)。视同7年7月=7.58年，实际缴费33年4月=33.33年，累计40年11月=40.92年。建账1996-01，建账前年限12年7月=12.58年。平均指数0.7382（建账前年限下取整12年，累计年限上取整41年，(12×1+18.2663)/41=0.7382）。计发基数7953（2023年基数预发）。过渡系数1.3%。"
 }

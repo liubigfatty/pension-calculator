@@ -1365,6 +1365,7 @@ function parseInput(inputData) {
     pre1992LocalYears,      // 深圳 1992年7月前地方补充养老年限
     socialAvgBaseInput: inputData.socialAvgBaseInput != null ? parseFloat(inputData.socialAvgBaseInput) : null, // 重庆社平覆盖（可为null）
     oneChild: inputData.oneChild === true, // 重庆独生子女标记
+    oneChildType: inputData.oneChildType || 'parent', // 独生子女类型：parent(独生父母5%)/no_child(无子女10%)，海南等省用
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
     regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
     tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
@@ -1711,6 +1712,18 @@ function calculate(config, inputData) {
     specialAddition = {
       amount: gzAmount,
       description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 5% = ${gzAmount.toFixed(2)}元`
+    }
+  }
+
+  // 海南独生子女父母/无子女人员计划生育奖励金：本人基本养老金 × 5% / 10%
+  // 依据：琼府〔2022〕40号；独生子女父母加发5%，无子女人员加发10%（"本人基本养老金"=基础+个人+过渡，加发前）
+  if (config.province === 'hainan' && data.oneChild) {
+    const hnBase = basicPension.amount + personalAccount.amount + transPension.amount
+    const rate = data.oneChildType === 'no_child' ? 0.10 : 0.05
+    const hnAmount = Math.round(hnBase * rate * 100) / 100
+    specialAddition = {
+      amount: hnAmount,
+      description: `计划生育奖励金(本人基本养老金×${(rate*100)}%): (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × ${(rate*100)}% = ${hnAmount.toFixed(2)}元`
     }
   }
 
