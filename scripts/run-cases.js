@@ -81,6 +81,8 @@ function mapCaseToInput(c, provConfig) {
     newMethodYears:  c.new_method_years ?? null,
     localPensionYears: c.local_pension_years ?? null,
     pre1992LocalYears: c.pre1992_local_years ?? null,
+    oneChild:        c.one_child ?? c.oneChild ?? false,
+    oneChildType:    c.one_child_type ?? c.oneChildType ?? 'parent',
   };
 }
 
