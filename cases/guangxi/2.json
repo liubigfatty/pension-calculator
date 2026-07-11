@@ -13,10 +13,10 @@
   "expected": {
     "basic_pension": 1788.03,
     "personal_pension": 498.21,
-    "transitional_pension": 0,
-    "total": 2286.24
+    "transitional_pension": 72.88,
+    "total": 2359.12
   },
-  "notes": "广西南宁，女1975-02生，1995-07参工，2025-03退休。无视同，但建账前有1年(1995-07至1996-07)。过渡=6847×0.7603×1×1.4%=72.9。计发月数195(50岁)。个人=97150.21/195=498.2。2024年基数6847。",
+  "notes": "广西南宁，女1975-02生，1995-07参工，2025-03退休。无视同，建账前1995-07至1996-07=1年。过渡=6847×0.7603×1×1.4%=72.88。计发月数195(50岁)。个人=97150.21/195=498.2。2024年基数6847。",
   "birth_year": 1975,
   "birth_month": 2,
   "work_year": 1995,
@@ -24,5 +24,6 @@
   "avg_index": 0.7603,
   "base_number": 6847,
   "recalibrated": true,
-  "verified": false
+  "verified": false,
+  "pre_account_years": 1
 }

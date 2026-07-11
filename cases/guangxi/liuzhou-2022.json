@@ -1,0 +1,31 @@
+{
+  "case_id": "guangxi-liuzhou-2022",
+  "province": "guangxi",
+  "city": "柳州",
+  "gender": "男",
+  "birth": "1962年12月",
+  "work_start": "1980年10月",
+  "retire_year": 2022,
+  "retire_month": 12,
+  "total_years": 42.25,
+  "sight_years": 11.25,
+  "actual_years": 31,
+  "pre_account_years": 15.75,
+  "personal_account": 67182.54,
+  "months": 139,
+  "avg_index": 0.7715,
+  "base_number": 6442,
+  "expected": {
+    "basic_pension": 2410.8,
+    "personal_pension": 483.4,
+    "transitional_pension": 1095.9,
+    "total": 3990.1
+  },
+  "birth_year": 1962,
+  "birth_month": 12,
+  "work_year": 1980,
+  "work_month": 10,
+  "verified": true,
+  "source": "广西柳州企业参保人员基本养老金核定表（2023-01-16发放，2022-12退休）；桂人社规〔2019〕26号。基础2410.8/个人483.4/过渡1095.9/合计3990.1。",
+  "notes": "广西建账时间1996-07。视同年限11.25年(1980-10至1992-01)+建账前实际4.5年(1992-01至1996-07)=建账前合计15.75年。过渡=6442×0.7715×15.75×1.4%=1095.9。年限取两位小数，待遇见分进角。"
+}
