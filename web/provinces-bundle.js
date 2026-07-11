@@ -76,9 +76,9 @@ const CITY_LIST = [
   '宣城市',
 ]
 
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-const TRANS_COEF = 0.012
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+const TRANS_COEF = 0.013
 const PROV_TAG = 'anhui'
 
 const MODULES = ['base', 'personal', 'transition']
@@ -96,16 +96,21 @@ const cases = []
 ;
 
 function getEngineConfig() {
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
+  const modules = {}
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 }
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true }
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF }
+  }
 
-    province: PROV_TAG,
+  return {
+    avg_salary_history: AVG_SALARY_HISTORY,
     base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '安徽省',
+    modules,
   }
 }
 
@@ -698,7 +703,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 福建过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 福建过渡系数约1.3%（核定表备注"约1.3%"；待官方文件编号确认）
 // TODO：补充官方文件编号（如：闽政发〔2006〕XX号）
 
 const PROV_TAG = 'fujian'
@@ -728,6 +733,18 @@ const cases = [
 ;
 
 function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
@@ -737,7 +754,13 @@ base_rates: PROV_BASE,
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
  avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '福建过渡系数约1.3%（核定表备注）；基础养老金与过渡性养老金均使用平均缴费指数(单指数)。',
   }
 }
 
@@ -1217,7 +1240,19 @@ account_start: ACCOUNT_START,
       shenzhen: SHENZHEN_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'guangdong', rate_per_year: 0.01 },
+      personal_account: { enabled: true },
+      transitional_pension: { enabled: true, formula_type: 'guangdong', coefficient: 0.012, old_transition_coefficient: 120 },
+      special_addition: { enabled: false },
+      adjustment_fund: { enabled: true, type: 'shenzhen', tiers: { 2021: 250, 2022: 200, 2023: 150, 2024: 50, 2025: 0 } },
+    },
+    // 深圳市独立体系：城市级模块覆盖（仅 city==='sz' 时生效）
+    sz_modules: {
+      basic_pension: { enabled: true, rate_per_year: 0.01, formula_type: 'shenzhen' },
+      transitional_pension: { enabled: true, formula_type: 'shenzhen', coefficient: 0.012 },
+      special_addition: { enabled: true, type: 'shenzhen_local' },
+    },
   }
 }
 
@@ -1366,8 +1401,8 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+const ACCOUNT_START = { year: 1996, month: 7 }
+const CUTOFF_DATE   = { year: 1996, month: 6 }
 
 const TRANS_COEF = 0.014  // 广西壮族自治区过渡系数 1.4000000000000001%
 
@@ -1421,7 +1456,8 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,
+    round_to_jiao: true,
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '⚠️ 2023-2025年基数待官方文件确认',
@@ -1567,7 +1603,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 贵州省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 贵州省过渡系数 1.4%（黔劳社厅发〔2006〕20号；备份核定表 transition_coefficient=0.014）
 
 const PROV_TAG = 'guizhou'
 
@@ -1606,6 +1642,12 @@ function getEngineConfig() {
       }
     }
   }
+  // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)，依据黔劳社厅发〔2006〕20号
+  modules.special_addition = {
+    enabled: true,
+    type: 'one_child',
+    rate: 0.05,
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -1619,10 +1661,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,  // 贵州过渡性养老金按建账前缴费年限计（工作起始→1998-01建账），非仅视同年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）',
+    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）；过渡系数1.4%（黔劳社厅发〔2006〕20号）；独生子女奖励5%×(基础+个人+过渡)。',
   }
 }
 
@@ -1768,7 +1810,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 海南省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 海南省过渡系数 1.4%（琼府〔2022〕40号）
 
 const PROV_TAG = 'hainan'
 
@@ -1820,7 +1862,7 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,  // 海南过渡性养老金使用1997年底前实际缴费年限+视同缴费年限
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '⚠️ 2023-2025年基数待官方文件确认',
@@ -2111,7 +2153,7 @@ const BASE_PARAMS = {
   
   PROV_GROWTH: 0.026,
   MERGE_YEAR: 2031,
-  PROV_2025: 7570,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 7705,  // 2025年计发基数=2025年预发基数（2026-01退休核定表确认上年全省平均工资7705元）
 }
 
 // 黑龙江省行政区划
@@ -2480,23 +2522,43 @@ const PROV_BASE = {
   2021: 5821,
   2022: 6112,
   2023: 6401,
-  2024: 6606,
-   2025: 6385,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  2024: 6738,  // 2024年全省企业计发基数（豫人社发及真实表验证）
+  2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
+  2026: 6738,  // 2026年退休暂用2025年全省基数（预发）
 };;
+
+// 洛阳市单独计发基数（2025年洛阳企业计发基数6573元）
+const LUOYANG_BASE = { ...PROV_BASE };
+LUOYANG_BASE[2024] = 6573;  // 2024年洛阳企业在岗职工月平均工资（2025年计发基数）
+LUOYANG_BASE[2025] = 6573;  // 2025年洛阳企业计发基数
+LUOYANG_BASE[2026] = 6573;  // 2026年退休暂用2025年基数（预发）
 
 // 郑州市单独计发基数（郑州市人社局2024年第5号通告）
 // 2024年基数6757元，与全省6738元相差19元（约0.3%）
 // 历史年份暂用全省基数代替，待补充官方数据
 const ZHENGZHOU_BASE = { ...PROV_BASE };
 ZHENGZHOU_BASE[2024] = 6757;  // 郑州市人社局2024年第5号通告
-// ZHENGZHOU_BASE[2025] 由 {...PROV_BASE} 展开继承（=6385，2024全口径社平），不再单独预估
+ZHENGZHOU_BASE[2026] = 6738;  // 2026年退休暂用2025年全省基数（预发）
+// ZHENGZHOU_BASE[2025] 由 {...PROV_BASE} 展开继承（=6738，2024全口径社平），不再单独预估
 
+
+// 信阳市单独计发基数（2025年信阳企业计发基数6260元）
+const XINYANG_BASE = { ...PROV_BASE };
+XINYANG_BASE[2024] = 6260;
+XINYANG_BASE[2025] = 6260;
+XINYANG_BASE[2026] = 6260;  // 2026年退休暂用2025年基数（预发）
+
+// 开封市单独计发基数（2025年开封企业计发基数6385元）
+const KAIFFENG_BASE = { ...PROV_BASE };
+KAIFFENG_BASE[2024] = 6385;
+KAIFFENG_BASE[2025] = 6385;
+KAIFFENG_BASE[2026] = 6385;  // 2026年退休暂用2025年基数（预发）
 // 河南省基数增长预测参数
 const BASE_PARAMS = {
   
   PROV_GROWTH: 0.03,  // 约3%年增速
   MERGE_YEAR: 2031,
-  PROV_2025: 6385,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
 }
 
 // 河南省城市列表（地级市）
@@ -2513,10 +2575,10 @@ const CITY_LIST = [
 // ⚠️ 待确认：建账时间（目前按1998-01估算，待官方文件确认）
 // ⚠️ 待确认：视同缴费cutoff时间（目前按1997-12估算，待官方文件确认）
 // TODO：搜索关键词"豫人社规 个人账户建立 1998"或"豫政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1998, month: 1 }
+const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政[2006]29号文，个人账户建账1995-01
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 河南过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 豫政[2006]29号文：1.3%  // 河南过渡系数固定 1.2%（待官方文件确认）
 // TODO：补充官方文件编号（如：豫政发〔2006〕XX号）
 
 const PROV_TAG = 'henan'
@@ -2555,9 +2617,15 @@ account_start: ACCOUNT_START,
     base_rates: {
       prov: PROV_BASE,
       zhengzhou: ZHENGZHOU_BASE,
+      luoyang: LUOYANG_BASE,
+      xinyang: XINYANG_BASE,
+      kaifeng: KAIFFENG_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'henan' },
+      transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },
+    },
   }
 }
 
@@ -2594,8 +2662,8 @@ const AVG_SALARY_HISTORY = {
   2021: 5681,
   2022: 5965,
   2023: 6260,
-  2024: 6606,
-  2025: 6385,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2024: 6738,  // 2024年全省企业计发基数（豫人社发及真实表验证）
+  PROV_2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
 };
 
 
@@ -2707,6 +2775,18 @@ const cases = []
 ;
 
 function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
@@ -2716,7 +2796,13 @@ base_rates: PROV_BASE,
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
  avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '湖北过渡系数1.2%（与江苏/甘肃/黑龙江一致，鄂政发〔2006〕42号）；预发表使用退休地上年计发基数。',
   }
 }
 
@@ -2769,13 +2855,14 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 官方数据
-// 2024年计发基数：7694元/月
-// 更新时间：2026-06-10
+// 数据来源：✅ 官方数据（三张核定表）
+// 2024年计发基数：7417元/月（湖南女2024-09预发表确认）
+// 2025年正式计发基数：7694元/月（株洲2025-11核定表确认）
+// 2025年缴费基准值：7180元/月（湖南男2025-07预发表确认）
+// 更新时间：2026-07-10
 
 // data/provinces/hunan.js
 // 湖南省养老金计算数据模块
-// TODO：补充1995-2022年官方计发基数（目前为估算值）
 // 依据：湘人社规〔2024〕10号、湘人社发〔2025〕53号
 
 // ==================== 基础数据 ====================
@@ -2798,45 +2885,45 @@ const PROV_BASE = {
   1992: 1615,
   1993: 1695,
   1994: 1780,
-  1995: 352.24,
-  1996: 406.63,
-  1997: 436.87,
-  1998: 446.04,
-  1999: 489.79,
-  2000: 558.32,
-  2001: 630,
-  2002: 713.93,
-  2003: 797.16,
-  2004: 916.79,
-  2005: 1087.1,
-  2006: 1345.96,
-  2007: 1599.08,
-  2008: 1848.28,
-  2009: 2078.16,
-  2010: 2361.03,
-  2011: 2659.44,
-  2012: 2980.25,
-  2013: 3335.64,
-  2014: 3672.2,
-  2015: 4073.79,
-  2016: 4449.34,
-  2017: 4851.35,
-  2018: 4576.81,
-  2019: 4839.52,
-  2020: 5243.42,
-  2021: 5571.79,
-  2022: 5938.17,
-  2023: 5938.17,
-  2024: 7618,
-   2025: 6787,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
+  1995: 342,   // 1995年计发基数（待官方文件确认，暂用缴费基准值）
+  1996: 400,
+  1997: 425,
+  1998: 444,
+  1999: 456,
+  2000: 495,
+  2001: 543,
+  2002: 641,
+  2003: 728,
+  2004: 821,
+  2005: 955,
+  2006: 1305,
+  2007: 1487,
+  2008: 1795,
+  2009: 1940,
+  2010: 2270,
+  2011: 2540,
+  2012: 2960,
+  2013: 3336,
+  2014: 3658,
+  2015: 4044,
+  2016: 4491,
+  2017: 4491,
+  2018: 4491,
+  2019: 4764,
+  2020: 5054,
+  2021: 5460,
+  2022: 5977,
+  2023: 6284,
+  2024: 7417,  // 2024年计发基数（湖南女2024-09预发表确认）
+  2025: 7694,  // 2025年正式计发基数（株洲2025-11核定表确认）
+};;;;
 
 // 湖南省基数增长预测参数
 const BASE_PARAMS = {
   PROV_GROWTH: 0.026,
-  LATEST_BASE_YEAR: 2023,
-  LATEST_BASE_VALUE: 6711,
-  PROV_2025: 6787,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  LATEST_BASE_YEAR: 2024,
+  LATEST_BASE_VALUE: 7417,
+  PROV_2025: 7694,  // 2025年正式计发基数（株洲2025-11核定表确认）
 }
 
 // 湖南省城市列表（地级市+自治州）
@@ -2995,7 +3082,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023-2025年基数（湘人社规〔2025〕30号）',
+    notes: '2024-2025年计发基数与缴费基准值经三张核定表核对',
   };
 }
 
@@ -3006,37 +3093,37 @@ const AVG_SALARY_HISTORY = {
   1992: 210.5,
   1993: 261.83,
   1994: 342,
-  1995: 399.83,
-  1996: 425,
-  1997: 443.83,
-  1998: 446,
-  1999: 489.75,
-  2000: 558.33,
-  2001: 630,
-  2002: 713.92,
-  2003: 1000.08,
-  2004: 1135.33,
-  2005: 1275.5,
-  2006: 1450,
-  2007: 1755,
-  2008: 2012.17,
-  2009: 2211.17,
-  2010: 2472.5,
-  2011: 2882.17,
-  2012: 3247.58,
-  2013: 3560.5,
-  2014: 3926.42,
-  2015: 4363.08,
-  2016: 4853.42,
-  2017: 4851.33,
-  2018: 4576.83,
-  2019: 4839.5,
-  2020: 5460,
-  2021: 5977,
-  2022: 6284,
-  2023: 6711,
-  2024: 7618,
-  2025: 6787,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  1995: 342,   // 1995.04-1996.03 社保缴费年度基准值
+  1996: 400,   // 1996.04-1997.03
+  1997: 425,   // 1997.04-1998.03
+  1998: 444,   // 1998.04-1999.03（两张表一致，425为单个月份异常值）
+  1999: 456,
+  2000: 495,
+  2001: 543,
+  2002: 641,
+  2003: 728,
+  2004: 821,
+  2005: 955,
+  2006: 1305,
+  2007: 1487,
+  2008: 1795,
+  2009: 1940,
+  2010: 2270,  // 2010年起为自然年度
+  2011: 2540,
+  2012: 2960,
+  2013: 3336,
+  2014: 3658,
+  2015: 4044,
+  2016: 4491,
+  2017: 4491,
+  2018: 4491,
+  2019: 4764,
+  2020: 5054,
+  2021: 5460,
+  2022: 5977,
+  2023: 6284,
+  2024: 6711,  // 2024年全口径社平/缴费基准值
+  2025: 7180,  // 2025年全口径社平/缴费基准值（第二张核定表确认）
 };
 
 
@@ -4578,14 +4665,14 @@ const PROV_BASE = {
   2022: 7666.08,
   2023: 8087.83,
   2024: 8202,
-   2025: 8258,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表：暂用2024年全口径社平作为2025年计发基数）
 };;
 
 const BASE_PARAMS = {
   
   PROV_GROWTH: 0.02,  // 预估年增长2%
   MERGE_YEAR: 2031,
-  PROV_2025: 8258,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表确认）
 }
 
 // ==================== 城市列表 ====================
@@ -4601,8 +4688,8 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
 
 const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
 const PROV_TAG = 'ningxia'
@@ -4622,9 +4709,9 @@ const MODULE_LABELS = {
 const SPECIAL_ADDITION_PARAMS = {
   enabled: true,
   type: 'intellectual',
-  intellectual_work: 10,     // 工龄补贴 10元/月
-  intellectual_area: 8.5,    // 地区补贴 8.5元/月
-  note: '知识分子补贴 = 工龄补贴10元/月 + 地区补贴8.5元/月 = 18.5元/月',
+  intellectual_area: 10,    // 知识分子地区津贴（真实表：10.00元/月）
+  intellectual_work: 8.5,   // 知识分子工龄补贴（真实表：8.50元/月）
+  note: '知识分子补贴 = 地区津贴10元/月 + 工龄补贴8.5元/月 = 18.5元/月（宁政办发[2006]126号及相关规定）',
 }
 
 // ==================== 测试案例 ====================
@@ -4679,10 +4766,10 @@ const cases = [
     expected: {
       basic_pension: 2771.13,
       personal_pension: 879.95,
-      transitional_pension: 709.05,
-      total: 4378.63
+      transitional_pension: 680.50,
+      total: 4350.08
     },
-    notes: "宁夏2026年1月退休男职工(知识分子)，1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。低指数0.7666。知识分子过渡系数1.43%(+0.13%)+地区津贴10元+工龄补贴8.5元。计发基数8366。",
+    notes: "宁夏2026年1月银川退休男职工（知识分子），1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%(1.3%+0.13%)；地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。",
     intellectual: true,
     avg_index: 0.7666,
     base_number: 8366,
@@ -4763,7 +4850,7 @@ base_rates: {
     usePreAccountYears: true,  // 宁夏使用建账前缴费年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '宁夏有知识分子补贴：过渡系数1.3%→1.43%（需传入intellectual:true），固定补贴18.5元/月（工龄补贴10元+地区补贴8.5元）。使用建账前缴费年限（preAccountYears）。',
+    notes: '宁夏平均缴费工资指数算法：建账前各年缴费指数均视同为1；建账后按实际缴费工资÷上年社平计算当年指数；建账前年限下取整，累计缴费年限上取整，平均指数=(建账前年限下取整×1+建账后指数和)÷累计缴费年限上取整。知识分子过渡系数1.3%→1.43%，并发放地区津贴10元/月+工龄补贴8.5元/月。使用建账前缴费年限（preAccountYears）。',
   }
 }
 
@@ -4934,13 +5021,16 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'chongqing' };
   }
+
+  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
+  modules.special_addition = {
+    enabled: true,
+    type: 'qinghai_27_doc',
+    xining_addition: 12,
+    other_addition: 13
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -4954,10 +5044,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）',
+    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
   }
 }
 
@@ -5281,7 +5371,7 @@ const PROV_BASE = {
   2022: 7069.25,
   2023: 7468,
   2024: 7678,
-   2025: 7506,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 7831,  // 2025年计发基数（济南2026-01正式核定表，2025-09预发仍用7678）
 };;
 
 // 山东省基数增长预测参数
@@ -5289,7 +5379,7 @@ const BASE_PARAMS = {
   
   PROV_GROWTH: 0.02,  // 约2%年增速
   MERGE_YEAR: 2031,
-  PROV_2025: 7506,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 7831,  // 2025年计发基数（济南2026-01正式核定表，2025-09预发仍用7678）
 }
 
 // 山东省城市列表（地级市）
@@ -5310,7 +5400,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 山东过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 山东过渡系数固定 1.3%（鲁政发[2006]92号，济南2026-01临时待遇核定表确认）（待官方文件确认）
 // TODO：补充官方文件编号（如：鲁政发〔2006〕XX号）
 
 const PROV_TAG = 'shandong'
@@ -5366,7 +5456,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2024年基数7678元（鲁人社字〔2024〕112号）。⚠️ 双指数：基础用avgIndex，过渡用transIndex（视同缴费指数）。',
+    notes: '2024年基数7678元（鲁人社字〔2024〕112号）；济南2026-01临时待遇基数7831元。过渡系数1.3%。',
   }
 }
 
@@ -6407,7 +6497,7 @@ const CITY_LIST = []
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 天津市过渡系数 1.2%
+const TRANS_COEF = 0.010  // 天津市过渡系数 1.0%（真实表核定：过渡=基数×全部平均工资指数×1997年底前年限×1%）
 
 const PROV_TAG = 'tianjin'
 
@@ -6819,6 +6909,18 @@ const CUTOFF_DATE   = { year: 1997, month: 12 }
 
 const TRANS_COEF = 0.014  // 西藏自治区过渡系数 1.4000000000000001%
 
+// 西藏特殊待遇分项（按地区类别，单位：元/月）
+// 数据来源：用户提供的西藏企业职工基本养老金核定表（拉萨·二类地区，case_id 24 / 新女表）
+// 高原补贴为动态值：= 指数化月平均缴费工资 × 高原补贴比例
+//   指数化月平均缴费工资 = 退休地计发基数 × 平均缴费指数
+//   高原补贴比例按"在西藏工作年限"：满10年不满15年→5%；满15年不满20年→10%；20年以上→15%
+//   交通/取暖/福利为地区固定金额（二类地区：交通30、取暖39.88、福利260）
+// 注：高原补贴计入"基本养老待遇"段，交通+采暖+福利计入"其他待遇"段，合计均纳入月总待遇
+const XIZANG_SUBSIDIES = {
+  '二类地区': { transport_fee: 30.0, heating_fee: 39.88, welfare_fund: 260.0 },
+  // 其他地区待补充官方核定表
+}
+
 const PROV_TAG = 'xizang'
 
 // ==================== 模块配置 ====================
@@ -6851,6 +6953,12 @@ function getEngineConfig() {
       }
     }
   }
+  // 西藏特殊待遇：高原补贴 + 采暖 + 交通 + 福利（按地区类别分项）
+  modules.special_addition = {
+    enabled: true,
+    type: 'xizang_subsidies',
+    subsidies: XIZANG_SUBSIDIES,
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -6862,12 +6970,16 @@ base_rates: PROV_BASE,
     base_rates: { prov: PROV_BASE },
     avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
-    
+
+    // 西藏灵活就业退休年龄（藏政发〔2006〕37号等）：女45岁、男55岁
+    // 引擎 getRetireTotalMonths 识别此配置后，自动取对应法定退休年龄与计发月数
+    flex_retire_age: { male: 55, female: 45 },
+
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。口径=当年（非上年度）。',
+    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。口径=当年（非上年度）。特殊待遇按地区类别分项计发。',
   }
 }
 

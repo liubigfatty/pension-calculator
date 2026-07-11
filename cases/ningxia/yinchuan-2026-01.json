@@ -1,0 +1,33 @@
+{
+  "case_id": "ningxia-yinchuan-2026-01",
+  "province": "ningxia",
+  "city": "银川",
+  "gender": "男",
+  "birth": "1966年1月",
+  "work_start": "1988年8月",
+  "retire_year": 2026,
+  "retire_month": 1,
+  "total_years": 37.5,
+  "sight_years": 2.42,
+  "actual_years": 35.08,
+  "pre_account_years": 7.42,
+  "personal_account": 122313.73,
+  "months": 139,
+  "avg_index": 0.7666,
+  "base_number": 8366,
+  "base_prov": 8366,
+  "intellectual": true,
+  "expected": {
+    "basic_pension": 2771.13,
+    "personal_pension": 879.95,
+    "transitional_pension": 680.5,
+    "total": 4350.08
+  },
+  "birth_year": 1966,
+  "birth_month": 1,
+  "work_year": 1988,
+  "work_month": 8,
+  "verified": true,
+  "source": "宁夏回族自治区退休基本养老金计算表（银川市，2026-01-28核定，2026-01退休）；宁政办发[2006]126号。基础2771.13/个人879.95/过渡680.50/基本养老金合计4331.58；知识分子地区津贴10.00+工龄补贴8.50，应发养老金合计4350.08。",
+  "notes": "宁夏银川男知识分子，1966-01生，1988-08参工，2026-01正常退休(60岁)。视同2年5月=2.42年，实际缴费35年1月=35.08年，累计37年6月=37.5年。建账1996-01，建账前年限7年5月=7.42年。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%（1.3%+0.13%），地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。"
+}
