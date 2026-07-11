@@ -706,7 +706,11 @@ function calcSpecialAddition(params) {
     if (!params?.context?.oneChild) return { amount: 0, description: '非独生子女父母，不享受此补贴' }
     const retireYear = params?.context?.retireYear || 2025;
     const avgPensionData = mod.avgPensionData || {};
-    const avgPension = avgPensionData[retireYear] || avgPensionData[2023] || 0;
+    // 支持 case 级覆盖：当真实表给出了明确的独生子女补贴计算基数时优先使用
+    const avgPension = params?.context?.oneChildAvgPension
+      ?? avgPensionData[retireYear]
+      ?? avgPensionData[2023]
+      ?? 0;
     const rate = mod.rate || 0.05;
     const amount = Math.round(avgPension * rate * 100) / 100;
     return {
@@ -1367,6 +1371,7 @@ function parseInput(inputData) {
     socialAvgBaseInput: inputData.socialAvgBaseInput != null ? parseFloat(inputData.socialAvgBaseInput) : null, // 重庆社平覆盖（可为null）
     oneChild: inputData.oneChild === true, // 重庆独生子女标记
     oneChildType: inputData.oneChildType || 'parent', // 独生子女类型：parent(独生父母5%)/no_child(无子女10%)，海南等省用
+    oneChildAvgPension: inputData.oneChildAvgPension != null ? parseFloat(inputData.oneChildAvgPension) : null, // 云南独生子女补贴计算基数（人均养老金）覆盖
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
     regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
     tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
@@ -1678,6 +1683,7 @@ function calculate(config, inputData) {
       retireYear: legalDate.year,
       intellectual: data.intellectual,
       oneChild: data.oneChild,
+      oneChildAvgPension: data.oneChildAvgPension,
       totalWorkYears: totalYears,
       zzBase: zzBaseVal,
       avgIndex: data.avgIndex,
