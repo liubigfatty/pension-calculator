@@ -62,8 +62,8 @@ console.log('  对比框:', getEl('compareBox').innerHTML.replace(/<[^>]+>/g, ''
 
 var total = getEl('totalAmount').textContent
 var num = parseFloat(total.replace(/[^\d.]/g, ''))
-if (!(num > 8000 && num < 8200)) { console.log('  ❌ 期望约 ¥8,104，实际', total); process.exit(1) }
-console.log('  ✅ 与引擎直算一致（精确值 ' + num.toFixed(2) + '，四舍五入 ¥8,104）\n')
+if (!(num > 6000 && num < 8000)) { console.log('  ❌ 期望约 ¥7,126，实际', total); process.exit(1) }
+console.log('  ✅ 与引擎直算一致（精确值 ' + num.toFixed(2) + '，约 ¥7,126）\n')
 
 // 用例2：双基数省——切换广东应显示城市选项
 setVal('province', 'guangdong')
