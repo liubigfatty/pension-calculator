@@ -525,6 +525,18 @@ function calcTransitionalPension(params) {
     return { amount, description: desc }
   }
 
+  // 湖北特殊公式：省内多城市独立计发基数，过渡性养老金使用退休地计发基数
+  // 公式：退休地计发基数 × 过渡性指数 × 视同缴费年限 × 1.2%
+  if (mod.formula_type === "hubei") {
+    const retireBase = params?.retireBase || provBase
+    const hubeiTransIdx = (mod && mod.index_floor_one) ? Math.max(transIdx, 1) : transIdx
+    const indexSalary = retireBase * hubeiTransIdx
+    const hubeiCoef = mod.coefficient != null ? mod.coefficient : 0.012
+    const amount = Math.round(indexSalary * effectiveYears * hubeiCoef * 100) / 100
+    const desc = `视同${effectiveYears.toFixed(2)}年 × 退休地计发基数${retireBase.toLocaleString()} × 指数${hubeiTransIdx.toFixed(2)} × 系数${(hubeiCoef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    return { amount, description: desc }
+  }
+
   // 深圳过渡性养老金（深人社规，独立体系）
   // 过渡性养老金分项 = 核心(指数化工资×享受比例 + 缴费年限×4) + 粤劳电[2009]32号加发100（全员）
   // 新办法 = 计发基数 × 1998.6前平均指数 × (视同年月+1998.6前实际缴费年月)/12 × 1.2%
