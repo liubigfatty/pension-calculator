@@ -1,10 +1,10 @@
-// 数据来源：❌ 2024年未公布，使用2025年数据
-// 2024年计发基数：6665元/月
-// 更新时间：2026-06-10
+// 数据来源：湖北各地市养老金计发基数官方公布/权威汇总
+// 2024/2025年各地市基数取自用户提供的全省汇总表（2026-07-11）
+// 2025年省直/武汉计发基数=9112元/月，2024年=9022元/月
+// 湖北为省内多城市分别确定计发基数，需使用城市键查询。
 
 // data/provinces/hubei.js
-// 湖北省养老金计算数据模块（框架版，待补充官方数据）
-// TODO：补充官方计发基数、过渡系数、建账时间等
+// 湖北省养老金计算数据模块（多城市计发基数版）
 
 const PROV_BASE = {
   1978: 706,
@@ -54,35 +54,79 @@ const PROV_BASE = {
   2022: 6045,
   2023: 6730,
   2024: 9022,
-   2025: 7496,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
+  2025: 9112,  // 武汉/省直2025年计发基数（一档城市）
+};
+
+// 湖北第二档城市：宜昌、黄石、十堰、襄阳、恩施、荆门、随州
+const TIER2_BASE = {
+  yichang:   { 2024: 7232, 2025: 7424 },
+  huangshi:  { 2024: 7048, 2025: 7347 },
+  shiyan:    { 2024: 7079, 2025: 7340 },
+  xiangyang: { 2024: 7141, 2025: 7325 },
+  enshi:     { 2024: 6989, 2025: 7309 },
+  jingmen:   { 2024: 6957, 2025: 7309 },
+  suizhou:   { 2024: 7079, 2025: 7304 },
+  // 中文键兼容
+  宜昌: { 2024: 7232, 2025: 7424 },
+  黄石: { 2024: 7048, 2025: 7347 },
+  十堰: { 2024: 7079, 2025: 7340 },
+  襄阳: { 2024: 7141, 2025: 7325 },
+  恩施: { 2024: 6989, 2025: 7309 },
+  恩施州: { 2024: 6989, 2025: 7309 },
+  荆门: { 2024: 6957, 2025: 7309 },
+  随州: { 2024: 7079, 2025: 7304 },
+};
+
+// 湖北第三档城市：潜江、仙桃、天门、鄂州、咸宁、孝感、黄冈、神农架、荆州
+const TIER3_BASE = {
+  qianjiang:   { 2024: 6954, 2025: 7320 },
+  xiantao:     { 2024: 6954, 2025: 7301 },
+  tianmen:     { 2024: 6896, 2025: 7277 },
+  ezhou:       { 2024: 6955, 2025: 7275 },
+  xianning:    { 2024: 6958, 2025: 7257 },
+  xiaogan:     { 2024: 6871, 2025: 7238 },
+  huanggang:   { 2024: 6816, 2025: 7221 },
+  shennongjia: { 2024: 6810, 2025: 7215 },
+  jingzhou:    { 2024: 6826, 2025: 7210 },
+  // 中文键兼容
+  潜江:   { 2024: 6954, 2025: 7320 },
+  仙桃:   { 2024: 6954, 2025: 7301 },
+  天门:   { 2024: 6896, 2025: 7277 },
+  鄂州:   { 2024: 6955, 2025: 7275 },
+  咸宁:   { 2024: 6958, 2025: 7257 },
+  孝感:   { 2024: 6871, 2025: 7238 },
+  黄冈:   { 2024: 6816, 2025: 7221 },
+  神农架: { 2024: 6810, 2025: 7215 },
+  神农架林区: { 2024: 6810, 2025: 7215 },
+  荆州:   { 2024: 6826, 2025: 7210 },
+};
 
 const BASE_PARAMS = {
-  
   PROV_GROWTH: 0.03,
   MERGE_YEAR: 2031,
-  PROV_2025: 7496,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+  PROV_2025: 9112,  // 武汉/省直2025年计发基数
+};
 
 const CITY_LIST = [
   '武汉市', '黄石市', '十堰市', '宜昌市', '襄阳市',
   '鄂州市', '荆门市', '孝感市', '荆州市', '黄冈市',
-  '咸宁市', '随州市', '恩施州',
-]
+  '咸宁市', '随州市', '恩施州', '潜江市', '仙桃市',
+  '天门市', '神农架林区',
+];
 
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-const TRANS_COEF = 0.012
-const PROV_TAG = 'hubei'
+const ACCOUNT_START = { year: 1998, month: 1 };
+const CUTOFF_DATE   = { year: 1997, month: 12 };
+const TRANS_COEF = 0.012;
+const PROV_TAG = 'hubei';
 
-const MODULES = ['base', 'personal', 'transition']
+const MODULES = ['base', 'personal', 'transition'];
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
-}
+};
 
-const cases = []
+const cases = [];
 
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
@@ -103,22 +147,22 @@ function getEngineConfig() {
   }
 
   return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
+    avg_salary_history: AVG_SALARY_HISTORY,
+    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
-
     province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
+    base_rates: {
+      prov: PROV_BASE,
+      ...TIER2_BASE,
+      ...TIER3_BASE,
+    },
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: modules,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '湖北过渡系数1.2%（与江苏/甘肃/黑龙江一致，鄂政发〔2006〕42号）；预发表使用退休地上年计发基数。',
-  }
+    notes: '湖北过渡系数1.2%（鄂政发〔2006〕42号）；省内各地市独立计发基数，预发表使用退休地上年计发基数。',
+  };
 }
 
 

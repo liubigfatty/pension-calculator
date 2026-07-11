@@ -1183,11 +1183,12 @@ function getBase(city, year, config, sourceField = 'base_rates') {
 
   // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
   // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  // 城市有独立数据且与全省同步更新时，优先使用城市基数（如湖北十堰）
   const lastCityYear = cityKeys[cityKeys.length - 1]
   const lastProvYear = provKeys[provKeys.length - 1]
   const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
   if (year > lastYear) {
-    if (lastCityYear > lastProvYear) {
+    if (cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear) {
       return cityRates[lastCityYear] || provRates[lastProvYear] || 0
     }
     return provRates[lastProvYear] || cityRates[lastCityYear] || 0

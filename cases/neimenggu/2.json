@@ -1,0 +1,29 @@
+{
+  "case_id": "neimenggu-2022-male-official",
+  "province": "neimenggu",
+  "gender": "男",
+  "birth": "1962年09月",
+  "work_start": "1980年11月",
+  "retire_year": 2022,
+  "retire_month": 9,
+  "birth_year": 1962,
+  "birth_month": 9,
+  "work_year": 1980,
+  "work_month": 11,
+  "avg_index": 1.7318,
+  "personal_account": 199050.07,
+  "months": 139,
+  "sight_years": 17.1667,
+  "total_years": 41.9167,
+  "base_number": 7089,
+  "expected": {
+    "basic_pension": 4058.74,
+    "personal_pension": 1432.01,
+    "transitional_pension": 2529.01,
+    "total": 8019.76
+  },
+  "verified": true,
+  "source": "官方核定表(图片)",
+  "notes": "内蒙古企业退休官方核定表(2026-07-11用户提供图片)。男1962-09生/1980-11参工/1998-01建账/2022-09退。累计503个月=41年11个月、视同206个月=17年2个月、实际297个月=24年9个月，全程未断缴。平均缴费指数1.7318。个人账户199050.07元，计发月数139。计发基数7089(2022年度，官方核定表'退休时自治区上年度在岗职工月平均工资7089')。基础=7089×(1+1.7318)/2×41.9167×1%=4058.74；个人=199050.07/139=1432.01；过渡=7089×1.7318×17.1667×1.2%=2529.01；合计8019.76(新办法)。引擎核对逐项吻合(差0.01为四舍五入)。验证PROV_BASE[2022]由占位值7351纠正为官方7089。",
+  "recalibrated": true
+}
