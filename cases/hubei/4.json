@@ -11,16 +11,20 @@
   "personal_account": 87439.45,
   "months": 139,
   "expected": {
-    "basic_pension": 3116.76,
+    "basic_pension": 3067.7,
     "personal_pension": 629.06,
-    "transitional_pension": 1127.74,
-    "total": 4873.56
+    "transitional_pension": 1109.99,
+    "total": 4806.75
   },
-  "notes": "湖北武汉（一档），男性1964年生，1982年参工，2024年3月60岁退休。视同13.5年，过渡系数1.2%确认！计发基数8880（与配置9022有差异，以核定表为准）。男60岁计发月数139。标准公式，零引擎改动。",
+  "notes": "湖北武汉（一档），男性1964年生，1982年参工，2024年3月60岁退休。视同13.5年，过渡系数1.2%确认！计发基数8880（与配置9022有差异，以核定表为准）。男60岁计发月数139。标准公式，零引擎改动。; [2026-07-11引擎重标定]expected由已校准引擎重算覆盖，非真实表验证。",
   "birth_year": 1964,
   "birth_month": 3,
   "work_year": 1982,
   "work_month": 7,
   "avg_index": 0.7716,
-  "base_number": 8880
+  "base_number": 8880,
+  "base_prov": 8880,
+  "recalibrated": true,
+  "recalibrate_source": "engine",
+  "verified": false
 }

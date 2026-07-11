@@ -83,7 +83,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 贵州省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 贵州省过渡系数 1.4%（黔劳社厅发〔2006〕20号；备份核定表 transition_coefficient=0.014）
 
 const PROV_TAG = 'guizhou'
 
@@ -122,6 +122,12 @@ function getEngineConfig() {
       }
     }
   }
+  // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)，依据黔劳社厅发〔2006〕20号
+  modules.special_addition = {
+    enabled: true,
+    type: 'one_child',
+    rate: 0.05,
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -135,10 +141,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,  // 贵州过渡性养老金按建账前缴费年限计（工作起始→1998-01建账），非仅视同年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）',
+    notes: '2023年基数6857.58元（黔人社通〔2024〕53号），2024年基数7272元（黔人社发〔2025〕16号）；过渡系数1.4%（黔劳社厅发〔2006〕20号）；独生子女奖励5%×(基础+个人+过渡)。',
   }
 }
 

@@ -35,6 +35,17 @@ Page({
   },
 
   onLoad(options) {
+    // 微信 AI 开发模式：账号卡片接力进入时，优先用 handoff payload 覆盖 calc_result
+    try {
+      const _ho = (app.globalData && app.globalData.agentHandoffs) || null
+      const _key = (typeof this.getPageId === 'function') ? this.getPageId() : null
+      const _h = (_ho && _key != null) ? _ho[_key] : null
+      if (_h && _h.payload && _h.payload.calcResult) {
+        wx.setStorageSync('calc_result', _h.payload.calcResult)
+        delete _ho[_key]
+      }
+    } catch (e) { /* 普通流程不受影响 */ }
+
     // 检测是否是分享卡片进来的（裂变路径）
     if (options.share === '1') {
       // 分享查看模式：显示分享者的结果 + "我也来算一下"按钮

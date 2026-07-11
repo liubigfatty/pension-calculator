@@ -13,7 +13,7 @@
   "expected": {
     "basic_pension": 2856.81,
     "personal_pension": 1049.53,
-    "transitional_pension": 936.71,
+    "transitional_pension": 957.54,
     "total": 4863.88
   },
   "notes": "河南省洛阳市，1966年出生，1984年参工，2026年3月60岁退休。高指数（>1.0）。视同123月=10.25年。洛阳当地基数6573。",
@@ -23,5 +23,6 @@
   "work_month": 6,
   "avg_index": 1.0433,
   "trans_index": 1.0665,
-  "base_number": 6738
+  "base_number": 6738,
+  "recalibrated": true
 }

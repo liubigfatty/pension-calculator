@@ -1,0 +1,29 @@
+{
+  "case_id": "jiangmen",
+  "province": "guangdong",
+  "city": "江门市",
+  "gender": "女",
+  "birth_year": 1974,
+  "birth_month": 4,
+  "work_year": 2004,
+  "work_month": 6,
+  "retire_year": 2024,
+  "retire_month": 5,
+  "avg_index": 0.452,
+  "total_years": 17.75,
+  "sight_years": 0,
+  "months": 195,
+  "personal_account": 55389.69,
+  "base_number": 9028,
+  "city_type": "prov",
+  "xuzhang": 0,
+  "new_method_years": 0,
+  "expected": {
+    "basic_pension": 965.73,
+    "personal_pension": 284.05,
+    "transitional_pension": 168,
+    "total": 1417.78
+  },
+  "verified": true,
+  "source": "江门社保局核定表(2024-05，预发使用2023基数9028)；无视同，过渡性=100加发+年限津贴"
+}

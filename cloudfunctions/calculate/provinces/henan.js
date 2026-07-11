@@ -58,23 +58,43 @@ const PROV_BASE = {
   2021: 5821,
   2022: 6112,
   2023: 6401,
-  2024: 6606,
-   2025: 6385,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  2024: 6738,  // 2024年全省企业计发基数（豫人社发及真实表验证）
+  2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
+  2026: 6738,  // 2026年退休暂用2025年全省基数（预发）
 };;
+
+// 洛阳市单独计发基数（2025年洛阳企业计发基数6573元）
+const LUOYANG_BASE = { ...PROV_BASE };
+LUOYANG_BASE[2024] = 6573;  // 2024年洛阳企业在岗职工月平均工资（2025年计发基数）
+LUOYANG_BASE[2025] = 6573;  // 2025年洛阳企业计发基数
+LUOYANG_BASE[2026] = 6573;  // 2026年退休暂用2025年基数（预发）
 
 // 郑州市单独计发基数（郑州市人社局2024年第5号通告）
 // 2024年基数6757元，与全省6738元相差19元（约0.3%）
 // 历史年份暂用全省基数代替，待补充官方数据
 const ZHENGZHOU_BASE = { ...PROV_BASE };
 ZHENGZHOU_BASE[2024] = 6757;  // 郑州市人社局2024年第5号通告
-// ZHENGZHOU_BASE[2025] 由 {...PROV_BASE} 展开继承（=6385，2024全口径社平），不再单独预估
+ZHENGZHOU_BASE[2026] = 6738;  // 2026年退休暂用2025年全省基数（预发）
+// ZHENGZHOU_BASE[2025] 由 {...PROV_BASE} 展开继承（=6738，2024全口径社平），不再单独预估
 
+
+// 信阳市单独计发基数（2025年信阳企业计发基数6260元）
+const XINYANG_BASE = { ...PROV_BASE };
+XINYANG_BASE[2024] = 6260;
+XINYANG_BASE[2025] = 6260;
+XINYANG_BASE[2026] = 6260;  // 2026年退休暂用2025年基数（预发）
+
+// 开封市单独计发基数（2025年开封企业计发基数6385元）
+const KAIFFENG_BASE = { ...PROV_BASE };
+KAIFFENG_BASE[2024] = 6385;
+KAIFFENG_BASE[2025] = 6385;
+KAIFFENG_BASE[2026] = 6385;  // 2026年退休暂用2025年基数（预发）
 // 河南省基数增长预测参数
 const BASE_PARAMS = {
   
   PROV_GROWTH: 0.03,  // 约3%年增速
   MERGE_YEAR: 2031,
-  PROV_2025: 6385,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
 }
 
 // 河南省城市列表（地级市）
@@ -91,10 +111,10 @@ const CITY_LIST = [
 // ⚠️ 待确认：建账时间（目前按1998-01估算，待官方文件确认）
 // ⚠️ 待确认：视同缴费cutoff时间（目前按1997-12估算，待官方文件确认）
 // TODO：搜索关键词"豫人社规 个人账户建立 1998"或"豫政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1998, month: 1 }
+const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政[2006]29号文，个人账户建账1995-01
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 河南过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 豫政[2006]29号文：1.3%  // 河南过渡系数固定 1.2%（待官方文件确认）
 // TODO：补充官方文件编号（如：豫政发〔2006〕XX号）
 
 const PROV_TAG = 'henan'
@@ -133,9 +153,15 @@ account_start: ACCOUNT_START,
     base_rates: {
       prov: PROV_BASE,
       zhengzhou: ZHENGZHOU_BASE,
+      luoyang: LUOYANG_BASE,
+      xinyang: XINYANG_BASE,
+      kaifeng: KAIFFENG_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'henan' },
+      transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },
+    },
   }
 }
 
@@ -172,8 +198,8 @@ const AVG_SALARY_HISTORY = {
   2021: 5681,
   2022: 5965,
   2023: 6260,
-  2024: 6606,
-  2025: 6385,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2024: 6738,  // 2024年全省企业计发基数（豫人社发及真实表验证）
+  PROV_2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
 };
 
 

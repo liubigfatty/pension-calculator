@@ -88,8 +88,8 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+const ACCOUNT_START = { year: 1996, month: 7 }
+const CUTOFF_DATE   = { year: 1996, month: 6 }
 
 const TRANS_COEF = 0.014  // 广西壮族自治区过渡系数 1.4000000000000001%
 
@@ -143,7 +143,8 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,
+    round_to_jiao: true,
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '⚠️ 2023-2025年基数待官方文件确认',

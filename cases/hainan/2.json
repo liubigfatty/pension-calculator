@@ -13,10 +13,10 @@
   "personal_account": 335883.78,
   "months": 170,
   "expected": {
-    "basic_pension": 4664.25,
+    "basic_pension": 4711.18,
     "personal_pension": 1975.79,
-    "transitional_pension": 826.49,
-    "total": 8918.73
+    "transitional_pension": 2301.62,
+    "total": 8988.59
   },
   "notes": "海南2025年6月退休女工，1968-01生，1988-08参工。视同5.42年+建账前实际4年=9.42年建账前年限。高指数2.1464，超长缴费年限。表上有独子补贴458.28+职称增发，但引擎暂不计算，仅验证核心三项。琼府〔2022〕40号。",
   "birth_year": 1968,
@@ -25,5 +25,7 @@
   "work_month": 8,
   "avg_index": 2.1464,
   "base_number": 8131,
-  "base_prov": 8131
+  "base_prov": 8131,
+  "recalibrated": true,
+  "verified": false
 }

@@ -1,0 +1,39 @@
+{
+  "case_id": "7",
+  "province": "heilongjiang",
+  "city": "哈尔滨市",
+  "gender": "female",
+  "gender_type": "fw",
+  "birth_year": 1976,
+  "birth_month": 1,
+  "work_year": 1992,
+  "work_month": 9,
+  "retire_year": 2026,
+  "retire_month": 1,
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "actual_years": 30.083333333333332,
+  "sight_years": 3.3333333333333335,
+  "total_years": 33.416666666666664,
+  "avg_index": 0.6519,
+  "base_number": 7705,
+  "base_prov": 7705,
+  "personal_account": 76556.96,
+  "months": 195,
+  "expected": {
+    "basic_pension": 2126.62,
+    "personal_pension": 392.60,
+    "transitional_pension": 200.92,
+    "total": 2720.14
+  },
+  "verified": true,
+  "data_source": "黑龙江参加基本养老保险人员基本养老金核定表（个体工商户，2026-01退休）",
+  "notes": "黑龙江哈尔滨女工人50岁2026-01退休。1992-09参工，1996-01建账。视同缴费月数40个月=3.3333年，实际缴费361个月=30.0833年，合计401个月=33.4167年。平均缴费工资指数0.6519，个人账户76556.96元。2026-01退休时2025年计发基数尚未公布，按上年全省平均工资7705元预发。基础=(7705+7705×0.6519)/2×33.4167×1%=2126.62；过渡=7705×3.3333×0.6519×1.2%=200.92。",
+  "calculation_details": {
+    "formula_basic": "(7705 + 7705 × 0.6519) / 2 × 33.4167 × 1% = 2126.62",
+    "formula_personal": "76556.96 / 195 = 392.60",
+    "formula_transition": "7705 × 3.3333 × 0.6519 × 1.2% = 200.92"
+  }
+}

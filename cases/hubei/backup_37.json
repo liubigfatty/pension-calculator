@@ -1,0 +1,31 @@
+{
+  "case_id": "backup_37",
+  "province": "hubei",
+  "city": "武汉市青山区",
+  "region_category": null,
+  "gender": "女",
+  "birth_year": 1970,
+  "birth_month": 11,
+  "work_year": 2004,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 11,
+  "avg_index": 0.5683,
+  "trans_index": null,
+  "base_number": 9112,
+  "base_prov": 9112,
+  "personal_account": 74478.73,
+  "months": 170,
+  "sight_years": 0,
+  "actual_years": 20.58,
+  "pre_account_years": null,
+  "total_years": 20.58,
+  "expected": {
+    "basic_pension": 1470.48,
+    "personal_pension": 438.11,
+    "transitional_pension": 0,
+    "total": 1908.59
+  },
+  "verified": true,
+  "notes": "湖北计发基数9112元最高之一；过渡系数1.2%与江苏/甘肃/黑龙江一致；有调节金结构\n[来源:备份 other/37.json]"
+}

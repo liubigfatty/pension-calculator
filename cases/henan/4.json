@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 1537.61,
     "personal_pension": 312.75,
-    "total": 1850.36,
-    "transitional_pension": 0
+    "transitional_pension": 0,
+    "total": 1850.36
   },
   "notes": "河南省女性，1975年出生，1995年参工，2025年11月50岁退休。无视同缴费年限（0月），指数化工资4051.92。个人账户计发月数195。",
   "birth_year": 1975,
@@ -22,5 +22,6 @@
   "work_year": 1995,
   "work_month": 9,
   "avg_index": 0.6014,
-  "base_number": 6738
+  "base_number": 6738,
+  "recalibrated": true
 }

@@ -1,0 +1,29 @@
+{
+  "case_id": "huizhou",
+  "province": "guangdong",
+  "city": "惠州市",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1985,
+  "work_month": 1,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "avg_index": 0.5938,
+  "total_years": 27.92,
+  "sight_years": 0.75,
+  "months": 195,
+  "personal_account": 84112.74,
+  "base_number": 9307,
+  "city_type": "prov",
+  "xuzhang": 13615.08,
+  "new_method_years": 4.41845,
+  "expected": {
+    "basic_pension": 2057.13,
+    "personal_pension": 431.35,
+    "transitional_pension": 321.46,
+    "total": 3081.95
+  },
+  "verified": true,
+  "source": "惠州社保局核定表(2025-10)；粤府函〔2021〕294号新办法"
+}

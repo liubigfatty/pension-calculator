@@ -18,10 +18,10 @@
   "personal_account": 85298.25,
   "months": 139,
   "expected": {
-    "basic_pension": 1992.39,
+    "basic_pension": 2449.58,
     "personal_pension": 613.66,
-    "transitional_pension": 686.2,
-    "total": 3292.25
+    "transitional_pension": 843.66,
+    "total": 3906.9
   },
   "verified": true,
   "notes": "株洲市2026年3月退休男性案例。平均缴费指数1.0324，指数化月平均工资7943.29元。基础养老金=(7694+7943.29)/2*31.33*1%=2449.58。过渡性养老金=7943.29*8.17*1.3%=843.66。个人账户养老金=85298.25/139=613.66。合计3906.90元。",

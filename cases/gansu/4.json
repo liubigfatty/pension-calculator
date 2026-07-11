@@ -1,30 +1,32 @@
 {
   "case_id": "4",
   "province": "gansu",
-  "city": "兰州市",
+  "city": "张掖市肃南县",
   "gender": "female",
   "birth_year": 1974,
-  "birth_month": 6,
-  "work_year": 2002,
-  "work_month": 7,
+  "birth_month": 9,
+  "work_year": 1994,
+  "work_month": 2,
   "retire_year": 2024,
-  "retire_month": 6,
+  "retire_month": 9,
   "account_start": {
-    "year": 1996,
+    "year": 1998,
     "month": 1
   },
-  "actual_years": 22,
-  "sight_years": 0,
-  "total_years": 22,
-  "avg_index": 0.5341,
-  "base_number": 8613,
-  "personal_account": 77892.16,
+  "actual_years": 26.75,
+  "sight_years": 3.9167,
+  "total_years": 30.66,
+  "avg_index": 1.3015,
+  "base_number": 7359,
+  "personal_account": 203206,
   "months": 195,
   "expected": {
-    "basic_pension": 1281.5,
-    "personal_pension": 399.45,
-    "transitional_pension": 0,
-    "total": 1680.95
+    "basic_pension": 2596.4,
+    "personal_pension": 1042.08,
+    "transitional_pension": 449.39,
+    "total": 4087.87
   },
-  "notes": "甘肃女工人50岁2024.06退休，纯新人案例。参工2002.07（建账1996-01之后），无视同/无过渡性养老金。低指数0.5341，个账7.8万。"
+  "verified": true,
+  "notes": "甘肃张掖市肃南县女工人50岁2024.09正常退休。参工1994.02，实际建账1998-01（该地区/单位个人账户建立晚于全省1996-01），视同缴费年限=1994.02至1998.01=3年11月。2024.09退休当年甘肃计发基数尚未公布，按上年基数7359预发。高指数1.3015，个账20.32万。基础=2596.40，个人=1042.08，过渡=449.39，合计=4087.87。",
+  "data_source": "甘肃省企业职工退休基本养老金领取资格认定表（2024-09），肃南县社会保险事业服务中心业务审核专用章"
 }

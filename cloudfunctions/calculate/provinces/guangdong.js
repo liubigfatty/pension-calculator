@@ -142,7 +142,19 @@ account_start: ACCOUNT_START,
       shenzhen: SHENZHEN_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'guangdong', rate_per_year: 0.01 },
+      personal_account: { enabled: true },
+      transitional_pension: { enabled: true, formula_type: 'guangdong', coefficient: 0.012, old_transition_coefficient: 120 },
+      special_addition: { enabled: false },
+      adjustment_fund: { enabled: true, type: 'shenzhen', tiers: { 2021: 250, 2022: 200, 2023: 150, 2024: 50, 2025: 0 } },
+    },
+    // 深圳市独立体系：城市级模块覆盖（仅 city==='sz' 时生效）
+    sz_modules: {
+      basic_pension: { enabled: true, rate_per_year: 0.01, formula_type: 'shenzhen' },
+      transitional_pension: { enabled: true, formula_type: 'shenzhen', coefficient: 0.012 },
+      special_addition: { enabled: true, type: 'shenzhen_local' },
+    },
   }
 }
 

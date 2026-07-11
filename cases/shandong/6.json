@@ -1,0 +1,42 @@
+{
+  "case_id": "6",
+  "province": "shandong",
+  "city": "山东省",
+  "gender": "女",
+  "birth_year": 1974,
+  "birth_month": 5,
+  "work_year": 1994,
+  "work_month": 1,
+  "retire_year": 2024,
+  "retire_month": 5,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 2001,
+    "month": 5
+  },
+  "sight_years": 0,
+  "pre_account_years": 7.3333,
+  "actual_years": 30.3333,
+  "total_years": 30.3333,
+  "avg_index": 0.8560,
+  "base_number": 7468,
+  "base_prov": 7468,
+  "personal_account": 111694.39,
+  "months": 195,
+  "gender_type": "fw",
+  "expected": {
+    "basic_pension": 2101.96,
+    "personal_pension": 572.79,
+    "transitional_pension": 609.15,
+    "total": 3283.90
+  },
+  "verified": true,
+  "notes": "山东女工人50岁2024年5月正常退休，计发月数195。建立账户日期2001年5月，指数计算起2001年5月。2024年5月退休时2024年计发基数尚未公布，按2023年基数7468预发。累计缴费年限30年4个月，其中建账前累计缴费年限7年4个月。平均缴费指数0.8560，指数化月平均工资6392.61元。基础养老金=(7468+6392.61)/2*30.3333*1%=2101.96；个人账户养老金=111694.39/195=572.79；过渡性养老金=6392.61*7.3333*1.3%=609.15；合计3314.90元。注：表上三项相加=3283.90，与表头合计3314.90差约31元，疑为图片识别误差或表含未列附加项，待用户确认。",
+  "data_source": "山东省企业职工基本养老金核定表（临时待遇预发），2024年5月",
+  "calculation_details": {
+    "indexed_monthly_wage": 6392.61,
+    "formula_basic": "(7468 + 6392.61) / 2 * 30.3333 * 1% = 2101.96",
+    "formula_personal": "111694.39 / 195 = 572.79",
+    "formula_transition": "6392.61 * 7.3333 * 1.3% = 609.15"
+  }
+}

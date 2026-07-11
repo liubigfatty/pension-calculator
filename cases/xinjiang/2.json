@@ -23,5 +23,7 @@
   "birth_month": 10,
   "work_year": 1987,
   "work_month": 10,
-  "avg_index": 0.6085
+  "avg_index": 0.6085,
+  "recalibrated": true,
+  "verified": false
 }

@@ -12,10 +12,10 @@
   "personal_account": 276661.55,
   "months": 170,
   "expected": {
-    "basic_pension": 3065.57,
+    "basic_pension": 2979.09,
     "personal_pension": 1627.42,
-    "transitional_pension": 733.13,
-    "total": 5426.12
+    "transitional_pension": 712.45,
+    "total": 5319
   },
   "notes": "广西南宁烟草系统女工，1968-07生，1992-07参工，2023-07退休(55岁)。无视同(0年)，建账前1992-07至1996-07=4年。累计31年1月=31.09年。高指数1.9749，高账户27.6万。过渡=6442×1.9749×4×1.4%=712.5。桂人社规〔2019〕26号。",
   "birth_year": 1968,
@@ -23,5 +23,7 @@
   "work_year": 1992,
   "work_month": 7,
   "avg_index": 1.9749,
-  "base_number": 6442
+  "base_number": 6442,
+  "recalibrated": true,
+  "verified": false
 }

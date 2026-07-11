@@ -1,0 +1,28 @@
+{
+  "case_id": "hebei-female-2025-baoding",
+  "province": "hebei",
+  "gender": "女",
+  "birth": "1975年12月",
+  "work_start": "1994年03月",
+  "retire_year": 2025,
+  "retire_month": 12,
+  "total_years": 22.42,
+  "sight_years": 0,
+  "pre_account_years": 1.83,
+  "personal_account": 52077.55,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1384.46,
+    "personal_pension": 267.06,
+    "transitional_pension": 117.53,
+    "total": 1769.05
+  },
+  "notes": "河北省保定市莲池区真实社保局核定表。女性1975-12生，1994-03参工，2025-12满50岁正常退休（弹性提前退休）。缴费年限22年5个月，建账前实际缴费1年10个月（1994-03至1995-12），个人账户储存额52077.55元，计发月数195。2025年保定计发基数7410；指数化月平均缴费工资4940.25；平均指数按4940.25/7410=0.6667。基础=(7410+4940.25)/2×22.42×1%=1384.46；个人账户=52077.55/195=267.06；过渡=4940.25×1.83×1.3%=117.53。",
+  "birth_year": 1975,
+  "birth_month": 12,
+  "work_year": 1994,
+  "work_month": 3,
+  "avg_index": 0.6667,
+  "base_number": 7410,
+  "base_prov": 7410
+}

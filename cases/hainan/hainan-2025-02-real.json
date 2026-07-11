@@ -1,0 +1,32 @@
+{
+  "case_id": "hainan-2025-02-real",
+  "province": "hainan",
+  "city": "海南",
+  "gender": "男",
+  "birth": "1965年1月",
+  "work_start": "1983年4月",
+  "retire_year": 2025,
+  "retire_month": 2,
+  "total_years": 41.9167,
+  "sight_years": 10.75,
+  "actual_years": 31.1667,
+  "pre_account_years": 14.75,
+  "personal_account": 223786.86,
+  "months": 139,
+  "avg_index": 1.8444,
+  "base_number": 8131,
+  "base_prov": 8131,
+  "expected": {
+    "basic_pension": 4847.21,
+    "personal_pension": 1609.98,
+    "transitional_pension": 3096.84,
+    "total": 9554.03
+  },
+  "birth_year": 1965,
+  "birth_month": 1,
+  "work_year": 1983,
+  "work_month": 4,
+  "verified": true,
+  "source": "海南省企业单位参保人员基本养老金核定表（2025-02退休，2025-03起发放）；琼府〔2022〕40号。基础4847.21/个人1609.98/过渡3096.84/合计9554.03。暂用2024年基数8131预发。",
+  "notes": "海南男，1965-01生，1983-04参工，2025-02退休(60岁)。视同10.75年(1983-04至1994-01)+建账前实际4年(1994-01至1998-01)=14.75年建账前年限。过渡=8131×1.8444×14.75×1.4%=3096.84。基础=(8131+8131×1.8444)/2×41.9167×1%=4847.21。缴费年限精确到4位小数。"
+}

@@ -10,6 +10,13 @@ App({
         traceUser: true
       })
     }
+    // 微信 AI 开发模式：账号卡片点击进入时，接收原子接口 handoff 数据
+    if (typeof wx.onAgentHandoff === 'function') {
+      wx.onAgentHandoff(({ pageId, path, query, payload }) => {
+        this.globalData.agentHandoffs = this.globalData.agentHandoffs || {}
+        this.globalData.agentHandoffs[pageId] = { path, query, payload }
+      })
+    }
   },
   globalData: {}
 })

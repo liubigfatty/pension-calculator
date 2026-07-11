@@ -111,13 +111,16 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'chongqing' };
   }
+
+  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
+  modules.special_addition = {
+    enabled: true,
+    type: 'qinghai_27_doc',
+    xining_addition: 12,
+    other_addition: 13
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -131,10 +134,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）',
+    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
   }
 }
 

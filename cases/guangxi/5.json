@@ -13,10 +13,10 @@
   "personal_account": 215967.09,
   "months": 139,
   "expected": {
-    "basic_pension": 3975.62,
+    "basic_pension": 3898.2,
     "personal_pension": 1553.72,
-    "transitional_pension": 2337.91,
-    "total": 7868.3
+    "transitional_pension": 2293.41,
+    "total": 7745.4
   },
   "notes": "广西柳州男职工，1965-03生，1981-09参工，2025-04退休(60岁)。视同10.34年(1981-09至1992-01)+建账前实际4.5年(1992-01至1996-07)=14.84年建账前年限。高指数1.6122，长工龄43.59年，养老金7745.5元。文件依据：桂人社规〔2019〕26号",
   "policy_doc": "桂人社规〔2019〕26号",
@@ -26,5 +26,7 @@
   "work_month": 9,
   "avg_index": 1.6122,
   "base_number": 6847,
-  "base_prov": 6847
+  "base_prov": 6847,
+  "recalibrated": true,
+  "verified": false
 }

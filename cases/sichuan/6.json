@@ -1,0 +1,38 @@
+{
+  "case_id": "6",
+  "province": "sichuan",
+  "city": "全省",
+  "gender": "男",
+  "birth_year": 1969,
+  "birth_month": 3,
+  "work_year": 1986,
+  "work_month": 11,
+  "retire_year": 2024,
+  "retire_month": 3,
+  "retire_type": "policy",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "pre_account_months": 106,
+  "pre_account_years": 8.83333,
+  "sight_years": 5.08333,
+  "actual_years": 32,
+  "total_years": 37.08333,
+  "avg_index": 0.726,
+  "base_number": 8079,
+  "base_prov": 8079,
+  "personal_account": 88960.59,
+  "months": 170,
+  "extra_rate": 0.004,
+  "expected": {
+    "basic_pension": 2585.28,
+    "personal_pension": 523.3,
+    "transitional_pension": 800.34,
+    "extra_pension": 869.95,
+    "total": 4778.87
+  },
+  "verified": true,
+  "notes": "四川案例6，男，1969-03生，1986-11参工，2024-03退休(55岁，政策性提前退)。月计发基数8079元，平均缴费指数0.726，指数化月平均工资5865.35元。视同缴费61个月(5.08333年)，实际缴费384个月(32年)，累计445个月(37.08333年)。1995年12月31日前未建账缴费106个月(8.83333年)。个人账户88960.59元，计发月数170。基础=(8079+5865.35)/2×37.08333×1%=2585.28；个人=88960.59/170=523.30；过渡=(8079+5865.35)/2×8.83333×1.3%=800.34；增发=5865.35×0.4%×37.08333+定额=869.95。合计4778.87元。川劳社发〔2006〕17号。",
+  "data_source": "四川省社会保险业务办理结果通知单（2024-03），川劳社发〔2006〕17号"
+}

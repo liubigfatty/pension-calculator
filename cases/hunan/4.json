@@ -1,33 +1,35 @@
 {
   "case_id": "4",
   "province": "hunan",
-  "city": "雨花区",
-  "gender": "男",
-  "birth_year": 1965,
-  "birth_month": 10,
-  "work_year": 2007,
-  "work_month": 7,
-  "retire_year": 2025,
-  "retire_month": 10,
+  "city": "株洲市",
+  "gender": "女",
+  "birth_year": 1974,
+  "birth_month": 1,
+  "work_year": 1995,
+  "work_month": 11,
+  "retire_year": 2024,
+  "retire_month": 7,
   "retire_type": "normal",
-  "account_start": {
-    "year": 2007,
-    "month": 7
-  },
   "sight_years": 0,
-  "actual_years": 18.33,
-  "total_years": 18.33,
-  "avg_index": 0.6719,
-  "base_number": 7694,
-  "personal_account": 72662.86,
-  "months": 139,
+  "actual_years": 17.75,
+  "total_years": 17.75,
+  "avg_index": 0.6116,
+  "base_number": 7417,
+  "personal_account": 31915.75,
+  "months": 195,
   "expected": {
-    "basic_pension": 933.17,
-    "personal_pension": 522.75,
+    "basic_pension": 1060.85,
+    "personal_pension": 163.67,
     "transitional_pension": 0,
-    "total": 1455.92
+    "total": 1224.52
   },
   "verified": true,
-  "notes": "湖南案例4，灵活就业人员，男性60岁正常退休。2007年7月参加工作（很晚参保），建账时间2007年7月。无视同年限，无过渡性养老金。实际缴费18.33年，刚超过最低15年。平均缴费指数0.6719，指数化月平均工资5169.60元。基础养老金=(7694+5169.60)/2*18.33*1%=1178.95，个人账户养老金=72662.86/139=522.75，合计1701.70元。",
-  "data_source": "湖南省企业职工基本养老保险退休人员基本养老金核定表（预发核定表），雨花区灵活就业人员，2025年10月01日退休"
+  "notes": "湖南株洲2024年7月退休女性，预发核定表。2024年计发基数7417元。平均缴费指数0.6116，指数化月平均工资4536.24元。基础养老金=(7417+4536.24)/2*17.75*1%=1060.85。无视同缴费年限，过渡性养老金为0。个人账户养老金=31915.75/195=163.67。合计1224.52元。",
+  "data_source": "湖南省企业职工基本养老保险待遇核定表（预发核定表），打印日期2024年7月29日",
+  "calculation_details": {
+    "indexed_monthly_wage": 4536.24,
+    "formula_basic": "(7417 + 4536.24) / 2 * 17.75 * 1% = 1060.85",
+    "formula_personal": "31915.75 / 195 = 163.67",
+    "formula_transition": "0"
+  }
 }

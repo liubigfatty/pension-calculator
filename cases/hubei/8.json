@@ -1,0 +1,37 @@
+{
+  "case_id": "hubei-wuhan-2025-11",
+  "province": "hubei",
+  "city": "武汉市",
+  "gender": "女",
+  "birth": "1975年11月",
+  "work_start": "1995年1月",
+  "birth_year": 1975,
+  "birth_month": 11,
+  "work_year": 1995,
+  "work_month": 1,
+  "retire_year": 2025,
+  "retire_month": 11,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "total_years": 28.83,
+  "sight_years": 1,
+  "actual_years": 27.83,
+  "pre_account_years": 1,
+  "personal_account": 93583.84,
+  "months": 195,
+  "avg_index": 0.7654,
+  "base_number": 9112,
+  "base_prov": 9112,
+  "expected": {
+    "basic_pension": 2318.84,
+    "personal_pension": 479.92,
+    "transitional_pension": 83.69,
+    "total": 2882.45
+  },
+  "verified": true,
+  "notes": "湖北武汉（江夏区），女性1975年11月生，1995年1月参工，1996年1月建账，2025年11月50岁正常退休。视同缴费年限1年（1995-01至1995-12），实际缴费年限27.83年（334个月），累计缴费年限28.83年（347个月）。平均缴费指数0.7654，指数化月平均工资=9112×0.7654=6974.32。计发基数9112元（武汉市2024年，退休上年度）。个人账户93583.84元，计发月数195。基础=(9112+6974.32)/2×28.83×1%=2318.84；过渡=9112×0.7654×1×1.2%=83.69；个人=93583.84/195=479.92；合计2882.45元。鄂政发〔2006〕42号。",
+  "data_source": "湖北省养老保险待遇计算表（武汉市江夏区社会保险经办机构，2025-11）"
+}

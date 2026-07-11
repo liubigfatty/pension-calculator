@@ -1,0 +1,39 @@
+.ai-card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 24rpx 28rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 1rpx solid #ece5d8;
+}
+.ai-card__title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5a4a32;
+}
+.ai-card__prov {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: #a08c6c;
+}
+.ai-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 18rpx;
+}
+.ai-card__label {
+  font-size: 26rpx;
+  color: #6b6b6b;
+}
+.ai-card__value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #8B7355;
+}
+.ai-card__note {
+  margin-top: 16rpx;
+  font-size: 20rpx;
+  color: #b0a892;
+  line-height: 1.4;
+}

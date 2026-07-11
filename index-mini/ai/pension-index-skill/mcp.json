@@ -1,0 +1,190 @@
+{
+  "apis": [
+    {
+      "name": "calculatePensionIndex",
+      "description": "根据用户提供的参保地和逐年缴费基数，计算本人平均缴费工资指数与个人账户余额。当用户想了解自己的养老金缴费水平、平均缴费指数、个人账户累计金额时使用。",
+      "_meta": {
+        "ui": {
+          "componentPath": "ai/pension-index-skill/components/result-card",
+          "pagePath": "/pages/result/result"
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "province": {
+            "type": "string",
+            "description": "参保地省份，如「吉林省」「浙江」「北京」。支持中文省名或拼音代码（jilin/zhejiang/beijing）。"
+          },
+          "yearlyData": {
+            "type": "array",
+            "description": "逐年缴费明细数组，每项包含 year(年份)、months(该年缴费月数，通常12)、baseAvg(该年月均缴费基数，元/月)。未缴费年份可省略或 baseAvg 设 0。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "number",
+                  "description": "缴费年份，如 2022"
+                },
+                "months": {
+                  "type": "number",
+                  "description": "该年实际缴费月数，1-12"
+                },
+                "baseAvg": {
+                  "type": "number",
+                  "description": "该年月均缴费工资基数（元/月）"
+                }
+              },
+              "required": [
+                "year",
+                "months",
+                "baseAvg"
+              ]
+            }
+          }
+        },
+        "required": [
+          "province",
+          "yearlyData"
+        ]
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "reverseIndexByBalance",
+      "description": "反推平均缴费指数。当用户只知道个人账户余额、想反推平均缴费指数时使用；需同时提供参保地、首次缴费年月与累计缴费月数。",
+      "_meta": {
+        "ui": {
+          "componentPath": "ai/pension-index-skill/components/result-card",
+          "pagePath": "/pages/result/result"
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "province": {
+            "type": "string",
+            "description": "参保地省份，如「吉林省」「浙江」「北京」。支持中文省名或拼音代码（jilin/zhejiang/beijing）。"
+          },
+          "startYear": {
+            "type": "number",
+            "description": "首次缴费年份，如 2019"
+          },
+          "startMonth": {
+            "type": "number",
+            "description": "首次缴费月份 1-12"
+          },
+          "totalMonths": {
+            "type": "number",
+            "description": "累计缴费月数，如 60 表示缴费 5 年"
+          },
+          "knownBalance": {
+            "type": "number",
+            "description": "当前个人账户余额（元）"
+          }
+        },
+        "required": [
+          "province",
+          "startYear",
+          "startMonth",
+          "totalMonths",
+          "knownBalance"
+        ]
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "reverseYearlyByCurrentBase",
+      "description": "反推历年缴费情况。当用户只知道当前月缴费基数、想估算历年缴费基数与平均指数时使用；需提供参保地、首缴年月与缴费月数。结果假设历年按当前比例缴费。",
+      "_meta": {
+        "ui": {
+          "componentPath": "ai/pension-index-skill/components/result-card",
+          "pagePath": "/pages/result/result"
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "province": {
+            "type": "string",
+            "description": "参保地省份，如「吉林省」「浙江」「北京」。支持中文省名或拼音代码（jilin/zhejiang/beijing）。"
+          },
+          "startYear": {
+            "type": "number",
+            "description": "首次缴费年份，如 2019"
+          },
+          "startMonth": {
+            "type": "number",
+            "description": "首次缴费月份 1-12"
+          },
+          "totalMonths": {
+            "type": "number",
+            "description": "累计缴费月数，如 60 表示缴费 5 年"
+          },
+          "currentBase": {
+            "type": "number",
+            "description": "当前（最近一年）月缴费工资基数（元/月）"
+          }
+        },
+        "required": [
+          "province",
+          "startYear",
+          "startMonth",
+          "totalMonths",
+          "currentBase"
+        ]
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "reverseYearlyByTargetIndex",
+      "description": "反推目标缴费基数。当用户想达到某个平均缴费指数、了解每年应缴多少基数时使用；需提供参保地、首缴年月与缴费月数。每年应缴基数 = 当年社平 × 目标指数。",
+      "_meta": {
+        "ui": {
+          "componentPath": "ai/pension-index-skill/components/result-card",
+          "pagePath": "/pages/result/result"
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "province": {
+            "type": "string",
+            "description": "参保地省份，如「吉林省」「浙江」「北京」。支持中文省名或拼音代码（jilin/zhejiang/beijing）。"
+          },
+          "startYear": {
+            "type": "number",
+            "description": "首次缴费年份，如 2019"
+          },
+          "startMonth": {
+            "type": "number",
+            "description": "首次缴费月份 1-12"
+          },
+          "totalMonths": {
+            "type": "number",
+            "description": "累计缴费月数，如 60 表示缴费 5 年"
+          },
+          "targetIndex": {
+            "type": "number",
+            "description": "目标平均缴费工资指数，如 1.0、1.5、2.0"
+          }
+        },
+        "required": [
+          "province",
+          "startYear",
+          "startMonth",
+          "totalMonths",
+          "targetIndex"
+        ]
+      },
+      "outputSchema": {}
+    }
+  ],
+  "components": [
+    {
+      "path": "ai/pension-index-skill/components/result-card",
+      "relatedPage": "/pages/result/result",
+      "expirable": false
+    }
+  ]
+}

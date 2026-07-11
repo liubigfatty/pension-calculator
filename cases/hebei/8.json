@@ -1,0 +1,30 @@
+{
+  "case_id": "hebei-male-2024-baoding",
+  "province": "hebei",
+  "gender": "男",
+  "birth": "1964年11月",
+  "work_start": "1981年12月",
+  "retire_year": 2024,
+  "retire_month": 11,
+  "total_years": 42.96,
+  "sight_years": 10.04,
+  "pre_account_years": 4,
+  "personal_account": 71796.67,
+  "months": 139,
+  "expected": {
+    "basic_pension": 2651.31,
+    "personal_pension": 516.52,
+    "transitional_pension": 271.5,
+    "total": 3439.33
+  },
+  "notes": "河北省企业工人真实社保局核定表。男性1964-11生，1981-12-17参工，1992-01首次缴费，2024-11满60岁正常退休。缴费年限42年11.5个月=42.96年；视同缴费年限10.04年（1981-12至1992-01）；建账前实际缴费4年（1992-01至1995-12）；个人账户储存额71796.67元；计发月数139。表中2024年计发基数7122，因退休2024-11且2024基数可能尚未公布，按预发机制使用2023年基数7122；指数化月平均缴费工资5221.14；平均指数=5221.14/7122。基础=(7122+5221.14)/2×42.96×1%=2651.31；个人账户=71796.67/139=516.52；过渡=5221.14×14.04×1.3%=952.96。",
+  "birth_year": 1964,
+  "birth_month": 11,
+  "work_year": 1981,
+  "work_month": 12,
+  "avg_index": 0.733100252737995,
+  "base_number": 7122,
+  "base_prov": 7122,
+  "recalibrated": true,
+  "verified": false
+}

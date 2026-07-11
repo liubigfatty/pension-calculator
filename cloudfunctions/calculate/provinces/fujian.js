@@ -83,7 +83,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 福建过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 福建过渡系数约1.3%（核定表备注"约1.3%"；待官方文件编号确认）
 // TODO：补充官方文件编号（如：闽政发〔2006〕XX号）
 
 const PROV_TAG = 'fujian'
@@ -113,6 +113,18 @@ const cases = [
 ;
 
 function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
@@ -122,7 +134,13 @@ base_rates: PROV_BASE,
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
  avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '福建过渡系数约1.3%（核定表备注）；基础养老金与过渡性养老金均使用平均缴费指数(单指数)。',
   }
 }
 
