@@ -82,7 +82,7 @@ const CITY_LIST = [
 // ⚠️ 待确认：视同缴费cutoff时间（目前按1995-09估算，待官方文件确认）
 // TODO：搜索关键词"湘人社规 个人账户建立 1995"或"湘政发〔2006〕XX号 养老保险办法"
 const ACCOUNT_START = { year: 1995, month: 10 }
-const CUTOFF_DATE   = { year: 1995, month: 09 }
+const CUTOFF_DATE   = { year: 1995, month: 9 }
 
 const TRANS_COEF = 0.013  // 湖南过渡系数固定 1.3%
 // 依据：m12333.cn（湖南省退休人员养老金计算办法）
