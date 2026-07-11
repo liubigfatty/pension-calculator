@@ -55,6 +55,8 @@ function mapCaseToInput(c, provConfig) {
     workMonth:      c.work_month,
     retireYear,
     retireMonth,
+    // 显式退休日期：传入后引擎直接使用，避免从出生日期反推（用于延迟/特殊退休年龄，如深圳男61岁1个月）
+    retireDateInput: (retireYear && retireMonth) ? { year: retireYear, month: retireMonth } : null,
     avgIndex:       c.avg_index ?? 1.0,
     personalAcc:    c.personal_account ?? 0,
     // 预发/核定表场景：单 base_number 时默认 baseRetire=baseProv=base_number（单基数省份）；
@@ -74,6 +76,11 @@ function mapCaseToInput(c, provConfig) {
     extraRate:       c.extra_rate     ?? null,
     accountStart:    c.account_start   ?? null,
     xuzhang:         c.xuzhang        ?? null,
+    oldIndexSalary:  c.old_index_salary ?? null,
+    enjoymentRatio:  c.enjoyment_ratio ?? null,
+    newMethodYears:  c.new_method_years ?? null,
+    localPensionYears: c.local_pension_years ?? null,
+    pre1992LocalYears: c.pre1992_local_years ?? null,
   };
 }
 

@@ -92,8 +92,14 @@ const DEFAULT_MONTHLY_PAYMENT_MONTHS = {
  * @returns {Object} 计算结果 { amount, description }
  */
 function calcBasicPension(params) {
-  const { retireBase, provBase, avgIndex, totalYears, mod } = params
+  let mod = params.mod
+  // 深圳独立体系：城市级基础养老金覆盖（需在 enabled 检查前）
+  if ((params.city === 'sz' || params.city === 'shenzhen') && params.province === 'guangdong' && params.szModules?.basic_pension) {
+    mod = { ...mod, ...params.szModules.basic_pension }
+  }
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
+
+  const { retireBase, provBase, avgIndex, totalYears } = params
 
   const rate = mod.rate_per_year || 0.01
   let amount
@@ -119,6 +125,11 @@ function calcBasicPension(params) {
     amount = Math.round((retireBase * aCoeff + indexSalary) / 2 * totalYears * rate * 100) / 100
     const aDesc = aCoeff !== 1 ? `(a=${aCoeff.toFixed(4)})` : ''
     description = `(${retireBase.toLocaleString()}×${aCoeff.toFixed(4)}${aDesc} + ${indexSalary.toLocaleString(undefined, {maximumFractionDigits:2})}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'shenzhen') {
+    // 深圳基础养老金：独立计发基数已在 retireBase，不适用广东 a 系数（与默认公式一致）
+    const indexSalary = retireBase * avgIndex
+    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -388,7 +399,7 @@ function calcTransitionalPension(params) {
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
 
   // 深圳独立体系：城市级公式覆盖（非省配置级别）
-  if (params.city === 'sz' && params.province === 'guangdong' && params.szModules?.transitional_pension) {
+  if ((params.city === 'sz' || params.city === 'shenzhen') && params.province === 'guangdong' && params.szModules?.transitional_pension) {
     mod = { ...mod, ...params.szModules.transitional_pension }
   }
   // 云南特色：用建账前缴费年限替代视同缴费年限
@@ -511,50 +522,27 @@ function calcTransitionalPension(params) {
   }
 
   // 深圳过渡性养老金（深人社规，独立体系）
-  // 原办法核心: oldIndexSalary × 享受比例 + FLOOR(总年限) × 4
-  // 当 oldIndexSalary=0：加+100最低保障，无单独调节金
-  // 当 oldIndexSalary>0：过渡不含+100，单独加调节金（逐年递减40/年）
-  // 调整额 = max(新办法 - 调整基准, 0) × 发放比例（调整基准=核心+100保障）
+  // 过渡性养老金分项 = 核心(指数化工资×享受比例 + 缴费年限×4) + 粤劳电[2009]32号加发100（全员）
+  // 新办法 = 计发基数 × 1998.6前平均指数 × (视同年月+1998.6前实际缴费年月)/12 × 1.2%
+  // 调整额 = (新办法 − 核心) × 比例（核心不含100加发）；调节金单列（calcAdjustmentFund）
   if (mod.formula_type === "shenzhen") {
     const oldIndexSalary = params?.oldIndexSalary || 0
     const enjoymentRatio = params?.enjoymentRatio || 0
-
     const coreAmount = Math.round((oldIndexSalary * enjoymentRatio + Math.floor(totalYears) * 4) * 100) / 100
-    // 最低保障：当 oldIndexSalary=0 时过渡性额外+100（如案例4），否则调节金单独加
-    const minGuarantee = (oldIndexSalary === 0) ? 100 : 0
-    const baseSZAmount = Math.round((coreAmount + minGuarantee) * 100) / 100
-    // 调整基准 = 核心金额（不含保障的过渡性基础）
-    const adjBase = coreAmount
-
-    // 独li调节金：仅 oldIndexSalary>0（每年递减40元）
-    const retireYear = params?.retireYear || 2026
-    const adjFund = (oldIndexSalary > 0)
-      ? { 2023: 180, 2024: 140, 2025: 100, 2026: 60, 2027: 20 }[retireYear] || 0
-      : 0
-
-    // 新办法（同广东系数法）
+    // 深圳过渡性养老金分项 = 核心 + 粤劳电[2009]32号加发100（全员）
+    const baseSZAmount = Math.round((coreAmount + 100) * 100) / 100
+    // 新办法：计发基数 × 1998.6前平均指数 × (视同年月+1998.6前实际缴费年月)/12 × 1.2%
     const coef = mod.coefficient || 0.012
-    const newAmount = Math.round(provBase * (transIndex || avgIndex) * (preAccountYears || sightYears) * coef * 100) / 100
-
+    const pre98Years = (params?.preAccountYears != null && params.preAccountYears > 0) ? params.preAccountYears : (sightYears || 0)
+    const newAmount = Math.round(provBase * (transIndex || avgIndex) * pre98Years * coef * 100) / 100
+    const retireYear = params?.retireYear || 2026
     const transitionRates = { 2021: 0.3, 2022: 0.5, 2023: 0.7, 2024: 0.9, 2025: 1.0 }
     const rate = transitionRates[retireYear] || 1.0
-
-    // 调整额：新办法 vs 调整基准
-    const excess = newAmount - adjBase
-    if (excess > 0) {
-      const adjustment = Math.round(excess * rate * 100) / 100
-      const total = Math.round((baseSZAmount + adjustment + adjFund) * 100) / 100
-      const descParts = []
-      descParts.push('过渡性' + baseSZAmount.toFixed(2) + (minGuarantee ? '(含保障+100)' : ''))
-      descParts.push('调整(' + adjustment.toFixed(2) + '=(新' + newAmount.toFixed(2) + '-基准' + adjBase.toFixed(2) + ')×' + (rate*100).toFixed(0) + '%)')
-      if (adjFund > 0) descParts.push('调节金' + adjFund)
-      descParts.push('=' + total.toFixed(2) + '元（深圳独立体系）')
-      return { amount: total, description: descParts.join(' + ') }
-    }
-    // 新≤基准：只取过渡性基础（含保障）+ 调节金（如有），无调整
-    const total = Math.round((baseSZAmount + adjFund) * 100) / 100
-    const desc = '过渡性' + baseSZAmount.toFixed(2) + (minGuarantee ? '(含保障+100)' : '') + '，新' + newAmount.toFixed(2) + '≤基准' + adjBase.toFixed(2) + '，无调整' + (adjFund > 0 ? ' + 调节金' + adjFund : '') + ' = ' + total.toFixed(2) + '元（深圳独立体系）'
-    return { amount: total, description: desc }
+    // 调整额 = (新办法 − 核心) × 比例（核心不含100加发）
+    const excess = newAmount - coreAmount
+    const adjustment = excess > 0 ? Math.round(excess * rate * 100) / 100 : 0
+    const desc = `深圳过渡性养老金：核心${coreAmount.toFixed(2)} + 加发100 = ${baseSZAmount.toFixed(2)}元；新办法${newAmount.toFixed(2)}，调整额${adjustment.toFixed(2)}（比例${(rate*100).toFixed(0)}%）`
+    return { amount: baseSZAmount, _newAmount: newAmount, _oldBase: coreAmount, _allowance: 0, _rate: rate, _adjustment: adjustment, description: desc }
   }
 
   // 重庆特殊公式（渝办发〔2006〕205号）：
@@ -569,42 +557,41 @@ function calcTransitionalPension(params) {
   }
 
   // 广东粤府函[2021]294号 新办法（系数法）+过渡期（2021-2025）
-  // 新办法: 计发基数 × 1998年6月前缴费指数 × (视同+1998年6月前实际) × 1.2%
-  // 老办法: 视同缴费账户÷月数 + 粤劳电[2009]32号加发100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
-  // 过渡期: 2021=30%, 2022=50%, 2023=70%, 2024=90%, 2025=100%, 2026+全用新办法
   if (mod.formula_type === "guangdong") {
     const coef = mod.coefficient || 0.012
-    const newAmount = Math.round(provBase * effectiveYears * transIdx * coef * 100) / 100
+    // 新办法加权年数：案例直接提供 newMethodYears = (视同指数×视同年月及93底实际缴费月数 + 1994-1998.6实际缴费指数和)/12
+    const newYears = (params?.newMethodYears != null) ? params.newMethodYears : (effectiveYears * transIdx)
+    const newAmount = Math.round(provBase * newYears * coef * 100) / 100
     const xuzhang = params?.xuzhang || 0
-    const months = params?.months || 139
-    const xuzhangAmount = (months > 0 && xuzhang > 0) ? Math.round(xuzhang / months * 100) / 100 : 0
-    // 粤劳电[2009]32号+100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
-    const fixedAmount = Math.round((100 + Math.floor(totalYears) * 4) * 100) / 100
-    const oldAmount = Math.round((xuzhangAmount + fixedAmount) * 100) / 100  // 三项之和
+    // 广东原办法过渡性养老金 = 视同账户额 ÷ 原过渡性养老金计发系数 K
+    // （粤府函〔2021〕294号 附表 K=120，非个人账户计发月数 months）
+    const kCoef = mod.old_transition_coefficient || 120
+    const xuzhangAmount = (kCoef > 0 && xuzhang > 0) ? Math.round(xuzhang / kCoef * 100) / 100 : 0
+    // 原办法过渡性养老金（仅视同账户额÷系数）= 调整基准
+    const oldBase = xuzhangAmount
+    // 粤劳电[2009]32号加发100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
+    const allowance = Math.floor(totalYears) * 4
+    const oldAmount = Math.round((xuzhangAmount + 100 + allowance) * 100) / 100  // 表上“过渡性养老金”分项
     const retireYear = params?.retireYear || 2026
     const transitionRates = { 2021: 0.3, 2022: 0.5, 2023: 0.7, 2024: 0.9, 2025: 1.0 }
+    const rate = transitionRates[retireYear] || 1.0
 
-    // 2026年起直接全用新办法
+    // 调整额 = (新办法 − 原办法 − 缴费年限津贴) × 当年发放比例（2026年起全用新办法，调整额=0）
+    // 新办法 ≤ 原办法+津贴时调整额为 0（如无视同人员）
+    const rawAdjustment = retireYear >= 2026 ? 0 : (newAmount - oldBase - allowance) * rate
+    const adjustment = Math.max(0, Math.round(rawAdjustment * 100) / 100)
+
+    // 2026年起直接全用新办法（无调整额、无100/津贴叠加）
     if (retireYear >= 2026) {
       const amount = Math.round(newAmount * 100) / 100
-      const desc = retireYear >= 2026
-        ? `粤府函[2021]294号新办法(${retireYear}年起全用)：基数${provBase.toLocaleString()} × 指数${transIdx.toFixed(4)} × 建账前${effectiveYears.toFixed(2)}年 × ${(coef*100).toFixed(1)}% = ${amount.toFixed(2)}元`
-        : `粤府函[2021]294号新办法：基数${provBase.toLocaleString()} × 指数${transIdx.toFixed(4)} × 建账前${effectiveYears.toFixed(2)}年 × ${(coef*100).toFixed(1)}% = ${amount.toFixed(2)}元（无旧办法视同账户）`
-      return { amount, description: desc }
+      const desc = `粤府函[2021]294号新办法(${retireYear}年起全用)：基数${provBase.toLocaleString()} × 加权年${newYears.toFixed(4)} × ${(coef*100).toFixed(1)}% = ${amount.toFixed(2)}元`
+      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: adjustment, description: desc }
     }
 
-    // 2021-2025过渡期：新老办法对比
-    if (newAmount > oldAmount) {
-      const excess = newAmount - oldAmount
-      const rate = transitionRates[retireYear] || 1.0
-      const adjustment = Math.round(excess * rate * 100) / 100
-      const amount = Math.round((oldAmount + adjustment) * 100) / 100
-      const desc = `新${newAmount.toFixed(2)} > 老${oldAmount.toFixed(2)}，高出${excess.toFixed(2)} × ${(rate*100).toFixed(0)}% = 过渡调整额${adjustment.toFixed(2)}，合计${amount.toFixed(2)}元`
-      return { amount, description: desc }
-    } else {
-      const amount = Math.round(oldAmount * 100) / 100
-      return { amount, description: `新${newAmount.toFixed(2)} ≤ 老${oldAmount.toFixed(2)}，取老办法${amount.toFixed(2)}元` }
-    }
+    // 过渡性养老金分项 = 原办法 + 100 + 津贴（调整额在 calculate 中单列）
+    const amount = oldAmount
+    const desc = `过渡性养老金(原办法${oldBase.toFixed(2)} + 加发100 + 缴费年限津贴${allowance}) = ${amount.toFixed(2)}元`
+    return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: adjustment, description: desc }
   }
 
   // 非广东/深圳公式：effectiveYears为0时返回无视同
@@ -653,7 +640,7 @@ function calcTransitionalPension(params) {
 function calcSpecialAddition(params) {
   let mod = params?.mod
   // 深圳独立体系：城市级特殊增发覆盖（需在 enabled 检查前）
-  if (params.city === 'sz' && params.province === 'guangdong' && params.szModules?.special_addition) {
+  if ((params.city === 'sz' || params.city === 'shenzhen') && params.province === 'guangdong' && params.szModules?.special_addition) {
     mod = { ...mod, ...params.szModules.special_addition }
   }
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
@@ -776,8 +763,8 @@ function calcSpecialAddition(params) {
     const localYears = params?.context?.localPensionYears || 0
     const pre1992Local = params?.context?.pre1992LocalYears || 0
     const avgIdx = params?.context?.avgIndex || 0
-    // 项目五：地方补助
-    const localAmount = Math.round((localYears * avgIdx * 18.5 + 20) * 100) / 100
+    // 项目五：地方补助（仅地方补充养老保险缴费年限>0时享受，否则不享受+20）
+    const localAmount = localYears > 0 ? Math.round((localYears * avgIdx * 18.5 + 20) * 100) / 100 : 0
     // 项目六：过渡性补助（仅1992年7月前有地方补缴时生效）
     const transAmount = pre1992Local > 0 ? Math.round((pre1992Local * avgIdx * 11 + 60) * 100) / 100 : 0
     const total = Math.round((localAmount + transAmount) * 100) / 100
@@ -845,6 +832,16 @@ function calcAdjustmentFund(params) {
       amount,
       description: `过渡调节金：${base} + ${avgIndex.toFixed(4)} × ${totalYears.toFixed(2)}年 × ${coef} = ${amount.toFixed(2)}元（浙人社发〔2018〕102号）`
     }
+  }
+
+  // 深圳调节金（深人社规，按退休年度分档）
+  if (mod.type === 'shenzhen') {
+    const city = params?.city || ''
+    if (city !== 'sz' && city !== 'shenzhen') return { amount: 0, description: '深圳调节金：非深圳参保人员，不享受' }
+    const retireYear = params?.retireYear || 2026
+    const tiers = mod.tiers || { 2021: 250, 2022: 200, 2023: 150, 2024: 50, 2025: 0 }
+    const amount = tiers[retireYear] || 0
+    return { amount, description: `深圳调节金(${retireYear}年)：${amount}元` }
   }
 
   // 甘肃阈值型（默认）
@@ -1322,6 +1319,10 @@ function parseInput(inputData) {
   const preAccountYearsInput = inputData.preAccountYears != null ? parseFloat(inputData.preAccountYears)
     : inputData.preAccountYearsInput != null ? parseFloat(inputData.preAccountYearsInput) : null
 
+  // 广东新办法加权年数（核定表直供，避免引擎反推指数误差）：
+  // (视同指数×视同年月及93底实际缴费月数 + 1994-1998.6实际缴费指数和) ÷ 12
+  const newMethodYears = parseFloat(inputData.newMethodYears) || null
+
   // 上海特殊参数：虚账实记总额（用于过渡性养老金计算）
   const xuzhang = parseFloat(inputData.xuzhang) || null
 
@@ -1355,6 +1356,7 @@ function parseInput(inputData) {
     transPensionOld, // 原办法过渡性养老金（可为null）
     extraRate,       // 四川增发养老金合计比例（可为null，默认0.1%）
     preAccountYearsInput, // 建账前缴费年限用户指定值（可为null）
+    newMethodYears,    // 广东新办法加权年数（核定表直供，可为null）
     xuzhang,               // 虚账实记总额（可为null，上海特殊）
     oldIndexSalary,         // 深圳 指数化月平均缴费工资(老)
     enjoymentRatio,         // 深圳 享受比例
@@ -1608,7 +1610,10 @@ function calculate(config, inputData) {
     socialAvgBase,
     avgIndex: data.avgIndex,
     totalYears,
-    mod: config.modules?.basic_pension || { enabled: true, rate_per_year: 0.01 }
+    mod: config.modules?.basic_pension || { enabled: true, rate_per_year: 0.01 },
+    city,
+    szModules: config.sz_modules,
+    province: config.province
   })
 
   // 增发基础养老金
@@ -1640,6 +1645,7 @@ function calculate(config, inputData) {
     totalYears,
     mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
     preAccountYears,
+    newMethodYears: data.newMethodYears,
     transIndex: data.transIndex,
     pre1996Years: data.pre1996Years,
     transPensionOld: data.transPensionOld,
@@ -1708,16 +1714,22 @@ function calculate(config, inputData) {
     }
   }
 
-  // 调节金（支持甘肃阈值型 + 浙江过渡调节金）
+  // 调节金（支持甘肃阈值型 + 浙江过渡调节金 + 深圳分档调节金）
   const adjustmentFund = calcAdjustmentFund({
     mod: config.modules?.adjustment_fund || { enabled: false },
     sightYears,
     avgIndex: data.avgIndex,
-    totalYears
+    totalYears,
+    city,
+    retireYear: legalDate.year,
+    province: config.province
   })
 
   // ===== 合计 =====
-  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount
+  // 广东/深圳过渡性养老金调整额（单列，计入总额）
+  const transAdjustment = (config.province === 'guangdong' && transPension._adjustment)
+    ? transPension._adjustment : 0
+  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment
   // 浙江：见分进角补足 — 合计金额向上取整到角（0.1元）
   const total = config.round_to_jiao
     ? Math.ceil(rawSum * 10) / 10
@@ -1761,6 +1773,7 @@ function calculate(config, inputData) {
     totalYears,
     mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
     preAccountYears,
+    newMethodYears: data.newMethodYears,
     transIndex: data.transIndex,
     pre1996Years: data.pre1996Years,
     transPensionOld: data.transPensionOld,
@@ -1775,7 +1788,7 @@ function calculate(config, inputData) {
     province: config.province
   })
 
-  const flexRawSum = flexBasic.amount + flexExtra.amount + flexPersonal.amount + flexTrans.amount + specialAddition.amount + adjustmentFund.amount
+  const flexRawSum = flexBasic.amount + flexExtra.amount + flexPersonal.amount + flexTrans.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment
   const flexTotal = config.round_to_jiao
     ? Math.ceil(flexRawSum * 10) / 10
     : Math.round(flexRawSum * 100) / 100
@@ -1804,6 +1817,7 @@ function calculate(config, inputData) {
       transitionalPension: transPension,
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
+      transitionalAdjustment: transAdjustment,
       total: total,
       totalYears,
       actualYears,
@@ -1827,6 +1841,7 @@ function calculate(config, inputData) {
       transitionalPension: flexTrans,
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
+      transitionalAdjustment: transAdjustment,
       total: flexTotal,
       totalYears: flexTotalYears,
       actualYears: flexActualYears,

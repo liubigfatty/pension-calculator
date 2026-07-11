@@ -1,0 +1,32 @@
+{
+  "case_id": "shenzhen-man",
+  "province": "guangdong",
+  "city": "深圳市",
+  "gender": "男",
+  "birth_year": 1964,
+  "birth_month": 3,
+  "work_year": 1983,
+  "work_month": 11,
+  "retire_year": 2025,
+  "retire_month": 6,
+  "avg_index": 0.3803,
+  "total_years": 16.5833,
+  "sight_years": 14.5,
+  "months": 131.4,
+  "personal_account": 33425.18,
+  "base_number": 11181,
+  "city_type": "sz",
+  "old_index_salary": 3894.34,
+  "enjoyment_ratio": 0.065,
+  "trans_index": 0.498,
+  "pre_account_years": 5.4167,
+  "local_pension_years": 0,
+  "expected": {
+    "basic_pension": 1279.66,
+    "personal_pension": 254.38,
+    "transitional_pension": 417.13,
+    "total": 1995.97
+  },
+  "verified": true,
+  "source": "深圳社保局核定表(2025-06)；深人社规独立体系：基础用默认公式(无广东a系数)、过渡核心+100加发、调整额=(新办法-核心)×100%"
+}
