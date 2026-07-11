@@ -76,7 +76,7 @@ const CITY_LIST = []
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 天津市过渡系数 1.2%
+const TRANS_COEF = 0.010  // 天津市过渡系数 1.0%（真实表核定：过渡=基数×全部平均工资指数×1997年底前年限×1%）
 
 const PROV_TAG = 'tianjin'
 

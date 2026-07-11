@@ -1,30 +1,42 @@
 {
   "case_id": "5",
   "province": "shandong",
-  "city": "济南市",
-  "gender": "female",
-  "birth_year": 1974,
-  "birth_month": 4,
-  "work_year": 1994,
-  "work_month": 1,
-  "retire_year": 2024,
-  "retire_month": 4,
+  "city": "潍坊市",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 7,
+  "work_year": 1984,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 9,
+  "retire_type": "normal",
   "account_start": {
-    "year": 2001,
-    "month": 5
+    "year": 1998,
+    "month": 11
   },
-  "actual_years": 23,
-  "sight_years": 7.33,
-  "total_years": 30.33,
-  "avg_index": 0.856,
-  "base_number": 7468,
-  "personal_account": 111694.39,
-  "months": 195,
+  "sight_years": 14.0833,
+  "pre_account_years": 0,
+  "actual_years": 26.9167,
+  "total_years": 41.0,
+  "avg_index": 0.6820,
+  "base_number": 7678,
+  "base_prov": 7678,
+  "personal_account": 95061.63,
+  "months": 137.8,
+  "gender_type": "male",
   "expected": {
-    "basic_pension": 2161.07,
-    "personal_pension": 572.79,
-    "transitional_pension": 626.28,
-    "total": 3360.14
+    "basic_pension": 2647.45,
+    "personal_pension": 689.85,
+    "transitional_pension": 958.47,
+    "total": 4295.77
   },
-  "notes": "山东济南女工人50岁2024.04退休。建账2001-05（非常晚），建账前7.33年(1994.01-2001.05)。视同7.33年。过渡=7468×0.8560×7.3333×1.3%=609.15"
+  "verified": true,
+  "notes": "山东潍坊市男2025年9月正常退休，60岁2个月，计发月数137.80。建立账户日期1998年11月，指数计算起1998年11月。2025年9月退休时2025年计发基数尚未公布，按2024年基数7678预发。累计缴费年限41年0个月，其中视同缴费年限14年1个月，建账前累计缴费年限14年1个月。平均缴费指数0.6820，指数化月平均工资5236.40元。基础养老金=(7678+5236.40)/2*41*1%=2647.45；个人账户养老金=95061.63/137.80=689.85；过渡性养老金=5236.40*14.0833*1.3%=958.47；合计4295.77元。",
+  "data_source": "潍坊市企业职工基本养老保险临时待遇核定表，2025年9月",
+  "calculation_details": {
+    "indexed_monthly_wage": 5236.40,
+    "formula_basic": "(7678 + 5236.40) / 2 * 41 * 1% = 2647.45",
+    "formula_personal": "95061.63 / 137.80 = 689.85",
+    "formula_transition": "5236.40 * 14.0833 * 1.3% = 958.47"
+  }
 }

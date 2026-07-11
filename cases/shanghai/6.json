@@ -1,0 +1,34 @@
+{
+  "case_id": "6",
+  "province": "shanghai",
+  "city": "上海市",
+  "gender": "女",
+  "gender_type": "fw",
+  "birth_year": 1976,
+  "birth_month": 2,
+  "work_year": 2001,
+  "work_month": 4,
+  "retire_year": 2026,
+  "retire_month": 2,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1993,
+    "month": 1
+  },
+  "actual_years": 23.914,
+  "sight_years": 0,
+  "total_years": 23.914,
+  "avg_index": 1.5231,
+  "base_number": 12434,
+  "personal_account": 307242,
+  "months": 195,
+  "expected": {
+    "basic_pension": 3751.1,
+    "personal_pension": 1575.6,
+    "transitional_pension": 0,
+    "total": 5326.7
+  },
+  "verified": true,
+  "notes": "上海女工人50岁正常退休（申请当月非管理/技术岗）。1976年2月生，2026年2月退休，计发月数195。2001年4月参加工作，全部缴费年限23年11个月（内部折算约23.914年），平均缴费指数1.5231，个人账户约307242元。2026年2月退休使用2025年基数12434。基础养老金=(12434+12434×1.5231)/2×23.914×1%=3751.1；个人账户=307242/195=1575.6；无92年底前工龄，过渡性养老金=0；合计5326.7元。",
+  "data_source": "上海市社会保险业务核定表（企业职工申领养老金），2026年2月核定"
+}

@@ -400,6 +400,17 @@ function calcTransitionalPension(params) {
   // 云南特色：用建账前缴费年限替代视同缴费年限
   const effectiveYears = (preAccountYears != null && preAccountYears > 0) ? preAccountYears : sightYears
 
+  // 河北公式（冀劳社〔2006〕67号）：过渡性养老金 = 指数化月平均缴费工资 × (视同缴费年限 + 建账前实际缴费年限) × 系数
+  if (mod.formula_type === 'hebei') {
+    const hebeiYears = (sightYears || 0) + (preAccountYears || 0)
+    if (hebeiYears <= 0) return { amount: 0, description: '无视同及建账前缴费年限' }
+    const coef = (mod.coefficient != null) ? mod.coefficient : 0.012
+    const indexSalary = provBase * transIdx
+    const amount = Math.round(indexSalary * hebeiYears * coef * 100) / 100
+    const desc = '视同' + (sightYears || 0).toFixed(2) + '年+建账前' + (preAccountYears || 0).toFixed(2) + '年=' + hebeiYears.toFixed(2) + '年 × 指数化工资' + indexSalary.toFixed(2) + ' × 系数' + (coef * 100).toFixed(1) + '% = ' + amount.toFixed(2) + '元'
+    return { amount, description: desc }
+  }
+
   // 北京特殊公式：过渡性养老金 = G同 + G实（京劳社养发〔1998〕21号）
   // G同：1992年10月前的视同缴费年限 → 用 sightYears
   // G实：1992年10月~1998年6月（cutoff）的实际缴费年限 → 用 preAccountYears（建账前实际缴费年限）

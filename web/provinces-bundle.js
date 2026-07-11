@@ -1938,10 +1938,9 @@ const PROV_BASE = {
 };;
 
 const BASE_PARAMS = {
-  
   PROV_GROWTH: 0.03,
   MERGE_YEAR: 2031,
-  PROV_2025: 6678,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+  PROV_2025: 7410,  // 2025年保定真实核定表（待全省官方文件）
 }
 
 const CITY_LIST = [
@@ -1950,9 +1949,9 @@ const CITY_LIST = [
   '衡水市',
 ]
 
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-const TRANS_COEF = 0.012
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+const TRANS_COEF = 0.013
 const PROV_TAG = 'hebei'
 
 const MODULES = ['base', 'personal', 'transition']
@@ -1970,16 +1969,26 @@ const cases = []
 ;
 
 function getEngineConfig() {
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
+  const modules = {}
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 }
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true }
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, formula_type: 'hebei' }
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF
+      }
+    }
+  }
 
-    province: PROV_TAG,
+  return {
+    avg_salary_history: AVG_SALARY_HISTORY,
     base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '河北省',
+    modules,
   }
 }
 
@@ -2017,7 +2026,7 @@ const AVG_SALARY_HISTORY = {
   2022: 6211.08,
   2023: 6534.25,
   2024: 7265,
-  2025: 6678,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2025: 7410,  // 2025年保定真实核定表（待全省官方文件）
 };
 
 

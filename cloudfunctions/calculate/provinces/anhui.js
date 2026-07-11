@@ -71,9 +71,9 @@ const CITY_LIST = [
   '宣城市',
 ]
 
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-const TRANS_COEF = 0.012
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+const TRANS_COEF = 0.013
 const PROV_TAG = 'anhui'
 
 const MODULES = ['base', 'personal', 'transition']
@@ -91,16 +91,21 @@ const cases = []
 ;
 
 function getEngineConfig() {
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
+  const modules = {}
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 }
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true }
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF }
+  }
 
-    province: PROV_TAG,
+  return {
+    avg_salary_history: AVG_SALARY_HISTORY,
     base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '安徽省',
+    modules,
   }
 }
 

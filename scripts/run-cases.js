@@ -26,12 +26,11 @@ function mapCaseToInput(c, provConfig) {
   const gender = isFemale ? 'female' : 'male';
 
   // genderType：优先用案例里的，否则根据 months 判断
-  let genderType = c.genderType || '';
+  let genderType = c.gender_type || c.genderType || '';
   if (!genderType && isFemale) {
     const m = c.months || 195;
     if (m === 170) {
-      // 170个月=55岁：看 notes 是否含"女干部"
-      genderType = (c.notes && c.notes.includes('女干部')) ? 'fc' : 'fw55';
+      genderType = 'fw55';
     } else {
       genderType = 'fw50';
     }
@@ -55,9 +54,10 @@ function mapCaseToInput(c, provConfig) {
     retireMonth,
     avgIndex:       c.avg_index ?? 1.0,
     personalAcc:    c.personal_account ?? 0,
-    // 仅在同时给出市县/全省基数时才显式传入（预发核定表场景），避免单字段脏数据干扰
-    baseRetire:     (c.base_number != null && c.base_prov != null) ? c.base_number : null,
-    baseProv:       (c.base_number != null && c.base_prov != null) ? c.base_prov : null,
+    // 预发/核定表场景：单 base_number 时默认 baseRetire=baseProv=base_number（单基数省份）；
+    // 双基数省份同时给出 base_number/base_prov 时分别传入。
+    baseRetire:     c.base_number != null ? c.base_number : null,
+    baseProv:       c.base_prov != null ? c.base_prov : (c.base_number != null ? c.base_number : null),
     sightYears:      c.sight_years   ?? null,
     totalYears:      c.total_years    ?? null,
     preAccountYears: c.pre_account_years ?? null,
@@ -66,22 +66,40 @@ function mapCaseToInput(c, provConfig) {
     retireType:      c.retire_type    || 'standard',
     cityType:        c.city_type      || 'prov',
     transIndex:      c.trans_index     ?? null,
+    extraRate:       c.extra_rate     ?? null,
+    accountStart:    c.account_start   ?? null,
+    xuzhang:         c.xuzhang        ?? null,
   };
 }
 
 // ===== 运行单个案例 =====
 function runCase(prov, c, file) {
-  // 加载省份配置（优先用 provinces/*.json，与 verify.js 一致）
+  // 加载省份配置：必须用真相源 .js（getEngineConfig 含 TRANS_COEF/公式等），
+  // 不能先用 provinces/*.json 副本——副本常过期（如 jiangsu.json 仍 8254 vs 真相源 8917），
+  // 吃过期副本会制造假失败。与生产线(index.js 走 getEngineConfig)保持一致。
   const configPaths = [
-    path.join(__dirname, '..', 'provinces', `${prov}.json`),
+    path.join(__dirname, '..', 'cloudfunctions', 'calculate', 'provinces', `${prov}.js`),
     path.join(__dirname, '..', 'cloudfunctions', 'calculate', 'provinces', `${prov}.json`),
+    path.join(__dirname, '..', 'provinces', `${prov}.js`),
+    path.join(__dirname, '..', 'provinces', `${prov}.json`),
   ];
   let config = null;
   for (const p of configPaths) {
-    if (fs.existsSync(p)) { config = JSON.parse(fs.readFileSync(p, 'utf8')); break; }
-    // 也支持 .js
-    const jsPath = p.replace(/\.json$/, '.js');
-    if (fs.existsSync(jsPath)) { const m = require(path.resolve(jsPath)); config = m.getEngineConfig ? m.getEngineConfig() : m; break; }
+    if (!fs.existsSync(p)) continue;
+    if (p.endsWith('.js')) {
+      // 真相源：require 后取 getEngineConfig（含 TRANS_COEF/公式/增发等）
+      try {
+        const m = require(path.resolve(p));
+        config = m.getEngineConfig ? m.getEngineConfig() : m;
+        break;
+      } catch (e) { continue; }
+    } else {
+      // .json 副本：解析失败（含 // 注释等非法 JSON）则跳过，回退到 .js
+      try {
+        config = JSON.parse(fs.readFileSync(p, 'utf8'));
+        break;
+      } catch (e) { continue; }
+    }
   }
   if (!config) return { ok: false, msg: `省份配置 ${prov} 不存在` };
 

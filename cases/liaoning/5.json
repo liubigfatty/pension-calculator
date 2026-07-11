@@ -1,0 +1,43 @@
+{
+  "case_id": "5",
+  "province": "liaoning",
+  "city": "沈阳市",
+  "gender": "男",
+  "birth_year": 1964,
+  "birth_month": 3,
+  "work_year": 1982,
+  "work_month": 1,
+  "retire_year": 2024,
+  "retire_month": 3,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1998,
+    "month": 1
+  },
+  "sight_years": 9.92,
+  "pre_account_years": 13.17,
+  "actual_years": 31.50,
+  "total_years": 41.42,
+  "avg_index": 1.2387,
+  "trans_index": 1.23833,
+  "base_number": 8141,
+  "base_prov": 6987,
+  "personal_account": 212742,
+  "months": 139,
+  "gender_type": "male",
+  "expected": {
+    "basic_pension": 3774.49,
+    "personal_pension": 1530.52,
+    "transitional_pension": 1679.92,
+    "total": 6985.00
+  },
+  "verified": true,
+  "notes": "辽宁沈阳市企业男，1964-03生，2024-03退休（60岁），计发月数139。参加工作时间1982-01，建立账户时间1996-01。2024-03退休时2024年沈阳基数尚未公布，按2023年基数8141预发（表上养老金计发基数97692.00元为年度值，月值=8141）。全部缴费年限41.42年，其中视同年限9.92年、建账前缴费年限13.17年、实际缴费年限31.50年。个人账户累计212742.00元。平均缴费指数1.2387，建账前缴费指数1.23833。基础养老金=(8141+8141×1.2387)/2×41.42×1%=3774.45；个人账户养老金=212742/139=1530.52；过渡性养老金=(8141+8141×1.23833)/2×13.17×1.4%=1679.91；合计6984.88元。与表上差异均在1元以内。",
+  "data_source": "辽宁省城镇企业职工退休待遇核定表（沈阳，2024-03退休）",
+  "calculation_details": {
+    "indexed_monthly_wage": 10084.81,
+    "formula_basic": "(8141 + 8141 × 1.2387) / 2 × 41.42 × 1% = 3774.45",
+    "formula_personal": "212742 / 139 = 1530.52",
+    "formula_transition": "(8141 + 8141 × 1.23833) / 2 × 13.17 × 1.4% = 1679.91"
+  }
+}

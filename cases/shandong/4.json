@@ -1,31 +1,42 @@
 {
   "case_id": "4",
   "province": "shandong",
-  "city": "日照市",
-  "gender": "female",
-  "birth_year": 1974,
-  "birth_month": 4,
-  "work_year": 1993,
-  "work_month": 1,
-  "retire_year": 2024,
-  "retire_month": 4,
+  "city": "山东省",
+  "gender": "女",
+  "birth_year": 1970,
+  "birth_month": 11,
+  "work_year": 1995,
+  "work_month": 7,
+  "retire_year": 2025,
+  "retire_month": 11,
+  "retire_type": "normal",
   "account_start": {
-    "year": 1996,
-    "month": 10
+    "year": 1998,
+    "month": 1
   },
-  "actual_years": 27.5,
-  "sight_years": 3.75,
-  "total_years": 31.25,
-  "avg_index": 0.6098,
-  "base_number": 7468,
-  "personal_account": 82008.95,
-  "months": 195,
+  "sight_years": 0.5,
+  "pre_account_years": 2.5,
+  "actual_years": 31.5,
+  "total_years": 32,
+  "avg_index": 0.64,
+  "base_number": 7678,
+  "base_prov": 7678,
+  "personal_account": 101912.71,
+  "months": 170,
+  "gender_type": "fc",
   "expected": {
-    "basic_pension": 1931.26,
-    "personal_pension": 420.56,
-    "transitional_pension": 228.25,
-    "total": 2580.07
+    "basic_pension": 2014.71,
+    "personal_pension": 599.49,
+    "transitional_pension": 159.7,
+    "total": 2773.9
   },
-  "notes": "山东日照女工人50岁2024.04退休。建账1996-10（地区差异），建账前3.75年(1993.01-1996.10)。视同3.75年。过渡=7468×0.8058×3.75×1.3%=220.55",
-  "trans_index": 0.6072
+  "verified": true,
+  "notes": "山东省女干部/管理岗2025年11月正常退休，55岁，计发月数170。2025年11月退休时2025年计发基数尚未公布，按2024年基数7678预发。累计缴费年限32年0个月，其中视同缴费年限0年6个月，建账前累计缴费年限2.5年（含视同0.5年、建账前实际2.0年）。平均缴费指数0.640，指数化月平均工资4913.92元。基础养老金=(7678+4913.92)/2*32*1%=2014.71；个人账户养老金=101912.71/170=599.49；过渡性养老金=4913.92*2.5*1.3%=159.70；合计2773.90元。",
+  "data_source": "山东省企业职工基本养老保险临时待遇核定表（女干部），2025年11月",
+  "calculation_details": {
+    "indexed_monthly_wage": 4913.92,
+    "formula_basic": "(7678 + 4913.92) / 2 * 32 * 1% = 2014.71",
+    "formula_personal": "101912.71 / 170 = 599.49",
+    "formula_transition": "4913.92 * 2.5 * 1.3% = 159.70"
+  }
 }

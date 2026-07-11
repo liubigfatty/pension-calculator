@@ -21,10 +21,10 @@
   "personal_account": 225643.45,
   "months": 195,
   "expected": {
-    "basic_pension": 3083.64,
+    "basic_pension": 2965.47,
     "personal_pension": 1157.15,
-    "transitional_pension": 354.89,
-    "total": 4595.68
+    "transitional_pension": 341.29,
+    "total": 4463.91
   },
   "notes": "甘肃女工人50岁2023.10退休。参工1993.09，建账1996-01，视同年限2.25年<15年，调节金=0。高指数1.79，过渡性=7077×1.7861×2.25×1.2%=341.29"
 }

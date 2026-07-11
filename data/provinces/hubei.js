@@ -60,6 +60,13 @@ const PROV_BASE = {
 
 
 
+
+
+
+
+
+
+
 ;
 
 const BASE_PARAMS = {
@@ -68,6 +75,13 @@ const BASE_PARAMS = {
   MERGE_YEAR: 2031,
   PROV_2025: 7496,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };
+
+
+
+
+
+
+
 
 
 

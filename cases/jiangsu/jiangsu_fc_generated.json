@@ -21,8 +21,8 @@
   "expected": {
     "basic_pension": 2506.53,
     "personal_pension": 399.26,
-    "transitional_pension": 0,
-    "total": 2905.79
+    "transitional_pension": 1349.82,
+    "total": 4255.61
   },
   "notes": "jiangsu 女干部55岁退休（自动生成）",
   "trans_index": 0.8634,
