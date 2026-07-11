@@ -1,0 +1,32 @@
+{
+  "case_id": "xizang-2024-female-45",
+  "province": "xizang",
+  "city": "西藏",
+  "gender": "女",
+  "birth_year": 1979,
+  "birth_month": 12,
+  "work_year": 2010,
+  "work_month": 1,
+  "retire_year": 2024,
+  "retire_month": 12,
+  "avg_index": 0.947,
+  "base_number": 11546,
+  "base_prov": 11546,
+  "personal_account": 123127.81,
+  "months": 216,
+  "sight_years": 0,
+  "actual_years": 15,
+  "pre_account_years": null,
+  "total_years": 15,
+  "tibet_work_years": 15,
+  "region_category": "二类地区",
+  "genderType": "fw",
+  "expected": {
+    "basic_pension": 1686.00,
+    "personal_pension": 570.04,
+    "transitional_pension": 0,
+    "total": 3679.33
+  },
+  "verified": true,
+  "notes": "西藏灵活就业女45岁退休（2010-01参工即缴费，无视同，累计15年）。基础养老金指数化工资=11546×0.947=10934.06；高原补贴=10934.06×10%=1093.41（在藏15年→10%）。计发月数216（女45岁，flex_retire_age）。藏政发〔2006〕37号。来源：用户提供完整计算过程核对。"
+}

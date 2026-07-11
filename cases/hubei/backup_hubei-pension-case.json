@@ -1,0 +1,31 @@
+{
+  "case_id": "backup_hubei-pension-case",
+  "province": "hubei",
+  "city": "湖北省黄石市",
+  "region_category": null,
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 5,
+  "work_year": 1981,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 5,
+  "avg_index": 0.9729,
+  "trans_index": null,
+  "base_number": 7048,
+  "base_prov": 7048,
+  "personal_account": 25843.25,
+  "months": 139,
+  "sight_years": 14.25,
+  "actual_years": 10.25,
+  "pre_account_years": null,
+  "total_years": 24.5,
+  "expected": {
+    "basic_pension": 1703.36,
+    "personal_pension": 185.92,
+    "transitional_pension": 1172.55,
+    "total": 3061.83
+  },
+  "verified": true,
+  "notes": "本计算表为按照2024年黄石市基本养老金计发标准计算的预发待遇\n待2025年该市基本养老金计发基数公布后进行重新核算，多退少补\n基础养老金公式：(7048 + 6857) / 2 × 24.5 × 1% = 1703.36\n过渡性养老金公式：7048 × 0.9729 × (14.25 + 0) × 1.2% = 1172.55\n个人账户养老金公式：25843.25 / 139 = 185.92\n灵活就业人员，视同年限14.25年较高，实际缴费仅10.25年\n退休实际年龄60岁\n[来源:备份 other/hubei-pension-case.json]"
+}

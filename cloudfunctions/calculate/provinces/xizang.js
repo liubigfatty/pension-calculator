@@ -89,6 +89,18 @@ const CUTOFF_DATE   = { year: 1997, month: 12 }
 
 const TRANS_COEF = 0.014  // 西藏自治区过渡系数 1.4000000000000001%
 
+// 西藏特殊待遇分项（按地区类别，单位：元/月）
+// 数据来源：用户提供的西藏企业职工基本养老金核定表（拉萨·二类地区，case_id 24 / 新女表）
+// 高原补贴为动态值：= 指数化月平均缴费工资 × 高原补贴比例
+//   指数化月平均缴费工资 = 退休地计发基数 × 平均缴费指数
+//   高原补贴比例按"在西藏工作年限"：满10年不满15年→5%；满15年不满20年→10%；20年以上→15%
+//   交通/取暖/福利为地区固定金额（二类地区：交通30、取暖39.88、福利260）
+// 注：高原补贴计入"基本养老待遇"段，交通+采暖+福利计入"其他待遇"段，合计均纳入月总待遇
+const XIZANG_SUBSIDIES = {
+  '二类地区': { transport_fee: 30.0, heating_fee: 39.88, welfare_fund: 260.0 },
+  // 其他地区待补充官方核定表
+}
+
 const PROV_TAG = 'xizang'
 
 // ==================== 模块配置 ====================
@@ -121,6 +133,12 @@ function getEngineConfig() {
       }
     }
   }
+  // 西藏特殊待遇：高原补贴 + 采暖 + 交通 + 福利（按地区类别分项）
+  modules.special_addition = {
+    enabled: true,
+    type: 'xizang_subsidies',
+    subsidies: XIZANG_SUBSIDIES,
+  };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -132,12 +150,16 @@ base_rates: PROV_BASE,
     base_rates: { prov: PROV_BASE },
     avg_salary_history: AVG_SALARY_HISTORY,
  modules: modules,
-    
+
+    // 西藏灵活就业退休年龄（藏政发〔2006〕37号等）：女45岁、男55岁
+    // 引擎 getRetireTotalMonths 识别此配置后，自动取对应法定退休年龄与计发月数
+    flex_retire_age: { male: 55, female: 45 },
+
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。口径=当年（非上年度）。',
+    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。口径=当年（非上年度）。特殊待遇按地区类别分项计发。',
   }
 }
 

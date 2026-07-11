@@ -1,0 +1,32 @@
+{
+  "case_id": "backup_24",
+  "province": "xizang",
+  "city": "拉萨市",
+  "region_category": "二类地区",
+  "gender": "男",
+  "birth_year": 1970,
+  "birth_month": 11,
+  "work_year": 1989,
+  "work_month": 3,
+  "retire_year": 2025,
+  "retire_month": 11,
+  "avg_index": 0.671,
+  "trans_index": null,
+  "base_number": 11777,
+  "base_prov": 11777,
+  "personal_account": 69473.19,
+  "months": 170,
+  "sight_years": 15.83,
+  "actual_years": 10.92,
+  "pre_account_years": null,
+  "total_years": 26.75,
+  "tibet_work_years": 15.83,
+  "expected": {
+    "basic_pension": 2632.12,
+    "personal_pension": 408.67,
+    "transitional_pension": 1751.32,
+    "total": 5912.23
+  },
+  "verified": true,
+  "notes": "西藏基本养老金与其他待遇分离；高原补贴=指数化月均工资(7902.37)×10%(在藏工作15.83年，满15年档)；计发月数整数170\n[来源:备份 other/24.json；特殊项:高原补贴/采暖/交通/福利]"
+}

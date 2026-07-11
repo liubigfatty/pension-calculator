@@ -90,6 +90,18 @@ const cases = []
 ;
 
 function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,
@@ -99,7 +111,13 @@ base_rates: PROV_BASE,
     province: PROV_TAG,
     base_rates: { prov: PROV_BASE },
  avg_salary_history: AVG_SALARY_HISTORY,
- modules: {},
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '湖北过渡系数1.2%（与江苏/甘肃/黑龙江一致，鄂政发〔2006〕42号）；预发表使用退休地上年计发基数。',
   }
 }
 

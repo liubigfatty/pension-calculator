@@ -6,11 +6,14 @@ const fs = require('fs');
 const path = require('path');
 
 // ===== 加载引擎（自动找路径）=====
+// 注意：优先使用工作副本 ./engine/pension-engine.js（与省份真相源 provinces/*.js 同源），
+// 不要先用 cloudfunctions/calculate/pension-engine.js —— 后者是部署快照，常落后于工作副本，
+// 会制造"假失败"（如特殊待遇/独生子女分支缺失）。与生产线构建(sync)保持一致前，测试以工作副本为准。
 let engine;
 const TRY_PATHS = [
+  './engine/pension-engine.js',
   './cloudfunctions/calculate/pension-engine.js',
   'C:/Users/14041/WorkBuddy/pension-engine/miniprogram/cloud-functions/calculate/pension-engine.js',
-  './engine/pension-engine.js',
 ];
 for (const p of TRY_PATHS) {
   if (fs.existsSync(p)) { engine = require(path.resolve(p)); break; }
@@ -64,8 +67,10 @@ function mapCaseToInput(c, provConfig) {
     actualYears:     c.actual_years     ?? null,
     months:         c.months         ?? null,
     retireType:      c.retire_type    || 'standard',
-    cityType:        c.city_type      || 'prov',
+    cityType:        c.city_type || c.cityType || 'prov',
     transIndex:      c.trans_index     ?? null,
+    regionCategory:  c.region_category ?? null,
+    tibetWorkYears:  c.tibet_work_years ?? null,
     extraRate:       c.extra_rate     ?? null,
     accountStart:    c.account_start   ?? null,
     xuzhang:         c.xuzhang        ?? null,

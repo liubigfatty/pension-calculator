@@ -1,0 +1,32 @@
+{
+  "case_id": "backup_guizhou",
+  "province": "guizhou",
+  "city": "",
+  "region_category": null,
+  "gender": "",
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1984,
+  "work_month": 10,
+  "retire_year": 2025,
+  "retire_month": 10,
+  "avg_index": 0.6824,
+  "trans_index": null,
+  "base_number": 7324.5,
+  "base_prov": 7324.5,
+  "personal_account": 79111.16,
+  "months": 139,
+  "sight_years": 8.17,
+  "actual_years": 32.92,
+  "pre_account_years": null,
+  "total_years": 41.08,
+  "one_child": true,
+  "expected": {
+    "basic_pension": 2531.09,
+    "personal_pension": 569.15,
+    "transitional_pension": 927.17,
+    "total": 4228.78
+  },
+  "verified": true,
+  "notes": "\n[来源:备份 other/贵州.json；特殊项:独生子女奖励；独生子女奖励+201.37]"
+}

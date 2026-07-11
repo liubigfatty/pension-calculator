@@ -724,6 +724,38 @@ function calcSpecialAddition(params) {
       amount,
       description: `独生子女补贴：全省人均养老金${avgPension}元(${retireYear}年) × ${(rate * 100)}% = ${amount.toFixed(2)}元`
     }
+  } else if (mod.type === 'xizang_subsidies') {
+    // 西藏特殊待遇：高原补贴 + 采暖 + 交通 + 福利（按地区类别分项，合计计入总待遇）
+    // 数据来源：用户提供的西藏企业职工基本养老金核定表（拉萨·二类地区）
+    const region = params?.context?.regionCategory || '二类地区';
+    const subs = mod.subsidies?.[region] || mod.subsidies?.['二类地区'] || {};
+    const baseRetire = params?.context?.baseRetire || 0;
+    const avgIndex = params?.context?.avgIndex || 0;
+    const indexedWage = baseRetire * avgIndex; // 指数化月平均缴费工资
+    const twy = params?.context?.tibetWorkYears;
+    let plateauRatio = 0;
+    if (twy != null) {
+      if (twy >= 20) plateauRatio = 0.15;
+      else if (twy >= 15) plateauRatio = 0.10;
+      else if (twy >= 10) plateauRatio = 0.05;
+      else plateauRatio = 0;
+    }
+    const plateau = Math.round(indexedWage * plateauRatio * 100) / 100;
+    let totalAmount = 0;
+    const parts = [];
+    const fixedKeys = ['transport_fee', 'heating_fee', 'welfare_fund'];
+    const fixedLabels = { transport_fee: '交通费', heating_fee: '取暖防寒费', welfare_fund: '过渡期福利金' };
+    for (const k of fixedKeys) {
+      const amt = subs[k] || 0;
+      if (amt) { totalAmount += amt; parts.push(`${fixedLabels[k]}:${amt}元`); }
+    }
+    totalAmount += plateau;
+    parts.push(`高原补贴:${plateau}元(指数化${indexedWage.toFixed(2)}×${(plateauRatio * 100)}%)`);
+    return {
+      amount: Math.round(totalAmount * 100) / 100,
+      description: `西藏特殊待遇(${region})：${parts.join('，')}，合计${Math.round(totalAmount * 100) / 100}元`,
+      breakdown: { plateau, indexedWage: Math.round(indexedWage * 100) / 100, plateauRatio, fixed: subs },
+    };
   } else if (mod.type === 'qinghai_27_doc') {
     // 青劳社厅发[2004]27号《关于适当提高企业退休人员待遇水平的通知》
     // 西宁地区(含大通、湟中、湟源)+12元/月，其他地区+13元/月
@@ -945,6 +977,17 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
  * @returns {number} 退休总月数
  */
 function getRetireTotalMonths(birthYear, birthMonth, type, config, skipDelay) {
+  // 省份级灵活就业退休年龄覆盖（如西藏：女45/男55，藏政发〔2006〕37号等）
+  // 仅当该省份配置 flex_retire_age 时生效，不影响其他省份
+  if (config && config.flex_retire_age) {
+    const fa = config.flex_retire_age
+    const baseAgeFa = (type === 'male') ? (fa.male != null ? fa.male : 60)
+                                         : (fa.female != null ? fa.female : 50)
+    if (skipDelay) return baseAgeFa * 12
+    const delay = getDelayMonths(birthYear, birthMonth, type, config)
+    return baseAgeFa * 12 + delay
+  }
+
   let baseAge
 
   switch (type) {
@@ -973,6 +1016,15 @@ function getRetireTotalMonths(birthYear, birthMonth, type, config, skipDelay) {
 
 // 内部辅助函数：计算延迟后退休（不截断到原法定年龄）
 function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config) {
+  // 省份级灵活就业退休年龄覆盖（如西藏：女45/男55），仅该省份配置 flex_retire_age 时生效
+  if (config && config.flex_retire_age) {
+    const fa = config.flex_retire_age
+    const baseAgeFa = (type === 'male') ? (fa.male != null ? fa.male : 60)
+                                         : (fa.female != null ? fa.female : 50)
+    const delay = getDelayMonths(birthYear, birthMonth, type, config)
+    return Math.max(baseAgeFa * 12, baseAgeFa * 12 + delay - maxDelay)
+  }
+
   let baseAge
 
   switch (type) {
@@ -1311,6 +1363,8 @@ function parseInput(inputData) {
     socialAvgBaseInput: inputData.socialAvgBaseInput != null ? parseFloat(inputData.socialAvgBaseInput) : null, // 重庆社平覆盖（可为null）
     oneChild: inputData.oneChild === true, // 重庆独生子女标记
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
+    regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
+    tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
 
     // 性别映射到人员类型（支持外部传入，支持中英文）
     // 外部可传：male/fc/fw/fw55；未传入时按gender推断（female→fw）
@@ -1618,7 +1672,11 @@ function calculate(config, inputData) {
       zzBase: zzBaseVal,
       avgIndex: data.avgIndex,
       localPensionYears: data.localPensionYears,
-      pre1992LocalYears: data.pre1992LocalYears
+      pre1992LocalYears: data.pre1992LocalYears,
+      regionCategory: data.regionCategory,
+      baseRetire: retBase,
+      tibetWorkYears: data.tibetWorkYears != null ? data.tibetWorkYears
+        : (sightYears > 0 ? sightYears : actualYears)
     },
     city,
     szModules: config.sz_modules,
@@ -1633,6 +1691,18 @@ function calculate(config, inputData) {
     specialAddition = {
       amount: oneChildAmount,
       description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 3% = ${oneChildAmount.toFixed(2)}元`
+    }
+  }
+
+  // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)
+  // 依据：黔劳社厅发〔2006〕20号；全省独生子女父母退休时按本人基本养老金的5%加发
+  // 由 province 全局开关（special_addition.enabled）控制
+  if (config.province === 'guizhou' && config.modules?.special_addition?.enabled) {
+    const gzBase = basicPension.amount + personalAccount.amount + transPension.amount
+    const gzAmount = Math.round(gzBase * 0.05 * 100) / 100
+    specialAddition = {
+      amount: gzAmount,
+      description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 5% = ${gzAmount.toFixed(2)}元`
     }
   }
 
