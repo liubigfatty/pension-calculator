@@ -144,6 +144,7 @@ base_rates: PROV_BASE,
     
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: true,
+    round_to_jiao: true,
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '⚠️ 2023-2025年基数待官方文件确认',

@@ -1,0 +1,31 @@
+{
+  "case_id": "guangxi-nanning-2025-02",
+  "province": "guangxi",
+  "city": "南宁",
+  "gender": "女",
+  "birth": "1975年02月",
+  "work_start": "1995年07月",
+  "retire_year": 2025,
+  "retire_month": 2,
+  "total_years": 29.67,
+  "sight_years": 0,
+  "actual_years": 29.67,
+  "pre_account_years": 1,
+  "personal_account": 97150.21,
+  "months": 195,
+  "avg_index": 0.7603,
+  "base_number": 6847,
+  "expected": {
+    "basic_pension": 1788.1,
+    "personal_pension": 498.2,
+    "transitional_pension": 72.9,
+    "total": 2359.2
+  },
+  "birth_year": 1975,
+  "birth_month": 2,
+  "work_year": 1995,
+  "work_month": 7,
+  "verified": true,
+  "source": "广西南宁企业参保人员基本养老金核定表（2025-04起发放，2025-02退休）；桂人社规〔2019〕26号。基础1788.1/个人498.2/过渡72.9/合计2359.2。2025年暂用2024年基数6847预发。",
+  "notes": "南宁女工，1975-02生，1995-07参工，2025-02退休(50岁)。无视同，建账前1995-07至1996-07=1年。广西取整：年限保留2位小数（第三位>0进位），待遇见分进角保留1位小数。"
+}
