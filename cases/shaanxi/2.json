@@ -1,28 +1,31 @@
 {
   "case_id": "shaanxi-hanyin-2025-female",
   "province": "shaanxi",
+  "city": "安康市",
   "gender": "女",
   "birth": "1975年05月",
   "work_start": "1993年01月",
   "retire_year": 2025,
   "retire_month": 8,
-  "total_years": 32.67,
+  "total_years": 32.6667,
+  "actual_years": 32.6667,
   "sight_years": 0,
   "personal_account": 141481.48,
   "months": 193.8,
+  "avg_index": 0.773,
+  "base_number": 7727,
+  "base_prov": 7727,
   "expected": {
-    "basic_pension": 2237.89,
+    "basic_pension": 2237.66,
     "personal_pension": 730.04,
     "transitional_pension": 0,
-    "total": 2967.93
+    "total": 2967.7
   },
-  "notes": "陕西汉阴，女1975-05生，1993-01参工(建账1996-01后)，2025-08退休(50岁3月，延迟)。无视同年限。累计32年8月=32.67年。预发核定：2025基数未公布，用2024年基数7727。个人=141481.48/193.8=730.04精确。计发月数193.8(非标，延迟退休调整)。基础=(7727+7727×0.773)/2×32.67×1%=2237.66。",
+  "source": "陕西省企业退休人员基本养老金（预发）核定表（安康市汉阴县，2025-08-01核定）。基础2237.66/个人730.04/过渡0/合计2967.7。",
+  "notes": "陕西汉阴，女1975-05生，1993-01参工并缴费，2025-08正常退休（50岁3月，延迟）。实际缴费32年8月=32.6667年，无视同缴费年限。建账1996-01，建账前年限3年。平均指数0.773，2025年计发基数尚未公布，预发暂用2024年基数7727。计发月数193.8。过渡性养老金=本人指数化月平均工资×视同缴费年限×1.4%，因无视同年限故为0。",
   "birth_year": 1975,
   "birth_month": 5,
   "work_year": 1993,
   "work_month": 1,
-  "avg_index": 0.773,
-  "base_number": 7727,
-  "recalibrated": true,
-  "verified": false
+  "verified": true
 }
