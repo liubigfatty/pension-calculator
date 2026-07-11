@@ -702,7 +702,8 @@ function calcSpecialAddition(params) {
     }
   } else if (mod.type === 'one_child') {
     // 独生子女补贴：全省退休人员人均养老金 × 比例
-    // 云南：云人社发〔2023〕41号，比例 5%
+    // 云南：云劳社〔2002〕76号，比例 5%（需领取《独生子女证》）
+    if (!params?.context?.oneChild) return { amount: 0, description: '非独生子女父母，不享受此补贴' }
     const retireYear = params?.context?.retireYear || 2025;
     const avgPensionData = mod.avgPensionData || {};
     const avgPension = avgPensionData[retireYear] || avgPensionData[2023] || 0;
@@ -1676,7 +1677,7 @@ function calculate(config, inputData) {
       location: data.cityType,
       retireYear: legalDate.year,
       intellectual: data.intellectual,
-      actualYears: actualYears,
+      oneChild: data.oneChild,
       totalWorkYears: totalYears,
       zzBase: zzBaseVal,
       avgIndex: data.avgIndex,
