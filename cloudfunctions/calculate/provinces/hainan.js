@@ -81,7 +81,7 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1998, month: 1 }
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.013  // 海南省过渡系数 1.3%
+const TRANS_COEF = 0.014  // 海南省过渡系数 1.4%（琼府〔2022〕40号）
 
 const PROV_TAG = 'hainan'
 
@@ -133,7 +133,7 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
+    usePreAccountYears: true,  // 海南过渡性养老金使用1997年底前实际缴费年限+视同缴费年限
     cities: CITY_LIST || [],
     cases: cases || [],
     notes: '⚠️ 2023-2025年基数待官方文件确认',
