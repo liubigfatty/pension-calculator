@@ -1,0 +1,31 @@
+{
+  "case_id": "zhongshan",
+  "province": "guangdong",
+  "city": "中山市",
+  "gender": "女",
+  "birth_year": 1970,
+  "birth_month": 2,
+  "work_year": 2007,
+  "work_month": 12,
+  "retire_year": 2025,
+  "retire_month": 4,
+  "avg_index": 0.5241,
+  "total_years": 17.3333,
+  "sight_years": 0,
+  "actual_years": 17.3333,
+  "pre_account_years": 0,
+  "months": 169.5,
+  "personal_account": 66720.85,
+  "base_number": 9307,
+  "city_type": "prov",
+  "new_method_years": 0,
+  "xuzhang": 0,
+  "expected": {
+    "basic_pension": 1127.31,
+    "personal_pension": 393.63,
+    "transitional_pension": 168,
+    "total": 1688.94
+  },
+  "verified": true,
+  "source": "中山社保局核定表(2025-04)；55岁1个月，广东a系数低指数"
+}
