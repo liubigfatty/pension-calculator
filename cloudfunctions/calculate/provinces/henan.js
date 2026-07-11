@@ -62,6 +62,11 @@ const PROV_BASE = {
    2025: 6385,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
+// 洛阳市单独计发基数（2025年洛阳企业计发基数6573元）
+const LUOYANG_BASE = { ...PROV_BASE };
+LUOYANG_BASE[2024] = 6573;  // 2024年洛阳企业在岗职工月平均工资（2025年计发基数）
+LUOYANG_BASE[2025] = 6573;  // 2025年洛阳企业计发基数
+
 // 郑州市单独计发基数（郑州市人社局2024年第5号通告）
 // 2024年基数6757元，与全省6738元相差19元（约0.3%）
 // 历史年份暂用全省基数代替，待补充官方数据
@@ -91,10 +96,10 @@ const CITY_LIST = [
 // ⚠️ 待确认：建账时间（目前按1998-01估算，待官方文件确认）
 // ⚠️ 待确认：视同缴费cutoff时间（目前按1997-12估算，待官方文件确认）
 // TODO：搜索关键词"豫人社规 个人账户建立 1998"或"豫政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1998, month: 1 }
+const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政[2006]29号文，个人账户建账1995-01
 const CUTOFF_DATE   = { year: 1997, month: 12 }
 
-const TRANS_COEF = 0.012  // 河南过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 豫政[2006]29号文：1.3%  // 河南过渡系数固定 1.2%（待官方文件确认）
 // TODO：补充官方文件编号（如：豫政发〔2006〕XX号）
 
 const PROV_TAG = 'henan'
@@ -133,9 +138,13 @@ account_start: ACCOUNT_START,
     base_rates: {
       prov: PROV_BASE,
       zhengzhou: ZHENGZHOU_BASE,
+      luoyang: LUOYANG_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'henan' },
+      transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },
+    },
   }
 }
 

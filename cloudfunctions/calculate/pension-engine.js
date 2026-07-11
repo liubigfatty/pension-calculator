@@ -100,12 +100,12 @@ function calcBasicPension(params) {
   let description
 
   if (mod.formula_type === 'henan') {
-    // 河南特殊：指数化工资 = 退休地计发基数 × 平均缴费指数
-    // 公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
-    const indexSalary = retireBase * avgIndex
-    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
-    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
-  } else if (mod.formula_type === 'chongqing') {
+    // 河南特殊（豫政[2006]29号）：基础养老金 = 省职工月平均工资 × (1 + 全程平均缴费指数) / 2 × 缴费年限 × 1%
+    // 河南基础用全省基数 provBase，过渡用本地基数 retireBase（双基数）
+    const base = provBase != null ? provBase : retireBase
+    const indexSalary = base * avgIndex
+    amount = Math.round((base + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${base.toLocaleString()} + ${base.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
     // 重庆特殊（渝办发〔2006〕205号）：基础 = (社平 + 社平×Q) / 2 × 年限 × 1%
     // A = 上年度全市在岗职工月平均工资，非计发基数；由 params.socialAvgBase 传入
     const socialAvg = params.socialAvgBase || retireBase
@@ -503,7 +503,8 @@ function calcTransitionalPension(params) {
   // 公式：退休地计发基数 × 过渡性指数 × 视同缴费年限 × 系数
   if (mod.formula_type === "henan") {
     const retireBase = params?.retireBase || provBase
-    const indexSalary = retireBase * transIdx
+    const cityBase = params?.cityBase || retireBase
+    const indexSalary = cityBase * transIdx
     const amount = Math.round(indexSalary * effectiveYears * mod.coefficient * 100) / 100
     const desc = `指数化工资${indexSalary.toFixed(2)} × 视同${effectiveYears.toFixed(2)}年 × ${(mod.coefficient * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
     return { amount, description: desc }
@@ -1632,6 +1633,7 @@ function calculate(config, inputData) {
   const transPension = calcTransitionalPension({
     provBase: provBase,
     retireBase: retBase,
+    cityBase: getBase(city, legalDate.year, config),
     sightYears,
     avgIndex: data.avgIndex,
     actualYears,

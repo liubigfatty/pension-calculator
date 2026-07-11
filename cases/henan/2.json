@@ -13,8 +13,8 @@
   "expected": {
     "basic_pension": 2246.71,
     "personal_pension": 399.55,
-    "transitional_pension": 0,
-    "total": 2646.26
+    "transitional_pension": 468.89,
+    "total": 3115.15
   },
   "notes": "河南省信阳市，2025年10月退休。全省基数6738，信阳当地基数6260。视同111月=9.25年。",
   "birth_year": 1965,
