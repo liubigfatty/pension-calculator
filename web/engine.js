@@ -1193,17 +1193,21 @@ function getBase(city, year, config, sourceField = 'base_rates') {
 
   const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
-  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
-  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
-  // 城市有独立数据且与全省同步更新时，优先使用城市基数（如湖北十堰）
+  // 2.1 计发基数外推规则（全省/城市统一执行）
+  // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
+  // - 退休年 > 数据最大年+1：远期退休，按 GROWTH_RATE 统一前推最后已知基数（与数据范围内外推一致）
   const lastCityYear = cityKeys[cityKeys.length - 1]
   const lastProvYear = provKeys[provKeys.length - 1]
   const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
   if (year > lastYear) {
-    if (cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear) {
-      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
+    if (year === lastYear + 1) {
+      // 预发年：用上年（数据最大年）基数原值
+      return baseVal
     }
-    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+    const diff = year - lastYear
+    return Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100
   }
 
 
