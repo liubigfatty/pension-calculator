@@ -27,17 +27,18 @@
 │           │  统一 JSON 参数       │                      │
 │           ▼                       ▼                      │
 │  ┌──────────────────────────────────────────┐           │
-│  │     pension-engine.js (统一计算引擎)       │           │
+│  │     engine/pension-engine.js (统一计算引擎·唯一真相源) │           │
 │  └──────────────────┬───────────────────────┘           │
 │                     │                                    │
 ├─────────────────────┼────────────────────────────────────┤
 │                     ▼                                    │
 │  ┌──────────────────────────────────────────┐           │
-│  │  provinces/ (省份配置文件)                 │           │
-│  │  ├── jilin.json                           │           │
-│  │  ├── liaoning.json                       │           │
-│  │  └── heilongjiang.json                   │           │
+│  │  cloudfunctions/calculate/provinces/       │           │
+│  │  (省份配置·唯一真相源：.js 为加载源, .json 为镜像) │
+│  │  ├── heilongjiang.js  ← 改数据只动这里     │           │
+│  │  └── heilongjiang.json (镜像, 须同步)     │           │
 │  └──────────────────────────────────────────┘           │
+│  ⚠️ 其余 provinces 副本/快照已归档至 archive/，禁止手改 │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -95,8 +96,8 @@ git push -u origin main
 
 ### 新增省份配置
 
-1. 复制 `provinces/jilin.json` 为 `provinces/{new_province}.json`
-2. 修改配置中的省份名称、基数数据、记账利率等
+1. 复制 `cloudfunctions/calculate/provinces/jilin.js`(+`.json` 镜像) 为 `{new_province}.js/.json`
+2. 修改配置中的省份名称、基数数据、记账利率等（保持注释/文号，2026 未公布不写值）
 3. 在 `engine/pension-engine.js` 中注册新省份（如需要）
 4. 更新 `PRD.md` 中的省份覆盖列表
 
@@ -114,35 +115,25 @@ node test_{province}.js
 ## 项目结构
 
 ```
-养老金计算平台/
-├── engine/                     # 计算引擎
-│   └── pension-engine.js       # 统一计算引擎
-├── provinces/                  # 省份配置
-│   ├── jilin.json
-│   ├── liaoning.json
-│   └── heilongjiang.json
-├── miniprogram/                # 微信小程序
-│   ├── app.js / app.json
-│   ├── pages/
-│   │   ├── index/              # 首页
-│   │   ├── pension/            # 养老金测算
-│   │   ├── result/             # 结果展示
-│   │   └── retire-age/         # 退休年龄查询
-│   └── utils/
-├── website/                    # 网页端
-│   ├── index.html
-│   ├── pension.html
-│   ├── retire-age.html
-│   ├── css/
-│   ├── js/
-│   └── provinces/
-├── tests/                      # 测试
-│   ├── test-engine.js
-│   └── cross-validate.js
-├── research/                   # 政策调研
-├── ui-spec/                    # UI 规范
-├── PRD.md                      # 产品需求文档
-└── README.md                   # 项目说明
+养老金计算平台/  (git: pension-calculator; 分支 main / ai-mode / gh-pages)
+├── engine/
+│   └── pension-engine.js       # ★ 计算引擎唯一真相源 (run-cases 用)
+├── cloudfunctions/
+│   └── calculate/
+│       ├── pension-engine.js   # 引擎部署副本(由 engine/ 同步)
+│       └── provinces/          # ★ 省份数据唯一真相源 (.js 加载 / .json 镜像, 62文件)
+├── miniprogram/                # 小程序1：养老金测算
+├── index-mini/                 # 小程序2：缴费指数 (+ ai/ AI能力, 仅 ai-mode 分支)
+├── web/                        # GitHub 网站 (对应 gh-pages 分支, 引擎+省份打包)
+├── cases/                      # 案例库 (验证 expected 来源)
+├── scripts/                    # 工具脚本 (run-cases.js 为验证入口)
+├── docs/                       # 文档/手册 (00-项目管理手册/项目手册-原则与实现.md 为权威口径)
+├── data/                       # 公共数据/政策原始材料
+├── research/  src/  tests/  reports/  css/  assets/
+├── archive/                    # 归档区(gitignore): 过期副本/散落脚本/会话备份, 禁止当活代码
+└── 根: README/PRD/STATUS/CHANGELOG/VERSION/项目配置/各类报告.md
+⚠️ 唯一真相源只有 engine/pension-engine.js 与 cloudfunctions/calculate/provinces/；
+   其余 provinces 副本 / 前端快照 / 旧站 均已归档或自动生成，禁止手改。
 ```
 
 ## 政策依据

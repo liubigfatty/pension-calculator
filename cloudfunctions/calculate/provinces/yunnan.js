@@ -2,7 +2,22 @@
 // 2024年计发基数：7177元/月
 // 更新时间：2026-06-18
 
-// data/provinces/yunnan.js
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/yunnan.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
 // 云南省养老金计算数据模块
 
 // 全省历年计发基数（元/月）
@@ -276,8 +291,8 @@ const AVG_SALARY_HISTORY = {
   2021: 6622,
   2022: 6906,
   2023: 7177,
-  2024: 8183,
-  2025: 8183,  // 2025年计发基数尚未公布，预发暂用2024年基数8183
+  2024: 7263,
+  2025: 7427,  // 2025年计发基数尚未公布，预发暂用2024年基数8183
 };
 
 

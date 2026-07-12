@@ -28,3 +28,11 @@ reports/
 
 # 微信开发者工具本地私有配置（不入库）
 index-mini/project.private.config.json
+
+# 归档区：过期副本/散落脚本/会话备份集中存放，禁止被误当活代码
+archive/
+_gd_old_archive/
+
+# 会话临时备份目录（不入库，已移入 archive/）
+backup_*/
+**/backup_*/
