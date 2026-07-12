@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>16省过渡养老金失败 · 诊断报告</title>
+<style>
+body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#f6f7f9;color:#1f2937;margin:0;padding:24px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;max-width:960px;margin:0 auto;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+h1{font-size:20px;margin:0 0 4px}
+h2{font-size:16px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #eef2f7}
+.sub{color:#6b7280;font-size:13px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #f0f0f0}
+th{background:#fafafa;color:#374151;font-weight:600}
+.ok{color:#047857;font-weight:600}
+.bad{color:#dc2626;font-weight:600}
+.warn{color:#b45309;font-weight:600}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;font-size:13px;color:#92400e;margin:12px 0}
+.key{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;font-size:13px;color:#991b1b;margin:12px 0}
+.opt{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;font-size:13px;color:#1e40af;margin:10px 0}
+code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>16省过渡养老金失败 · 诊断报告</h1>
+<div class="sub">生成于 2026-07-10 ｜ 基于 run-cases 全量171例 + 官网逐省核实 + 重庆麻雀案例反推</div>
+
+<div class="key">
+<b>核心结论（与直觉相反）：</b>这16省 cases 失败，<b>根因不只是引擎系数/公式错，更是 cases 库自身的 expected 基准口径混乱</b>。
+官网查完16省系数后证实——浙江/广东/四川系数本就对，却仍失败；重庆反推更暴露同省 cases 混用 sight/pre 两种年限口径。
+<b>单改引擎去迁就一个脏基准，会越改越乱。</b>
+</div>
+
+<h2>一、官网系数核对（16省，3个 Agent 逐省搜官方文件）</h2>
+<table>
+<thead><tr><th>省</th><th>引擎当前系数</th><th>官网官方系数</th><th>系数状态</th><th>来源文件</th></tr></thead>
+<tbody>
+<tr><td>重庆</td><td>0.014 ✅(已改)</td><td>1.4%</td><td class="ok">对</td><td>渝办发〔2006〕205号</td></tr>
+<tr><td>广西</td><td>未知</td><td>1.4%</td><td class="bad">缺</td><td>广西人社厅/财政厅2020</td></tr>
+<tr><td>贵州</td><td>0.013</td><td>1.4%</td><td class="bad">错</td><td>黔府发〔2006〕21号</td></tr>
+<tr><td>海南</td><td>0.013</td><td>1.4%</td><td class="bad">错</td><td>海南省社保中心2023</td></tr>
+<tr><td>河北</td><td>0.012</td><td>1.3%</td><td class="bad">错</td><td>冀劳社〔2006〕67号</td></tr>
+<tr><td>河南</td><td>0.012</td><td>1.3%</td><td class="bad">错</td><td>豫劳社养老〔2006〕26号</td></tr>
+<tr><td>辽宁</td><td>未知</td><td>1.4%</td><td class="bad">缺</td><td>辽人社厅2024</td></tr>
+<tr><td>内蒙</td><td>未知</td><td>1.2%</td><td class="bad">缺</td><td>内政办字〔2006〕253号</td></tr>
+<tr><td>陕西</td><td>未知</td><td>1.4%</td><td class="bad">缺</td><td>陕政发〔2006〕27号</td></tr>
+<tr><td>山西</td><td>未知</td><td>1.3%</td><td class="bad">缺</td><td>晋政发〔2006〕32号</td></tr>
+<tr><td>四川</td><td>0.013</td><td>1.3%</td><td class="ok">对</td><td>川劳社发〔2006〕17号</td></tr>
+<tr><td>天津</td><td>未知</td><td>1.0%</td><td class="bad">缺</td><td>津劳局〔2006〕329号</td></tr>
+<tr><td>新疆</td><td>未知</td><td>1.3%</td><td class="bad">缺</td><td>新政发〔2006〕59号</td></tr>
+<tr><td>云南</td><td>未知</td><td>1.3%</td><td class="bad">缺</td><td>云政发〔2006〕139号</td></tr>
+<tr><td>浙江</td><td>0.014</td><td>1.4%</td><td class="ok">对</td><td>浙政发〔2015〕25号</td></tr>
+<tr><td>广东</td><td>0.012</td><td>1.2%</td><td class="ok">对</td><td>粤府函〔2021〕294号</td></tr>
+</tbody>
+</table>
+<div class="note">系数查完只是排除了"系数错"这个假设。<b>浙江/广东/四川系数早对却仍失败</b>，证明真正问题在公式里的<b>年限范围/指数口径/特殊公式实现</b>，不在系数。</div>
+
+<h2>二、失败差异方向分布（按省）</h2>
+<table>
+<thead><tr><th>省</th><th>失败数</th><th>实际偏高</th><th>实际偏低</th><th>预期0但实际&gt;0</th></tr></thead>
+<tbody>
+<tr><td>chongqing</td><td>4</td><td>2</td><td>0</td><td>2</td></tr>
+<tr><td>guangdong</td><td>6</td><td>4</td><td>2</td><td>0</td></tr>
+<tr><td>guangxi</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td>guizhou</td><td>2</td><td>2</td><td>0</td><td>0</td></tr>
+<tr><td>hainan</td><td>4</td><td>4</td><td>0</td><td>0</td></tr>
+<tr><td>hebei</td><td>4</td><td>3</td><td>0</td><td>1</td></tr>
+<tr><td>henan</td><td>6</td><td>1</td><td>5</td><td>0</td></tr>
+<tr><td>liaoning</td><td>5</td><td>1</td><td>4</td><td>0</td></tr>
+<tr><td>neimenggu</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+<tr><td>shaanxi</td><td>2</td><td>1</td><td>1</td><td>0</td></tr>
+<tr><td>shanxi</td><td>4</td><td>1</td><td>3</td><td>0</td></tr>
+<tr><td>sichuan</td><td>4</td><td>0</td><td>0</td><td>4</td></tr>
+<tr><td>tianjin</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
+<tr><td>xinjiang</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+<tr><td>yunnan</td><td>5</td><td>5</td><td>0</td><td>0</td></tr>
+<tr><td>zhejiang</td><td>6</td><td>5</td><td>1</td><td>0</td></tr>
+</tbody>
+</table>
+<div class="warn">差异方向混合（有的实际偏高、有的偏低、有的预期0实际却&gt;0），说明各省公式/口径错综复杂，绝非"统一调系数"能解决。</div>
+
+<h2>三、重庆麻雀：cases 库基准本身口径混乱（决定性证据）</h2>
+<table>
+<thead><tr><th>案例</th><th>sight(视同)</th><th>pre_account(建账前)</th><th>expected过渡</th><th>反推用的年限</th><th>口径</th></tr></thead>
+<tbody>
+<tr><td>chongqing/1</td><td>13.33</td><td>16.17</td><td>1514.35</td><td>13.33（sight）</td><td class="bad">漏建账前实际2.83年</td></tr>
+<tr><td>chongqing/2</td><td>0</td><td>13.00</td><td>0</td><td>—（填0占位）</td><td class="bad">漏全部建账前13年</td></tr>
+<tr><td>chongqing/3</td><td>0</td><td>—</td><td>0</td><td>—（填0占位）</td><td class="bad">漏建账前年限</td></tr>
+<tr><td>chongqing/5</td><td>0</td><td>0.25</td><td>24.08</td><td>0.25（pre）</td><td class="ok">对（建账前）</td></tr>
+</tbody>
+</table>
+<p class="sub">官网重庆口径（渝办发〔2006〕205号）=「建立个人账户前缴费年限」= pre_account（含视同+建账前实际）。引擎按此算：case5✅、case4✅；case1/2/3/fc 的 expected 是脏值（case1 用 sight 漏 2.83 年、case2/3 的 sight=0 直接填 0）。<b>同省4个案例，expected 混用 sight / pre / 0占位三种口径——基准本身就是乱的。</b></p>
+
+<div class="key">
+<b>推论：</b>cases 库 = 官方核定值 + 早期「verify --update 把引擎输出写回 expected」的回填值混合体（git 提交 <code>1269a37</code> 佐证）。部分案例后来重标定成官方值，但重标定不彻底，留下口径不一的脏数据。
+我上一轮把重庆引擎改成「用 sight」只是凑巧让 case1 过了、却把 case5 搞错——这正是「用脏基准指导改引擎」的典型陷阱。
+</div>
+
+<h2>四、根因定论</h2>
+<ul>
+<li><b>引擎侧：</b>多数省过渡系数确实偏低/缺失（见上表），且广东/四川/浙江/重庆等省有专用公式分支，年限字段与指数口径需逐省核对官网。</li>
+<li><b>基准侧（更关键）：</b>cases 库的 expected 口径不统一、含占位脏值，<b>不能直接当"官方真值"去对齐引擎</b>。否则改一个案例对、改乱另一个。</li>
+</ul>
+
+<h2>五、下一步方案（请你拍板）</h2>
+<div class="opt"><b>A. 重建干净基准（推荐）</b>：以官网官方口径为准，用引擎（或独立公式）批量重算全部171例的 expected，生成统一口径的干净基准，再逐省把引擎系数/公式对齐到新基准。彻底，但要改写 cases 的 expected 数据。</div>
+<div class="opt"><b>B. 先挑脏数据修正</b>：只修正明显错误的 cases（sight=0 却填 0 占位、同省混用 sight/pre 的），再对齐引擎。范围小，但仍要改 cases。</div>
+<div class="opt"><b>C. 你给权威原表</b>：你提供各省官方核定表的原始数据（像黑龙江那张表），我重新录入 expected，避免"重算"带来的二次误差。</div>
+<div class="note">无论选哪条，引擎系数都已按官网查到的正确值保留（重庆已改 1.4%、其余省缺/错的系数我列在表一，待你确认后统一写入）。当前 cases 全量：112 过 / 60 败。</div>
+</div>
+</body>
+</html>

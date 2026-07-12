@@ -9,7 +9,7 @@
  *
  * 使用方式：
  *   const engine = require('./pension-engine')
- *   const config = require('../data/provinces/jilin.json')
+ *   const config = require('../cloudfunctions/calculate/provinces/jilin.json')
  *   const result = engine.calculate(config, inputData)
  */
 
@@ -518,6 +518,18 @@ function calcTransitionalPension(params) {
     const indexSalary = cityBase * transIdx
     const amount = Math.round(indexSalary * effectiveYears * mod.coefficient * 100) / 100
     const desc = `指数化工资${indexSalary.toFixed(2)} × 视同${effectiveYears.toFixed(2)}年 × ${(mod.coefficient * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    return { amount, description: desc }
+  }
+
+  // 湖北特殊公式：省内多城市独立计发基数，过渡性养老金使用退休地计发基数
+  // 公式：退休地计发基数 × 过渡性指数 × 视同缴费年限 × 1.2%
+  if (mod.formula_type === "hubei") {
+    const retireBase = params?.retireBase || provBase
+    const hubeiTransIdx = (mod && mod.index_floor_one) ? Math.max(transIdx, 1) : transIdx
+    const indexSalary = retireBase * hubeiTransIdx
+    const hubeiCoef = mod.coefficient != null ? mod.coefficient : 0.012
+    const amount = Math.round(indexSalary * effectiveYears * hubeiCoef * 100) / 100
+    const desc = `视同${effectiveYears.toFixed(2)}年 × 退休地计发基数${retireBase.toLocaleString()} × 指数${hubeiTransIdx.toFixed(2)} × 系数${(hubeiCoef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
     return { amount, description: desc }
   }
 
@@ -1177,16 +1189,21 @@ function getBase(city, year, config, sourceField = 'base_rates') {
 
   const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
-  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
-  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  // 2.1 计发基数外推规则（全省/城市统一执行）
+  // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
+  // - 退休年 > 数据最大年+1：远期退休，按 GROWTH_RATE 统一前推最后已知基数（与数据范围内外推一致）
   const lastCityYear = cityKeys[cityKeys.length - 1]
   const lastProvYear = provKeys[provKeys.length - 1]
   const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
   if (year > lastYear) {
-    if (lastCityYear > lastProvYear) {
-      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
+    if (year === lastYear + 1) {
+      // 预发年：用上年（数据最大年）基数原值
+      return baseVal
     }
-    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+    const diff = year - lastYear
+    return Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100
   }
 
 

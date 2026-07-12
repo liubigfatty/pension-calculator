@@ -1,10 +1,25 @@
-// 数据来源：❌ 2024年未公布，使用2025年数据
-// 2024年计发基数：6665元/月
-// 更新时间：2026-06-10
+// 数据来源：湖北各地市养老金计发基数官方公布/权威汇总
+// 2024/2025年各地市基数取自用户提供的全省汇总表（2026-07-11）
+// 2025年省直/武汉计发基数=9112元/月，2024年=9022元/月
+// 湖北为省内多城市分别确定计发基数，需使用城市键查询。
 
-// data/provinces/hubei.js
-// 湖北省养老金计算数据模块（框架版，待补充官方数据）
-// TODO：补充官方计发基数、过渡系数、建账时间等
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/hubei.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 湖北省养老金计算数据模块（多城市计发基数版）
 
 const PROV_BASE = {
   1978: 706,
@@ -49,40 +64,93 @@ const PROV_BASE = {
   2017: 4737,
   2018: 4974,
   2019: 5222,
-  2020: 5483,
-  2021: 5757,
-  2022: 6045,
-  2023: 6730,
+  2020: 7753,
+  2021: 8125,
+  2022: 8531,
+  2023: 8880,
   2024: 9022,
-   2025: 7496,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
+  2025: 9112,  // 武汉/省直2025年计发基数（一档城市）
+};
+
+// 湖北第二档城市：宜昌、黄石、十堰、襄阳、恩施、荆门、随州
+const TIER2_BASE = {
+  yichang:   { 2024: 7232, 2025: 7424 },
+  huangshi:  { 2024: 7048, 2025: 7347 },
+  shiyan:    { 2024: 7079, 2025: 7340 },
+  xiangyang: { 2024: 7141, 2025: 7325 },
+  enshi:     { 2024: 6989, 2025: 7309 },
+  jingmen:   { 2024: 6957, 2025: 7309 },
+  suizhou:   { 2024: 7079, 2025: 7304 },
+  // 中文键兼容
+  宜昌: { 2024: 7232, 2025: 7424 },
+  黄石: { 2024: 7048, 2025: 7347 },
+  十堰: { 2024: 7079, 2025: 7340 },
+  襄阳: { 2024: 7141, 2025: 7325 },
+  恩施: { 2024: 6989, 2025: 7309 },
+  恩施州: { 2024: 6989, 2025: 7309 },
+  荆门: { 2024: 6957, 2025: 7309 },
+  随州: { 2024: 7079, 2025: 7304 },
+};
+
+// 湖北第三档城市：潜江、仙桃、天门、鄂州、咸宁、孝感、黄冈、神农架、荆州
+const TIER3_BASE = {
+  qianjiang:   { 2024: 6954, 2025: 7320 },
+  xiantao:     { 2024: 6954, 2025: 7301 },
+  tianmen:     { 2024: 6896, 2025: 7277 },
+  ezhou:       { 2024: 6955, 2025: 7275 },
+  xianning:    { 2024: 6958, 2025: 7257 },
+  xiaogan:     { 2024: 6871, 2025: 7238 },
+  huanggang:   { 2024: 6816, 2025: 7221 },
+  shennongjia: { 2024: 6810, 2025: 7215 },
+  jingzhou:    { 2024: 6826, 2025: 7210 },
+  // 中文键兼容
+  潜江:   { 2024: 6954, 2025: 7320 },
+  仙桃:   { 2024: 6954, 2025: 7301 },
+  天门:   { 2024: 6896, 2025: 7277 },
+  鄂州:   { 2024: 6955, 2025: 7275 },
+  咸宁:   { 2024: 6958, 2025: 7257 },
+  孝感:   { 2024: 6871, 2025: 7238 },
+  黄冈:   { 2024: 6816, 2025: 7221 },
+  神农架: { 2024: 6810, 2025: 7215 },
+  神农架林区: { 2024: 6810, 2025: 7215 },
+  荆州:   { 2024: 6826, 2025: 7210 },
+};
+
+// 湖北缴费基数月标准（全口径社平）分档参考 —— 仅备查，引擎 AVG_SALARY_HISTORY 仍用第一档(武汉/省直)序列
+// 注：缴费基数月标准(年度Y) = 全口径社平(社平年Y-1)；故 2024年度→社平年2023，2025年度→社平年2024
+// 数据来源：用户提供的2025年全省汇总明细（2026-07-12）
+const CONTRIB_BASE_TIERS = {
+  2023: { tier1: 7489, tier2: 6948, tier3: 6805 }, // 2024年度缴费基数月标准：第一档(武汉/省直) / 第二档 / 第三档
+  2024: { tier1: 7496, tier2: 7226, tier3: 7154 }, // 2025年度缴费基数月标准
+  // 2025: { tier1: ?, tier2: ?, tier3: ? }, // 2026年度缴费基数月标准(=社平年2025全口径)待官方公布
+};
 
 const BASE_PARAMS = {
-  
   PROV_GROWTH: 0.03,
   MERGE_YEAR: 2031,
-  PROV_2025: 7496,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+  PROV_2025: 9112,  // 武汉/省直2025年计发基数
+};
 
 const CITY_LIST = [
   '武汉市', '黄石市', '十堰市', '宜昌市', '襄阳市',
   '鄂州市', '荆门市', '孝感市', '荆州市', '黄冈市',
-  '咸宁市', '随州市', '恩施州',
-]
+  '咸宁市', '随州市', '恩施州', '潜江市', '仙桃市',
+  '天门市', '神农架林区',
+];
 
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-const TRANS_COEF = 0.012
-const PROV_TAG = 'hubei'
+const ACCOUNT_START = { year: 1998, month: 1 };
+const CUTOFF_DATE   = { year: 1997, month: 12 };
+const TRANS_COEF = 0.012;
+const PROV_TAG = 'hubei';
 
-const MODULES = ['base', 'personal', 'transition']
+const MODULES = ['base', 'personal', 'transition'];
 const MODULE_LABELS = {
   base:        '基础养老金',
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
-}
+};
 
-const cases = []
+const cases = [];
 
 
 // 历年社平工资（元/月）—— 用于个人账户余额精确计算
@@ -94,7 +162,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'hubei' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -103,22 +171,23 @@ function getEngineConfig() {
   }
 
   return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
+    avg_salary_history: AVG_SALARY_HISTORY,
+    account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
-
     province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
+    base_rates: {
+      prov: PROV_BASE,
+      ...TIER2_BASE,
+      ...TIER3_BASE,
+    },
+    avg_salary_history: AVG_SALARY_HISTORY,
+    modules: modules,
+    contrib_base_tiers: CONTRIB_BASE_TIERS,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '湖北过渡系数1.2%（与江苏/甘肃/黑龙江一致，鄂政发〔2006〕42号）；预发表使用退休地上年计发基数。',
-  }
+    notes: '湖北过渡系数1.2%（鄂政发〔2006〕42号）；省内各地市独立计发基数，预发表使用退休地上年计发基数。',
+  };
 }
 
 
@@ -145,12 +214,12 @@ const AVG_SALARY_HISTORY = {
   2017: 6640,
   2018: 7361,
   2019: 8170,
-  2020: 5925.83,
-  2021: 8206.92,
-  2022: 8609,
-  2023: 9177.83,
-  2024: 9022,
-  2025: 7496,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2020: 6233,
+  2021: 6795,
+  2022: 7040,
+  2023: 7489,
+  2024: 7496,
+  // 2025: 官方全口径未公布，交由引擎预发年规则外推(=2024原值)，公布后再填
 };
 
 

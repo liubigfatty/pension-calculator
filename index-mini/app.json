@@ -11,23 +11,4 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
-,
-  "lazyCodeLoading": "requiredComponents",
-  "subPackages": [
-    {
-      "root": "ai",
-      "independent": true,
-      "pages": []
-    }
-  ],
-  "agent": {
-    "skills": [
-      {
-        "name": "pensionIndexCalc",
-        "description": "计算本人平均缴费工资指数与个人账户余额",
-        "path": "ai/pension-index-skill"
-      }
-    ],
-    "instruction": "AGENTS.md"
-  }
 }

@@ -1,0 +1,23 @@
+{
+  "case_id": "hubei-shiyan-2026",
+  "province": "hubei",
+  "gender": "女",
+  "birth": "1974年07月",
+  "work_start": "2011年07月",
+  "retire_year": 2026,
+  "retire_month": 6,
+  "total_years": 15,
+  "sight_years": 0,
+  "personal_account": 50643,
+  "months": 185.4,
+  "avg_index": 0.5841,
+  "city_type": "shiyan",
+  "expected": {
+    "basic_pension": 872.05,
+    "personal_pension": 273.16,
+    "transitional_pension": 0,
+    "total": 1145.21
+  },
+  "notes": "湖北十堰（第二档城市），2026年6月退休，女性，累计缴费15年。2025年十堰计发基数7340；因2026年基数尚未公布，按上年基数预发。计发月数185.4对应51岁11个月。该表为官方核定表。",
+  "verified": true
+}

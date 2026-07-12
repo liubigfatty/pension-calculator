@@ -1,0 +1,26 @@
+{
+  "case_id": "hubei-jingzhou-hangyetongchou-2026-04",
+  "province": "hubei",
+  "city_type": "荆州",
+  "gender": "男",
+  "birth_year": 1966,
+  "birth_month": 4,
+  "work_year": 1984,
+  "work_month": 10,
+  "retire_year": 2026,
+  "retire_month": 4,
+  "avg_index": 0.8463,
+  "personal_account": 90001.62,
+  "months": 139,
+  "total_years": 41.5833,
+  "account_start": { "year": 1998, "month": 12 },
+  "expected": {
+    "basic_pension": 2767.53,
+    "personal_pension": 647.49,
+    "transitional_pension": 1037.55,
+    "total": 4452.57
+  },
+  "verified": true,
+  "source": "湖北荆州某地养老保险待遇计算表（行业统筹企业，1998年12月统账）",
+  "note": "行业统筹企业统账时间晚于湖北普通企业1996年1月，视同缴费年限因此多约2年11个月。"
+}
