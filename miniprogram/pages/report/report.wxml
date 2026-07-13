@@ -1,3 +1,4 @@
+<!-- report.wxml · 动态版（数据全部由 report.js 从引擎结果实时计算） -->
 <view class="report-wrap">
   <view class="loading" wx:if="{{isLoading}}"><text>加载报告中...</text></view>
 
@@ -8,7 +9,6 @@
       <view class="hero-inner">
         <text class="hero-label">每月可领取养老金</text>
         <view class="hero-amount-row">
-          <text class="hero-symbol">¥</text>
           <text class="hero-amount">{{legalTotalStr}}</text>
         </view>
         <view class="hero-tags">
@@ -19,7 +19,7 @@
       <view class="hero-glow"></view>
     </view>
 
-    <!-- ===== 模块1：退休画像 ===== -->
+    <!-- ===== 模块1：个人退休画像 ===== -->
     <view class="section">
       <view class="section-header" bindtap="toggleSection" data-key="profile">
         <text class="section-num">1</text>
@@ -40,7 +40,7 @@
       </view>
     </view>
 
-    <!-- ===== 模块2：方案对比 ===== -->
+    <!-- ===== 模块2：方案深度对比 ===== -->
     <view class="section">
       <view class="section-header" bindtap="toggleSection" data-key="comparison">
         <text class="section-num">2</text>
@@ -73,7 +73,7 @@
       </view>
     </view>
 
-    <!-- ===== 模块3：累计领取对比 ===== -->
+    <!-- ===== 模块3：累计领取对比（仅弹性提前有数据时显示） ===== -->
     <view class="section" wx:if="{{cumulativeItems.length > 0}}">
       <view class="section-header" bindtap="toggleSection" data-key="cumulative">
         <text class="section-num">3</text>
@@ -85,7 +85,7 @@
           <view class="tr header"><text class="td name">领到年龄</text><text class="td num">正常退休</text><text class="td num early-color">弹性提前</text><text class="td num">差额</text></view>
           <view wx:for="{{cumulativeItems}}" wx:key="age">
             <view class="tr {{item.isNormalStart ? 'normal-start' : ''}} {{item.isBreakEven ? 'breakeven' : ''}}">
-              <text class="td name">{{item.age}}岁{{item.isNormalStart ? '（正常起领）' : ''}}</text>
+              <text class="td name">{{item.ageLabel || item.age + '岁'}}</text>
               <text class="td num">¥{{item.legalTotal}}</text>
               <text class="td num early-color">¥{{item.flexTotal}}</text>
               <text class="td num" style="{{item.isBreakEven ? 'color:#8B7355;font-weight:600' : (item.diff.indexOf('+')===0 ? 'color:#4A8C5C' : 'color:#D85A30')}}">{{item.diff}}</text>
@@ -96,7 +96,7 @@
       </view>
     </view>
 
-    <!-- ===== 模块4：退休建议 ===== -->
+    <!-- ===== 模块4：退休策略建议（动态：企业职工 / 灵活就业） ===== -->
     <view class="section">
       <view class="section-header" bindtap="toggleSection" data-key="advice">
         <text class="section-num">4</text>
@@ -105,30 +105,12 @@
       </view>
       <view class="section-body" wx:if="{{showSection.advice}}">
 
-        <!-- 企业职工版 -->
+        <!-- 企业职工版：结构化卡片 -->
         <view wx:if="{{adviceType == 'worker'}}">
-          <view class="advice-card blue">
-            <text class="advice-title">企业职工退休分析</text>
-            <text class="advice-text">正常退休月养老金 <text class="highlight">{{legalTotalStr}}</text>，弹性提前 <text class="highlight">{{flexTotalStr}}</text>，每月差额约<text class="highlight">¥{{diffMonthly}}</text>元。</text>
-          </view>
-
-          <view class="feature-section">
-            <text class="feature-title">关键差异分析</text>
-            <view class="feature-item">
-              <text class="feature-label">工资收入</text>
-              <text class="feature-desc">正常退休多领约<text class="highlight">¥{{salary3year}}</text>元工资（按缴费基数估算），弹性提前退休后无工资收入</text>
-            </view>
-            <view class="feature-item">
-              <text class="feature-label">住房公积金</text>
-              <text class="feature-desc">正常退休继续缴存，单位和个人合计约<text class="highlight">¥{{fund3year}}</text>；弹性提前退休停缴</text>
-            </view>
-            <view class="feature-item">
-              <text class="feature-label">医疗保险</text>
-              <text class="feature-desc">{{medicareLabel}}职工医保缴费年限要求约{{medicareRequirement}}年（{{medicareYears}}年已{{medicareMet ? '满足' : '不足'}}），弹性提前退休后可直接享受退休医保待遇，无需补缴</text>
-            </view>
-            <view class="feature-item" wx:if="{{breakEvenAge > 0}}">
-              <text class="feature-label">盈亏平衡</text>
-              <text class="feature-desc">约<text class="highlight">{{breakEvenAge}}岁</text>前弹性提前累计领取更高，此后正常退休反超</text>
+          <view class="advice-points">
+            <view class="advice-point" wx:for="{{workerAdvicePoints}}" wx:key="title">
+              <text class="advice-point-title">{{item.title}}</text>
+              <text class="advice-point-desc">{{item.desc}}</text>
             </view>
           </view>
 
@@ -137,30 +119,12 @@
           </view>
         </view>
 
-        <!-- 灵活就业版 -->
+        <!-- 灵活就业版：结构化卡片 -->
         <view wx:if="{{adviceType == 'flexible'}}">
-          <view class="advice-card green">
-            <text class="advice-title">灵活就业退休分析</text>
-            <text class="advice-text">全部保费自费（费率20%），提前退休经济账：少缴保费约<text class="highlight">¥{{savePremium}}</text>元 + 早领养老金约<text class="highlight">¥{{earlyPension}}</text>元，合计好处约<text class="highlight">¥{{totalEarlyBenefit}}</text>元。</text>
-          </view>
-
-          <view class="feature-section">
-            <text class="feature-title">关键差异分析</text>
-            <view class="feature-item">
-              <text class="feature-label">保费节省</text>
-              <text class="feature-desc">弹性提前退休约省下<text class="highlight">¥{{savePremium}}</text>元保费（全自费20%，3年少缴）</text>
-            </view>
-            <view class="feature-item">
-              <text class="feature-label">早领养老金</text>
-              <text class="feature-desc">提前领取约<text class="highlight">{{earlyMonths}}</text>个月，多领约<text class="highlight">¥{{earlyPension}}</text>元</text>
-            </view>
-            <view class="feature-item">
-              <text class="feature-label">回本分析</text>
-              <text class="feature-desc">合计好处约<text class="highlight">¥{{totalEarlyBenefit}}</text>元，正常退休每月多领<text class="highlight">¥{{diffMonthly}}</text>元，需约<text class="highlight">{{paybackYears}}</text>年追平</text>
-            </view>
-            <view class="feature-item" wx:if="{{medicareYears > 0}}">
-              <text class="feature-label">医疗保险</text>
-              <text class="feature-desc">{{medicareLabel}}职工医保缴费年限要求约{{medicareRequirement}}年（{{medicareYears}}年），弹性提前退休后可直接享受退休医保待遇</text>
+          <view class="advice-points green">
+            <view class="advice-point" wx:for="{{flexibleAdvicePoints}}" wx:key="title">
+              <text class="advice-point-title">{{item.title}}</text>
+              <text class="advice-point-desc">{{item.desc}}</text>
             </view>
           </view>
 
@@ -191,7 +155,7 @@
     </view>
 
     <!-- ===== 模块5：缴费优化建议 ===== -->
-    <view class="section" wx:if="{{showSection.optimization}}">
+    <view class="section">
       <view class="section-header" bindtap="toggleSection" data-key="optimization">
         <text class="section-num">5</text>
         <text class="section-title">缴费优化建议</text>
@@ -199,10 +163,11 @@
       </view>
       <view class="section-body" wx:if="{{showSection.optimization}}">
 
-        <!-- 企业职工版 -->
+        <!-- 企业职工版：优化点 + 指数表 -->
         <view wx:if="{{adviceType == 'worker'}}">
-          <view class="advice-card blue" style="margin-bottom:8px">
-            <text class="advice-text">企业职工社保由单位依法缴纳，缴费基数按本人实际工资确定。建议确认单位是否按照实际工资足额申报，避免低基数缴费影响未来待遇。</text>
+          <view class="advice-point blue" wx:if="{{optimizationPoint}}">
+            <text class="advice-point-title">{{optimizationPoint.title}}</text>
+            <text class="advice-point-desc">{{optimizationPoint.desc}}</text>
           </view>
         </view>
 
@@ -211,16 +176,16 @@
           <text class="calc-desc" style="margin-bottom:8px">灵活就业可自主选择缴费档次，不同指数对养老金的影响如下（基于当前缴费年限估算）：</text>
           <view class="data-table">
             <view class="tr header"><text class="td name">缴费指数</text><text class="td num">月养老金</text><text class="td num">月增加</text></view>
-            <view class="tr"><text class="td name">0.6</text><text class="td num">¥{{index06}}</text><text class="td num" style="color:#888">--</text></view>
-            <view class="tr"><text class="td name">0.8</text><text class="td num">¥{{index08}}</text><text class="td num green-color">+¥{{index08inc}}</text></view>
+            <view class="tr"><text class="td name">0.6</text><text class="td num">{{index06}}</text><text class="td num" style="color:#888">--</text></view>
+            <view class="tr"><text class="td name">0.8</text><text class="td num">{{index08}}</text><text class="td num green-color">+¥{{index08inc}}</text></view>
             <view class="tr" style="background:#F0F5EE"><text class="td name">{{avgIndexStr}}（当前）</text><text class="td num">{{legalTotalStr}}</text><text class="td num green-color">+¥{{index10inc}}</text></view>
-            <view class="tr"><text class="td name">1.5</text><text class="td num">¥{{index15}}</text><text class="td num green-color">+¥{{index15inc}}</text></view>
-            <view class="tr"><text class="td name">2.0</text><text class="td num">¥{{index20}}</text><text class="td num green-color">+¥{{index20inc}}</text></view>
+            <view class="tr"><text class="td name">1.5</text><text class="td num">{{index15}}</text><text class="td num green-color">+¥{{index15inc}}</text></view>
+            <view class="tr"><text class="td name">2.0</text><text class="td num">{{index20}}</text><text class="td num green-color">+¥{{index20inc}}</text></view>
           </view>
           <text class="calc-desc" style="margin-top:6px">注：以上为基础养老金变化估算，实际总养老金差异更大（含个人账户部分）。</text>
         </view>
 
-        <!-- 咨询引导语 -->
+        <!-- 咨询引导语 + 二维码 -->
         <view class="consult-card">
           <text class="consult-text">如果您存在以下情况：</text>
           <text class="consult-item">• 社保有断档、多地缴纳未合并</text>
@@ -266,6 +231,5 @@
       <button class="btn-save" bindtap="onSaveImage">保存报告到相册</button>
       <button class="btn-back" bindtap="onBack">返回结果</button>
     </view>
-    <canvas type="2d" id="reportCanvas" class="reportWidget" style="position:absolute;left:-9999px;top:0;width:375px;height:4000px;"></canvas>
   </view>
 </view>

@@ -1,0 +1,10 @@
+{
+  "name": "generateReportImage",
+  "version": "1.0.0",
+  "description": "养老金深度报告长图生成云函数（服务端渲染，@napi-rs/canvas 零系统依赖）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "@napi-rs/canvas": "^0.1"
+  }
+}

@@ -1,6 +1,6 @@
 // pages/report/report.js - 退休规划深度报告
 var app = getApp()
-var reportCanvas = require('./report-canvas.js')
+// 报告长图改由云端 generateReportImage 云函数生成（方案A：彻底规避小程序端 Canvas 叠字/尺寸限制）
 
 Page({
   data: {
@@ -128,11 +128,11 @@ Page({
     } else {
       replaceRateDesc = '替代率低于40%，明显低于全国平均水平，退休后收入替代不足，建议重点规划补充养老（企业年金/商业养老保险）。'
     }
-    // 医保年限（男职工一般20-25年，女职工一般20-25年，各地政策不同；此处按通用最低标准）
+    // 医保退休缴费年限：男职工缴满30年、女职工缴满25年（各地略有差异，按通用标准）
     const medicareYears = Math.floor(legalTotalYears)
     const retireIdxGender = retireIdx !== undefined ? retireIdx : (isFlexible ? 4 : 0)
     const isFemale = retireIdxGender === 2 || retireIdxGender === 4  // 企业女(55退)/灵活就业女
-    const medicareRequirement = 25  // 多数地区男女统一最低25年（男部分地区要求更高）
+    const medicareRequirement = isFemale ? 25 : 30  // 男30年 / 女25年
     const medicareMet = medicareYears >= medicareRequirement
     const medicareLabel = isFemale ? '女' : '男'
     // 企业职工：提前退休期间继续工作的工资收入（按计发基数×0.92扣除个人8%社保估算）
@@ -162,6 +162,9 @@ Page({
     const inc15 = Math.round(legalBaseRetire * 0.45 * legalTotalYears * 0.01)
     const inc20 = Math.round(legalBaseRetire * 0.7 * legalTotalYears * 0.01)
 
+    const legalTotalStr = '¥' + legalTotal.toFixed(2)
+    const flexTotalStr = flexTotal > 0 ? '¥' + flexTotal.toFixed(2) : '--'
+
     this.setData({
       isLoading: false,
       // 模块1
@@ -172,8 +175,8 @@ Page({
       baseRetireStr: Math.round(legalBaseRetire).toLocaleString(),
       isFlexible,
       // 模块2
-      legalTotalStr: '¥' + legalTotal.toFixed(2),
-      flexTotalStr: flexTotal > 0 ? '¥' + flexTotal.toFixed(2) : '--',
+      legalTotalStr,
+      flexTotalStr,
       legalAgeShow: legalAgeStr, flexAgeShow: flexAgeStr || '--',
       legalDateShow: legalDate, flexDateShow: flexDate || '--',
       legalYearsShow: legalYearsStr, flexYearsShow: flexYearsStr || '--',
@@ -184,15 +187,15 @@ Page({
       // 模块3
       cumulativeItems: cumulative.items,
       breakEvenAge: cumulative.breakEvenAge,
-      // 模块4
+      // 模块4（拆成结构化条目，避免 wxml 堆字）
       adviceType: isFlexible ? 'flexible' : 'worker',
       replaceRate,
       replaceRateDesc,
       medicareYears,
       medicareMet,
-      medicareLabel,  // '男' or '女'，用于医保建议文案
-      medicareRequirement,  // 医保最低缴费年限（年），屏显医保建议行需用到
-      estPreRetireSalary: estPreRetireSalary.toLocaleString(),  // 推算退休前工资（用于替代率说明）
+      medicareLabel,
+      medicareRequirement,
+      estPreRetireSalary: estPreRetireSalary.toLocaleString(),
       salary3year,
       fund3year,
       savePremium,
@@ -200,6 +203,23 @@ Page({
       totalEarlyBenefit,
       earlyMonths,
       paybackYears,
+      workerAdvicePoints: isFlexible ? [] : [
+        { title: '核心对比', desc: '正常退休月养老金 ' + legalTotalStr + '，弹性提前 ' + flexTotalStr + '，每月差额约 ¥' + diffMonthly.toLocaleString() + ' 元。' },
+        { title: '工资收入', desc: '正常退休多领约 ¥' + salary3year.toLocaleString() + ' 元工资（按缴费基数估算），弹性提前退休后无工资收入。' },
+        { title: '住房公积金', desc: '正常退休继续缴存，单位和个人合计约 ¥' + fund3year.toLocaleString() + '；弹性提前退休停缴。' },
+        { title: '医疗保险', desc: medicareLabel + '职工医保缴费年限要求约' + medicareRequirement + '年（' + medicareYears + '年已' + (medicareMet ? '满足' : '不足') + '），弹性提前退休后可直接享受退休医保待遇，无需补缴。' },
+        { title: '盈亏平衡', desc: '约 ' + (cumulative.breakEvenAge > 0 ? cumulative.breakEvenAge : '—') + ' 岁前弹性提前累计领取更高，此后正常退休反超。' }
+      ],
+      flexibleAdvicePoints: !isFlexible ? [] : [
+        { title: '核心对比', desc: '全部保费自费（费率20%），提前退休经济账：少缴保费约 ¥' + savePremium.toLocaleString() + ' 元 + 早领养老金约 ¥' + earlyPension.toLocaleString() + ' 元，合计好处约 ¥' + totalEarlyBenefit.toLocaleString() + ' 元。' },
+        { title: '保费节省', desc: '弹性提前退休约省下 ¥' + savePremium.toLocaleString() + ' 元保费（全自费20%，3年少缴）。' },
+        { title: '早领养老金', desc: '提前领取约 ' + earlyMonths + ' 个月，多领约 ¥' + earlyPension.toLocaleString() + ' 元。' },
+        { title: '回本分析', desc: '合计好处约 ¥' + totalEarlyBenefit.toLocaleString() + ' 元，正常退休每月多领 ¥' + diffMonthly.toLocaleString() + ' 元，需约 ' + paybackYears + ' 年追平。' },
+        { title: '医疗保险', desc: medicareLabel + '职工医保缴费年限要求约' + medicareRequirement + '年（' + medicareYears + '年），弹性提前退休后可直接享受退休医保待遇。' }
+      ],
+      optimizationPoint: isFlexible
+        ? null
+        : { title: '足额申报', desc: '企业职工社保由单位依法缴纳，缴费基数按本人实际工资确定。建议确认单位是否按照实际工资足额申报，避免低基数缴费影响未来待遇。' },
       // 模块5（指数优化）
       index06, index08, index15, index20,
       index08inc: inc08.toLocaleString(),
@@ -213,7 +233,7 @@ Page({
       personalDesc: legalPersonalDesc,
       extraPensionStr: legalExtra > 0 ? '¥' + legalExtra.toFixed(2) : '',
       extraDetails: legalExtraDetails.map(d => ({
-        label: d.range + '年：' + d.years + '年 × ' + (d.rate * 100) + '%',
+        label: d.range + '年：' + Number(d.years).toFixed(2) + '年 × ' + Number(d.rate * 100).toFixed(1) + '%',
         amount: '¥' + Math.round(d.amount)
       })),
       totalPensionStr: '¥' + legalTotal.toFixed(2),
@@ -223,45 +243,61 @@ Page({
         advice: true, optimization: true, calculation: true, disclaimer: true
       }
     })
+
+    // 页面渲染完成后立刻预热云函数实例，降低首次保存时冷启动概率
+    this._warmupGenerate()
   },
 
-  // 累计领取对比
+  // 累计领取对比（里程碑式：提前起领 / 正常起领 / 70岁 / 追平，不再5年区间、不再延伸到90）
   _calcCumulative(legalAge, flexAge, legalAnnual, flexAnnual) {
-    const items = []
+    const startAge = Math.floor(flexAge || legalAge)
+    // 预扫描：找出追平年龄（累计领取差额由正转负）
     let breakEvenAge = 0
     let prevDiff = 0
-    const startAge = Math.floor(flexAge || legalAge)
-    const endAge = 90
-    // 关键年龄点：每5岁 + 正常退休年龄（让"第二个对比点=正常退休年龄"在表中显式可见）
+    for (let age = startAge; age <= 100; age++) {
+      const diff = Math.round(Math.max(0, age - flexAge) * flexAnnual) - Math.round(Math.max(0, age - legalAge) * legalAnnual)
+      if (breakEvenAge === 0 && prevDiff > 0 && diff <= 0) { breakEvenAge = age; break }
+      prevDiff = diff
+    }
+    // 关键里程碑集合（起始年龄用实际值，避免 60 与 60岁2个月 被 round 成同一个整数而合并）
     const ageSet = new Set()
-    for (let age = startAge; age <= endAge; age += 5) ageSet.add(age)
-    ageSet.add(Math.round(legalAge))
-    const ages = Array.from(ageSet).sort(function(a, b) { return a - b })
+    ageSet.add(flexAge)    // 弹性提前起领（实际年龄，可能含小数）
+    ageSet.add(legalAge)   // 正常起领（实际年龄）
+    ageSet.add(70)         // 70岁
+    if (breakEvenAge > 0) ageSet.add(breakEvenAge)  // 追平
 
-    ages.forEach(function(age) {
+    const ages = Array.from(ageSet).filter(function (a) { return a >= startAge }).sort(function (a, b) { return a - b })
+
+    const items = ages.map(function (age) {
       const legalYrs = Math.max(0, age - legalAge)
       const flexYrs = Math.max(0, age - flexAge)
       const legalTotal = Math.round(legalYrs * legalAnnual)
       const flexTotal = Math.round(flexYrs * flexAnnual)
       const diff = flexTotal - legalTotal
-
-      const isNormalStart = Math.abs(age - legalAge) < 0.5
-      let isBreakEven = false
-      if (breakEvenAge === 0 && prevDiff > 0 && diff <= 0) {
-        breakEvenAge = age
-        isBreakEven = true
-      }
-      if (breakEvenAge > 0 && age === breakEvenAge) isBreakEven = true
-
-      let diffStr = ''
+      const isNormalStart = Math.abs(age - legalAge) < 0.01
+      const isFlexStart = Math.abs(age - flexAge) < 0.01
+      const isBreakEven = breakEvenAge > 0 && Math.abs(age - breakEvenAge) < 0.5
+      let diffStr
       if (isBreakEven) diffStr = '追平'
       else if (diff > 0) diffStr = '+' + this._fmtWan(diff)
-      else diffStr = '-' + this._fmtWan(Math.abs(diff))
-
-      prevDiff = diff
-      items.push({ age, legalTotal: this._fmtWan(legalTotal), flexTotal: this._fmtWan(flexTotal), diff: diffStr, isBreakEven, isNormalStart })
+      else if (diff < 0) diffStr = '-' + this._fmtWan(Math.abs(diff))
+      else diffStr = '平'
+      const ageLabel = this._fmtAgeLabel(age, isFlexStart, isNormalStart, isBreakEven)
+      return { age, ageLabel, legalTotal: this._fmtWan(legalTotal), flexTotal: this._fmtWan(flexTotal), diff: diffStr, isBreakEven, isNormalStart, isFlexStart }
     }.bind(this))
+
     return { items, breakEvenAge: Math.round(breakEvenAge) }
+  },
+
+  _fmtAgeLabel(age, isFlexStart, isNormalStart, isBreakEven) {
+    const year = Math.floor(age)
+    const month = Math.round((age - year) * 12)
+    let s = year + '岁'
+    if (month > 0) s += month + '个月'
+    if (isBreakEven) s += '（追平）'
+    else if (isFlexStart) s += '（提前）'
+    else if (isNormalStart) s += '（正常）'
+    return s
   },
 
   _fmtWan(num) {
@@ -274,34 +310,95 @@ Page({
     this.setData({ ['showSection.' + key]: !this.data.showSection[key] })
   },
 
-  onReady() {
-    // Canvas 2D 节点在 onSaveImage 时通过选择器获取，无需 selectComponent
+  // 保存报告：调用云端 generateReportImage 生成 PNG，优先 base64 直传回写相册，失败/超时时自动重试一次
+  onSaveImage() {
+    var data = this._buildReportData()
+    if (!data) {
+      wx.showToast({ title: '报告数据缺失', icon: 'none' })
+      return
+    }
+    this._doSaveImage(data, false)
   },
 
-  onSaveImage() {
+  _doSaveImage(data, isRetry) {
     var self = this
     wx.showLoading({ title: '生成报告图...', mask: true })
-
-    // 提前提取 this.data，避免异步回调中 this 丢失
-    var d = this.data
-
-    // 拷贝二维码图片到 USER_DATA_PATH（Canvas 2D 的 createImage 需要绝对路径）
-    var fs = wx.getFileSystemManager()
-    var tmpQr = wx.env.USER_DATA_PATH + '/consult-wechat.jpg'
-    fs.copyFile({
-      srcPath: '/images/consult-wechat.jpg',
-      destPath: tmpQr,
-      success: function() { self._renderReport(d, tmpQr) },
-      fail: function() { self._renderReport(d, null) }
+    wx.cloud.callFunction({
+      name: 'generateReportImage',
+      data: { data: data },
+      success: function (res) {
+        wx.hideLoading()
+        var r = res.result || {}
+        if (!r.success) {
+          wx.showToast({ title: (r.message || '生成失败'), icon: 'none' })
+          return
+        }
+        if (r.base64) {
+          // base64 直传：写入本地临时文件后直接保存到相册
+          const fs = wx.getFileSystemManager()
+          const filePath = wx.env.USER_DATA_PATH + '/pension_report_' + Date.now() + '.png'
+          fs.writeFile({
+            filePath: filePath,
+            data: r.base64,
+            encoding: 'base64',
+            success: function () {
+              wx.saveImageToPhotosAlbum({
+                filePath: filePath,
+                success: function () {
+                  wx.showToast({ title: '已保存到相册', icon: 'success' })
+                },
+                fail: function (err) {
+                  // 无相册权限或拒绝时，回退到预览让用户长按保存
+                  console.warn('[report] saveImageToPhotosAlbum fail, fallback preview', err)
+                  wx.previewImage({ urls: [filePath], current: filePath })
+                }
+              })
+            },
+            fail: function (err) {
+              console.error('[report] writeFile fail:', err)
+              wx.showToast({ title: '图片写入失败', icon: 'none' })
+            }
+          })
+        } else if (r.url) {
+          // 云存储兜底：走 previewImage 长按保存
+          wx.previewImage({ urls: [r.url], current: r.url })
+        } else {
+          wx.showToast({ title: '生成结果异常', icon: 'none' })
+        }
+      },
+      fail: function (err) {
+        wx.hideLoading()
+        console.error('[report] generateReportImage fail:', err)
+        if (!isRetry) {
+          wx.showToast({ title: '首次超时，正在重试...', icon: 'none' })
+          setTimeout(function () { self._doSaveImage(data, true) }, 500)
+        } else {
+          wx.showToast({ title: '生成失败，请重试', icon: 'none' })
+        }
+      }
     })
   },
 
-  _renderReport(d, qrPath) {
-    var self = this
+  _warmupGenerate() {
+    wx.cloud.callFunction({
+      name: 'generateReportImage',
+      data: { _warmup: true },
+      success: function (res) {
+        console.log('[report] warmup ok', res.result)
+      },
+      fail: function (err) {
+        console.warn('[report] warmup fail', err)
+      }
+    })
+  },
+
+  // 组装传给云函数的报告数据（与展示页 setData 字段一致）
+  _buildReportData() {
+    var d = this.data
     var hasEarly = d.flexTotalStr !== '--'
     var adviceType = d.isFlexible ? 'flexible' : 'worker'
 
-    var data = {
+    return {
       province: d.provinceName,
       city: d.cityLabel,
       identity: d.identity,
@@ -350,13 +447,13 @@ Page({
       estPreRetireSalary: d.estPreRetireSalary || '',
       replaceRateDesc: d.replaceRateDesc || '',
       // 模块5
-      qrPath: qrPath || '',
+      qrPath: 'consult-wechat.jpg',
       indexOpts: [
-        { label: '0.6', pension: '¥' + d.index06, inc: '--', isCurrent: false },
-        { label: '0.8', pension: '¥' + d.index08, inc: '+¥' + d.index08inc, isCurrent: false },
+        { label: '0.6', pension: d.index06, inc: '--', isCurrent: false },
+        { label: '0.8', pension: d.index08, inc: '+¥' + d.index08inc, isCurrent: false },
         { label: d.avgIndexStr + '（当前）', pension: d.legalTotalStr, inc: '+¥' + d.index10inc, isCurrent: true },
-        { label: '1.5', pension: '¥' + d.index15, inc: '+¥' + d.index15inc, isCurrent: false },
-        { label: '2.0', pension: '¥' + d.index20, inc: '+¥' + d.index20inc, isCurrent: false }
+        { label: '1.5', pension: d.index15, inc: '+¥' + d.index15inc, isCurrent: false },
+        { label: '2.0', pension: d.index20, inc: '+¥' + d.index20inc, isCurrent: false }
       ],
       // 模块6
       basicPension: d.basicPensionStr,
@@ -367,69 +464,6 @@ Page({
       extraDetails: d.extraDetails || [],
       totalPension: d.totalPensionStr
     }
-
-    var query = wx.createSelectorQuery().in(this)
-    query.select('#reportCanvas').fields({ node: true, size: true }).exec(function (res) {
-      if (!res || !res[0] || !res[0].node) {
-        wx.hideLoading()
-        wx.showToast({ title: '画布未就绪', icon: 'none' })
-        return
-      }
-      var canvas = res[0].node
-      var ctx = canvas.getContext('2d')
-      var dpr = 2
-      try {
-        dpr = (wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : wx.getSystemInfoSync().pixelRatio) || 2
-      } catch (e) { dpr = 2 }
-
-      try {
-        reportCanvas.draw(data, canvas, ctx, dpr, function () {
-          wx.canvasToTempFilePath({
-            canvas: canvas,
-            success: function (r) {
-              wx.hideLoading()
-              var filePath = r.tempFilePath
-              // 优先用预览大图展示：用户在预览里「长按」即可保存到相册 / 转发（iOS、安卓微信原生能力，最稳）
-              // 避免 wx.saveImageToPhotosAlbum 因相册授权被拒而静默失败（尤其 iOS 首次拒绝后不再弹窗）
-              wx.previewImage({
-                urls: [filePath],
-                current: filePath,
-                success: function () { console.log('[report] 预览已弹出，可长按保存') },
-                fail: function () { self._saveFallback(filePath) }
-              })
-            },
-            fail: function (err) {
-              wx.hideLoading()
-              console.error('[report] canvasToTempFilePath fail:', JSON.stringify(err))
-              wx.showToast({ title: '生成失败', icon: 'none' })
-            }
-          })
-        })
-      } catch (e) {
-        wx.hideLoading()
-        console.error('[report] render error:', e)
-        wx.showToast({ title: '生成失败', icon: 'none' })
-      }
-    })
-  },
-
-  _saveFallback(filePath) {
-    wx.saveImageToPhotosAlbum({
-      filePath: filePath,
-      success: function () { wx.showToast({ title: '已保存到相册', icon: 'success' }) },
-      fail: function (err2) {
-        if (err2.errMsg && err2.errMsg.indexOf('auth deny') >= 0) {
-          wx.showModal({
-            title: '需要授权',
-            content: '请授权保存图片到相册',
-            confirmText: '去设置',
-            success: function (m) { if (m.confirm) wx.openSetting() }
-          })
-        } else {
-          wx.showToast({ title: '保存失败', icon: 'none' })
-        }
-      }
-    })
   },
 
   onUnload() {

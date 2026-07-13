@@ -1,0 +1,5 @@
+# 依赖在部署时由云端 npm install 拉取（Windows 本地装的是 win32 二进制，不能用于 Linux 云函数）
+node_modules/
+# 本地验证临时产物
+test-report.png
+test-render.js

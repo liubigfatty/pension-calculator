@@ -119,5 +119,6 @@ Page({
     })
 
     wx.navigateTo({ url: '/pages/step2/step2' })
-  }
+  },
 })
+

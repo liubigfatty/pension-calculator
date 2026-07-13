@@ -267,6 +267,14 @@ Page({
    *   3. 支付成功 → 标记已购买 → 跳转报告页
    */
   goReport() {
+    // 付费开关：false=线下自测直接解锁报告；true=发布收费版（需主体已开通虚拟支付能力 + 云端 createOrder 配 VP_APP_SECRET）
+    const PAY_ENABLED = true
+    if (!PAY_ENABLED) {
+      wx.setStorageSync('report_paid', '1')
+      wx.navigateTo({ url: '/pages/report/report' })
+      return
+    }
+
     // 审核模式：连续点击5次绕过支付
     this._debugTapCount = (this._debugTapCount || 0) + 1
     if (this._debugTapCount >= 5) {
