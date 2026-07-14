@@ -69,6 +69,49 @@
         </div>
       </div>
 
+      <!-- 加发项 / 特殊补贴 -->
+      <fieldset class="extra-box" id="extraField" hidden>
+        <legend>加发项 / 特殊补贴</legend>
+        <p class="extra-tip">仅所选参保地的适用项目会显示，留空表示不享受。贵州、吉林、辽宁、甘肃、黑龙江的加发项按政策自动计算。</p>
+
+        <div class="sub-field" data-extra="sichuan">
+          <label for="extraRate">增发养老金比例（四川）</label>
+          <input type="number" id="extraRate" step="0.0001" min="0" max="0.05" placeholder="如 0.003（即 0.3%）">
+          <small>独生子女 0.1% ＋ 艰苦边远 0.1% 等合计约 0.1%~0.4%</small>
+        </div>
+
+        <div class="sub-field" data-extra="ningxia">
+          <label class="chk"><input type="checkbox" id="intellectual"> 属于知识分子（宁夏工龄＋地区补贴）</label>
+        </div>
+
+        <div class="sub-field" data-extra="yunnan chongqing hainan">
+          <label class="chk"><input type="checkbox" id="oneChild"> 持有《独生子女父母光荣证》</label>
+        </div>
+
+        <div class="sub-field" data-extra="yunnan">
+          <label for="oneChildAvgPension">独生子女补贴基数（云南·选填）</label>
+          <input type="number" id="oneChildAvgPension" placeholder="全省人均养老金，留空自动取">
+        </div>
+
+        <div class="sub-field" data-extra="hainan">
+          <label for="oneChildType">独生子女类型（海南）</label>
+          <select id="oneChildType">
+            <option value="parent">独生子女父母（加发 5%）</option>
+            <option value="no_child">无子女人员（加发 10%）</option>
+          </select>
+        </div>
+
+        <div class="sub-field" data-extra="xizang">
+          <label for="regionCategory">地区类别（西藏）</label>
+          <input type="text" id="regionCategory" placeholder="如 二类地区">
+        </div>
+
+        <div class="sub-field" data-extra="xizang">
+          <label for="tibetWorkYears">在藏工作年限（西藏·年）</label>
+          <input type="number" id="tibetWorkYears" min="0" max="50" placeholder="年">
+        </div>
+      </fieldset>
+
       <button class="primary-btn" id="calcBtn">开始测算</button>
     </section>
 

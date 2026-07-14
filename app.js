@@ -53,6 +53,15 @@
   var elTransField = $('transIndexField'), elTrans = $('transIndex')
   var elBalance = $('balance'), elEstimate = $('estimateBtn'), elCalc = $('calcBtn')
   var elResult = $('resultCard'), elTabs = $('scenarioTabs')
+  // 加发项控件
+  var elExtraField = $('extraField')
+  var elExtraRate = $('extraRate')
+  var elIntellectual = $('intellectual')
+  var elOneChild = $('oneChild')
+  var elOneChildAvgPension = $('oneChildAvgPension')
+  var elOneChildType = $('oneChildType')
+  var elRegionCategory = $('regionCategory')
+  var elTibetWorkYears = $('tibetWorkYears')
 
   var currentScenario = 'legal'
   var lastResult = null
@@ -102,14 +111,30 @@
     })
 
     refreshCityOptions()
+    refreshExtraOptions()
   }
 
-  // 省份变化：双基数省显示城市选择；双指数省显示过渡指数
+  // 省份变化：双基数省显示城市选择；双指数省显示过渡指数；加发项按省显示
   function onProvinceChange() {
     refreshCityOptions()
+    refreshExtraOptions()
     var slug = elProvince.value
     elTransField.hidden = !DOUBLE_INDEX[slug]
     if (!DOUBLE_INDEX[slug]) elTrans.value = ''
+  }
+
+  // 加发项区块：仅显示当前参保地适用的项目
+  function refreshExtraOptions() {
+    var slug = elProvince.value
+    var rows = document.querySelectorAll('#extraField [data-extra]')
+    var any = false
+    rows.forEach(function (row) {
+      var list = (row.getAttribute('data-extra') || '').trim().split(/\s+/)
+      var show = list.indexOf(slug) >= 0
+      row.hidden = !show
+      if (show) any = true
+    })
+    elExtraField.hidden = !any
   }
 
   function refreshCityOptions() {
@@ -153,10 +178,22 @@
       workMonth: parseInt(work[1], 10),
       avgIndex: parseFloat(elAvg.value) || 1.0,
       personalAccInput: parseFloat(elBalance.value) || 0,
-      extras: {},
       cityType: elCityField.hidden ? 'prov' : (elCity.value || 'prov')
     }
     if (!elTransField.hidden && elTrans.value) input.transIndex = parseFloat(elTrans.value)
+
+    // 加发项：直接摊平成引擎所需的扁平字段，绕过云函数 extras 对象断链
+    // （云函数把前端 extras 原样透传，但引擎只读扁平字段 extraRate/intellectual/oneChild/...）
+    var slug = elProvince.value
+    if (slug === 'sichuan' && elExtraRate.value) input.extraRate = parseFloat(elExtraRate.value)
+    if (slug === 'ningxia') input.intellectual = elIntellectual.checked
+    if (slug === 'yunnan' || slug === 'chongqing' || slug === 'hainan') input.oneChild = elOneChild.checked
+    if (slug === 'yunnan' && elOneChildAvgPension.value) input.oneChildAvgPension = parseFloat(elOneChildAvgPension.value)
+    if (slug === 'hainan') input.oneChildType = elOneChildType.value || 'parent'
+    if (slug === 'xizang') {
+      input.regionCategory = elRegionCategory.value || '二类地区'
+      if (elTibetWorkYears.value) input.tibetWorkYears = parseFloat(elTibetWorkYears.value)
+    }
     return input
   }
 

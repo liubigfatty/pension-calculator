@@ -288,3 +288,68 @@ select:focus, input:focus {
   .amount-value { font-size: 34px; }
   .info-grid { gap: 8px; }
 }
+
+/* ---------- 加发项 ---------- */
+.extra-box {
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 14px 16px 4px;
+  margin: 4px 0 18px;
+}
+.extra-box legend {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 0 8px;
+}
+.extra-tip {
+  font-size: 11.5px;
+  color: #aab0bb;
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+.sub-field { margin-bottom: 14px; }
+.sub-field > label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 7px;
+  font-weight: 500;
+}
+.sub-field small {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  color: #aab0bb;
+}
+.sub-field input[type="text"],
+.sub-field input[type="number"],
+.sub-field select {
+  width: 100%;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: var(--ink);
+  background: #fbfbfc;
+  outline: none;
+  appearance: none;
+}
+.sub-field select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236b7484' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.sub-field .chk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--ink);
+  font-weight: 500;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+.sub-field .chk input { width: 18px; height: 18px; flex: 0 0 auto; }
