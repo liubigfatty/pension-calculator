@@ -134,6 +134,12 @@ function calcBasicPension(params) {
     const indexSalary = retireBase * avgIndex
     amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
     description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'jilin') {
+    // 吉林特殊（吉人社联〔2020〕79号等）：基础养老金 = (市县计发基数 + 全省计发基数 × 平均指数) / 2 × 累计缴费年限 × 1%
+    // 市县与全省两个基数在同一公式里加权，并非只用退休地基数
+    const base = (retireBase + provBase * avgIndex) / 2
+    amount = Math.round(base * totalYears * rate * 100) / 100
+    description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
