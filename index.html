@@ -1,348 +1,126 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>养老金计算平台 | 31省企业职工基本养老金测算</title>
-<style>
-:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--accent:#0071e3;--border:#e5e5ea;--green:#34c759;--red:#ff3b30;--radius:16px;--shadow:0 2px 12px rgba(0,0,0,.06)}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
-.container{max-width:880px;margin:0 auto;padding:24px 16px 80px}
-.header{text-align:center;padding:40px 0 32px}
-.header h1{font-size:28px;font-weight:700;letter-spacing:-.02em}
-.header p{color:var(--sub);margin-top:8px;font-size:15px}
-.card{background:var(--card);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow)}
-.card-title{font-size:17px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.row{grid-template-columns:1fr}}
-.field{display:flex;flex-direction:column;gap:4px}
-.field label{font-size:13px;color:var(--sub);font-weight:500}
-.field input,.field select{height:44px;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-size:15px;outline:none;transition:border .2s;background:var(--card);width:100%}
-.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,113,227,.1)}
-.field input[type=number]{font-variant-numeric:tabular-nums}
-.btn{height:48px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;width:100%}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#0066cc}
-.btn-secondary{background:var(--border);color:var(--text);margin-top:8px}
-.btn-secondary:hover{background:#dcdce0}
-.result-hidden{display:none}
-.result-card{padding:20px 24px}
-.result-card .total{font-size:36px;font-weight:700;color:var(--accent);text-align:center;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:16px}
-.result-card .total small{font-size:14px;color:var(--sub);font-weight:400}
-.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px}
-.result-grid .item{padding:10px 0;border-bottom:1px solid var(--border)}.result-grid .item:last-child,.result-grid .item:nth-last-child(2){border-bottom:none}
-.result-grid .item .label{font-size:13px;color:var(--sub)}.result-grid .item .val{font-size:18px;font-weight:600}
-.info-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.info-tag{background:#f0f0f5;padding:4px 12px;border-radius:20px;font-size:13px;color:var(--sub)}
-.adv-toggle{cursor:pointer;color:var(--accent);font-size:14px;text-align:center;padding:8px;user-select:none}
-.adv-toggle:hover{opacity:.8}
-.adv-panel{display:none;margin-top:12px}
-.adv-panel.show{display:block}
-.error-msg{background:#fff0f0;color:var(--red);padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:12px;display:none}
-.loading{text-align:center;padding:40px;color:var(--sub)}
-.footer{text-align:center;color:var(--sub);font-size:12px;padding:24px}
-.province-selector select{font-size:16px;font-weight:500}
-.note-text{font-size:13px;color:var(--sub);line-height:1.6}
-.note-text a{color:var(--accent)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>养老金测算 · 31 省计算器</title>
+  <meta name="description" content="基于各省官方计发基数与记账利率的养老金测算工具，与小程序同款计算引擎，支持法定退休与弹性提前退休双方案对比。">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-<div class="header">
-<h1>📊 养老金计算平台</h1>
-<p>支持全国31省 · 企业职工基本养老金测算 · 数据来源各省人社厅官方文件</p>
-</div>
-
-<!-- 输入区 -->
-<div class="card" id="input-card">
-<div class="card-title">基本参数</div>
-<div class="row">
-<div class="field province-selector">
-<label>退休省份</label>
-<select id="province" onchange="onProvinceChange()"><option value="">加载中...</option></select>
-</div>
-<div class="field">
-<label>城市 / 退休地类型</label>
-<select id="city"><option value="prov">全省默认</option></select>
-</div>
-<div class="field">
-<label>人员身份</label>
-<select id="employType" onchange="onEmployChange()"><option value="employee">企业职工</option><option value="flexible">灵活就业</option></select>
-</div>
-<div class="field">
-<label>性别 / 退休类型</label>
-<select id="genderType"><option value="male">男 (60岁)</option><option value="fw">女工人 (50岁)</option><option value="fc">女干部 (55岁)</option></select>
-</div>
-<div class="field">
-<label>退休类型</label>
-<select id="retireType"><option value="normal">正常退休</option><option value="flex_early">弹性提前</option></select>
-</div>
-<div class="field">
-<label>出生：年 / 月</label>
-<div style="display:flex;gap:8px"><input type="number" id="birthYear" value="1965" style="flex:1" min="1940" max="2010" placeholder="年"><input type="number" id="birthMonth" value="1" style="flex:1" min="1" max="12" placeholder="月"></div>
-</div>
-<div class="field">
-<label>参工：年 / 月</label>
-<div style="display:flex;gap:8px"><input type="number" id="workYear" value="1985" style="flex:1" min="1960" max="2026" placeholder="年"><input type="number" id="workMonth" value="1" style="flex:1" min="1" max="12" placeholder="月"></div>
-</div>
-    <div class="field">
-      <label>个人账户余额（元）<span style="color:var(--sub);font-weight:400"> 不填则自动估算</span></label>
-      <input type="number" id="personalAcc" placeholder="留空按各省基数+指数自动估算" step="0.01">
+  <header class="app-header">
+    <div class="header-inner">
+      <h1>养老金测算</h1>
+      <p>31 省官方计发基数 · 与小程序同款计算引擎</p>
     </div>
-    <div class="field">
-      <label>平均缴费指数</label>
-      <div style="display:flex;gap:6px;align-items:center">
-        <button type="button" class="idx-btn" onclick="setIndex(0.6)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">60%</button>
-        <button type="button" class="idx-btn" onclick="setIndex(0.8)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">80%</button>
-        <button type="button" class="idx-btn" onclick="setIndex(1.0)" style="flex-shrink:0;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:13px">100%</button>
-        <input type="number" id="avgIndex" value="1.0" step="0.0001" min="0.6" max="3.0" style="flex:1;min-width:0" placeholder="或自定义">
+  </header>
+
+  <main class="container">
+    <!-- 相关工具 -->
+    <section class="card" style="padding:14px 22px">
+      <a href="https://liubigfatty.github.io/contribution-index-calculator/" style="color:#1d4ed8;font-weight:600;text-decoration:none;font-size:15px">› 平均缴费指数计算器（算本人历年缴费水平）</a>
+    </section>
+
+    <!-- 表单 -->
+    <section class="card form-card">
+      <h2 class="card-title">填写参保信息</h2>
+
+      <div class="field">
+        <label for="province">参保地</label>
+        <select id="province"></select>
       </div>
-    </div>
-</div>
 
-<div class="row">
-<div class="field"><label>其它加发</label>
-<select id="specialFlags"><option value="">无</option><option value="oneChild">独生子女</option><option value="intellectual">知识分子</option><option value="both">独生+知识分子</option></select>
-</div>
-</div>
+      <div class="field">
+        <label for="retireType">人员类型</label>
+        <select id="retireType"></select>
+      </div>
 
-<button class="btn btn-primary" onclick="calculate()">计算养老金</button>
-<div id="error-msg" class="error-msg"></div>
-</div>
+      <div class="field">
+        <label for="birthDate">出生年月</label>
+        <input type="month" id="birthDate" value="1970-06">
+      </div>
 
-<!-- 结果区 -->
-<div class="card result-card result-hidden" id="result-card">
-<div class="total" id="total-amount">--</div>
-<div class="result-grid" id="result-grid"></div>
-  <div class="info-bar" id="info-bar"></div>
-<button class="btn btn-secondary" id="reportBtn" onclick="openReport()" style="margin-top:16px;display:none">📄 完整报告：弹性退休对比与建议</button>
-</div>
+      <div class="field">
+        <label for="workDate">参加工作时间</label>
+        <input type="month" id="workDate" value="1995-07">
+      </div>
 
-<div class="footer">
-引擎基于各省人社厅官方文件 · 数据截至2026年6月 · <span id="config-count">31</span>省已配置<br>
-<small>计算结果仅供参考，实际以社保经办机构核定为准</small>
-</div>
-</div>
+      <div class="field">
+        <label for="avgIndex">本人平均缴费指数</label>
+        <div class="chip-row" id="indexChips"></div>
+        <input type="number" id="avgIndex" step="0.01" min="0.4" max="3" value="1.0" placeholder="0.6 ~ 3.0，一般填 1.0">
+      </div>
 
-<script src="js/pension-engine-browser.js?v=20260615"></script>
-<script>
-// === 全局状态 ===
-var currentConfig = null;
-var provinceList = [];
+      <div class="field" id="cityField" hidden>
+        <label for="cityType">计发基数所在地</label>
+        <select id="cityType"></select>
+      </div>
 
-// === 初始化 ===
-async function init() {
-  var list = [
-    {id:"jilin",name:"吉林省"},{id:"liaoning",name:"辽宁省"},{id:"heilongjiang",name:"黑龙江省"},
-    {id:"beijing",name:"北京市"},{id:"tianjin",name:"天津市"},{id:"shanghai",name:"上海市"},{id:"chongqing",name:"重庆市"},
-    {id:"hebei",name:"河北省"},{id:"shanxi",name:"山西省"},{id:"neimenggu",name:"内蒙古"},
-    {id:"shandong",name:"山东省"},{id:"henan",name:"河南省"},{id:"jiangsu",name:"江苏省"},
-    {id:"zhejiang",name:"浙江省"},{id:"anhui",name:"安徽省"},{id:"fujian",name:"福建省"},
-    {id:"jiangxi",name:"江西省"},{id:"hubei",name:"湖北省"},{id:"hunan",name:"湖南省"},
-    {id:"guangdong",name:"广东省"},{id:"guangxi",name:"广西"},{id:"hainan",name:"海南省"},
-    {id:"sichuan",name:"四川省"},{id:"guizhou",name:"贵州省"},{id:"yunnan",name:"云南省"},
-    {id:"shaanxi",name:"陕西省"},{id:"gansu",name:"甘肃省"},{id:"qinghai",name:"青海省"},
-    {id:"ningxia",name:"宁夏"},{id:"xinjiang",name:"新疆"},{id:"xizang",name:"西藏"}
-  ];
-  provinceList = list;
-  var sel = document.getElementById("province");
-  sel.innerHTML = list.map(function(p){return "<option value="+p.id+">"+p.name+"</option>";}).join("");
-  document.getElementById("config-count").textContent = list.length;
-  await loadProvince("jilin");
-  sel.value = "jilin";
-}
+      <div class="field" id="transIndexField" hidden>
+        <label for="transIndex">过渡性养老金平均缴费指数<span class="opt">（选填）</span></label>
+        <input type="number" id="transIndex" step="0.01" placeholder="双指数省份选填，默认同平均指数">
+      </div>
 
-async function loadProvince(id) {
-  try {
-    var resp = await fetch("js/provinces/" + id + ".json");
-    currentConfig = await resp.json();
-    var citySel = document.getElementById("city");
-    var cities = currentConfig.cities || [{code:"prov",name:"全省默认"}];
-    citySel.innerHTML = cities.map(function(c){return "<option value="+c.code+">"+c.name+"</option>";}).join("");
-    updateDefaultAccount();
-  } catch(e) { console.error("Load province error:", e); currentConfig = null; }
-}
+      <div class="field">
+        <label for="balance">个人账户余额（元）<span class="opt">（选填）</span></label>
+        <div class="input-with-btn">
+          <input type="number" id="balance" placeholder="留空则自动估算">
+          <button type="button" id="estimateBtn" class="ghost-btn">估算</button>
+        </div>
+      </div>
 
-function updateDefaultAccount() {
-  if (!currentConfig) return;
-  // 自动估算个人账户余额
-  // 公式：近10年平均基数 × 指数 × 8% × 12 × (退休年龄-参工年龄) × 复利因子1.3
-  var baseRates = currentConfig.base_rates;
-  if (!baseRates) return;
-  // 取prov或城市基数
-  var provRates = baseRates.prov || baseRates;
-  var years = Object.keys(provRates).map(Number).filter(function(y){return y >= 2015 && y <= 2025});
-  if (years.length === 0) years = Object.keys(provRates).map(Number).slice(-10);
-  var sum = 0;
-  years.forEach(function(y){ sum += provRates[y]; });
-  var avgBase = sum / years.length;
-  var idx = parseFloat(document.getElementById("avgIndex").value) || 1.0;
-  var birthY = parseInt(document.getElementById("birthYear").value) || 1965;
-  var workY = parseInt(document.getElementById("workYear").value) || 1985;
-  var retireY = birthY + 60; // 粗略按60岁
-  var totalYears = Math.max(retireY - workY, 15);
-  var estBalance = Math.round(avgBase * idx * 0.08 * 12 * totalYears * 1.3);
-  // 取整到万
-  estBalance = Math.round(estBalance / 10000) * 10000;
-  // 只改默认占位符，不改用户已填值
-  var accInput = document.getElementById("personalAcc");
-  if (!accInput.value || !accInput.dataset.userModified) {
-    accInput.placeholder = "自动估算约 " + estBalance.toLocaleString() + " 元";
-  }
-}
+      <button class="primary-btn" id="calcBtn">开始测算</button>
+    </section>
 
-function setIndex(val) {
-  document.getElementById("avgIndex").value = val;
-  // 高亮选中按钮
-  document.querySelectorAll('.idx-btn').forEach(function(b){ b.style.borderColor = 'var(--border)'; b.style.background = 'var(--card)'; });
-  event.target.style.borderColor = 'var(--accent)';
-  event.target.style.background = '#f0f7ff';
-  updateDefaultAccount();
-}
+    <!-- 结果 -->
+    <section class="card result-card" id="resultCard" hidden>
+      <div class="scenario-tabs" id="scenarioTabs">
+        <button class="tab active" data-sc="legal">法定退休</button>
+        <button class="tab" data-sc="flex">弹性提前退休</button>
+      </div>
 
-// 监听指数变化，更新默认账户余额
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("avgIndex").addEventListener("input", function() {
-    // 取消按钮高亮
-    document.querySelectorAll('.idx-btn').forEach(function(b){ b.style.borderColor = 'var(--border)'; b.style.background = 'var(--card)'; });
-    updateDefaultAccount();
-  });
-  document.getElementById("personalAcc").addEventListener("focus", function() {
-    if (this.value) this.dataset.userModified = "true";
-  });
-});
+      <div class="amount-hero">
+        <div class="amount-label">预计每月养老金</div>
+        <div class="amount-value" id="totalAmount">¥0</div>
+        <div class="amount-sub" id="replaceRate"></div>
+      </div>
 
-function onProvinceChange() {
-  var id = document.getElementById("province").value;
-  // 切换省份时重置账户默认值标记
-  var accInput = document.getElementById("personalAcc");
-  delete accInput.dataset.userModified;
-  loadProvince(id);
-}
+      <div class="info-grid">
+        <div><span>退休时间</span><b id="retireDate">—</b></div>
+        <div><span>退休年龄</span><b id="retireAge">—</b></div>
+        <div><span>计发月数</span><b id="retireMonths">—</b></div>
+        <div><span>替代率</span><b id="rate">—</b></div>
+      </div>
 
-function onEmployChange() {
-  var et = document.getElementById("employType").value;
-  var genderSel = document.getElementById("genderType");
-  var flagSel = document.getElementById("specialFlags");
-  if (et === "flexible") {
-    // 灵活就业：性别只有男女，知识分子不适用
-    if (genderSel.value === "fc" || genderSel.value === "fw") genderSel.value = "male";
-    genderSel.innerHTML = '<option value="male">男 (60岁)</option><option value="female">女 (55岁)</option>';
-    // 其它加发中去掉知识分子
-    flagSel.innerHTML = '<option value="">无</option><option value="oneChild">独生子女</option>';
-  } else {
-    // 企业职工：完整选项
-    genderSel.innerHTML = '<option value="male">男 (60岁)</option><option value="fw">女工人 (50岁)</option><option value="fc">女干部 (55岁)</option>';
-    flagSel.innerHTML = '<option value="">无</option><option value="oneChild">独生子女</option><option value="intellectual">知识分子</option><option value="both">独生+知识分子</option>';
-  }
-  updateDefaultAccount();
-}
+      <div class="block">
+        <h3>养老金构成</h3>
+        <div class="break-row"><span>基础养老金</span><b id="basePension">—</b></div>
+        <div class="break-row" id="transRow"><span>过渡性养老金</span><b id="transPension">—</b></div>
+        <div class="break-row"><span>个人账户养老金</span><b id="personalPension">—</b></div>
+        <div class="break-row" id="extraRow"><span>增发 / 加发</span><b id="extraPension">—</b></div>
+        <div class="break-row total"><span>每月合计</span><b id="totalRow">—</b></div>
+      </div>
 
+      <div class="block">
+        <h3>缴费年限</h3>
+        <div class="break-row"><span>累计缴费年限</span><b id="totalYears">—</b></div>
+        <div class="break-row"><span>实际缴费年限</span><b id="actualYears">—</b></div>
+        <div class="break-row"><span>视同缴费年限</span><b id="sightYears">—</b></div>
+        <div class="break-row" id="minRow"><span>最低缴费年限要求</span><b id="minYears">—</b></div>
+      </div>
 
-function calculate() {
-  var errEl = document.getElementById("error-msg");
-  errEl.style.display = "none";
-  if (!currentConfig) { errEl.textContent = "省份配置加载中，请稍候再试"; errEl.style.display = "block"; return; }
-  try {
-    var by = parseInt(document.getElementById("birthYear").value);
-    var bm = parseInt(document.getElementById("birthMonth").value);
-    var wy = parseInt(document.getElementById("workYear").value);
-    var wm = parseInt(document.getElementById("workMonth").value);
-    if (!by || !bm || !wy || !wm) { errEl.textContent = "请填写完整的出生和参工年月"; errEl.style.display = "block"; return; }
-    var employType = document.getElementById("employType").value;
-    var gv = document.getElementById("genderType").value;
-    var input = {
-      name: "测算用户",
-      gender: (gv === "male") ? "male" : "female",
-      genderType: gv,
-      cityType: document.getElementById("city").value,
-      retireType: document.getElementById("retireType").value,
-      birthYear: by, birthMonth: bm, workYear: wy, workMonth: wm,
-      avgIndex: parseFloat(document.getElementById("avgIndex").value) || 1.0,
-      personalAccInput: parseFloat(document.getElementById("personalAcc").value) || undefined,
-      skipDelay: false
-    };
-    // 灵活就业：无视同缴费
-    if (employType === "flexible") {
-      input.sightYears = 0;
-    }
-    var sf = document.getElementById("specialFlags").value;
-    if (sf === "oneChild" || sf === "both") input.oneChild = true;
-    if (sf === "intellectual" || sf === "both") input.intellectual = true;
-    var result = window.PensionEngine.calculate(currentConfig, input);
-    window._lastInput = input;
-    displayResult(result);
-  } catch(e) {
-    errEl.textContent = "计算出错: " + e.message;
-    errEl.style.display = "block";
-  }
-}
+      <div class="compare-box" id="compareBox"></div>
 
-function displayResult(result) {
-  var r = result.legal;
-  // 日期格式统一：xx年xx月
-  function fmtDateObj(d) { return d ? d.year + '年' + d.month + '月' : '--'; }
-  var dateStr = result.legalDate || fmtDateObj(r.date);
-  document.getElementById("result-card").classList.remove("result-hidden");
-  document.getElementById("total-amount").innerHTML = "¥" + r.total.toLocaleString("zh-CN",{minimumFractionDigits:2}) + "<br><small>月基本养老金</small>";
-  // 优化描述显示：去掉末尾的"= XXX元"，因为右侧已经单独显示金额了
-  function cleanDesc(d) {
-    if (!d) return "";
-    return d.replace(/=\s*[\d,.]+元$/, "").replace(/1\.00%/g, "1%").trim();
-  }
-  var items = [
-    {label:"基础养老金",val:r.basicPension.amount,desc:cleanDesc(r.basicPension.description)},
-    {label:"个人账户养老金",val:r.personalAccount.amount,desc:cleanDesc(r.personalAccount.description)}
-  ];
-  if (r.extraPension && r.extraPension.amount > 0) items.push({label:"增发基础养老金",val:r.extraPension.amount,desc:cleanDesc(r.extraPension.description)});
-  if (r.transitionalPension && r.transitionalPension.amount > 0) items.push({label:"过渡性养老金",val:r.transitionalPension.amount,desc:cleanDesc(r.transitionalPension.description)});
-  if (r.specialAddition && r.specialAddition.amount > 0) items.push({label:"特殊增发",val:r.specialAddition.amount,desc:cleanDesc(r.specialAddition.description)});
-  if (r.adjustmentFund && r.adjustmentFund.amount > 0) items.push({label:"调节金",val:r.adjustmentFund.amount});
-  var grid = document.getElementById("result-grid");
-  grid.innerHTML = items.map(function(i){
-    var d = i.desc ? " <span style='font-size:11px;color:#86868b'>("+i.desc+")</span>" : "";
-    return "<div class='item'><div class='label'>"+i.label+d+"</div><div class='val'>¥"+i.val.toLocaleString("zh-CN",{minimumFractionDigits:2})+"</div></div>";
-  }).join("");
-  // 过渡系数：兼容不同字段名
-  var transMd = currentConfig.modules && currentConfig.modules.transitional_pension;
-  var transCoef = 0;
-  if (transMd) {
-    transCoef = (transMd.coefficient || transMd.coefficient_over_20 || 0) * 100;
-  }
-  document.getElementById("info-bar").innerHTML = [
-    "退休日期: " + dateStr,
-    "退休年龄: " + (r.ageStr||"--"),
-    "计发月数: " + (r.months||"--"),
-    "累计年限: " + (r.totalYears||0).toFixed(2) + "年",
-    "计发基数: ¥" + (r.baseRetire||0).toLocaleString(),
-    "过渡系数: " + (transCoef ? transCoef.toFixed(1) + "%" : "--")
-  ].map(function(t){return "<span class='info-tag'>"+t+"</span>";}).join("");
-  document.getElementById("result-card").scrollIntoView({behavior:"smooth"});
-  document.getElementById("reportBtn").style.display = "block";
-}
+      <p class="disclaimer">* 测算结果为估算值，实际待遇以社保经办机构核定为准。数据来源于各省人社部门公布的养老金计发基数与记账利率。</p>
+    </section>
+  </main>
 
-function openReport() {
-  var inp = window._lastInput;
-  if (!inp) return;
-  var baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf("/")) + "/report-preview.html";
-  var params = [
-    "province=" + encodeURIComponent(document.getElementById("province").value || "jilin"),
-    "gender=" + encodeURIComponent(inp.gender || "male"),
-    "genderType=" + encodeURIComponent(inp.genderType || "male"),
-    "birthYear=" + (inp.birthYear || 1965),
-    "birthMonth=" + (inp.birthMonth || 1),
-    "workYear=" + (inp.workYear || 1985),
-    "workMonth=" + (inp.workMonth || 1),
-    "avgIndex=" + (inp.avgIndex || 1.0),
-    "personalAcc=" + (inp.personalAccInput || 0),
-    "cityType=" + encodeURIComponent(inp.cityType || "prov"),
-    "employType=" + encodeURIComponent(document.getElementById("employType").value || "employee")
-  ];
-  window.open(baseUrl + "?" + params.join("&"), "_blank");
-}
+  <footer class="app-footer">
+    <p>数据本地计算 · 无需联网 · 与微信小程序同源引擎</p>
+  </footer>
 
-init();
-</script></script>
+  <script src="engine.js"></script>
+  <script src="provinces-bundle.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
