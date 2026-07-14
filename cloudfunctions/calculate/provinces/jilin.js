@@ -23,7 +23,7 @@
 // 全省历年计发基数（元/月）
 // 来源：吉林省历年社平工资表（1995-2024年官方数据）
 const USE_PRE_ACCOUNT_YEARS = false;  // 吉林省不用建账前缴费年限
-const NOTES = '吉林特殊算法：基础养老金与增发均为 (上一年度市县计发基数 + 上一年度全省计发基数×本人平均缴费工资指数) ÷ 2 的加权值（市县与全省两基数同处一公式，并非只用退休地基数）；过渡性养老金单用全省计发基数。此加权算法为吉林特有，不能当成各省通用规则。';
+const NOTES = '吉林特殊算法：基础养老金与增发均为 (上一年度市县计发基数 + 上一年度全省计发基数×本人平均缴费工资指数) ÷ 2 的加权值（市县与全省两基数同处一公式，并非只用退休地基数）；过渡性养老金单用全省计发基数。此加权算法为吉林特有，不能当成各省通用规则。【内联 cases 数组为自描述测试数据·铁律】每个案例 input 必须显式带 gender/genderType 与 baseRetireInput/baseProvInput；2026 等"预发年"必须用上一年已发布计发基数作暂定（如 2026→用 2025 的 7322/7978.25），禁止依赖引擎外推。否则会因引擎默认男性(→按60岁反推退休年至2035)与计发基数外推得到错误结果（吉林-女-1976-02 曾因此被算成 2035 年退休、base 2797.87）。';
 const PROV_BASE = {
   1978: 761,
   1979: 799,
@@ -179,6 +179,7 @@ const cases = [
   {
     name: '长春-男-1966-02（预核定表）',
     input: {
+      gender: 'male', genderType: 'male',
       birthYear: 1966, birthMonth: 2,
       workYear: 1984, workMonth: 7,
       retireYear: 2026, retireMonth: 2,
@@ -202,6 +203,9 @@ const cases = [
   {
     name: '吉林-女-1976-02（预核定表）',
     input: {
+      gender: 'female', genderType: 'fw50',                 // 显式性别：防止 harness 漏解析名字而默认男性→按60岁反推退休年至2035
+      baseRetireInput: 7322,                                // 2026预发年：用2025已发布计发基数(全省)作暂定，勿依赖引擎外推
+      baseProvInput: 7322,
       birthYear: 1976, birthMonth: 2,
       workYear: 2008, workMonth: 6,
       retireYear: 2026, retireMonth: 2,
@@ -224,6 +228,7 @@ const cases = [
   {
     name: '通化-男-2025-08（正式核定表）',
     input: {
+      gender: 'male', genderType: 'male',
       birthYear: 1965, birthMonth: 1,
       workYear: 1980, workMonth: 1,
       cityType: 'prov',
@@ -244,6 +249,7 @@ const cases = [
   {
     name: '吉林-男-1965-06（正式核定表）',
     input: {
+      gender: 'male', genderType: 'male',
       birthYear: 1965, birthMonth: 6,
       workYear: 1984, workMonth: 10,
       cityType: 'prov',
@@ -264,6 +270,7 @@ const cases = [
   {
     name: '长春-男-1965-03（预核定表）',
     input: {
+      gender: 'male', genderType: 'male',
       birthYear: 1965, birthMonth: 3,
       workYear: 1982, workMonth: 12,
       cityType: 'cc',
