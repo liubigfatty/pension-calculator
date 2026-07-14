@@ -54,6 +54,18 @@ Page({
     extraLabel: '',
     extraValues: {},
 
+    // 加发项 UI 状态（对齐引擎扁平字段）
+    provSlug: '',
+    showExtra: false,
+    exExtraRate: '',
+    exIntellectual: false,
+    exOneChild: false,
+    exOneChildAvg: '',
+    exOneChildTypeIdx: 0,
+    exTibetYears: '',
+    oneChildTypeLabels: ['父母一方/独生子女', '无子女人员（10%）'],
+    oneChildTypeValues: ['parent', 'no_child'],
+
     // 省份信息
     provinceName: '',
     cityLabel: '',
@@ -71,6 +83,8 @@ Page({
     const hasExtra = !!meta.hasExtra
     const extraType = meta.extraType || null
     const extraLabel = meta.extraLabel || ''
+    // 有加发项输入的省份（显式清单，不依赖 province-meta 不准的 hasExtra 标记）
+    const EXTRA_PROVINCES = ['sichuan', 'ningxia', 'yunnan', 'chongqing', 'hainan', 'xizang']
 
     // 用默认指数 1.0 估算余额（异步，不阻塞 UI）
     this.estimateBalanceProperly(provCode, input.cityType, 1.0)
@@ -78,6 +92,8 @@ Page({
     this.setData({
       provinceName: meta.name || provCode,
       cityLabel: this.getCityLabel(input.cityType, meta),
+      provSlug: provCode,
+      showExtra: EXTRA_PROVINCES.includes(provCode),
       hasExtra,
       extraType,
       extraLabel
@@ -208,10 +224,42 @@ Page({
     this.updateFormValid()
   },
 
-  // 加发项输入
-  onExtraInput(e) {
-    const key = e.currentTarget.dataset.key
-    this.setData({ [`extraValues.${key}`]: e.detail.value })
+  // ===== 加发项输入（按参保地，收集为引擎扁平字段）=====
+  onExtraRate(e) { this.setData({ exExtraRate: e.detail.value }) },
+  onIntellectualToggle(e) { this.setData({ exIntellectual: e.detail.value }) },
+  onOneChildToggle(e) { this.setData({ exOneChild: e.detail.value }) },
+  onOneChildAvg(e) { this.setData({ exOneChildAvg: e.detail.value }) },
+  onOneChildTypeChange(e) { this.setData({ exOneChildTypeIdx: parseInt(e.detail.value) }) },
+  onTibetYears(e) { this.setData({ exTibetYears: e.detail.value }) },
+
+  // 按参保地把加发项输入收集为引擎认的扁平字段（key 直接用引擎字段名，云函数原样展开进 input）
+  collectExtras() {
+    const d = this.data
+    const slug = d.provSlug
+    const extras = {}
+    if (slug === 'sichuan') {
+      const r = parseFloat(d.exExtraRate)
+      if (!isNaN(r) && r > 0) extras.extraRate = r
+    }
+    if (slug === 'ningxia') {
+      if (d.exIntellectual) extras.intellectual = true
+    }
+    if (slug === 'yunnan' || slug === 'chongqing' || slug === 'hainan') {
+      if (d.exOneChild) extras.oneChild = true
+    }
+    if (slug === 'yunnan' && d.exOneChild) {
+      const b = parseFloat(d.exOneChildAvg)
+      if (!isNaN(b) && b > 0) extras.oneChildAvgPension = b
+    }
+    if (slug === 'hainan' && d.exOneChild) {
+      extras.oneChildType = d.oneChildTypeValues[d.exOneChildTypeIdx] || 'parent'
+    }
+    if (slug === 'xizang') {
+      extras.regionCategory = '二类地区'
+      const y = parseFloat(d.exTibetYears)
+      if (!isNaN(y) && y > 0) extras.tibetWorkYears = y
+    }
+    return extras
   },
 
   onPrev() {
@@ -263,7 +311,7 @@ Page({
       workStartDate: `${input.workYear}-${pad(input.workMonth)}`,
       averageIndex: idx,
       personalAccount: balance,
-      extras: this.data.extraValues,
+      extras: this.collectExtras(),
       retireType: retireType  // ✅ 正确传入：'standard'法定 / 'early'弹性提前
     }
 

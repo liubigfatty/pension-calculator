@@ -81,7 +81,7 @@ module.exports = {
     }
   },
   "chongqing": {
-    "name": "chongqing",
+    "name": "重庆市",
     "avg_salary_history": {
       "1991": 275,
       "1992": 220.75,
@@ -122,7 +122,7 @@ module.exports = {
     }
   },
   "fujian": {
-    "name": "fujian",
+    "name": "福建省",
     "avg_salary_history": {
       "1978": 47.17,
       "1979": 49.42,
@@ -251,7 +251,7 @@ module.exports = {
     }
   },
   "guangxi": {
-    "name": "guangxi",
+    "name": "广西壮族自治区",
     "avg_salary_history": {
       "1995": 425.42,
       "1996": 449.75,
@@ -288,7 +288,7 @@ module.exports = {
     }
   },
   "guizhou": {
-    "name": "guizhou",
+    "name": "贵州省",
     "avg_salary_history": {
       "1990": 172.5,
       "1991": 174.17,
@@ -330,7 +330,7 @@ module.exports = {
     }
   },
   "hainan": {
-    "name": "hainan",
+    "name": "海南省",
     "avg_salary_history": {
       "1998": 520,
       "1999": 572,
@@ -482,7 +482,7 @@ module.exports = {
     }
   },
   "hubei": {
-    "name": "hubei",
+    "name": "湖北省",
     "avg_salary_history": {
       "1998": 706,
       "1999": 734,
@@ -595,7 +595,7 @@ module.exports = {
     }
   },
   "jiangxi": {
-    "name": "jiangxi",
+    "name": "江西省",
     "avg_salary_history": {
       "1991": 153.5,
       "1992": 179.5,
@@ -715,7 +715,7 @@ module.exports = {
     }
   },
   "neimenggu": {
-    "name": "neimenggu",
+    "name": "内蒙古自治区",
     "avg_salary_history": {
       "1990": 153.83,
       "1991": 167.67,
@@ -757,7 +757,7 @@ module.exports = {
     }
   },
   "ningxia": {
-    "name": "ningxia",
+    "name": "宁夏回族自治区",
     "avg_salary_history": {
       "1995": 469.58,
       "1996": 506.25,
@@ -794,7 +794,7 @@ module.exports = {
     }
   },
   "qinghai": {
-    "name": "qinghai",
+    "name": "青海省",
     "avg_salary_history": {
       "1995": 479.42,
       "1996": 557.25,
@@ -831,7 +831,7 @@ module.exports = {
     }
   },
   "shaanxi": {
-    "name": "shaanxi",
+    "name": "陕西省",
     "avg_salary_history": {
       "1992": 212.08,
       "1993": 249.92,
@@ -871,7 +871,7 @@ module.exports = {
     }
   },
   "shandong": {
-    "name": "shandong",
+    "name": "山东省",
     "avg_salary_history": {
       "1996": 419.33,
       "1997": 484.08,
@@ -949,7 +949,7 @@ module.exports = {
     }
   },
   "shanxi": {
-    "name": "shanxi",
+    "name": "山西省",
     "avg_salary_history": {
       "1992": 210.83,
       "1993": 252.08,
@@ -1026,7 +1026,7 @@ module.exports = {
     }
   },
   "tianjin": {
-    "name": "tianjin",
+    "name": "天津市",
     "avg_salary_history": {
       "1990": 146.42,
       "1991": 153.75,
@@ -1068,7 +1068,7 @@ module.exports = {
     }
   },
   "xinjiang": {
-    "name": "xinjiang",
+    "name": "新疆维吾尔自治区",
     "avg_salary_history": {
       "1995": 445.67,
       "1996": 498.92,
@@ -1105,7 +1105,7 @@ module.exports = {
     }
   },
   "xizang": {
-    "name": "xizang",
+    "name": "西藏自治区",
     "avg_salary_history": {
       "1998": 915.58,
       "1999": 1080.17,

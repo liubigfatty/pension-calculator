@@ -40,11 +40,18 @@ exports.main = async (event) => {
       workMonth: workStartDate.includes('-') ? parseInt(workStartDate.split('-')[1]) : 1,
       avgIndex: parseFloat(averageIndex),
       personalAccInput: parseFloat(personalAccount) || 0,  // 0 或空 → 引擎自动复利估算
-      // 加发项（如吉林增发、云南独生子女补贴等）
-      extras: extras || {},
       // 城市类型（如 shenyang/dalian/prov），引擎 calculate() 用 data.cityType 匹配城市计发基数
       cityType: cityType || 'prov',
       // 不设置 skipDelay，让引擎自动计算延迟退休
+    }
+
+    // 加发项拆包：前端 step3 把加发项收集成 extras 对象（键名=引擎扁平字段，如 extraRate/oneChild/intellectual/
+    // regionCategory/tibetWorkYears/oneChildType/oneChildAvgPension），引擎只认扁平字段、不读 input.extras，
+    // 故必须在此逐键摊平到 input 顶层，否则小程序加发项一律算 0。
+    const extrasIn = extras || {}
+    for (const k of Object.keys(extrasIn)) {
+      const v = extrasIn[k]
+      if (v !== undefined && v !== null && v !== '') input[k] = v
     }
 
     // 仅估算余额（快速路径，不跑完整测算）

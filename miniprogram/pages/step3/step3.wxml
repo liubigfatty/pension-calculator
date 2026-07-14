@@ -59,11 +59,49 @@
     />
   </view>
 
-  <!-- 加发项（根据省份动态显示） -->
-  <view class="form-group" wx:if="{{hasExtra}}">
-    <text class="form-label">{{extraLabel || '加发项'}}</text>
-    <view class="form-hint" wx:if="{{extraType === 'extra_pension'}}">视同缴费年限 ≥ 20年可触发增发</view>
-    <view class="form-hint" wx:if="{{extraType === 'special_addition'}}">该省份有特殊加发项</view>
+  <!-- 加发项（按参保地动态显示，对齐引擎扁平字段） -->
+  <view class="form-group" wx:if="{{showExtra}}">
+    <text class="form-label">加发项（{{provinceName}}）</text>
+
+    <!-- 四川：增发比例 -->
+    <view wx:if="{{provSlug === 'sichuan'}}" class="extra-item">
+      <text class="extra-label">增发养老金比例</text>
+      <input class="balance-input" type="digit" placeholder="如 0.003（即 0.3%）" value="{{exExtraRate}}" bindinput="onExtraRate" />
+      <text class="extra-hint">独生子女 0.1% ＋ 艰苦边远 0.1% 等，合计约 0.1%~0.4%</text>
+    </view>
+
+    <!-- 宁夏：知识分子 -->
+    <view wx:if="{{provSlug === 'ningxia'}}" class="extra-switch">
+      <text class="extra-label">属于知识分子（工龄＋地区补贴）</text>
+      <switch checked="{{exIntellectual}}" bindchange="onIntellectualToggle" color="#07c160" />
+    </view>
+
+    <!-- 云南/重庆/海南：独生子女 -->
+    <view wx:if="{{provSlug === 'yunnan' || provSlug === 'chongqing' || provSlug === 'hainan'}}" class="extra-switch">
+      <text class="extra-label">持有《独生子女父母光荣证》</text>
+      <switch checked="{{exOneChild}}" bindchange="onOneChildToggle" color="#07c160" />
+    </view>
+
+    <!-- 云南：补贴基数选填 -->
+    <view wx:if="{{provSlug === 'yunnan' && exOneChild}}" class="extra-item">
+      <text class="extra-label">独生子女补贴基数（选填）</text>
+      <input class="balance-input" type="digit" placeholder="全省人均养老金，留空自动取" value="{{exOneChildAvg}}" bindinput="onOneChildAvg" />
+    </view>
+
+    <!-- 海南：独生子女类型 -->
+    <view wx:if="{{provSlug === 'hainan' && exOneChild}}" class="extra-item">
+      <text class="extra-label">独生子女类型</text>
+      <picker range="{{oneChildTypeLabels}}" value="{{exOneChildTypeIdx}}" bindchange="onOneChildTypeChange">
+        <view class="extra-picker">{{oneChildTypeLabels[exOneChildTypeIdx]}}</view>
+      </picker>
+    </view>
+
+    <!-- 西藏：在藏工作年限 -->
+    <view wx:if="{{provSlug === 'xizang'}}" class="extra-item">
+      <text class="extra-label">在藏工作年限（年）</text>
+      <input class="balance-input" type="digit" placeholder="满10年5% / 满15年10% / 满20年15%" value="{{exTibetYears}}" bindinput="onTibetYears" />
+      <text class="extra-hint">地区类别默认二类地区（拉萨）</text>
+    </view>
   </view>
 
   <!-- 计算按钮 -->
