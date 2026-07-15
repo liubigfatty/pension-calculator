@@ -38,7 +38,7 @@ Page({
     // 支付检查：未付费且非审核模式则跳回
     if (!wx.getStorageSync('report_paid') && !wx.getStorageSync('audit_paid')) {
       wx.showToast({ title: '请先付费', icon: 'none' })
-      setTimeout(() => wx.navigateBack(), 1000)
+      this.scheduleBack()
       return
     }
 
@@ -46,7 +46,7 @@ Page({
 
     if (!r || !r._raw) {
       wx.showToast({ title: '未获取到计算结果', icon: 'none' })
-      setTimeout(() => wx.navigateBack(), 1000)
+      this.scheduleBack()
       return
     }
 
@@ -433,7 +433,22 @@ Page({
   },
 
   onUnload() {
+    if (this._backTimer) clearTimeout(this._backTimer)
     // 付费标记保留，用户返回结果页可再次进入无需重复付费
+  },
+
+  // 受控延时返回：保存句柄以便卸载时取消，且只在当前页仍是 report 时才返回，
+  // 避免向已销毁/非当前 webview 触发 navigateBack（即基础库报的
+  // "routeDone with a webviewId X that is not the current page"）
+  scheduleBack(delay = 1000) {
+    this._backTimer = setTimeout(() => {
+      const pages = getCurrentPages()
+      const top = pages[pages.length - 1]
+      if (top && top.route === 'pages/report/report') {
+        wx.navigateBack()
+      }
+      this._backTimer = null
+    }, delay)
   },
 
   onBack() { wx.navigateBack() }

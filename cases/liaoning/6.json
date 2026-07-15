@@ -1,0 +1,43 @@
+{
+  "case_id": "6",
+  "province": "liaoning",
+  "city": "锦州市",
+  "gender": "male",
+  "gender_type": "male",
+  "birth_year": 1969,
+  "birth_month": 3,
+  "work_year": 1988,
+  "work_month": 12,
+  "retire_year": 2024,
+  "retire_month": 3,
+  "retire_type": "special",
+  "account_start": {
+    "year": 1998,
+    "month": 1
+  },
+  "sight_years": 4.83,
+  "pre_account_years": 9,
+  "actual_years": 30.42,
+  "total_years": 35.25,
+  "avg_index": 1.1913,
+  "base_number": 7201,
+  "base_prov": 7201,
+  "personal_account": 149805.28,
+  "months": 170,
+  "expected": {
+    "basic_pension": 2781.15,
+    "personal_pension": 881.21,
+    "transitional_pension": 994.11,
+    "total": 4656.47,
+    "extra_pension": 0
+  },
+  "verified": true,
+  "status": "正式核准",
+  "notes": "辽宁锦州男，特殊工种提前退休(55岁,计发月数170)。1969.03生，1988.12参加工作，1993.11首次缴费，1998.01建立账户，2024.03退休。先用2023年全省计发基数6987预发，2024年全省计发基数公布（7201元/月）后已正式核准重算。视同4.83年(1988.12-1993.11)，建账前9.00年，实际30.42年，累计35.25年。平均缴费指数1.1913(由基础养老金反推)，过渡指数同=1.1913。基础=7201×(1+1.1913)/2×35.25×1%=2781.15；账户=149805.28/170=881.21；过渡=7201×(1+1.1913)/2×9×1.4%=994.11；合计4656.47。依据辽劳社发〔2006〕81号。",
+  "data_source": "辽宁省城镇企业职工退休待遇核定表（锦州，特殊工种提前退休，2024-03）",
+  "calculation_details": {
+    "formula_basic": "(7201 + 7201 × 1.1913) / 2 × 35.25 × 1% = 2781.15",
+    "formula_personal": "149805.28 / 170 = 881.21",
+    "formula_transition": "(7201 + 7201 × 1.1913) / 2 × 9.00 × 1.4% = 994.11"
+  }
+}

@@ -16,8 +16,9 @@ Page({
     if (pages.length > 1) {
       wx.navigateBack()
     } else {
-      // 如果没有历史页面（如直接从设置进入），跳回首页
-      wx.switchTab({ url: '/pages/index/index' })
+      // 如果没有历史页面（如直接从设置进入），重置栈并跳回首页
+      // 注意：本程序无 tabBar，不能用 switchTab，必须用 reLaunch
+      wx.reLaunch({ url: '/pages/index/index' })
     }
   }
 })
