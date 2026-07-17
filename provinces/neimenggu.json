@@ -120,7 +120,7 @@
     "transitional_pension": {
       "enabled": true,
       "coefficient": 0.0149,
-      "formula_type": "chongqing",
+      "formula_type": "weighted_transition",
       "notes": "内蒙古过渡=(A+A×Q)/2×M1×1.5%。建账1996-01，usePreAccountYears=true。案例1确认。"
     },
     "special_addition": {

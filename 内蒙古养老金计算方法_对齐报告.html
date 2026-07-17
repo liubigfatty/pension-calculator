@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内蒙古企业养老金计算方法 · 引擎对齐报告</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --line:#e5e7eb; --brand:#0e7490; --brand2:#0891b2; --ok:#047857;
+    --warn:#b45309; --warnbg:#fffbeb; --okbg:#ecfdf5; --code:#0f172a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.65;padding:28px 16px}
+  .wrap{max-width:920px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin:16px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  h2{font-size:17px;margin:0 0 12px;color:var(--brand);
+    border-left:4px solid var(--brand2);padding-left:10px}
+  h3{font-size:14px;margin:16px 0 6px;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  th{background:#f1f5f9;font-weight:600}
+  .num{font-variant-numeric:tabular-nums;text-align:right;font-family:"SF Mono",Consolas,monospace}
+  code{background:#f1f5f9;padding:1px 6px;border-radius:5px;font-size:13px;color:var(--code)}
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;margin-right:6px}
+  .p-ok{background:var(--okbg);color:var(--ok)}
+  .p-warn{background:var(--warnbg);color:var(--warn)}
+  .formula{background:#0f172a;color:#e2e8f0;padding:12px 14px;border-radius:10px;
+    font-family:"SF Mono",Consolas,monospace;font-size:13px;overflow-x:auto;margin:8px 0}
+  .fix li{margin:6px 0}
+  .note{font-size:13px;color:var(--muted)}
+  .alert{border:1px solid #fde68a;background:var(--warnbg);border-radius:10px;padding:12px 14px;margin:12px 0}
+  .alert b{color:var(--warn)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .box{flex:1;min-width:240px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .big{font-size:26px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums}
+  footer{color:var(--muted);font-size:12px;margin-top:24px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>内蒙古企业养老金计算方法</h1>
+  <p class="sub">基于官方规则修正引擎配置（neimenggu）并验算示例 · 生成于 2026-07-11</p>
+
+  <div class="card">
+    <h2>一、养老金构成</h2>
+    <p>内蒙古企业职工养老金由三项组成：</p>
+    <ul>
+      <li><b>基础养老金</b> — 与社平、缴费指数、缴费年限挂钩</li>
+      <li><b>个人账户养老金</b> — 个人账户累计储存额 ÷ 计发月数</li>
+      <li><b>过渡性养老金</b> — 仅“中人”（统账结合前参加工作）享有</li>
+    </ul>
+    <p class="note">“新人”（统账结合后参加工作）只有基础 + 个人账户两项。统账结合多数自 <b>1996-01</b> 起，最迟 <b>1998-01</b>。视同缴费年限 = 参加工作至 <b>1997-12</b>。</p>
+  </div>
+
+  <div class="card">
+    <h2>二、关键规则（已写入引擎）</h2>
+    <table>
+      <tr><th>项目</th><th>取值 / 规则</th><th>状态</th></tr>
+      <tr><td>基础养老金公式</td><td class="num">(基数 + 基数×Q) ÷ 2 × 缴费年限(含视同) × 1%</td><td><span class="pill p-ok">已对齐</span></td></tr>
+      <tr><td>个人账户公式</td><td class="num">个人账户累计储存额 ÷ 计发月数</td><td><span class="pill p-ok">已对齐</span></td></tr>
+      <tr><td>过渡性养老金公式</td><td class="num">指数化月均工资 × 统账结合前年限 × <b>1.2%</b></td><td><span class="pill p-ok">已对齐</span></td></tr>
+      <tr><td>指数封底</td><td>平均缴费指数 &lt; 1 时，<b>过渡性养老金按 1 计算</b>（基础养老金仍用真实指数）</td><td><span class="pill p-ok">已实现对</span></td></tr>
+      <tr><td>计发基数</td><td>全口径社平工资 = 计发基数；2025 未公布时（预发）用 2024 基数 <b>8105</b></td><td><span class="pill p-ok">已对齐</span></td></tr>
+      <tr><td>视同 cutoff</td><td>1997-12（统账结合前）</td><td><span class="pill p-ok">已对齐</span></td></tr>
+    </table>
+    <div class="formula">指数化月平均缴费工资 = 退休时计发基数 × (Q &lt; 1 ? 1 : Q)
+过渡性养老金 = 指数化月均工资 × 统账结合前(视同)年限 × 1.2%</div>
+  </div>
+
+  <div class="card">
+    <h2>三、示例验算（2025-06 退休男）</h2>
+    <div class="note">基本情况：1965-06 生，1984-07 参工，1998-01 建账，2025-06 退休；
+      计发基数 <b>8105</b>（2025 预发），平均指数 Q=<b>0.9708</b>，个账 <b>135800</b>，计发月数 <b>139</b>，
+      视同 <b>13.5</b> 年，累计 <b>41</b> 年。</div>
+
+    <div class="row" style="margin-top:14px">
+      <div class="box"><div class="note">基础养老金</div><div class="big">3274.53</div>
+        <div class="note">8105×(1+0.9708)/2×41×1%</div></div>
+      <div class="box"><div class="note">个人账户养老金</div><div class="big">976.98</div>
+        <div class="note">135800 ÷ 139</div></div>
+      <div class="box"><div class="note">过渡性养老金</div><div class="big">1313.01</div>
+        <div class="note">8105×<b>1</b>×13.5×1.2%（Q=0.9708&lt;1 封底为1）</div></div>
+    </div>
+
+    <h3>合计</h3>
+    <table>
+      <tr><th>分项</th><th class="num">金额</th></tr>
+      <tr><td>基础养老金</td><td class="num">3274.53</td></tr>
+      <tr><td>个人账户养老金</td><td class="num">976.98</td></tr>
+      <tr><td>过渡性养老金</td><td class="num">1313.01</td></tr>
+      <tr><th>基本养老金合计</th><th class="num">5564.52</th></tr>
+    </table>
+
+    <div class="alert">
+      <b>原文笔误提示：</b>您给出的最终合计为 <b>5565.42</b>，并写出合计式 “3274.53 + 976.98 + <b>1313.91</b>”。
+      但按公式，过渡性养老金 = 8105×1×13.5×1.2% = <b>1313.01</b>（非 1313.91）。
+      求和时把过渡项误写为 1313.91，导致合计多了 0.90 元。
+      <b>正确合计应为 5564.52。</b>基础、个人账户两项与您的数值一致。
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>四、本次引擎修正</h2>
+    <ul class="fix">
+      <li><code>cloudfunctions/calculate/provinces/neimenggu.js</code>：过渡系数 <b>0.013 → 0.012</b>；过渡模块新增 <code>index_floor_one: true</code>（指数&lt;1按1计过渡）。</li>
+      <li><code>engine/pension-engine.js</code>：通用过渡公式支持 <code>index_floor_one</code> 封底（<b>仅内蒙古启用，不影响其他省份</b>）。</li>
+      <li><code>cloudfunctions/calculate/provinces/neimenggu.json</code>（网页镜像）：coefficient <b>0.0149 → 0.012</b>，formula_type <b>chongqing → standard</b>，新增 <code>index_floor_one: true</code>。</li>
+      <li>删除 <code>cases/neimenggu/1.json</code>：早期 AI 猜测的脏 case（<code>verified:false</code>、备注“过渡公式疑似…待确认”），其 expected 按旧错误公式回填，非真实表。</li>
+      <li>已同步 <code>engine/pension-engine.js</code> → <code>cloudfunctions/calculate/</code> 与 <code>web/engine.js</code>。</li>
+      <li>全量回归：<b>158 / 158 通过</b>（绿）。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>五、下一步</h2>
+    <p><span class="pill p-warn">待真实表</span> 内蒙古目前<b>仍缺真实核定表</b>——零真实表锚定省份目前仅剩内蒙古。
+      请发送一张内蒙古企业职工养老金核定表（图片/数据），我将按 <b>pension-real-table-anchor</b> 流程：
+      读表 → 核对并修正省份配置 → 建/校准 verified case → 跑全量 → 同步副本 → 入记忆 → 提交。</p>
+    <p class="note">提示：真实表请尽量包含分项（基础/个人/过渡）金额与计发基数、个账累计、缴费年限、平均指数，便于精确锚定。</p>
+  </div>
+
+  <footer>内蒙古企业养老金计算方法 · 引擎对齐报告 · 数据口径以官方核定表为准</footer>
+</div>
+</body>
+</html>

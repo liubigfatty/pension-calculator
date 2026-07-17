@@ -99,11 +99,13 @@ function calcBasicPension(params) {
   let description
 
   if (mod.formula_type === 'henan') {
-    // 河南特殊：指数化工资 = 退休地计发基数 × 平均缴费指数
-    // 公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
-    const indexSalary = retireBase * avgIndex
-    amount = Math.round((retireBase + indexSalary) / 2 * totalYears * rate * 100) / 100
-    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+    // 河南双基数（豫政〔2006〕29号 + 豫劳社养老〔2006〕26号）：基础 = (全省计发基数 + 退休地计发基数 × 平均缴费指数) / 2 × 缴费年限 × 1%
+    // 第一项用全省基数 provBase；第二项指数化用退休地(城市)基数 retireBase（无独立基数城市回退全省）
+    const prov = provBase != null ? provBase : retireBase
+    const cityBase = retireBase != null ? retireBase : prov
+    const indexSalary = cityBase * avgIndex
+    amount = Math.round((prov + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${prov.toLocaleString()} 全省 + ${cityBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else if (mod.formula_type === 'chongqing') {
     // 重庆特殊（渝办发〔2006〕205号）：基础 = (社平 + 社平×Q) / 2 × 年限 × 1%
     // A = 上年度全市在岗职工月平均工资，非计发基数；由 params.socialAvgBase 传入
@@ -746,7 +748,15 @@ function calcSpecialAddition(params) {
     const actualYears_zz = params?.context?.actualYears || 0
     const totalWorkYears = params?.context?.totalWorkYears || 0
     const zzBase = params?.context?.zzBase || 1
-    const param = mod.subsidy_param || 8.85
+    let param = params?.subsidyParam || null
+    if (param === null) {
+      const ctxTransIdx = params?.context?.transIndex
+      const ctxSightYears = params?.context?.sightYears
+      if (ctxTransIdx && ctxSightYears && params?.context?.lookupZZSubsidyParam) {
+        param = params.context.lookupZZSubsidyParam(ctxSightYears, ctxTransIdx)
+      }
+    }
+    if (param === null) { param = mod.subsidy_param || 8.85 }
     const baseRef = 7933  // 参考值（2026年固定）
 
     if (!actualYears_zz || !totalWorkYears || totalWorkYears <= 0) {

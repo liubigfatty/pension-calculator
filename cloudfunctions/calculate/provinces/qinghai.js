@@ -51,12 +51,12 @@ const PROV_BASE = {
   2017: 6309,
   2018: 6625,
   2019: 6956,
-  2020: 7304,
-  2021: 7669,
+  2020: 7516,
+  2021: 7908,
   2022: 8261,
   2023: 8591,
   2024: 8878,
-   2025: 8816,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2025: 9056,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
 const BASE_PARAMS = {
@@ -111,7 +111,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'chongqing' };
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
   }
 
   // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
@@ -170,12 +170,12 @@ const AVG_SALARY_HISTORY = {
   2017: 6377.92,
   2018: 5682.83,
   2019: 6084.5,
-  2020: 7023.17,
-  2021: 7604.42,
+  2020: 7023,
+  2021: 7604,
   2022: 8029,
-  2023: 8642.58,
-  2024: 8878,
-  2025: 8816,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2023: 8643,
+  2024: 8816,
+  // 2025: 官方全口径未公布，交由引擎预发年规则外推(=2024原值)，公布后再填
 };
 
 

@@ -80,10 +80,30 @@ const PROV_BASE = {
 
 ;
 
-// 郑州市单独计发基数（郑州市人社局2024年第5号通告）
-// 2024年基数6757元，与全省6738元相差19元（约0.3%）
-// 历史年份暂用全省基数代替，待补充官方数据
+// 郑州市单独计发基数（双基数：过渡性养老金/过渡性补贴用退休地基数）
+// 2024年本地计发基数7925元（真实核定表案例佐证），2025年7933元（引擎 baseRef 验证）
+// 注：原6757实为郑州市2024全口径社平（非计发基数），已更正
 const ZHENGZHOU_BASE = { ...PROV_BASE };
+ZHENGZHOU_BASE[2024] = 7925;
+ZHENGZHOU_BASE[2025] = 7933;
+ZHENGZHOU_BASE[2026] = 7933;
+
+// 洛阳市单独计发基数（2023年6457元，洛阳市社保局问政回复确认；2024/2025待官方公布，暂用6573）
+const LUOYANG_BASE = { ...PROV_BASE };
+LUOYANG_BASE[2023] = 6457;
+LUOYANG_BASE[2024] = 6573;
+LUOYANG_BASE[2025] = 6573;
+LUOYANG_BASE[2026] = 6573;
+
+// 信阳市/开封市：原值6260/6385疑似“缴费基数/社平”误标为计发基数，待官方计发基数文件核实（详见真相源同款注释）
+const XINYANG_BASE = { ...PROV_BASE };
+XINYANG_BASE[2024] = 6260;
+XINYANG_BASE[2025] = 6260;
+XINYANG_BASE[2026] = 6260;
+const KAIFFENG_BASE = { ...PROV_BASE };
+KAIFFENG_BASE[2024] = 6385;
+KAIFFENG_BASE[2025] = 6385;
+KAIFFENG_BASE[2026] = 6385;
 
 
 
@@ -138,13 +158,12 @@ const CITY_LIST = [
 // ==================== 核心规则 ====================
 
 // 河南省养老保险建账时间和 cutoff 时间
-// ⚠️ 待确认：建账时间（目前按1998-01估算，待官方文件确认）
-// ⚠️ 待确认：视同缴费cutoff时间（目前按1997-12估算，待官方文件确认）
-// TODO：搜索关键词"豫人社规 个人账户建立 1998"或"豫政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// 建账时间官方依据：豫政办〔1995〕74号"从1995年1月起建立个人帐户"；河南省社保中心官网(2023-01-16)确认 1995-01-01
+// cutoff_date 河南不读取（formula_type:'henan' 仅由 account_start 判定视同），设为与建账同值
+const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政办〔1995〕74号，个人账户建账1995-01（官方坐实）
+const CUTOFF_DATE   = { year: 1995, month: 1 }  // 对齐建账1995-01
 
-const TRANS_COEF = 0.012  // 河南过渡系数固定 1.2%（待官方文件确认）
+const TRANS_COEF = 0.013  // 豫政〔2006〕29号：过渡系数 1.3%
 // TODO：补充官方文件编号（如：豫政发〔2006〕XX号）
 
 const PROV_TAG = 'henan'
@@ -179,8 +198,14 @@ function getEngineConfig() {
     base_rates: {
       prov: PROV_BASE,
       zhengzhou: ZHENGZHOU_BASE,
+      luoyang: LUOYANG_BASE,
+      xinyang: XINYANG_BASE,
+      kaifeng: KAIFFENG_BASE,
     },
-    modules: {},
+    modules: {
+      basic_pension: { enabled: true, formula_type: 'henan' },
+      transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },
+    },
   }
 }
 

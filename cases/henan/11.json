@@ -1,0 +1,36 @@
+{
+  "province": "henan",
+  "case_id": "henan-xinxiang-2026",
+  "gender": "女",
+  "birth_year": 1971,
+  "birth_month": 1,
+  "work_year": 1988,
+  "work_month": 7,
+  "retire_year": 2026,
+  "retire_month": 3,
+  "base_number": 6738,
+  "base_prov": 6738,
+  "city_type": "xinxiang",
+  "avg_index": 1.2142,
+  "trans_index": 1.2612,
+  "personal_account": 163443.46,
+  "months": 169,
+  "sight_years": 6.5,
+  "total_years": 37.67,
+  "pre_account_years": 6.5,
+  "retire_type": "standard",
+  "expected": {
+    "basic_pension": 2729.2,
+    "personal_pension": 967.12,
+    "transitional_pension": 680.3,
+    "total": 4376.62
+  },
+  "verified": true,
+  "source": {
+    "type": "核定表",
+    "region": "河南省新乡市",
+    "date": "2026-03-29",
+    "notes": "豫政[2006]29号文；2026-03退休，使用2025年全省基数6738、新乡本地基数6385；企业女职工管理岗55岁退休"
+  },
+  "notes": "河南新乡女，1971-01生，1988-07参工，1995-01建账，2026-03退休（55岁2个月，管理岗）。视同缴费月数78=6.5年，实际缴费月数374=31.17年，合计452月=37.67年。基础养老金用省基数6738、全程平均指数1.2142（7752.03÷6385）；过渡性养老金用本地基数6385、实际平均指数1.2612（8050.85÷6385）、视同年限6.5年、系数1.3%。新乡基数6385低于省基数6738（−5.2%），属'向下偏'地市——37.7年长工龄仍被低基数拉低，合计仅4376.62元。"
+}

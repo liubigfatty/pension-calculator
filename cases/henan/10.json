@@ -20,10 +20,10 @@
   "pre_account_years": 12.92,
   "retire_type": "standard",
   "expected": {
-    "basic_pension": 2525.58,
+    "basic_pension": 2471.06,
     "personal_pension": 511.00,
     "transitional_pension": 679.38,
-    "total": 3715.96
+    "total": 3661.44
   },
   "verified": true,
   "source": {
