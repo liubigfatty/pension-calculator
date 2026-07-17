@@ -1,0 +1,28 @@
+{
+  "case_id": "henan-pingdingshan-2024-11",
+  "province": "henan",
+  "city_type": "pingdingshan",
+  "gender": "女",
+  "birth_year": 1974,
+  "birth_month": 12,
+  "work_year": 1993,
+  "work_month": 12,
+  "retire_year": 2024,
+  "retire_month": 11,
+  "avg_index": 0.6297,
+  "trans_index": 0.605,
+  "personal_account": 71310.26,
+  "months": 195,
+  "total_years": 31.08,
+  "sight_years": 1.08,
+  "base_number": 6606,
+  "expected": {
+    "basic_pension": 1639.15,
+    "personal_pension": 365.69,
+    "transitional_pension": 53.17,
+    "total": 2058.01
+  },
+  "verified": true,
+  "source": "平顶山市2024-12企业退休官方核定表（用户2026-07-17提供，双基数反向案例）",
+  "note": "平顶山基数6260<省基数6738（与郑州相反）；基础/过渡均用退休地基数；无郑州式过渡性补贴（修正：2024-11退休用2024年省基数6606，非2025/2026的6738）"
+}

@@ -2859,6 +2859,7 @@ account_start: ACCOUNT_START,
       xinxiang: XINXIANG_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
+    lookupZZSubsidyParam: lookupZZSubsidyParam,
     modules: {
       basic_pension: { enabled: true, formula_type: 'henan' },
       transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },

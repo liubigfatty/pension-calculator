@@ -1,0 +1,30 @@
+{
+  "case_id": "hubei-jingzhou-2026-05-real",
+  "province": "hubei",
+  "city_type": "荆州",
+  "gender": "女",
+  "birth_year": 1976,
+  "birth_month": 5,
+  "work_year": 1993,
+  "work_month": 12,
+  "retire_year": 2026,
+  "retire_month": 5,
+  "avg_index": 0.9519,
+  "personal_account": 105842.74,
+  "months": 195,
+  "total_years": 32.5,
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "sight_years": 2.08,
+  "expected": {
+    "basic_pension": 2286.9,
+    "personal_pension": 542.78,
+    "transitional_pension": 171.31,
+    "total": 3000.99
+  },
+  "verified": true,
+  "source": "荆州市养老保险待遇核定表（社会人参保，2026-05，建立个人账户时间199601）",
+  "note": "普通企业建账1996-01（鄂政发[1995]111号全省统账结合）；退休地基数7210（三档）。与hubei/10.json(行业统筹1998-12建账)互为对照，证明湖北普通企业建账为1996而非1998。（基础养老金核定表标注2286.9，公式(7210+6863.2)/2×32.5×1%=2286.9，合计2286.9+542.78+171.31=3000.99吻合）"
+}

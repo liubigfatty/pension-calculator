@@ -806,7 +806,7 @@ function calcSpecialAddition(params) {
     // 补贴参数来源：附表二《过渡性补贴参数表》，查表维度=(视同年限见月进年, 过渡指数保留1位进位)
     // ⚠️ 参数因人而异！不可硬编码固定值。优先级：输入覆盖 > 查表 > config默认值(兼容旧数据)
     const location = params?.context?.location || 'prov'
-    if (location !== 'zz') {
+    if (location !== 'zz' && location !== 'zhengzhou') {
       return { amount: 0, description: '郑州过渡性补贴：非郑州市参保人员，不享受' }
     }
 
@@ -1720,7 +1720,7 @@ function calculate(config, inputData) {
   // 特殊增发
   // 郑州过渡性补贴：需要实际缴费年限、全部工作年限、计发基数
   let zzBaseVal = 0
-  if (config.province === 'henan' && city === 'zz') {
+  if (config.province === 'henan' && (city === 'zz' || city === 'zhengzhou')) {
     zzBaseVal = retBase  // 郑州市计发基数（用于过渡性补贴公式）
   }
 

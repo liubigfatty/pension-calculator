@@ -9,7 +9,7 @@
  *
  * 使用方式：
  *   const engine = require('./pension-engine')
- *   const config = require('../data/provinces/jilin.json')
+ *   const config = require('../cloudfunctions/calculate/provinces/jilin.json')
  *   const result = engine.calculate(config, inputData)
  */
 
@@ -560,10 +560,10 @@ function calcTransitionalPension(params) {
     return { amount: baseSZAmount, _newAmount: newAmount, _oldBase: coreAmount, _allowance: 0, _rate: rate, _adjustment: adjustment, description: desc }
   }
 
-  // 重庆特殊公式（渝办发〔2006〕205号）：
-  // 过渡性养老金 = (A + A×Q) / 2 × M1 × 1.4%
+  // 加权式过渡公式（原以首个使用省"重庆"命名，现改语义名）：
+  // 过渡性养老金 = (A + A×Q) / 2 × M1 × 系数
   // 其中 A = 计发基数（退休地基数），Q = 平均缴费指数，M1 = 建账前缴费年限
-  if (mod.formula_type === "chongqing") {
+  if (mod.formula_type === "weighted_transition") {
     const retireBase = params?.retireBase || provBase
     const avgBase = (retireBase + retireBase * transIdx) / 2
     const amount = Math.round(avgBase * effectiveYears * mod.coefficient * 100) / 100
@@ -806,7 +806,7 @@ function calcSpecialAddition(params) {
     // 补贴参数来源：附表二《过渡性补贴参数表》，查表维度=(视同年限见月进年, 过渡指数保留1位进位)
     // ⚠️ 参数因人而异！不可硬编码固定值。优先级：输入覆盖 > 查表 > config默认值(兼容旧数据)
     const location = params?.context?.location || 'prov'
-    if (location !== 'zz') {
+    if (location !== 'zz' && location !== 'zhengzhou') {
       return { amount: 0, description: '郑州过渡性补贴：非郑州市参保人员，不享受' }
     }
 
@@ -815,7 +815,7 @@ function calcSpecialAddition(params) {
     const zzBase = params?.context?.zzBase || 1
     const baseRef = mod.base_ref || 7933
 
-    // 补贴参数三级取值：①输入直接传值 ②从context的transIndex+sightYears查表 ③config默认值(兼容)
+    // 补贴参数三级取值：①输入直接传值 ②从context的transIndex+sightYears查表 ③config默认值(兼容旧数据)
     let param = params?.subsidyParam || null
     if (param === null) {
       const ctxTransIdx = params?.context?.transIndex
@@ -1649,11 +1649,11 @@ function calculate(config, inputData) {
   const retireAgeExact = legalTotalMonths / 12
   const months = data.monthsInput || getRetireMonths(retireAgeExact, config)
 
-  // 重庆特殊：基础养老金用上年度社平工资（非计发基数）
+  // 基础养老金取上年度社平工资（非计发基数）的省份用此分支
   // config.base_rates.social_avg_{上年度} 存储人社公布的养老金计发用社平
   // 也支持用户通过 socialAvgBaseInput 显式传入（如预核表使用计发基数代替社平）
   const socialAvgBaseKey = 'social_avg_' + (legalDate.year - 1)
-  const socialAvgBase = (config.modules?.basic_pension?.formula_type === 'chongqing')
+  const socialAvgBase = (config.modules?.basic_pension?.formula_type === 'prev_year_social_avg')
     ? (data.socialAvgBaseInput != null ? data.socialAvgBaseInput
        : config.base_rates?.[socialAvgBaseKey]
        || getBase('prov', legalDate.year - 1, config, 'avg_salary_history'))
@@ -1720,7 +1720,7 @@ function calculate(config, inputData) {
   // 特殊增发
   // 郑州过渡性补贴：需要实际缴费年限、全部工作年限、计发基数
   let zzBaseVal = 0
-  if (config.province === 'henan' && city === 'zz') {
+  if (config.province === 'henan' && (city === 'zz' || city === 'zhengzhou')) {
     zzBaseVal = retBase  // 郑州市计发基数（用于过渡性补贴公式）
   }
 

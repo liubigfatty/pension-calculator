@@ -1,0 +1,28 @@
+{
+  "case_id": "henan-zhengzhou-2026-02-highindex",
+  "province": "henan",
+  "city_type": "zhengzhou",
+  "gender": "男",
+  "birth_year": 1965,
+  "birth_month": 11,
+  "work_year": 1983,
+  "work_month": 9,
+  "retire_year": 2026,
+  "retire_month": 2,
+  "avg_index": 2.1119,
+  "trans_index": 2.5286,
+  "personal_account": 395301.7,
+  "months": 137.3,
+  "total_years": 42.5,
+  "sight_years": 11.58,
+  "base_number": 6738,
+  "expected": {
+    "basic_pension": 4991.65,
+    "personal_pension": 2879.11,
+    "transitional_pension": 3019.74,
+    "total": 11534.36
+  },
+  "verified": true,
+  "source": "郑州市2026-02企业退休官方核定表（今日头条@平静语社保 2026-07发布，高指数中人）",
+  "note": "双基数双指数：省基数6738/郑州基数7933；基础指数2.1119/过渡指数2.5286；含郑州过渡性补贴(参数8.85)"
+}
