@@ -260,7 +260,38 @@ testCases.forEach((tc, i) => {
   }
 });
 
+// ============ 郑州过渡性补贴查表回归测试（#4b：补全附表二坐标） ============
+console.log('========== 郑州补贴查表回归测试 ==========\n');
+const zzTests = [
+  { name: '坐标(1,0.7)→4.62 [case6 郑州2025-12]', sight: 7/12, idx: 0.6283, want: 4.62 },
+  { name: '坐标(5,0.9)→5.26', sight: 5, idx: 0.9, want: 5.26 },
+  { name: '坐标(12,2.6)→8.85', sight: 12, idx: 2.6, want: 8.85 },
+  { name: '坐标(13,0.6)→6.32', sight: 13, idx: 0.6, want: 6.32 },
+  { name: '坐标(14,0.9)→6.45 [case3 郑州2024-01]', sight: 13.5, idx: 0.8279, want: 6.45 },
+];
+zzTests.forEach(t => {
+  const got = henanModule.lookupZZSubsidyParam(t.sight, t.idx);
+  if (Math.abs(got - t.want) < 1e-9) { passed++; console.log(`✅ ${t.name}（查得 ${got}）`); }
+  else { failed++; console.log(`❌ ${t.name} 期望 ${t.want} 实得 ${got}`); }
+});
+
+// 公式复算（与引擎 calcSpecialAddition.zhengzhou_subsidy 同式）：
+// 补贴 = (实际年限×参数) / (累计年限×1%) × (郑州基数/参考基数7933)
+function zzSubsidy(actual, total, param, zzBase, baseRef = 7933) {
+  return Math.round((actual * param) / (total * 0.01) * (zzBase / baseRef) * 100) / 100;
+}
+const zzFormula = [
+  { name: 'case3 郑州2024-01：实际26.5/累计40/参数6.45/郑州7800 → 核定表419.9', actual: 26.5, total: 40, param: 6.45, zzBase: 7800, want: 419.9 },
+  { name: 'case6 郑州2025-12：实际31/累计31.58/参数4.62/郑州7933 → 核定表453.51', actual: 31, total: 31.58, param: 4.62, zzBase: 7933, want: 453.51 },
+];
+zzFormula.forEach(t => {
+  const got = zzSubsidy(t.actual, t.total, t.param, t.zzBase);
+  if (Math.abs(got - t.want) <= 0.5) { passed++; console.log(`✅ ${t.name}（算得 ${got}）`); }
+  else { failed++; console.log(`❌ ${t.name} 期望≈${t.want} 实得 ${got}`); }
+});
+console.log('');
+
 console.log(`\n========== 测试结果 ==========`);
-console.log(`通过: ${passed}, 失败: ${failed}, 总计: ${testCases.length}, 通过率: ${(passed / testCases.length * 100).toFixed(1)}%`);
+console.log(`通过: ${passed}, 失败: ${failed}, 总计: ${passed + failed}, 通过率: ${((passed / (passed + failed)) * 100).toFixed(1)}%`);
 
 process.exit(failed > 0 ? 1 : 0);
