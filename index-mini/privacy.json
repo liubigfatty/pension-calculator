@@ -1,0 +1,7 @@
+{
+  "policyVersion": "1.0.0",
+  "needAuthorization": true,
+  "description": "本小程序计算本人平均缴费指数：缴费基数仅临时提交云函数计算、不留存不关联身份；不收集姓名/身份证/手机号等身份信息。",
+  "permissionList": [],
+  "privacyProtocol": { "url": "https://a44a45f564294e3e959d393d70c9596b.app.codebuddy.work/privacy.html" }
+}

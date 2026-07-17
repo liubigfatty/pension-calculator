@@ -1,3 +1,6 @@
+// AUTO-GENERATED from source — 请勿手改，改源码后重跑 scripts/build-web-index.js
+window.INDEX_PROVINCES = (function () {
+  const module = { exports: {} };
 /*
  * 自动生成 - 31省社平工资数据包 (元/月)
  * 来源: cloudfunctions/calculate/provinces/*.js getEngineConfig().avg_salary_history
@@ -1236,3 +1239,6 @@ module.exports = {
     }
   }
 }
+
+  return module.exports;
+})();

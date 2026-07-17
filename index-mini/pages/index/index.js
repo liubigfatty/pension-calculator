@@ -112,6 +112,18 @@ Page({
   },
 
   calc() {
+    // 隐私合规门禁（P0-3）：未同意《隐私保护指引》前禁用计算
+    const app = getApp()
+    if (!app.globalData.privacyAuthorized) {
+      wx.showModal({
+        title: '隐私授权',
+        content: '我们仅在本机计算你输入的缴费数据，不会上传。点击同意即代表你已知晓《隐私保护指引》。',
+        showCancel: false,
+        success() { app.showPrivacyAuthorize && app.showPrivacyAuthorize() }
+      })
+      return
+    }
+
     const { provinces, provIndex, startYear, startMonth } = this.data
     const province = provinces[provIndex].slug
     const sy = Number(startYear) || 0

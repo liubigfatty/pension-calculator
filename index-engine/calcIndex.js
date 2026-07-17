@@ -143,8 +143,11 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A', gapYe
     // 公式: 月均基数 ÷ 当年社平 = 该年指数
     const yearIndex = rec.baseAvg / socialAvg
     
+    // 规则②：单年指数封顶 3.0 / 保底 0.6（仅影响平均指数，不影响账户入账）
+    const yearIndexClamped = Math.min(3.0, Math.max(0.6, yearIndex))
+
     // 加权累加（权重=该年月数）
-    totalIndexSum += yearIndex * rec.months
+    totalIndexSum += yearIndexClamped * rec.months
     totalWeight += rec.months
 
     // ── 计算个人账户本年计入金额 ──>
@@ -162,8 +165,8 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A', gapYe
       months: rec.months,
       baseAvg: rec.baseAvg,
       socialAvg,
-      index: yearIndex,
-      weightedIndex: yearIndex * rec.months,
+      index: yearIndexClamped,
+      weightedIndex: yearIndexClamped * rec.months,
       rate,
       accountContribution: annualAccountPay,
       balanceAfterYear: accountBalance
@@ -199,7 +202,7 @@ function calculateIndex({ provinceConfig, contribution, granularity = 'A', gapYe
  *
  * 原理: 
  *   已知最终余额 B、各年缴费月数、利率表、社平序列
- *   设未知平均指数为 X，则每年基数 = X × 上年社平
+ *   设未知平均指数为 X，则每年基数 = X × 当年社平
  *   代入复利公式反解 X（二分搜索）
  *
  * 支持三颗粒度：A/B 用原始基数结构，C 仅用起止时间+总月数铺成年序列。
@@ -216,7 +219,7 @@ function inferIndexFromBalance({ provinceConfig, contribution, granularity, know
   const TOLERANCE = options.tolerance || 10     // 误差容忍（元）
   const MAX_ITER = options.maxIter || 100       // 最大迭代次数
 
-  // 构建反推模板：逐年 + 该年上年度社平（用于合成基数 = 指数 × 社平）
+  // 构建反推模板：逐年 + 该年当年社平（用于合成基数 = 指数 × 社平）
   const template = buildInferTemplate(contribution, granularity, provinceConfig.avg_salary_history)
   if (template.length === 0) {
     return { error: '无法构建反推模板（缺少社平数据或缴费信息）' }

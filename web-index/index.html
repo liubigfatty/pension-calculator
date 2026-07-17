@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>平均缴费指数计算器 | 养老金计算平台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+  <!-- 隐私合规同意条幅（P0-3）：同意前禁用计算 -->
+  <div id="privacyBar" class="privacy-bar" style="display:none">
+    <span class="privacy-text">
+      我们仅在本机计算你输入的缴费数据，不会上传。点“同意”即代表你已知晓并同意
+      <a href="privacy.html" target="_blank" rel="noopener">《隐私保护指引》</a>。
+    </span>
+    <button class="btn-privacy" id="privacyAgree" type="button">同意</button>
+  </div>
+
+  <div style="max-width:760px;margin:0 auto;padding:14px 16px 0">
+    <a href="../" style="color:#1d4ed8;font-size:14px;text-decoration:none">‹ 返回养老金测算</a>
+  </div>
+
+  <header class="header">
+    <h1>平均缴费指数计算器</h1>
+    <p>选择参保地、填入逐年缴费基数，一键算出平均缴费指数与个人账户余额</p>
+  </header>
+
+  <!-- 基础信息 -->
+  <section class="card">
+    <div class="card-title">基础信息</div>
+    <div class="field">
+      <label>参保地</label>
+      <select id="province"></select>
+      <div class="warn" id="gapHint" style="display:none"></div>
+    </div>
+    <div class="field">
+      <label>首次缴费年月</label>
+      <input type="month" id="startDate" min="1990-01">
+    </div>
+  </section>
+
+  <!-- 逐年缴费明细 -->
+  <section class="card">
+    <div class="card-title">逐年缴费明细（未缴年份留空）</div>
+    <button class="btn-secondary" id="genBtn" type="button">生成逐年清单</button>
+    <div id="yearlyWrap" style="display:none">
+      <div class="tbl">
+        <div class="tr th"><span class="c1">年份</span><span class="c2">月数</span><span class="c3">月均缴费基数</span></div>
+        <div id="yearlyRows"></div>
+      </div>
+    </div>
+  </section>
+
+  <button class="btn-primary" id="calcBtn" type="button">计算平均缴费指数</button>
+
+  <!-- 结果 -->
+  <section class="card result" id="result" style="display:none">
+    <div class="card-title">平均缴费工资指数</div>
+    <div class="metric">
+      <span class="m-label">本人平均缴费工资指数</span>
+      <span class="m-value big" id="avgIndex">-</span>
+    </div>
+    <div class="metric">
+      <span class="m-label">个人账户余额（估算）</span>
+      <span class="m-value" id="accountBalance">-</span>
+    </div>
+    <div class="metric">
+      <span class="m-label">累计缴费</span>
+      <span class="m-value" id="totalMonths">-</span>
+    </div>
+    <div class="warn" id="gapNote" style="display:none"></div>
+
+    <div class="card-title" style="margin-top:22px">逐年明细</div>
+    <div class="tbl">
+      <div class="tr th">
+        <span class="c1">年份</span><span class="c2">月数</span><span class="c3">月均基数</span><span class="c4">指数</span><span class="c5">年末余额</span>
+      </div>
+      <div id="detailRows"></div>
+    </div>
+  </section>
+
+  <p class="foot">数据来源：各省历年社平工资（元/月）与记账利率表（1996-2025）。计算结果仅供参考，具体以社保经办部门核定为准。</p>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="provinces-index-data.js"></script>
+<script src="calc-index.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

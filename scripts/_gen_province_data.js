@@ -28,6 +28,19 @@ function withExtrapolation(avgIn) {
   return avg
 }
 
+// 深度递归查找 verified_count：真相源中该字段位置不统一
+// - 11 省为顶层字段；- 8 省（henan/anhui 等）嵌套在 `notes` 对象内；- 其余省缺失
+// 递归兜底，无论顶层还是任意层级均能取到。
+function findVerifiedCount(obj) {
+  if (obj === null || typeof obj !== 'object') return undefined
+  if (typeof obj.verified_count === 'number') return obj.verified_count
+  for (const k of Object.keys(obj)) {
+    const v = findVerifiedCount(obj[k])
+    if (v !== undefined) return v
+  }
+  return undefined
+}
+
 const files = fs.readdirSync(SRC_DIR).filter(f => f.endsWith('.js'))
 const out = {}
 const missing = []
@@ -41,9 +54,15 @@ for (const f of files) {
     if (!cfg) { missing.push(slug + ':无getEngineConfig'); continue }
     const avgRaw = cfg.avg_salary_history
     if (!avgRaw || Object.keys(avgRaw).length === 0) { missing.push(slug + ':空社平'); continue }
+    const jsonPath = path.join(SRC_DIR, slug + '.json')
+    let verifiedCount = undefined
+    if (fs.existsSync(jsonPath)) {
+      try { verifiedCount = findVerifiedCount(JSON.parse(fs.readFileSync(jsonPath, 'utf8'))) } catch (e) {}
+    }
     out[slug] = {
       name: cfg.name || slug,
-      avg_salary_history: withExtrapolation(avgRaw)
+      avg_salary_history: withExtrapolation(avgRaw),
+      verified_count: verifiedCount
     }
   } catch (e) {
     missing.push(slug + ':' + e.message)
