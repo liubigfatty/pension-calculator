@@ -191,7 +191,7 @@
     "basic_pension": {
       "enabled": true,
       "rate_per_year": 0.01,
-      "formula_type": "chongqing",
+      "formula_type": "prev_year_social_avg",
       "formula": "(上年度全市在岗职工月均 + 上年度全市在岗职工月均×指数) ÷ 2 × 累计缴费年限 × 1%",
       "notes": "渝办发〔2006〕205号。A=上年度全市在岗职工月平均工资(非计发基数)。双基数：基础用社平，过渡用计发基数。"
     },
@@ -206,7 +206,7 @@
     "transitional_pension": {
       "enabled": true,
       "coefficient": 0.014,
-      "formula_type": "chongqing",
+      "formula_type": "weighted_transition",
       "notes": "渝办发〔2006〕205号：过渡=(A+A×Q)/2×M1×1.4%。A=计发基数，M1=建账前年限(1996-01前)。1996年1月1日前参加工作为中人。"
     },
     "special_addition": {

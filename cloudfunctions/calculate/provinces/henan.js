@@ -78,7 +78,7 @@ const PROV_BASE = {
   2026: 6738,  // 2026年退休暂用2025年全省基数（预发）
 };;
 
-// 洛阳市单独计发基数（2025年洛阳企业计发基数6573元）
+// 洛阳市单独计发基数（2023年6457元，洛阳市社保局问政公开回复确认；2024/2025暂用6573，待官方公布）
 const LUOYANG_BASE = { ...PROV_BASE };
 LUOYANG_BASE[2024] = 6573;  // 2024年洛阳企业在岗职工月平均工资（2025年计发基数）
 LUOYANG_BASE[2025] = 6573;  // 2025年洛阳企业计发基数
@@ -97,18 +97,61 @@ ZHENGZHOU_BASE[2025] = 7933;  // 郑州市2025本地计发基数（引擎 baseRe
 ZHENGZHOU_BASE[2026] = 7933;  // 2026年退休暂用郑州2025本地基数（预发，2026官方未公布）
 
 
-// 信阳市单独计发基数（2025年信阳企业计发基数6260元）
+// 信阳市：6260（平顶山核定表证实6260为真实地市计发基数，信阳可能同属"非核心地市低基数档"，不再标"疑似误标"）
 const XINYANG_BASE = { ...PROV_BASE };
 XINYANG_BASE[2024] = 6260;
 XINYANG_BASE[2025] = 6260;
 XINYANG_BASE[2026] = 6260;  // 2026年退休暂用2025年基数（预发）
 
-// 开封市单独计发基数（2025年开封企业计发基数6385元）
+// 开封市：6385 实为全省全口径社平2024年值（非计发基数），疑似误标，待官方计发基数文件核实
 const KAIFFENG_BASE = { ...PROV_BASE };
 KAIFFENG_BASE[2024] = 6385;
 KAIFFENG_BASE[2025] = 6385;
 KAIFFENG_BASE[2026] = 6385;  // 2026年退休暂用2025年基数（预发）
-// 河南省基数增长预测参数
+
+// 平顶山市：6260 元（2024年真实核定表确认：平顶山企业女工退休核定表"本年当地基本养老金计发基数6260元"）
+// ⚠️ 与信阳撞值（同为6260），可能河南非核心地市共用此低基数；待更多地市案例交叉验证
+const PDS_BASE = { ...PROV_BASE };
+PDS_BASE[2024] = 6260;
+PDS_BASE[2025] = 6260;   // 2025年退休暂用2024年基数（预发）
+PDS_BASE[2026] = 6260;
+
+// 新乡市：6385 元（2026年真实核定表确认：新乡企业女职工退休核定表"上年当地基本养老金计发基数6385元"）
+// 注：与开封KAIFFENG_BASE撞值(同为6385)，但为独立城市各自维护
+const XINXIANG_BASE = { ...PROV_BASE };
+XINXIANG_BASE[2024] = 6385;
+XINXIANG_BASE[2025] = 6385;
+XINXIANG_BASE[2026] = 6385;  // 2026年退休暂用2025年基数（预发）
+
+// 信阳市：6260（平顶山核定表证实6260为真实地市计发基数，信阳可能同属"非核心地市低基数档"，不再标"疑似误标"）
+// 郑州过渡性补贴参数表（郑劳社〔2007〕36号 附表二）
+// 查表维度：视同缴费年限（见月进年，取整，非零小数进1）× 过渡性养老金平均指数（保留1位小数，第2位向上进位）
+// 已知坐标（来自真实核定表/官方案例）：
+//   (sight=1, idx=0.7)→4.62  (sight=5, idx=0.9)→5.26  (sight=13, idx=0.6)→6.32  (sight=12, idx=2.6)→8.85
+// ⚠️ 完整官方附表二尚未获取，当前为稀疏表；缺失坐标返回 null 引擎报 warning 并算 0
+const ZZ_SUBSIDY_PARAM_TABLE = {
+  // 格式：[视同年限][指数字符串] = 参数值
+  1:  { '0.7': 4.62 },
+  5:  { '0.9': 5.26 },
+  12: { '2.6': 8.85 },
+  13: { '0.6': 6.32 },
+}
+
+/**
+ * 查询郑州过渡性补贴参数
+ * @param {number} sightYears - 视同缴费年限（年）
+ * @param {number} transIndex - 过渡性养老金平均缴费指数
+ * @returns {number|null} 参数值，查不到返回 null
+ */
+function lookupZZSubsidyParam(sightYears, transIndex) {
+  const sightKey = Math.ceil(sightYears)  // 见月进年：非零小数进1
+  if (sightKey < 1) return null  // 无视同年限不享受补贴
+  // 指数保留1位小数，第2位向上进位
+  const idxKey = Math.ceil(transIndex * 10) / 10
+  const idxStr = idxKey.toFixed(1)
+  return (ZZ_SUBSIDY_PARAM_TABLE[sightKey] || {})[idxStr] || null
+}
+
 const BASE_PARAMS = {
   
   PROV_GROWTH: 0.03,  // 约3%年增速
@@ -128,18 +171,17 @@ const CITY_LIST = [
 // ==================== 核心规则 ====================
 
 // 河南省养老保险建账时间和 cutoff 时间
-// ⚠️ 待确认：建账时间（目前按1998-01估算，待官方文件确认）
-// ⚠️ 待确认：视同缴费cutoff时间（目前按1997-12估算，待官方文件确认）
-// TODO：搜索关键词"豫人社规 个人账户建立 1998"或"豫政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政[2006]29号文，个人账户建账1995-01
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// 建账时间官方依据：豫政办〔1995〕74号 附件一第二条一项"从1995年1月起建立个人帐户"；河南省社保中心官网(2023-01-16)、郑州市社保中心均确认 1995-01-01 为视同/实缴分界
+// 视同缴费 cutoff：河南走 formula_type:'henan'，视同年限仅由 account_start 判定（见 pension-engine.js L1525）；cutoff_date 河南不读取，设为与建账同值仅作数据整洁
+const ACCOUNT_START = { year: 1995, month: 1 }  // 豫政办〔1995〕74号，个人账户建账1995-01（官方坐实）
+const CUTOFF_DATE   = { year: 1995, month: 1 }  // 河南无北京式cutoff用法；对齐建账1995-01（2025-07-17核实更正：原1997-12无官方依据）
 
 const TRANS_COEF = 0.013  // 豫政[2006]29号文：1.3%  // 河南过渡系数固定 1.2%（待官方文件确认）
 // TODO：补充官方文件编号（如：豫政发〔2006〕XX号）
 
 const PROV_TAG = 'henan'
 
-// 河南省模块配置（有基础养老金 + 个人账户养老金 + 过渡性养老金）
+// 河南省模块配置（有基础养老金 + 个人账户养老金 + 过渡性养老金 + 郑州过渡性补贴）
 const MODULES = ['base', 'personal', 'transition']
 const MODULE_LABELS = {
   base:        '基础养老金',
@@ -176,11 +218,14 @@ account_start: ACCOUNT_START,
       luoyang: LUOYANG_BASE,
       xinyang: XINYANG_BASE,
       kaifeng: KAIFFENG_BASE,
+      pingdingshan: PDS_BASE,
+      xinxiang: XINXIANG_BASE,
     },
     avg_salary_history: AVG_SALARY_HISTORY,
     modules: {
       basic_pension: { enabled: true, formula_type: 'henan' },
       transitional_pension: { enabled: true, formula_type: 'henan', coefficient: TRANS_COEF },
+      special_addition: { enabled: true, type: 'zhengzhou_subsidy', subsidy_param: 8.85 },
     },
   }
 }
@@ -231,4 +276,6 @@ module.exports = {
   MODULE_LABELS,
   cases,
   getEngineConfig,
+  ZZ_SUBSIDY_PARAM_TABLE,
+  lookupZZSubsidyParam,
 }

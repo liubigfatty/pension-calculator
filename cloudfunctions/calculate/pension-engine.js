@@ -106,17 +106,14 @@ function calcBasicPension(params) {
   let description
 
   if (mod.formula_type === 'henan') {
-    // 河南特殊（豫政[2006]29号）：基础养老金 = 省职工月平均工资 × (1 + 全程平均缴费指数) / 2 × 缴费年限 × 1%
-    // 河南基础用全省基数 provBase，过渡用本地基数 retireBase（双基数）
-    const base = provBase != null ? provBase : retireBase
-    const indexSalary = base * avgIndex
-    amount = Math.round((base + indexSalary) / 2 * totalYears * rate * 100) / 100
-    description = `(${base.toLocaleString()} + ${base.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
-    // 重庆特殊（渝办发〔2006〕205号）：基础 = (社平 + 社平×Q) / 2 × 年限 × 1%
-    // A = 上年度全市在岗职工月平均工资，非计发基数；由 params.socialAvgBase 传入
-    const socialAvg = params.socialAvgBase || retireBase
-    amount = Math.round((socialAvg + socialAvg * avgIndex) / 2 * totalYears * rate * 100) / 100
-    description = `(¥${socialAvg.toLocaleString()} + ¥${socialAvg.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
+    // 河南双基数（豫政〔2006〕29号 + 豫劳社养老〔2006〕26号）：
+    // 基础养老金 = (全省计发基数 + 退休地计发基数 × 平均缴费指数) / 2 × 缴费年限 × 1%
+    // 第一项用全省基数 provBase；第二项指数化用退休地(城市)基数 retireBase（无独立基数城市回退全省）
+    const prov = provBase != null ? provBase : retireBase
+    const cityBase = retireBase != null ? retireBase : prov
+    const indexSalary = cityBase * avgIndex
+    amount = Math.round((prov + indexSalary) / 2 * totalYears * rate * 100) / 100
+    description = `(${prov.toLocaleString()} 全省 + ${cityBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else if (mod.formula_type === 'guangdong') {
     // 广东特殊：基础养老金公式含a系数（国发[2005]38号）
     // avgIndex≥0.6时a=1; avgIndex<0.6时a=avgIndex/0.6，提升低指数人员待遇
@@ -804,9 +801,10 @@ function calcSpecialAddition(params) {
       description: descParts.join(' + ')
     }
   } else if (mod.type === 'zhengzhou_subsidy') {
-    // 郑州过渡性补贴（郑州市人民政府令第161号，2023修正）
-    // 公式(2026年最新): [(实际缴费年限 × 8.85) / (累计工作年限 × 1%)] × (郑州市计发基数 / 7933)
-    // 仅限郑州市(zz)参保人员，视同缴费发生在1994年12月31日以前
+    // 郑州过渡性补贴（郑州市人民政府令第161号，郑劳社〔2007〕36号实施细则）
+    // 公式: [(实际缴费年限 × 补贴参数) / (累计工作年限 × 1%)] × (当地基数 / 参考基数)
+    // 补贴参数来源：附表二《过渡性补贴参数表》，查表维度=(视同年限见月进年, 过渡指数保留1位进位)
+    // ⚠️ 参数因人而异！不可硬编码固定值。优先级：输入覆盖 > 查表 > config默认值(兼容旧数据)
     const location = params?.context?.location || 'prov'
     if (location !== 'zz') {
       return { amount: 0, description: '郑州过渡性补贴：非郑州市参保人员，不享受' }
@@ -815,8 +813,20 @@ function calcSpecialAddition(params) {
     const actualYears_zz = params?.context?.actualYears || 0
     const totalWorkYears = params?.context?.totalWorkYears || 0
     const zzBase = params?.context?.zzBase || 1
-    const param = mod.subsidy_param || 8.85
-    const baseRef = 7933  // 参考值（2026年固定）
+    const baseRef = mod.base_ref || 7933
+
+    // 补贴参数三级取值：①输入直接传值 ②从context的transIndex+sightYears查表 ③config默认值(兼容)
+    let param = params?.subsidyParam || null
+    if (param === null) {
+      const ctxTransIdx = params?.context?.transIndex
+      const ctxSightYears = params?.context?.sightYears
+      if (ctxTransIdx && ctxSightYears && params?.context?.lookupZZSubsidyParam) {
+        param = params.context.lookupZZSubsidyParam(ctxSightYears, ctxTransIdx)
+      }
+    }
+    if (param === null) {
+      param = mod.subsidy_param || 8.85  // 兼容旧config/未查到时fallback（⚠️ 可能不准）
+    }
 
     if (!actualYears_zz || !totalWorkYears || totalWorkYears <= 0) {
       return { amount: 0, description: '郑州过渡性补贴：不满足计发条件' }
@@ -1413,6 +1423,7 @@ function parseInput(inputData) {
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
     regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
     tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
+    subsidyParam: inputData.subsidyParam != null ? parseFloat(inputData.subsidyParam) : null, // 郑州过渡性补贴参数（查表结果或核定表直供，可为null）
 
     // 性别映射到人员类型（支持外部传入，支持中英文）
     // 外部可传：male/fc/fw/fw55；未传入时按gender推断（female→fw）
@@ -1715,6 +1726,7 @@ function calculate(config, inputData) {
 
   let specialAddition = calcSpecialAddition({
     mod: config.modules?.special_addition || { enabled: false },
+    subsidyParam: data.subsidyParam,  // 允许输入直接指定补贴参数（覆盖查表）
     context: {
       retireAge: retireAgeExact,
       location: data.cityType,
@@ -1723,8 +1735,12 @@ function calculate(config, inputData) {
       oneChild: data.oneChild,
       oneChildAvgPension: data.oneChildAvgPension,
       totalWorkYears: totalYears,
+      actualYears: actualYears,
       zzBase: zzBaseVal,
       avgIndex: data.avgIndex,
+      transIndex: data.transIndex,   // 过渡性养老金平均指数（用于补贴参数查表）
+      sightYears: sightYears,        // 视同缴费年限（用于补贴参数查表）
+      lookupZZSubsidyParam: config.lookupZZSubsidyParam || null,  // 查表函数引用
       localPensionYears: data.localPensionYears,
       pre1992LocalYears: data.pre1992LocalYears,
       regionCategory: data.regionCategory,

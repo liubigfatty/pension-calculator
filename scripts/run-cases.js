@@ -44,6 +44,24 @@ function mapCaseToInput(c, provConfig) {
   const retireYear  = c.retire_year  || (c.retireDate ? parseInt(c.retireDate) : null);
   const retireMonth = c.retire_month || (c.retireDate ? parseInt(c.retireDate.split('-')[1]) : null);
 
+  // 预发/核定表场景：单 base_number 时默认 baseRetire=baseProv=base_number（单基数省份）；
+  // 双基数省份同时给出 base_number/base_prov 时分别传入。
+  // ⚠️ 双基数省份(河南等)修复：退休地有独立计发基数(city_type 为真实城市)时，
+  //    baseRetire 必须用"城市基数"(从 config.base_rates[city_type] 查)，不能用 base_number(通常是省基数)，
+  //    否则城市基数被省基数覆盖、双基数形同虚设（此前 8/9/10 的"通过"是假通过）。
+  let baseProv = c.base_prov != null ? c.base_prov : (c.base_number != null ? c.base_number : null);
+  let baseRetire = c.base_number != null ? c.base_number : null;
+  if (provConfig && provConfig.base_rates && c.city_type && c.city_type !== 'prov') {
+    const cityTable = provConfig.base_rates[c.city_type];
+    if (cityTable) {
+      const ry = c.retire_year;
+      const cb = cityTable[ry] != null ? cityTable[ry]
+               : cityTable[ry + 1] != null ? cityTable[ry + 1]
+               : cityTable[Object.keys(cityTable).sort((a, b) => b - a)[0]];
+      if (cb != null) baseRetire = cb;
+    }
+  }
+
   return {
     name:           c.case_id || '测试',
     province:       c.province || provConfig.provinceKey || 'beijing',
@@ -59,10 +77,8 @@ function mapCaseToInput(c, provConfig) {
     retireDateInput: (retireYear && retireMonth) ? { year: retireYear, month: retireMonth } : null,
     avgIndex:       c.avg_index ?? 1.0,
     personalAcc:    c.personal_account ?? 0,
-    // 预发/核定表场景：单 base_number 时默认 baseRetire=baseProv=base_number（单基数省份）；
-    // 双基数省份同时给出 base_number/base_prov 时分别传入。
-    baseRetire:     c.base_number != null ? c.base_number : null,
-    baseProv:       c.base_prov != null ? c.base_prov : (c.base_number != null ? c.base_number : null),
+    baseRetire:      baseRetire,
+    baseProv:        baseProv,
     sightYears:      c.sight_years   ?? null,
     totalYears:      c.total_years    ?? null,
     preAccountYears: c.pre_account_years ?? null,

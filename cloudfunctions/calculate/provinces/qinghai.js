@@ -126,7 +126,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'chongqing' };
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
   }
 
   // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）

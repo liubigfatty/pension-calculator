@@ -248,7 +248,14 @@ Page({
   },
 
   onRecalculate() {
-    wx.navigateBack({ delta: 3 })
+    const pages = getCurrentPages()
+    // 钳制 delta 为可用深度，避免越界返回触发路由告警；栈不足时直接回首页
+    const delta = Math.min(3, Math.max(0, pages.length - 1))
+    if (delta > 0) {
+      wx.navigateBack({ delta })
+    } else {
+      wx.reLaunch({ url: '/pages/index/index' })
+    }
   },
 
   /**

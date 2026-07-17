@@ -1,0 +1,42 @@
+{
+  "case_id": "7",
+  "province": "liaoning",
+  "city": "沈阳市",
+  "gender": "female",
+  "gender_type": "fw50",
+  "birth_year": 1975,
+  "birth_month": 2,
+  "work_year": 1993,
+  "work_month": 9,
+  "retire_year": 2025,
+  "retire_month": 3,
+  "retire_type": "normal",
+  "account_start": {
+    "year": 1996,
+    "month": 1
+  },
+  "sight_years": 0,
+  "pre_account_years": 2.3333,
+  "actual_years": 31.5833,
+  "total_years": 31.5833,
+  "avg_index": 0.5841,
+  "base_number": 8266,
+  "base_prov": 7201,
+  "personal_account": 92868.01,
+  "months": 194.6,
+  "expected": {
+    "basic_pension": 2067.79,
+    "personal_pension": 477.23,
+    "transitional_pension": 213.87,
+    "total": 2759,
+    "extra_pension": 0
+  },
+  "verified": true,
+  "notes": "辽宁沈阳市女，1975.02生，1993.09参加工作并首次缴费，1996.01建立账户，2025.03正常退休(50岁1个月，计发月数194.6)。参工=首缴→视同0；建账前2.3333年(1993.09-1995.12)；实际31.5833年(1996.01-2025.03)；累计31.5833年。平均缴费指数0.5841(历年缴费指数和18.6903÷32虚年)。计发基数8266/月(99192/年，沈阳市单列2024)。基础=(8266+8266×0.5841)/2×31.5833×1%=2067.79；账户=92868.01/194.6=477.23；过渡=(8266+8266×0.5841)/2×(2.3333+0)×1.4%=213.87；合计2759.00。",
+  "data_source": "辽宁省城镇企业职工退休待遇核定表（沈阳，2025-03退休）",
+  "calculation_details": {
+    "formula_basic": "(8266 + 8266 × 0.5841) / 2 × 31.5833 × 1% = 2067.79",
+    "formula_personal": "92868.01 / 194.6 = 477.23",
+    "formula_transition": "(8266 + 8266 × 0.5841) / 2 × 2.3333 × 1.4% = 213.87"
+  }
+}

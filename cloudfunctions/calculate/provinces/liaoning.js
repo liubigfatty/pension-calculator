@@ -1,5 +1,6 @@
 // 数据来源：✅ 官方数据
 // 2025年计发基数：7346元/月（辽人社〔2025〕17号）；2024年全省7201、沈阳8266、大连8823
+// 2025年缴费基数上下限：上限21792元/月、下限4359元/月（辽人社〔2025〕17号第一条）；2024年全省城镇居民人均可支配收入47982元/年（月3999，丧抚待遇口径）
 // 更新时间：2026-06-24
 // 注：沈阳8266元/月、大连8823元/月（单独计发基数）
 
@@ -160,13 +161,12 @@ const cases = [
     months: 195,
     expected: {
       basic_pension: 3046.25,
-      extra_pension: 207.41,
+      extra_pension: 0,
       personal_pension: 872.85,
-      transitional_pension: 220.55,
-      total: 4347.06
+      transitional_pension: 238.89,
+      total: 4157.99
     },
-    notes: "辽宁沈阳女工人50岁2023.07退休。双指数：基础1.29/过渡1.23。⚠️增发207.41在核定表上未单独列出，表total=3896.56不含增发，引擎total=4103.75含增发。需确认辽宁增发规则。",
-    trans_index: 1.2321
+    notes: "辽宁沈阳女工人50岁2023.07退休。单指数（过渡性养老金用平均缴费指数）。⚠️增发207.41在核定表上未单独列出，表total=3896.56不含增发，引擎total=4103.75含增发。需确认辽宁增发规则。",
   },
   // 案例2：全省男60岁2026.03退休
   {
@@ -190,13 +190,12 @@ const cases = [
     months: 139,
     expected: {
       basic_pension: 2825.35,
-      extra_pension: 311.73,
+      extra_pension: 0,
       personal_pension: 719.56,
-      transitional_pension: 959.85,
-      total: 4816.11
+      transitional_pension: 1064.53,
+      total: 4609.44
     },
-    notes: "辽宁全省基数男60岁2026.03退休。双指数：基础0.8684/过渡0.842。累计41.17年（实际30.09+视同11.08）。过渡=7346×0.842×11.08×1.4%。增发193.50未在表上显示",
-    trans_index: 0.842
+    notes: "辽宁全省基数男60岁2026.03退休。单指数（过渡性养老金用平均缴费指数）。累计41.17年（实际30.09+视同11.08）。过渡=7346×0.842×11.08×1.4%。增发193.50未在表上显示",
   },
   // 案例3：鞍山男60岁2025.08退休
   {
@@ -220,13 +219,12 @@ const cases = [
     months: 139,
     expected: {
       basic_pension: 3667.1,
-      extra_pension: 422.61,
+      extra_pension: 0,
       personal_pension: 735.83,
-      transitional_pension: 1334.69,
-      total: 6161
+      transitional_pension: 1193.55,
+      total: 5596.48
     },
-    notes: "辽宁鞍山男60岁2025.08退休。双指数：基础1.34/过渡1.31。累计42.67年（实际32.75+视同9.92）。过渡=7346×1.31×9.92×1.4%。增发405.65未在表上显示",
-    trans_index: 1.309
+    notes: "辽宁鞍山男60岁2025.08退休。单指数（过渡性养老金用平均缴费指数）。累计42.67年（实际32.75+视同9.92）。过渡=7346×1.31×9.92×1.4%。增发405.65未在表上显示",
   },
   // 案例4：全省男60岁2023.08退休
   {
@@ -250,13 +248,12 @@ const cases = [
     months: 139,
     expected: {
       basic_pension: 2800.1,
-      extra_pension: 306.55,
+      extra_pension: 0,
       personal_pension: 934.33,
-      transitional_pension: 1461.07,
-      total: 5502.36
+      transitional_pension: 1460.92,
+      total: 5195.29
     },
-    notes: "辽宁男60岁2023.08退休。建账1998-01（地区差异/补缴），建账前缴费15.25年(1982.10-1998.01)。视同15.25年。高指数1.617，高个账13万。过渡=6987×1.617×15.25×1.4%=1461.07。⚠️增发339.25表上未显示",
-    trans_index: 0.9797
+    notes: "辽宁男60岁2023.08退休。建账1998-01（地区差异/补缴），建账前缴费15.25年(1982.10-1998.01)。视同15.25年。单指数（过渡性养老金用平均缴费指数）。⚠️增发339.25表上未显示",
   }
 ]
 
@@ -272,7 +269,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, formula_type: 'chongqing' };
+    modules.transitional_pension = { enabled: true, formula_type: 'weighted_transition' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -350,7 +347,8 @@ const AVG_SALARY_HISTORY = {
   2021: 6383,
   2022: 6843,
   2023: 7121,
-  2024: 7264,
+
+  2024: 7265,
   // 2025: 官方全口径未公布，交由引擎预发年规则外推(=2024原值)，公布后再填
 };
 

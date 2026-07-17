@@ -169,7 +169,7 @@
     "transitional_pension": {
       "enabled": true,
       "coefficient": 0.014,
-      "formula_type": "chongqing",
+      "formula_type": "weighted_transition",
       "notes": "青劳社厅发[2006]59号。青海过渡=(A+A×Q)/2×M1×1.4%。建账1998-01。usePreAccountYears=true。1997年12月31日前缴费年限(含视同)。"
     },
     "special_addition": {
