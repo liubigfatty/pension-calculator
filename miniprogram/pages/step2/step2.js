@@ -36,8 +36,12 @@ function getInterestRate(year) {
 // 缴费档次对应的百分比
 const LEVEL_PERCENTS = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 
-// 双指数省份（浙江、广东、陕西）
-const DOUBLE_INDEX_PROVINCES = [10, 18, 26]  // 浙江=10, 广东=18, 陕西=26
+// 双指数省份（浙江、广东、陕西、河南）
+// 河南=15：豫政〔2006〕29号 双指数（基础/过渡用不同平均缴费指数），过渡性养老金指数按实际缴费年限单独算
+const DOUBLE_INDEX_PROVINCES = [10, 18, 26, 15]  // 浙江=10, 广东=18, 陕西=26, 河南=15
+
+// 仅广东需要"老办法指数"（粤府函〔2021〕294号 原办法÷120）；其余双指数省份只填过渡性指数
+const OLD_INDEX_PROVINCES = [18]  // 广东=18
 
 // 省份索引 → 云函数省份文件名（拼音，与 provinces/*.js 对应）
 const PROVINCE_SLUGS = [
@@ -78,8 +82,9 @@ Page({
 
     // 双指数省份相关
     showDoubleIndex: false,
+    showOldIndex: false,    // 仅广东显示"老办法指数"
     transIndexInput: '',   // 过渡性养老金指数
-    oldIndexInput: '',      // 老办法指数
+    oldIndexInput: '',      // 老办法指数（广东）
 
     // 计发基数选择（所有省份都显示）
     baseRateIndex: 0,       // 当前选择的计发基数索引
@@ -108,7 +113,8 @@ Page({
 
     // 判断是否为双指数省份，控制过渡指数输入框显示
     const isDoubleIndex = DOUBLE_INDEX_PROVINCES.includes(step1.provinceIndex)
-    this.setData({ showDoubleIndex: isDoubleIndex })
+    const showOldIndex = OLD_INDEX_PROVINCES.includes(step1.provinceIndex)  // 仅广东显示老办法指数
+    this.setData({ showDoubleIndex: isDoubleIndex, showOldIndex })
 
     // 计发基数选择（所有省份都显示）
     let baseRateNames = []
@@ -261,7 +267,20 @@ Page({
 
     console.log('[onCalculate] 映射后参数:', { province, gender, identity, genderType, birthDate, workStartDate, averageIndex, cityType })
 
-    // 存 calcInput 供 step3 页面读取（用于余额估算时的 genderType 判断）
+    // ── 双指数省份：把过渡性指数（及广东老办法指数）透传给引擎 ──
+    // 经 extras 传递：云函数会把 extras 摊平进引擎 input 顶层（引擎读 transIndex / oldIndexSalary）
+    // 不填则不下发，引擎自动兜底用本人平均指数（与单指数一致），不影响普通用户
+    const calcExtras = {}
+    if (d.showDoubleIndex && d.transIndexInput) {
+      const ti = parseFloat(d.transIndexInput)
+      if (!isNaN(ti) && ti > 0) calcExtras.transIndex = ti
+    }
+    if (d.showOldIndex && d.oldIndexInput) {
+      const oi = parseFloat(d.oldIndexInput)
+      if (!isNaN(oi) && oi > 0) calcExtras.oldIndexSalary = oi
+    }
+
+    // 存 calcInput 供 step3 页面读取（余额估算 genderType 判断 + 双指数透传）
     app.globalData.calcInput = {
       province,
       identity,
@@ -272,6 +291,8 @@ Page({
       birthMonth: parseInt(birthDate.split('-')[1]),
       workYear: parseInt(workStartDate.split('-')[0]),
       workMonth: parseInt(workStartDate.split('-')[1]),
+      transIndex: calcExtras.transIndex != null ? calcExtras.transIndex : null,
+      oldIndexSalary: calcExtras.oldIndexSalary != null ? calcExtras.oldIndexSalary : null,
     }
 
     // 调用云函数
@@ -290,7 +311,7 @@ Page({
           workStartDate,
           averageIndex,
           personalAccount: parseFloat(d.accountBalanceInput) || 0,
-          extras: {}
+          extras: calcExtras
         }
       })
 

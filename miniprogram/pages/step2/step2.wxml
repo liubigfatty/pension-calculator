@@ -34,19 +34,24 @@
       <text class="form-hint">可在社保账户查询，或咨询12333</text>
     </view>
 
-    <!-- 双指数省份（浙江/广东/陕西）- 并排显示 -->
+    <!-- 双指数省份（河南/浙江/广东/陕西）- 过渡性养老金指数 -->
     <view class="form-item" wx:if="{{showDoubleIndex}}">
-      <text class="form-label">双指数省份（过渡性养老金指数）</text>
-      <view class="double-index-row">
-        <view class="input-wrap flex-1">
-          <input class="input-field" type="digit" value="{{transIndexInput}}" placeholder="过渡性指数" bindinput="onTransIndexInput"/>
-          <text class="input-suffix">过渡指数</text>
-        </view>
-        <view class="input-wrap flex-1">
-          <input class="input-field" type="digit" value="{{oldIndexInput}}" placeholder="老办法指数" bindinput="onOldIndexInput"/>
-          <text class="input-suffix">老办法指数</text>
-        </view>
+      <text class="form-label">过渡性养老金指数</text>
+      <view class="input-wrap">
+        <input class="input-field" type="digit" value="{{transIndexInput}}" placeholder="按实际缴费年限算的指数" bindinput="onTransIndexInput"/>
+        <text class="input-suffix">过渡指数</text>
       </view>
+      <text class="form-hint">双指数省份专属：过渡性养老金按"实际缴费年限"单独算的指数，可能与上方本人平均指数不同；如不清楚可填相近值，或咨询12333</text>
+    </view>
+
+    <!-- 老办法指数（仅广东：粤府函〔2021〕294号 原办法÷120）-->
+    <view class="form-item" wx:if="{{showOldIndex}}">
+      <text class="form-label">老办法指数（仅广东）</text>
+      <view class="input-wrap">
+        <input class="input-field" type="digit" value="{{oldIndexInput}}" placeholder="原办法指数" bindinput="onOldIndexInput"/>
+        <text class="input-suffix">老办法指数</text>
+      </view>
+      <text class="form-hint">仅广东参保人需填：2006年前原办法的指数化月平均缴费工资指数</text>
     </view>
 
     <!-- 个人账户余额 -->

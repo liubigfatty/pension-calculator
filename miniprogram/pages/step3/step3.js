@@ -301,6 +301,10 @@ Page({
 
     // 构造日期字符串格式 YYYY-MM
     const pad = n => String(n).padStart(2, '0')
+    // 双指数省份：从 step2 存入 calcInput 的过渡指数/老办法指数透传（无则不下发，引擎兜底用平均指数）
+    const extras = this.collectExtras()
+    if (input.transIndex != null) extras.transIndex = input.transIndex
+    if (input.oldIndexSalary != null) extras.oldIndexSalary = input.oldIndexSalary
     const params = {
       province: input.province,
       cityType: input.cityType || 'prov',
@@ -311,7 +315,7 @@ Page({
       workStartDate: `${input.workYear}-${pad(input.workMonth)}`,
       averageIndex: idx,
       personalAccount: balance,
-      extras: this.collectExtras(),
+      extras: extras,
       retireType: retireType  // ✅ 正确传入：'standard'法定 / 'early'弹性提前
     }
 
