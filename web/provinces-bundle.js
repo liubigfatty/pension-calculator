@@ -3063,8 +3063,8 @@ const CITY_LIST = [
   '天门市', '神农架林区',
 ];
 
-const ACCOUNT_START = { year: 1998, month: 1 };
-const CUTOFF_DATE   = { year: 1997, month: 12 };
+const ACCOUNT_START = { year: 1996, month: 1 };  // 鄂政发〔1995〕111号：湖北1996-01全省实施统账结合（建账）；1998-07并轨全国统一口径，非建账年
+const CUTOFF_DATE   = { year: 1995, month: 12 };  // 建账前截止（视同缴费年限截止）
 const TRANS_COEF = 0.012;
 const PROV_TAG = 'hubei';
 
