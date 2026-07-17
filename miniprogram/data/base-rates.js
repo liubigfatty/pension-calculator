@@ -41,10 +41,10 @@ const PROV_BASE_LATEST = [
 // 双基数省份配置：省份索引 → 城市选项
 // 与 step1.js 的 DOUBLE_BASE_PROVINCES 对应
 const CITY_TYPE_CONFIG = {
-  // 河南：郑州市 / 全省其他
+  // 河南双基数城市（values 必须与 henan.js base_rates key 一致：引擎按 cityType 直接查 base_rates，无缩写映射）
   15: {
-    names: ['郑州市', '全省其他'],
-    values: ['zz', 'prov']
+    names: ['郑州市', '洛阳市', '开封市', '信阳市', '平顶山市', '新乡市', '全省其他'],
+    values: ['zhengzhou', 'luoyang', 'xinyang', 'kaifeng', 'pingdingshan', 'xinxiang', 'prov']
   },
   // 吉林：长春市 / 全省其他
   6: {
