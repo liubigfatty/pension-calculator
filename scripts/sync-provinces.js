@@ -8,14 +8,18 @@
  *   - BASE_PARAMS         (计发基数预测参数)
  *   - 城市单列计发基数块   SY_BASE / DL_BASE / SHENZHEN_BASE / ZHENGZHOU_BASE / CC_BASE
  *
- * 派发到所有依赖副本：
- *   - data/provinces/<p>.js          -> 同步 PROV_BASE/BASE_PARAMS/城市块
- *   - js/provinces/<p>.json           -> 同步 base_rates.prov
- *   - docs/js/provinces/<p>.json      -> 同步 base_rates.prov
- *   - docs/网页版/provinces/<p>.json  -> 同步 base_rates.prov
- *   - web/provinces-bundle.js         -> 由 scripts/build-web.js 生成（直接读真相源，自动正确）
+ * 派发到所有依赖副本（均为 .json 镜像，由真相源 .js 派生）：
+ *   - provinces/<p>.json                          -> 根目录镜像（base_rates.prov / avg_salary_history）
+ *   - cloudfunctions/calculate/provinces/<p>.json -> 云函数目录内镜像（与真相源 .js 同目录）
+ *   - docs/js/provinces/<p>.json                  -> 文档站点镜像
+ *   - docs/网页版/provinces/<p>.json              -> 文档站点镜像
+ *   - web/provinces-bundle.js                     -> 由 scripts/build-web.js 生成（直接读真相源，自动正确）
  *
- * 用法：node scripts/sync-provinces-v2.js
+ * ⚠️ 历史坑：脚本曾把 data/provinces(.js)、js/provinces(.json) 当作目标，但这两个目录
+ *    实际并不存在，导致同步静默跳过；而真正存在的 provinces/*.json 与云函数内 *.json
+ *    从未被同步、长期漂移成旧值（如湖南计发基数曾错为 5938.17/6090）。现已修正为上述真实目录。
+ *
+ * 用法：node scripts/sync-provinces.js
  */
 const fs = require('fs');
 const path = require('path');
@@ -23,9 +27,8 @@ const path = require('path');
 // 直接用 process.cwd() 拼接的 junction 路径在 node 下 readdir 会 ENOENT）
 const ROOT = fs.realpathSync(process.cwd());
 
-const AUTH = path.join(ROOT, 'cloudfunctions/calculate/provinces');
-const DATA = path.join(ROOT, 'data/provinces');
-const JS = path.join(ROOT, 'js/provinces');
+const AUTH = path.join(ROOT, 'cloudfunctions/calculate/provinces'); // 真相源 .js（读取）
+const PROVJSON = path.join(ROOT, 'provinces');                     // 根目录 .json 镜像（写入）
 const DOCSJS = path.join(ROOT, 'docs/js/provinces');
 const DOCWEB = path.join(ROOT, 'docs/网页版/provinces');
 
@@ -138,8 +141,8 @@ const provs = fs.readdirSync(AUTH).filter(f => f.endsWith('.js')).map(f => f.rep
 let ok = 0, skip = 0, baseBlocks = 0;
 
 const targets = [
-  { name: 'data/provinces', dir: DATA, kind: 'js' },
-  { name: 'js/provinces', dir: JS, kind: 'json' },
+  { name: 'provinces (root json)', dir: PROVJSON, kind: 'json' },
+  { name: 'cloudfunctions/calculate/provinces (json copy)', dir: AUTH, kind: 'json' },
   { name: 'docs/js/provinces', dir: DOCSJS, kind: 'json' },
   { name: 'docs/网页版/provinces', dir: DOCWEB, kind: 'json' },
 ];
