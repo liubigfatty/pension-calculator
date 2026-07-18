@@ -13,7 +13,7 @@
  *
  * 使用方式：
  *   const engine = require('./pension-engine')
- *   const config = require('../cloudfunctions/calculate/provinces/jilin.json')
+ *   const config = require('../cloudfunctions/calculate/provinces/jilin.js')
  *   const result = engine.calculate(config, inputData)
  */
 

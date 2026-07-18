@@ -1,0 +1,36 @@
+{
+  "case_id": "5",
+  "province": "hunan",
+  "city": "娄底市",
+  "gender": "女",
+  "birth_year": 1976,
+  "birth_month": 5,
+  "work_year": 1997,
+  "work_month": 9,
+  "retire_year": 2026,
+  "retire_month": 6,
+  "retire_type": "normal",
+  "sight_years": 0,
+  "actual_years": 19.5,
+  "total_years": 19.5,
+  "avg_index": 0.6655,
+  "base_number": 7699,
+  "personal_account": 49122.2,
+  "months": 195,
+  "expected": {
+    "basic_pension": 1249.4,
+    "personal_pension": 252.13,
+    "transitional_pension": 0,
+    "total": 1501.83
+  },
+  "verified": true,
+  "notes": "娄底市女职工，1976-05出生，1997-09参加工作（建账时间同为1997-09，无视同缴费），2026-06正常退休，实际缴费234个月(19.5年)，平均指数0.6655，个人账户49122.2元。基础养老金=(7699+5120.36)/2×19.50×1%=1249.4；个人账户=49122.2/195=252.13；过渡性=0（无视同）；合计1501.83元。核定表来源：娄底市人社局待遇核定表。",
+  "data_source": "娄底市企业职工基本养老保险待遇核定表（2026年6月，娄底市人力资源和社会保障局盖章）",
+  "calculation_details": {
+    "indexed_monthly_wage": 5120.36,
+    "formula_basic": "(7699 + 5120.36) / 2 * 19.50 * 1% = 1249.4",
+    "formula_personal": "49122.2 / 195 = 252.13",
+    "formula_transition": "0（无视同缴费年限=0）"
+  },
+  "account_start": "1997-09"
+}

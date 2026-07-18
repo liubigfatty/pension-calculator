@@ -29,12 +29,12 @@
 - 引擎真相源：`engine/pension-engine.js`
 - 省份数据真相源：`cloudfunctions/calculate/provinces/*.js`
 - 改完必须跑同步链（否则不生效）：
-  1. `node scripts/sync-provinces.js` → 派发 data/、js/、docs/ 镜像
+  1. `node scripts/sync-provinces.js` → 派发 4 处 .json 镜像：根 `provinces/`、`cloudfunctions/calculate/provinces/`、`docs/js/`、`docs/网页版/`（旧文档的 data/、js/ 两目录实际不存在，已废弃，详见脚本注释）
   2. `node scripts/build-web.js` → 再生 `web/engine.js` + `web/provinces-bundle.js`
   3. `node scripts/_gen_province_data.js` → 再生 `index-mini/cloudfunctions/calcIndex/provinces-data.js`
      （已含未发布年份 2025/2026 外推，勿手改此文件）
   4. 若在 ai-mode，另同步 `miniprogram/ai/...` 与 `index-mini/ai/...`
-- 验证：`node run-cases.js`（应 164/164）+ `node tests/test_henan.js`（14/14）+ `node verify-index-mini.js`
+- 验证：`node run-cases.js`（应 169/169）+ `node tests/test_henan.js`（14/14）+ `node verify-index-mini.js`
 
 ## 3. 发布快照归档（每次提审后单独存一份）
 
