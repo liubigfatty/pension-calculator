@@ -100,8 +100,8 @@ const CITY_LIST = [
 // ==================== 核心参数 ====================
 
 // 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
+const ACCOUNT_START = { year: 1997, month: 7 }  // 个人账户建立=1997-07(官方核定表"建账缴费时间1997年7月")；晋政发〔1998〕21号中人分界1998-07-01是另一概念(资格线)
+const CUTOFF_DATE   = { year: 1997, month: 6 }  // 视同缴费截止=建账前一月(1997-06)，与核定表视同155个月=12.9167年一致
 
 const TRANS_COEF = 0.013  // 山西省过渡系数 1.3%
 
