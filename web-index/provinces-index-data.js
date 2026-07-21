@@ -4,7 +4,7 @@ window.INDEX_PROVINCES = (function () {
 /*
  * 自动生成 - 31省社平工资数据包 (元/月)
  * 来源: cloudfunctions/calculate/provinces/*.js getEngineConfig().avg_salary_history
- * 生成时间: 2026-07-18
+ * 生成时间: 2026-07-21
  * 用途: 缴费指数小程序 calcIndex 云函数
  * 说明: 未发布年份(2025/2026)按引擎 getBase 外推口径补全(预发年flat/之后2%复利)，保证小程序有分母
  */
