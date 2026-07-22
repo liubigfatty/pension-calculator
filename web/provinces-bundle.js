@@ -6386,7 +6386,7 @@ function getEngineConfig() {
       modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
     }
   }
-  if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
+  if (MODULES.includes('personal')) modules.personal_account = { enabled: true, round_to_jiao: true };
   if (MODULES.includes('transition')) {
     modules.transitional_pension = { enabled: true, formula_type: "shanghai" };
     if (TRANS_COEF) {
@@ -6420,7 +6420,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）。上海特有指数保底：视同按1；1993-2010年低于1按1；2011年不低于1、2012年不低于0.85、2013年不低于0.75；2014年起按实际（最低约0.6）。引擎输入的avg_index应为保底后的最终值。基础养老金计发(沪人社规〔2021〕27号)：满整年后的剩余月数按0.083%/月计发(非整年换算1%/年)，且基础/个人/过渡三项均"分进角"(四舍五入到角)。',
+    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）。上海特有指数保底：视同按1；1993-2010年低于1按1；2011年不低于1、2012年不低于0.85、2013年不低于0.75；2014年起按实际（最低约0.6）。引擎输入的avg_index应为保底后的最终值。基础养老金计发(沪人社规〔2021〕27号)：满整年后的剩余月数按0.083%/月计发(非整年换算1%/年)，且基础/个人/过渡三项均"分进角"(四舍五入到角)。"当年增加养老金"：上海每年地方固定额（如2026年度325元），非公式计算，由输入 current_year_increase 提供并计入月基本养老金总额。',
   };
 }
 

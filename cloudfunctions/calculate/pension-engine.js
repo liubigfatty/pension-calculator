@@ -133,6 +133,19 @@ function calcBasicPension(params) {
     const base = (retireBase + provBase * avgIndex) / 2
     amount = Math.round(base * totalYears * rate * 100) / 100
     description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'shanghai') {
+    // 上海专属（沪人社规〔2021〕27号）：
+    // 基础养老金 = (计发基数 + 计发基数×指数) / 2 × (整年数×1% + 剩余月数×0.083%)
+    // 满整年后的剩余月数，每个月按 0.083% 计发（非整年换算 1%/年）。
+    // 政策第五条：基础/个人/过渡三项均"分进角"（四舍五入到角，分位进位），此处对基础养老金落地。
+    const indexSalary = retireBase * avgIndex
+    const totalMonths = Math.round((totalYears || 0) * 12)
+    const fullYears = Math.floor(totalMonths / 12)
+    const remMonths = totalMonths % 12
+    const coef = fullYears * 0.01 + remMonths * 0.00083
+    const raw = (retireBase + indexSalary) / 2 * coef
+    amount = Math.round(raw * 10) / 10  // 分进角：四舍五入到角
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(4)}) / 2 × (${fullYears}年×1% + ${remMonths}月×0.083%) = ${amount.toFixed(1)}元`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -322,7 +335,11 @@ function getSalaryBase(city, year, config) {
 function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, config, months, personalAccInput) {
 
   if (personalAccInput != null && personalAccInput > 0) {
-    const amount = Math.round(personalAccInput / months * 100) / 100
+    const raw = personalAccInput / months
+    // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+    const amount = config?.modules?.personal_account?.round_to_jiao
+      ? Math.round(raw * 10) / 10
+      : Math.round(raw * 100) / 100
     return {
       amount,
       balance: personalAccInput,
@@ -387,7 +404,11 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   }
 
   totalAcc = Math.round(totalAcc * 100) / 100
-  const amount = Math.round(totalAcc / months * 100) / 100
+  const rawAmt = totalAcc / months
+  // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+  const amount = config?.modules?.personal_account?.round_to_jiao
+    ? Math.round(rawAmt * 10) / 10
+    : Math.round(rawAmt * 100) / 100
 
   return {
     amount,
@@ -457,7 +478,8 @@ function calcTransitionalPension(params) {
 
     const basePart = retireBase * sight * 1.0 * coefSH
     const xuzhangPart = xuzhang > 0 ? xuzhang / 120 : 0
-    const amount = Math.round((basePart + xuzhangPart) * 100) / 100
+    // 上海（沪人社规〔2021〕27号）：过渡性养老金同样"分进角"
+    const amount = Math.round((basePart + xuzhangPart) * 10) / 10
 
     let desc = '上海过渡性养老金: ' + retireBase.toFixed(2) + ' × 1.0 × ' + sight.toFixed(2) + '年 × 1.2%'
     if (xuzhang > 0) {
@@ -956,7 +978,11 @@ function getRetireMonths(ageExact, config) {
 
   // 将精确年龄四舍五入到小数点后1位（月份），用于直接查表
   // 注意：表键格式为 "50.0"、"51.1" 等（有小数点），需确保格式一致
-  const keyAge = Math.round(ageExact * 10) / 10
+  let keyAge = Math.round(ageExact * 10) / 10
+  // 弹性退休年龄可能超出国标计发月数表边界（40~70岁），按沪人社规〔2021〕27号兜底：
+  // 低于40周岁按40周岁、高于70周岁按70周岁对应的计发月数计发
+  if (keyAge < 40) keyAge = 40
+  if (keyAge > 70) keyAge = 70
   // 整数部分直接写 .0，例如 50 → "50.0"，50.1 → "50.1"
   const keyStr = keyAge % 1 === 0 ? keyAge + '.0' : String(keyAge)
 
@@ -1855,7 +1881,11 @@ function calculate(config, inputData) {
   // 广东/深圳过渡性养老金调整额（单列，计入总额）
   const transAdjustment = (config.province === 'guangdong' && transPension._adjustment)
     ? transPension._adjustment : 0
-  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment
+  // 上海"当年增加养老金"（沪人社规，每年地方固定额，如2026年度为325元）：
+  // 非公式计算项，按退休年度由输入提供，直接计入月基本养老金总额；其他省份无此项
+  const currentYearIncrease = ((config.province === 'sh' || config.province === 'shanghai') && inputData.currentYearIncrease)
+    ? Number(inputData.currentYearIncrease) : 0
+  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment + currentYearIncrease
   // 浙江：见分进角补足 — 合计金额向上取整到角（0.1元）
   const total = config.round_to_jiao
     ? Math.ceil(rawSum * 10) / 10
@@ -1945,6 +1975,7 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
+      currentYearIncrease: currentYearIncrease,
       total: total,
       totalYears,
       actualYears,

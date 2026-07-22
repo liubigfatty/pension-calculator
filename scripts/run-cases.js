@@ -102,6 +102,7 @@ function mapCaseToInput(c, provConfig) {
     oneChildType:    c.one_child_type ?? c.oneChildType ?? 'parent',
     oneChildAvgPension: c.one_child_avg_pension ?? c.oneChildAvgPension ?? null,
     extraFixedAmount: c.extra_fixed_amount ?? null,  // 四川无子女定额补贴等
+    currentYearIncrease: c.current_year_increase != null ? c.current_year_increase : null,  // 上海当年增加养老金（每年地方固定额）
     intellectual:    c.intellectual ?? false,
   };
 }
