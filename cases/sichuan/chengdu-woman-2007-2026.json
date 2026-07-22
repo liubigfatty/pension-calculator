@@ -1,0 +1,32 @@
+{
+  "name": "成都个体参保女性2026-05退休(高指数)",
+  "province": "sichuan",
+  "city": "chengdu",
+  "gender": "女",
+  "genderType": "female",
+  "birth_year": 1976,
+  "birth_month": 5,
+  "work_year": 2007,
+  "work_month": 2,
+  "retire_year": 2026,
+  "retire_month": 5,
+  "avg_index": 1.11,
+  "personal_account": 340196.44,
+  "months": 195,
+  "sight_years": 0,
+  "total_years": 19.33,
+  "actual_years": 19.33,
+  "pre_account_years": 0,
+  "base_number": 8462,
+  "account_start": { "year": 1996, "month": 1 },
+  "expected": {
+    "basicPension": 1725.67,
+    "personalPension": 1744.60,
+    "transitionalPension": 0,
+    "extraPension": 181.56,
+    "total": 3651.83
+  },
+  "verified": true,
+  "source": "四川省社会保险业务预办结果通知单(2026)/个体参保缴费人员/2026-05退/预核单号202608511092008",
+  "notes": "计发基数8462/指数1.11/指数化工资9392.82/缴费232个月(19.33年)/个账340196.44/视同=0过渡性=0;增发=独子费公式(指数化×0.1%×年限);从2026-06起发放"
+}
