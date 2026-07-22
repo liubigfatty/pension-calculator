@@ -1,0 +1,31 @@
+{
+  "case_id": "guangxi-guilin-2026-05",
+  "province": "guangxi",
+  "city": "桂林",
+  "gender": "女",
+  "birth": "1971年05月",
+  "work_start": "1994年08月",
+  "retire_year": 2026,
+  "retire_month": 5,
+  "total_years": 31.75,
+  "sight_years": 10.17,
+  "actual_years": 21.59,
+  "pre_account_years": 11.25,
+  "personal_account": 97201.56,
+  "months": 170,
+  "avg_index": 0.8827,
+  "base_number": 6983,
+  "expected": {
+    "basic_pension": 2087.1,
+    "personal_pension": 571.8,
+    "transitional_pension": 970.9,
+    "total": 3629.8
+  },
+  "birth_year": 1971,
+  "birth_month": 5,
+  "work_year": 1994,
+  "work_month": 8,
+  "verified": true,
+  "source": "广西桂林企业参保人员基本养老金核定表（2026-05退休，2026-06起发放，桂林市临桂区）；桂人社规〔2019〕26号。基础2087.1/个人571.8/过渡970.9/合计3629.8。2026年基数未公布，按上年2025年基数6983预发。",
+  "notes": "桂林女干部，1971-05生，2026-05退休(55岁，计发月数170)。计算缴费年限起始1994-08，累计31.75年(视同10.17+实际21.59)，建账前年限11.25年。广西过渡系数1.4%、待遇见分进角、全省统一基数。"
+}
