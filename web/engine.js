@@ -400,7 +400,7 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
  * @returns {Object} 计算结果 { amount, description }
  */
 function calcTransitionalPension(params) {
-  let { provBase, sightYears, avgIndex, actualYears, totalYears, mod, preAccountYears, transIndex } = params
+  let { provBase, sightYears, avgIndex, actualYears, totalYears, mod, preAccountYears, transIndex, sight_index_map } = params
   // 天津/江苏等双指数省份：过渡性养老金使用 transIndex（如天津的"全部平均工资指数"）
   const transIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
@@ -578,8 +578,34 @@ function calcTransitionalPension(params) {
   // 广东粤府函[2021]294号 新办法（系数法）+过渡期（2021-2025）
   if (mod.formula_type === "guangdong") {
     const coef = mod.coefficient || 0.012
+
+    // 广东视同缴费指数自动查表（粤府函〔2021〕294号 附表一/二）
+    // 当用户未显式注入 transIndex 时（即 transIdx 已退化成 avgIndex），
+    // 根据参保地城市从 GUANGDONG_SIGHT_INDEX_MAP 查表获取 D 值。
+    // 案例（注入了 newMethodYears/transIndex）不受影响——注入值优先。
+    let gdTransIdx = transIdx
+    if (sight_index_map && !params?.transIndex && params?.transIndex !== 0) {
+      // transIndex 未显式注入 → 尝试按 city 查表
+      const lookupCity = params?.city || ''
+      // 查表优先级：原始键 → 去掉"市/省"后缀 → 大小写不敏感匹配
+      let tableD = sight_index_map[lookupCity]
+      if (tableD == null) {
+        const stripped = lookupCity.replace(/[省市]$/, '')
+        tableD = sight_index_map[stripped]
+      }
+      if (tableD == null) {
+        const lower = lookupCity.toLowerCase()
+        const foundKey = Object.keys(sight_index_map).find(k => k.toLowerCase() === lower)
+        if (foundKey) tableD = sight_index_map[foundKey]
+      }
+      if (tableD != null) {
+        gdTransIdx = tableD
+      }
+    }
+
     // 新办法加权年数：案例直接提供 newMethodYears = (视同指数×视同年月及93底实际缴费月数 + 1994-1998.6实际缴费指数和)/12
-    const newYears = (params?.newMethodYears != null) ? params.newMethodYears : (effectiveYears * transIdx)
+    // 真实用户未注入时：用查表 D 值 × 有效年限（近似；精确需 newMethodYears 注入）
+    const newYears = (params?.newMethodYears != null) ? params.newMethodYears : (effectiveYears * gdTransIdx)
     const newAmount = Math.round(provBase * newYears * coef * 100) / 100
     const xuzhang = params?.xuzhang || 0
     // 广东原办法过渡性养老金 = 视同账户额 ÷ 原过渡性养老金计发系数 K
@@ -600,11 +626,16 @@ function calcTransitionalPension(params) {
     const rawAdjustment = retireYear >= 2026 ? 0 : (newAmount - oldBase - allowance) * rate
     const adjustment = Math.max(0, Math.round(rawAdjustment * 100) / 100)
 
-    // 2026年起直接全用新办法（无调整额、无100/津贴叠加）
+    // 2026年起全用新办法（系数法），但固定津贴仍保留：
+    // 粤劳电[2009]32号加发100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
+    // 这两项与"过渡期调整额"无关，是独立发放的普惠性津贴
     if (retireYear >= 2026) {
-      const amount = Math.round(newAmount * 100) / 100
-      const desc = `粤府函[2021]294号新办法(${retireYear}年起全用)：基数${provBase.toLocaleString()} × 加权年${newYears.toFixed(4)} × ${(coef*100).toFixed(1)}% = ${amount.toFixed(2)}元`
-      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: adjustment, description: desc }
+      const fixedSubsidy = Math.round((100 + allowance) * 100) / 100
+      const amount = Math.round((newAmount + fixedSubsidy) * 100) / 100
+      const desc = newAmount > 0
+        ? `粤府函[2021]294号新办法(${retireYear}年)：${newAmount.toFixed(2)} + 津贴${fixedSubsidy.toFixed(2)} = ${amount.toFixed(2)}元`
+        : `过渡性养老金(年限津贴${allowance} + 加发100) = ${amount.toFixed(2)}元`
+      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: 0, description: desc }
     }
 
     // 过渡性养老金分项 = 原办法 + 100 + 津贴（调整额在 calculate 中单列）
@@ -1718,6 +1749,7 @@ function calculate(config, inputData) {
     city,
     szModules: config.sz_modules,
     province: config.province,
+    sight_index_map: config.sight_index_map,
     intellectual: data.intellectual
   })
 
@@ -1863,7 +1895,8 @@ function calculate(config, inputData) {
     pre1992Years: data.pre1992Years,
     city,
     szModules: config.sz_modules,
-    province: config.province
+    province: config.province,
+    sight_index_map: config.sight_index_map,
   })
 
   const flexRawSum = flexBasic.amount + flexExtra.amount + flexPersonal.amount + flexTrans.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment

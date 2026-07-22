@@ -622,11 +622,16 @@ function calcTransitionalPension(params) {
     const rawAdjustment = retireYear >= 2026 ? 0 : (newAmount - oldBase - allowance) * rate
     const adjustment = Math.max(0, Math.round(rawAdjustment * 100) / 100)
 
-    // 2026年起直接全用新办法（无调整额、无100/津贴叠加）
+    // 2026年起全用新办法（系数法），但固定津贴仍保留：
+    // 粤劳电[2009]32号加发100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
+    // 这两项与"过渡期调整额"无关，是独立发放的普惠性津贴
     if (retireYear >= 2026) {
-      const amount = Math.round(newAmount * 100) / 100
-      const desc = `粤府函[2021]294号新办法(${retireYear}年起全用)：基数${provBase.toLocaleString()} × 加权年${newYears.toFixed(4)} × ${(coef*100).toFixed(1)}% = ${amount.toFixed(2)}元`
-      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: adjustment, description: desc }
+      const fixedSubsidy = Math.round((100 + allowance) * 100) / 100
+      const amount = Math.round((newAmount + fixedSubsidy) * 100) / 100
+      const desc = newAmount > 0
+        ? `粤府函[2021]294号新办法(${retireYear}年)：${newAmount.toFixed(2)} + 津贴${fixedSubsidy.toFixed(2)} = ${amount.toFixed(2)}元`
+        : `过渡性养老金(年限津贴${allowance} + 加发100) = ${amount.toFixed(2)}元`
+      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: 0, description: desc }
     }
 
     // 过渡性养老金分项 = 原办法 + 100 + 津贴（调整额在 calculate 中单列）
