@@ -1,0 +1,30 @@
+{
+  "name": "山东女性合同制2026-01退休",
+  "province": "shandong",
+  "gender": "女",
+  "genderType": "female",
+  "birth_year": 1976,
+  "birth_month": 1,
+  "work_year": 1996,
+  "work_month": 1,
+  "retire_year": 2026,
+  "retire_month": 1,
+  "avg_index": 0.629,
+  "personal_account": 98192.41,
+  "months": 189.2,
+  "sight_years": 1.0833,
+  "total_years": 31.4167,
+  "actual_years": 30.08,
+  "pre_account_years": 1.0833,
+  "base_number": 7831,
+  "account_start": { "year": 1996, "month": 1 },
+  "expected": {
+    "basicPension": 2004.08,
+    "personalPension": 518.99,
+    "transitionalPension": 69.16,
+    "total": 2592.23
+  },
+  "verified": true,
+  "source": "企业职工基本养老保险临时待遇核定表(2026)/山东/二级单位/2026-01退/正常退休/合同制",
+  "notes": "计发基数7831/指数0.629/指数化工资4925.70/缴费指数月数361(30.08年)/缴费月数228.9726/建账前年限1年1月(1.0833)/计发月数189.20;基础=(4925.70+7831)/2*31.4167*1%=2004.08;过渡=4925.70*1.0833*1.3%=69.16;个账=98192.41/189.20=518.99"
+}
