@@ -97,9 +97,11 @@ function mapCaseToInput(c, provConfig) {
     newMethodYears:  c.new_method_years ?? null,
     localPensionYears: c.local_pension_years ?? null,
     pre1992LocalYears: c.pre1992_local_years ?? null,
-    oneChild:        c.one_child ?? c.oneChild ?? false,
+    oneChild:        c.one_child !== undefined ? !!c.one_child : (c.oneChild !== undefined ? !!c.oneChild : undefined),
+    // 三态：true=有独生子女(公式), false=无子女(定额), undefined=未指定(向后兼容走公式)
     oneChildType:    c.one_child_type ?? c.oneChildType ?? 'parent',
     oneChildAvgPension: c.one_child_avg_pension ?? c.oneChildAvgPension ?? null,
+    extraFixedAmount: c.extra_fixed_amount ?? null,  // 四川无子女定额补贴等
     intellectual:    c.intellectual ?? false,
   };
 }

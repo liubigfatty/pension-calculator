@@ -160,19 +160,36 @@ function calcExtraPension(params) {
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用', bracketDetails: [] }
 
   // 四川增发养老金（川劳社发〔2006〕17号）：
-  // 月增发养老金 = 指数化月平均缴费工资 × 增发比例 × 累计缴费年限
+  // 月增发养老金 = 指数化月平均缴费工资 × 增发比例 × 累计缴费年限 [+ 定额补贴]
   // 增发比例因人而异：独生子女0.1%、2005年底前工作0.1%、艰苦边远地区0.1%等，合计0.1%~0.4%+
+  // 双轨制：
+  //   - 有独生子女(oneChild=true) → 公式计算(指数化工资×比例×年限) + 可选定额叠加
+  //   - 无子女(oneChild=false)     → 纯定额补贴(如60元/月)，不走公式
   if (mod.formula_type === "sichuan") {
     const rBase = retireBase || 0
     const idx = avgIndex || 0
     const indexSalary = rBase * idx
     const calcYears = totalYears || actualYears
-    // 支持通过 params.extraRate 传入自定义比例（如0.004），否则用配置默认值
-    const rate = params?.extraRate != null ? params.extraRate : (mod.rate || 0.001)
-    const amount = Math.round(indexSalary * rate * calcYears * 100) / 100
+    const oneChild = params?.oneChild !== false  // 默认有独生子女(向后兼容)
+    const fixedAmount = params?.extraFixedAmount || 0
 
-    const desc = '四川增发养老金: ' + indexSalary.toFixed(2) + ' × ' + (rate * 100).toFixed(1)
-               + '% × ' + calcYears.toFixed(2) + '年 = ' + amount.toFixed(2) + '元'
+    // 无子女(oneChild显式=false)：纯定额补贴，不按公式算
+    // 未设置oneChild(undefined)：向后兼容，走公式（旧case无此字段）
+    const hasOneChildField = params.hasOwnProperty('oneChild')
+    if (hasOneChildField && !oneChild) {
+      const amount = Math.round(fixedAmount * 100) / 100
+      const desc = '四川增发养老金(无子女定额补贴): ' + amount.toFixed(2) + '元/月'
+      return { amount, description: desc, bracketDetails: [] }
+    }
+
+    // 有独生子女：公式计算 + 定额叠加
+    const rate = params?.extraRate != null ? params.extraRate : (mod.rate || 0.001)
+    const formulaAmount = Math.round(indexSalary * rate * calcYears * 100) / 100
+    const amount = Math.round((formulaAmount + fixedAmount) * 100) / 100
+
+    let desc = '四川增发养老金: ' + indexSalary.toFixed(2) + ' × ' + (rate * 100).toFixed(1)
+               + '% × ' + calcYears.toFixed(2) + '年 = ' + formulaAmount.toFixed(2) + '元'
+    if (fixedAmount > 0) desc += ' + 定额' + fixedAmount + '元 = ' + amount.toFixed(2) + '元'
     return { amount, description: desc, bracketDetails: [] }
   }
 
@@ -1448,9 +1465,10 @@ function parseInput(inputData) {
     localPensionYears,      // 深圳 地方补充养老缴费年限
     pre1992LocalYears,      // 深圳 1992年7月前地方补充养老年限
     socialAvgBaseInput: inputData.socialAvgBaseInput != null ? parseFloat(inputData.socialAvgBaseInput) : null, // 重庆社平覆盖（可为null）
-    oneChild: inputData.oneChild === true, // 重庆独生子女标记
+    oneChild: inputData.oneChild !== undefined ? inputData.oneChild === true : undefined, // 三态：true/false/undefined
     oneChildType: inputData.oneChildType || 'parent', // 独生子女类型：parent(独生父母5%)/no_child(无子女10%)，海南等省用
     oneChildAvgPension: inputData.oneChildAvgPension != null ? parseFloat(inputData.oneChildAvgPension) : null, // 云南独生子女补贴计算基数（人均养老金）覆盖
+    extraFixedAmount: inputData.extraFixedAmount != null ? parseFloat(inputData.extraFixedAmount) : null, // 四川增发定额补贴（无子女等固定金额，元/月）
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
     regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
     tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
@@ -1711,7 +1729,9 @@ function calculate(config, inputData) {
     mod: config.modules?.extra_pension || { enabled: false },
     retireBase: retBase,
     avgIndex: data.avgIndex,
-    extraRate: data.extraRate
+    extraRate: data.extraRate,
+    oneChild: data.oneChild,           // 四川双轨：有独生子女→公式，无子女→定额
+    extraFixedAmount: data.extraFixedAmount  // 定额补贴部分（元/月）
   })
 
   // 个人账户养老金
