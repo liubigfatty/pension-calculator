@@ -1399,6 +1399,12 @@ function parseInput(inputData) {
   // 格式：{ year: 1998, month: 12 }
   const accountStartInput = inputData.accountStart || null
 
+  // paymentStartInput: 用户实际开始缴费年月（陕西特殊）
+  // 陕西过渡性养老金年限截止到实际缴费开始时间，不是全省统账时间；
+  // 统账前已有实际缴费的年限不计入过渡性年限。
+  // 格式：{ year: 1993, month: 1 }
+  const paymentStartInput = inputData.paymentStart || null
+
   // totalYearsInput: 用户可显式指定累计缴费年限（精确值，覆盖自动计算结果）
   // 用于处理档案认定导致的不规则年限（如特殊工龄、中断认定等）
   const totalYearsInput = inputData.totalYears != null ? parseFloat(inputData.totalYears)
@@ -1473,6 +1479,7 @@ function parseInput(inputData) {
     personalAccInput,
     sightYearsInput,  // 用户显式指定的视同缴费年限（可为null）
     accountStartInput,  // 用户显式指定的个人账户开始缴费年月（可为null）
+    paymentStartInput,  // 用户显式指定的实际缴费开始年月（陕西特殊，可为null）
     totalYearsInput,  // 用户显式指定的累计缴费年限（可为null）
     baseRetireInput,  // 用户显式指定的退休地计发基数（可为null）
     baseProvInput,    // 用户显式指定的全省计发基数（可为null）
@@ -1618,19 +1625,28 @@ function calculate(config, inputData) {
   // ===== 确定城市 =====
   // 只要 cityType 不是 'prov'，就尝试用它查 base_rates（支持 shenyang/dalian 等）
   const city = (data.cityType && data.cityType !== 'prov') ? data.cityType : 'prov'
-  const hasSight = data.work.year < config.account_start?.year ||
-    (data.work.year === config.account_start?.year && data.work.month < config.account_start?.month)
 
   // 实际缴费起始时间：优先用用户指定的，否则用配置文件
   const accountStartConfigured = data.accountStartInput || config.account_start || { year: 1995, month: 7 }
-  // 有视同缴费时，实际缴费从建账时间开始；无视同时从参保时间开始
-  const actualStart = hasSight ? accountStartConfigured : data.work
+
+  // 陕西特殊：过渡性养老金年限截止到“实际缴费开始时间”，不是全省统账时间。
+  // 若配置 sight_cutoff_by_payment_start=true 且用户传入 paymentStart，
+  // 则视同年限算到 paymentStart，实际缴费从 paymentStart 开始；个人账户仍从 accountStart 起算。
+  const paymentStartConfigured = data.paymentStartInput || accountStartConfigured
+  const usePaymentStart = config.sight_cutoff_by_payment_start === true && data.paymentStartInput != null
+  const sightCutoff = usePaymentStart ? paymentStartConfigured : accountStartConfigured
+
+  const hasSight = data.work.year < sightCutoff.year ||
+    (data.work.year === sightCutoff.year && data.work.month < sightCutoff.month)
+
+  // 有视同缴费时，实际缴费从 sightCutoff 开始；无视同时从参保时间开始
+  const actualStart = hasSight ? sightCutoff : data.work
   const accountStart = accountStartConfigured
 
   // 年限计算
   // 优先使用用户显式指定的累计缴费年限（来自官方核定表），否则自动计算
   // 优先使用用户显式指定的视同缴费年限（来自官方核定表），否则自动计算
-  const autoSightYears = hasSight ? calcYears(data.work, accountStartConfigured) : 0
+  const autoSightYears = hasSight ? calcYears(data.work, sightCutoff) : 0
   let sightYears = data.sightYearsInput != null ? data.sightYearsInput : autoSightYears
   const autoTotalYears = calcYears(actualStart, legalDate) + sightYears
   let totalYears = data.totalYearsInput != null ? data.totalYearsInput : autoTotalYears

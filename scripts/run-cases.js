@@ -91,6 +91,7 @@ function mapCaseToInput(c, provConfig) {
     tibetWorkYears:  c.tibet_work_years ?? null,
     extraRate:       c.extra_rate     ?? null,
     accountStart:    c.account_start   ?? null,
+    paymentStart:    c.payment_start   ?? null,  // 陕西特殊：实际缴费开始时间
     xuzhang:         c.xuzhang        ?? null,
     oldIndexSalary:  c.old_index_salary ?? null,
     enjoymentRatio:  c.enjoyment_ratio ?? null,

@@ -27,5 +27,6 @@
   "birth_month": 5,
   "work_year": 1993,
   "work_month": 1,
+  "payment_start": { "year": 1993, "month": 1 },
   "verified": true
 }
