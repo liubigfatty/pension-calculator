@@ -1,0 +1,7 @@
+ERR 1.json: Cannot access 'effectiveYears' before initialization
+ERR 2.json: Cannot access 'effectiveYears' before initialization
+ERR 3.json: Cannot access 'effectiveYears' before initialization
+ERR 4.json: Cannot access 'effectiveYears' before initialization
+ERR 5.json: Cannot access 'effectiveYears' before initialization
+
+HAS_FAIL

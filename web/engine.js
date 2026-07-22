@@ -443,6 +443,24 @@ function calcTransitionalPension(params) {
   const transIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
 
+  // 山西双指数（晋政发〔2006〕32号）：
+  // 过渡性养老金必须使用「过渡平均缴费指数」trans_index（与基础养老金的 avg_index 不同）。
+  // 引擎本身不自动反推双指数，依赖案例/前端显式注入 trans_index；此处强制校验，
+  // 缺失时明确告警并回落 avg_index（避免静默误用基础指数导致结果偏差）。
+  if (mod.formula_type === 'shanxi') {
+    if (transIndex == null || transIndex <= 0) {
+      console.warn('[山西/双指数] 未提供 trans_index（过渡平均缴费指数），过渡性养老金将误用基础指数 avgIndex，请补充！')
+    }
+    const shTransIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
+    const coef = mod.coefficient || 0.013
+    const idxSalary = provBase * shTransIdx  // 指数化月平均工资（过渡性）
+    const amount = Math.round(idxSalary * sightYears * coef * 100) / 100
+    return {
+      amount,
+      description: `山西双指数(过渡): ${provBase.toLocaleString()} × 指数${shTransIdx.toFixed(4)}(指数化${idxSalary.toFixed(2)}) × ${sightYears.toFixed(4)}年 × ${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    }
+  }
+
   // 深圳独立体系：城市级公式覆盖（非省配置级别）
   if ((params.city === 'sz' || params.city === 'shenzhen') && params.province === 'guangdong' && params.szModules?.transitional_pension) {
     mod = { ...mod, ...params.szModules.transitional_pension }

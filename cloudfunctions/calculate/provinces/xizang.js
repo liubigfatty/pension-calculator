@@ -99,9 +99,9 @@ const CITY_LIST = [
 
 // ==================== 核心参数 ====================
 
-// 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// 建账时间（个人账户制度建立时间）：西藏2000年实行统账结合（林芝市人社局政策页"2000年6月30日以前未建立个人账户"、西藏政府纪实"2000年我区实行统账结合"）；视同缴费截止2000-06
+const ACCOUNT_START = { year: 2000, month: 7 }
+const CUTOFF_DATE   = { year: 2000, month: 6 }
 
 const TRANS_COEF = 0.014  // 西藏自治区过渡系数 1.4000000000000001%
 
