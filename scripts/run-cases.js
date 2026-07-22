@@ -181,20 +181,35 @@ function runCase(prov, c, file) {
 
 // ===== 主流程 =====
 function main() {
+  // 支持单省/单案例过滤：node run-cases.js <province> [<caseFile>]
+  // 无参数时仍跑全量，行为不变。
+  const args = process.argv.slice(2);
+  const filterProv = args[0] || null;
+  const filterFile = args[1] || null;
+
   const casesDir = './cases';
   if (!fs.existsSync(casesDir)) { console.error('❌ cases/ 不存在'); process.exit(1); }
 
-  const provinces = fs.readdirSync(casesDir)
+  let provinces = fs.readdirSync(casesDir)
     .filter(f => fs.statSync(path.join(casesDir, f)).isDirectory());
+  if (filterProv) {
+    provinces = provinces.filter(p => p === filterProv);
+    if (provinces.length === 0) {
+      console.error(`❌ 未找到省份目录: ${filterProv}`);
+      process.exit(1);
+    }
+  }
 
   let total = 0, pass = 0, fail = 0;
   const failures = [];
 
-  console.log('=== 养老金计算平台 全量测试 ===\n');
+  const scope = filterProv ? ` [${filterProv}${filterFile ? '/' + filterFile : ''}]` : ' 全量';
+  console.log(`=== 养老金计算平台 测试${scope} ===\n`);
 
   for (const prov of provinces) {
     const provDir = path.join(casesDir, prov);
-    const files = fs.readdirSync(provDir).filter(f => f.endsWith('.json'));
+    let files = fs.readdirSync(provDir).filter(f => f.endsWith('.json'));
+    if (filterFile) files = files.filter(f => f === filterFile);
 
     for (const f of files) {
       total++;

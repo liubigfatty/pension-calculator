@@ -141,6 +141,12 @@ function getEngineConfig() {
         modules.transitional_pension.coefficient = TRANS_COEF;
       }
     }
+    // 山西双指数（晋政发〔2006〕32号）：基础养老金与过渡性养老金使用不同平均缴费指数。
+    // 基础用 avg_index（基础平均缴费指数），过渡用 trans_index（过渡平均缴费指数）。
+    // 引擎不自动反推双指数，需案例/前端显式注入 trans_index；formula_type 显式声明身份，
+    // 由 calcTransitionalPension 的 'shanxi' 分支强制校验（缺失则告警，防止静默误用基础指数）。
+    modules.transitional_pension.formula_type = 'shanxi';
+    modules.transitional_pension.double_index = true;
   }
 
   return {
