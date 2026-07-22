@@ -137,6 +137,19 @@ function calcBasicPension(params) {
     const base = (retireBase + provBase * avgIndex) / 2
     amount = Math.round(base * totalYears * rate * 100) / 100
     description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'shanghai') {
+    // 上海专属（沪人社规〔2021〕27号）：
+    // 基础养老金 = (计发基数 + 计发基数×指数) / 2 × (整年数×1% + 剩余月数×0.083%)
+    // 满整年后的剩余月数，每个月按 0.083% 计发（非整年换算 1%/年）。
+    // 政策第五条：基础/个人/过渡三项均"分进角"（四舍五入到角，分位进位），此处对基础养老金落地。
+    const indexSalary = retireBase * avgIndex
+    const totalMonths = Math.round((totalYears || 0) * 12)
+    const fullYears = Math.floor(totalMonths / 12)
+    const remMonths = totalMonths % 12
+    const coef = fullYears * 0.01 + remMonths * 0.00083
+    const raw = (retireBase + indexSalary) / 2 * coef
+    amount = Math.round(raw * 10) / 10  // 分进角：四舍五入到角
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(4)}) / 2 × (${fullYears}年×1% + ${remMonths}月×0.083%) = ${amount.toFixed(1)}元`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex

@@ -157,7 +157,7 @@ const cases = [
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
   const modules = {};
-  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01, formula_type: 'shanghai' };
   if (MODULES.includes('extra')) {
     modules.extra_pension = { enabled: true };
     if (EXTRA_PARAMS) {
@@ -199,7 +199,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）。上海特有指数保底：视同按1；1993-2010年低于1按1；2011年不低于1、2012年不低于0.85、2013年不低于0.75；2014年起按实际（最低约0.6）。引擎输入的avg_index应为保底后的最终值。',
+    notes: '2023年基数12183元，2024年基数12307元，2025年基数12434元（沪人社规〔2023/2024/2025〕XX号）。上海特有指数保底：视同按1；1993-2010年低于1按1；2011年不低于1、2012年不低于0.85、2013年不低于0.75；2014年起按实际（最低约0.6）。引擎输入的avg_index应为保底后的最终值。基础养老金计发(沪人社规〔2021〕27号)：满整年后的剩余月数按0.083%/月计发(非整年换算1%/年)，且基础/个人/过渡三项均"分进角"(四舍五入到角)。',
   };
 }
 
