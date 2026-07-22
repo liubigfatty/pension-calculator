@@ -1,0 +1,32 @@
+{
+  "case_id": "xizang-2025-11-lasa-male-55",
+  "province": "xizang",
+  "city": "拉萨",
+  "region_category": "二类地区",
+  "gender": "男",
+  "birth_year": 1970,
+  "birth_month": 11,
+  "birth_day": 19,
+  "work_year": 1989,
+  "work_month": 3,
+  "work_day": 1,
+  "retire_year": 2025,
+  "retire_month": 11,
+  "retire_day": 30,
+  "avg_index": 0.671,
+  "base_number": 11777,
+  "base_prov": 11777,
+  "personal_account": 69473.19,
+  "months": 170,
+  "sight_years": 15.83,
+  "total_years": 26.75,
+  "tibet_work_years": 15.83,
+  "expected": {
+    "basic_pension": 2632.12,
+    "personal_pension": 408.67,
+    "transitional_pension": 1751.32,
+    "total": 5912.23
+  },
+  "verified": true,
+  "notes": "西藏拉萨二类地区男职工55岁正常退休（藏政发〔2006〕37号/藏劳社办〔2007〕6号）。基础=11777×(1+0.671)/2×26.75×1%=2632.12；个人=69473.19/170=408.67；过渡=11777×0.671×15.83×1.4%=1751.32；高原补贴=11777×0.671×10%=790.24（在藏认定工作年限15.83年，满15年不满20年档）；二类地区固定待遇=交通30+取暖39.88+福利260=329.88；合计5912.23。核定表注明退休月基本养老金5582.35元+其他待遇329.88元。"
+}
