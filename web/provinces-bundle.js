@@ -96,11 +96,13 @@ const CUTOFF_DATE   = { year: 1995, month: 12 }
 const TRANS_COEF = 0.013  // 皖政2006〔59〕号：过渡系数1.3%（高于全国标准1.2%）
 const PROV_TAG = 'anhui'
 
-// 【官方核定表校验 2026-07-23】安徽取整规则（核定表公式原文确认）：
-//   累计缴费年限→四舍五入到0.5年（例：42年5月=42.4167→42.5）
-//   视同缴费年限→保留1位小数（例：12年3月=12.25→12.3）
-//   引擎config.rounding统一yDec无法同时满足两套步长，故官方案例(anhui/2.json)注入取整后值；
-//   前端/案例输入层应按此规则预取整后再传入引擎。
+// 【官方核定表校验 2026-07-23，2026-07-23订正】安徽取整规则（核定表公式原文 + 用户核对确认）：
+//   累计缴费年限、视同缴费年限均 "只保留1位小数，且只进不退（向上取整到0.1年）"
+//     · 累计缴费 42年5月 = 42.4167 → ceil到0.1 = 42.5（白赚≈1个月）
+//     · 累计缴费 40年5月 = 40.4167 → ceil到0.1 = 40.5（与实缴40年6月待遇完全相同）
+//     · 视同缴费 12年3月 = 12.25 → ceil到0.1 = 12.3
+//   即 "隐形福利"：任何不足整十分位的小数缴费年限一律向上进位，断无向下取整。
+//   引擎已支持 years_round_mode:'ceil'，安徽启用；官方案例(anhui/2.json)现注入原始年月值交由引擎取整。
 
 const MODULES = ['base', 'personal', 'transition']
 const MODULE_LABELS = {
@@ -133,7 +135,7 @@ function getEngineConfig() {
     name: '安徽省',
     modules,
     // 取整规则：视同保留1位小数(yDec=1)；总年限0.5年步进需前端预取整注入
-    rounding: { years_decimal: 1, index_decimal: 4, result_decimal: 2 },
+    rounding: { years_decimal: 1, years_round_mode: 'ceil', index_decimal: 4, result_decimal: 2 },
   }
 }
 

@@ -1699,20 +1699,25 @@ function calculate(config, inputData) {
   }
 
   // ===== 省份特殊取整规则 =====
-  // 安徽等省份：缴费年限取1位小数，指数保留4位，结果保留2位
+  // 安徽等省份：缴费年限取1位小数（years_round_mode:'ceil' 时只进不退/向上取整），指数保留4位，结果保留2位
   // 福建等省份：年限按半段进整（不足半年按半年，大于半年不足一年按一年）
   const roundingRules = config.rounding
   if (roundingRules) {
     const yDec = roundingRules.years_decimal
     const iDec = roundingRules.index_decimal
     const rDec = roundingRules.result_decimal
-    
+
     // 年限取整（总年限、视同年限、建账前年限）
+    // years_round_mode: 'ceil' = 只进不退（向上取整到指定位数，例：安徽 40年5月=40.4167→40.5）
+    //                    'round'(默认) = 四舍五入
     if (yDec != null) {
       const factor = Math.pow(10, yDec)
-      if (totalYears != null) totalYears = Math.round(totalYears * factor) / factor
-      if (sightYears != null) sightYears = Math.round(sightYears * factor) / factor
-      if (preAccountYears != null) preAccountYears = Math.round(preAccountYears * factor) / factor
+      const yRound = (v) => (roundingRules.years_round_mode === 'ceil')
+        ? Math.ceil(v * factor) / factor
+        : Math.round(v * factor) / factor
+      if (totalYears != null) totalYears = yRound(totalYears)
+      if (sightYears != null) sightYears = yRound(sightYears)
+      if (preAccountYears != null) preAccountYears = yRound(preAccountYears)
     }
     
     // 福建等省份：年限按半段进整（0.5年步进）
