@@ -88,8 +88,14 @@ const CITY_LIST = [
 
 const ACCOUNT_START = { year: 1996, month: 1 }
 const CUTOFF_DATE   = { year: 1995, month: 12 }
-const TRANS_COEF = 0.013
+const TRANS_COEF = 0.013  // 皖政2006〔59〕号：过渡系数1.3%（高于全国标准1.2%）
 const PROV_TAG = 'anhui'
+
+// 【官方核定表校验 2026-07-23】安徽取整规则（核定表公式原文确认）：
+//   累计缴费年限→四舍五入到0.5年（例：42年5月=42.4167→42.5）
+//   视同缴费年限→保留1位小数（例：12年3月=12.25→12.3）
+//   引擎config.rounding统一yDec无法同时满足两套步长，故官方案例(anhui/2.json)注入取整后值；
+//   前端/案例输入层应按此规则预取整后再传入引擎。
 
 const MODULES = ['base', 'personal', 'transition']
 const MODULE_LABELS = {
@@ -121,6 +127,8 @@ function getEngineConfig() {
     province: PROV_TAG,
     name: '安徽省',
     modules,
+    // 取整规则：视同保留1位小数(yDec=1)；总年限0.5年步进需前端预取整注入
+    rounding: { years_decimal: 1, index_decimal: 4, result_decimal: 2 },
   }
 }
 
