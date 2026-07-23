@@ -290,5 +290,9 @@
       "tier2": 7226,
       "tier3": 7154
     }
+  },
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
   }
 }

@@ -383,5 +383,9 @@
       "shenzhen_transition_enabled": true,
       "shenzhen_transition_formula": "过渡性补助: 1992年7月前地方补缴年限×指数×11+60"
     }
+  },
+  "cutoff_date": {
+    "year": 1998,
+    "month": 6
   }
 }

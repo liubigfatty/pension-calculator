@@ -233,5 +233,9 @@
     },
     "verified": "待案例验证。建账时间1996-01（重庆1997年直辖，但养老保险个人账户制度1996年全国统一开始）。"
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  }
 }

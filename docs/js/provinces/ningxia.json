@@ -175,5 +175,9 @@
     "policy": "宁政发相关文件。基础=(计发基数+计发基数×Q)/2×年限×1%。过渡=计发基数×Q×视同年限×1.4%。建账1996-01。",
     "data_source": "官方数据"
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  }
 }

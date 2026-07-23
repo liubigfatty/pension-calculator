@@ -4,7 +4,7 @@
   "verified_count": 0,
   "account_start": {
     "year": 1998,
-    "month": 10
+    "month": 1
   },
   "viewing_start": {
     "year": 1998,
@@ -177,5 +177,9 @@
     "policy": "待确认政策文件。建账1998-10-01，1998年10月1日前参加工作为中人。过渡视同以1997年底为界。",
     "data_source": "官方数据"
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1997,
+    "month": 12
+  }
 }

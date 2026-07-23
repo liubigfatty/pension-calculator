@@ -5,7 +5,10 @@
     "year": 1996,
     "month": 1
   },
-  "cutoff_date": "1995-12-31",
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  },
   "base_rates": {
     "1978": 931,
     "1979": 978,

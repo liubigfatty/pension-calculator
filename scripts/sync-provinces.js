@@ -182,8 +182,18 @@ function syncJsonBaseRates(file, provBaseObj) {
   fs.writeFileSync(file, JSON.stringify(j, null, 2));
 }
 
+// ---------- account_start / cutoff_date：从真相源 .js 同步到 .json 镜像（建账时间同构） ----------
+// ⚠️ 历史坑：sync 脚本原只同步 AVG_SALARY_HISTORY 与 PROV_BASE，漏同步 account_start/cutoff_date，
+//    导致 .json 镜像的 account_start 长期漂移（如西藏曾错为 2005-07）。现补上。
+function syncJsonAccount(file, accountStart, cutoffDate) {
+  const j = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (accountStart) j.account_start = accountStart;
+  if (cutoffDate) j.cutoff_date = cutoffDate;
+  fs.writeFileSync(file, JSON.stringify(j, null, 2));
+}
+
 const provs = fs.readdirSync(AUTH).filter(f => f.endsWith('.js')).map(f => f.replace(/\.js$/, '')).sort();
-let ok = 0, skip = 0, baseBlocks = 0;
+let ok = 0, skip = 0, baseBlocks = 0, accountBlocks = 0;
 
 const targets = [
   { name: 'provinces (root json)', dir: PROVJSON, kind: 'json' },
@@ -211,6 +221,9 @@ for (const p of provs) {
     } else {
       syncJsonAvg(fp, authAvg); ok++;
       if (provBase) { syncJsonBaseRates(fp, provBase); baseBlocks++; }
+      const accountStart = extractObj(authFile, 'ACCOUNT_START');
+      const cutoffDate = extractObj(authFile, 'CUTOFF_DATE');
+      syncJsonAccount(fp, accountStart, cutoffDate); accountBlocks++;
     }
   }
 }
@@ -221,4 +234,4 @@ try {
   console.log('build-web.js 执行失败：', e.message);
 }
 
-console.log('SYNC_DONE avg=' + ok + ' base=' + baseBlocks + ' skip=' + skip);
+console.log('SYNC_DONE avg=' + ok + ' base=' + baseBlocks + ' account=' + accountBlocks + ' skip=' + skip);

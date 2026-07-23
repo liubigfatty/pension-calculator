@@ -2,8 +2,8 @@
   "province": "liaoning",
   "name": "辽宁省",
   "account_start": {
-    "year": 1995,
-    "month": 7
+    "year": 1996,
+    "month": 1
   },
   "viewing_start": {
     "year": 1995,
@@ -270,5 +270,9 @@
     "2023": 7121,
     "2024": 7265
   },
-  "verified_count": 5
+  "verified_count": 5,
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  }
 }

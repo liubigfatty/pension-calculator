@@ -182,5 +182,9 @@
     "2023": 8643,
     "2024": 8816
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1997,
+    "month": 12
+  }
 }

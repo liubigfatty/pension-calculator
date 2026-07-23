@@ -201,5 +201,9 @@
   },
   "notes": {
     "data_source": "官方数据"
+  },
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
   }
 }

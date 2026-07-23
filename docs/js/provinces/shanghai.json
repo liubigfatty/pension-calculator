@@ -2,7 +2,7 @@
   "province": "shanghai",
   "name": "上海市",
   "account_start": {
-    "year": 1997,
+    "year": 1993,
     "month": 1
   },
   "viewing_start": {
@@ -222,5 +222,9 @@
     "policy": "上海市企业职工基本养老金按沪人社规〔2021〕32号执行。基础养老金=(上年度全市月平均工资+指数化月均工资)/2×缴费年限×1%。过渡性养老金=月平均工资×1.0×92年底前视同年限×1.2%+虚账实记总额÷120。无增发养老金。1993-2010年指数低于1按1计算。",
     "data_source": "官方数据"
   },
-  "verified_count": 5
+  "verified_count": 5,
+  "cutoff_date": {
+    "year": 1992,
+    "month": 12
+  }
 }

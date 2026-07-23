@@ -2,8 +2,8 @@
   "province": "shanxi",
   "name": "山西省",
   "account_start": {
-    "year": 1996,
-    "month": 1
+    "year": 1997,
+    "month": 7
   },
   "viewing_start": {
     "year": 1998,
@@ -209,5 +209,9 @@
       "avg_salary_history",
       "无增发"
     ]
+  },
+  "cutoff_date": {
+    "year": 1997,
+    "month": 6
   }
 }

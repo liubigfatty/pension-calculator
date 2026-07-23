@@ -3,7 +3,7 @@
   "name": "陕西省",
   "account_start": {
     "year": 1996,
-    "month": 7
+    "month": 1
   },
   "viewing_start": {
     "year": 1996,
@@ -208,5 +208,9 @@
     "todoverify": [
       "案例4/5基础年限取整精度"
     ]
+  },
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
   }
 }

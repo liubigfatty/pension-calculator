@@ -2,7 +2,7 @@
   "province": "zhejiang",
   "name": "浙江省",
   "account_start": {
-    "year": 1997,
+    "year": 1998,
     "month": 1
   },
   "viewing_start": {
@@ -244,5 +244,9 @@
       "见分进角补足规则（已实现：ceil×10/10）",
       "需用浙江核定表验证三项福利计算"
     ]
+  },
+  "cutoff_date": {
+    "year": 1997,
+    "month": 12
   }
 }

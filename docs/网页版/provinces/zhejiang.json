@@ -2,7 +2,7 @@
   "province": "zhejiang",
   "name": "浙江省",
   "account_start": {
-    "year": 1997,
+    "year": 1998,
     "month": 1
   },
   "viewing_start": {
@@ -219,5 +219,9 @@
     "enabled": true,
     "coefficient": 0.014,
     "formula_type": "default"
+  },
+  "cutoff_date": {
+    "year": 1997,
+    "month": 12
   }
 }

@@ -214,5 +214,9 @@
       "三档内部差异",
       "avg_salary_history口径"
     ]
+  },
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
   }
 }

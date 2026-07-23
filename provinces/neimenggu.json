@@ -3,7 +3,7 @@
   "name": "内蒙古自治区",
   "verified_count": 0,
   "account_start": {
-    "year": 1995,
+    "year": 1998,
     "month": 1
   },
   "viewing_start": {
@@ -178,5 +178,9 @@
     "2023": 8105,
     "2024": 8179,
     "2025": 8430
+  },
+  "cutoff_date": {
+    "year": 1997,
+    "month": 12
   }
 }
