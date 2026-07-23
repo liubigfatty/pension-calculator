@@ -39,8 +39,10 @@
 
   // 双基数省份城市 key → 中文标签
   var CITY_LABELS = { shenzhen: '深圳', zhengzhou: '郑州', shenyang: '沈阳', dalian: '大连', cc: '长春' }
-  // 双指数省份（显示过渡性指数输入框）
-  var DOUBLE_INDEX = { zhejiang: 1, guangdong: 1, shaanxi: 1 }
+  // 双指数省份（显示过渡性指数输入框）：基础养老金与过渡性养老金使用不同平均缴费指数
+  //   浙江/广东/陕西：引擎原生支持，前端透传 transIndex
+  //   天津/山西/江苏：双指数省份此前遗漏，2026-07-23 补齐（天津/山西见 MEMORY；江苏 use_trans_index:true）
+  var DOUBLE_INDEX = { zhejiang: 1, guangdong: 1, shaanxi: 1, tianjin: 1, shanxi: 1, jiangsu: 1 }
 
   var INDEX_PRESETS = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 
