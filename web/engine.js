@@ -1686,16 +1686,21 @@ function calculate(config, inputData) {
   }
 
   // 北京特殊：自动计算建账前实际缴费年限（用于G实）
-
-  // 北京特殊：自动计算建账前实际缴费年限（用于G实）
   // preAccountYears = max(工作起始, 建账时间) 到 cutoff_date 的年数
-  // 例如：1995-11工作，account_start=1992-10，cutoff=1998-06 → preAccountYears=1995-11~1998-06 ≈ 2.58年
+  // 【核定表校验 2026-07-23】北京规则：cutoff当月整月计入（算到当月月底）
+  //   即 calcYears(preStart, cutoff+1月)，例：1997-04~1998-06 → 15个月=1.25年（非14月=1.1667年）
+  //   核对依据：朝阳区核定表(2026-07-10) 过渡性366.41=12049×2.4328×1.25×1% ✅
   if (preAccountYears === null && (config.province === 'bj' || config.province === 'beijing')) {
     console.log('[engine] 北京 preAccountYears 自动计算: work=', data.work, 'accountStart=', accountStartConfigured, 'cutoff=', config.cutoff_date)
     const cutoffConfigured = config.cutoff_date || { year: 1998, month: 6 }
     const preStart = (data.work.year < accountStartConfigured.year || (data.work.year === accountStartConfigured.year && data.work.month < accountStartConfigured.month)) ? accountStartConfigured : data.work
-    preAccountYears = calcYears(preStart, cutoffConfigured)
-    console.log('[engine] 北京 preAccountYears 计算结果:', preAccountYears)
+    // 北京 cutoff 当月整月计入（算到月底），故截止月+1
+    const bjCutoffEnd = {
+      year: cutoffConfigured.month === 12 ? cutoffConfigured.year + 1 : cutoffConfigured.year,
+      month: cutoffConfigured.month === 12 ? 1 : cutoffConfigured.month + 1,
+    }
+    preAccountYears = calcYears(preStart, bjCutoffEnd)
+    console.log('[engine] 北京 preAccountYears 计算结果(cutoff含当月):', preAccountYears)
   }
 
   // ===== 省份特殊取整规则 =====
