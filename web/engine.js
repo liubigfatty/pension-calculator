@@ -137,6 +137,19 @@ function calcBasicPension(params) {
     const base = (retireBase + provBase * avgIndex) / 2
     amount = Math.round(base * totalYears * rate * 100) / 100
     description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
+  } else if (mod.formula_type === 'shanghai') {
+    // 上海专属（沪人社规〔2021〕27号）：
+    // 基础养老金 = (计发基数 + 计发基数×指数) / 2 × (整年数×1% + 剩余月数×0.083%)
+    // 满整年后的剩余月数，每个月按 0.083% 计发（非整年换算 1%/年）。
+    // 政策第五条：基础/个人/过渡三项均"分进角"（四舍五入到角，分位进位），此处对基础养老金落地。
+    const indexSalary = retireBase * avgIndex
+    const totalMonths = Math.round((totalYears || 0) * 12)
+    const fullYears = Math.floor(totalMonths / 12)
+    const remMonths = totalMonths % 12
+    const coef = fullYears * 0.01 + remMonths * 0.00083
+    const raw = (retireBase + indexSalary) / 2 * coef
+    amount = Math.round(raw * 10) / 10  // 分进角：四舍五入到角
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(4)}) / 2 × (${fullYears}年×1% + ${remMonths}月×0.083%) = ${amount.toFixed(1)}元`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -326,7 +339,11 @@ function getSalaryBase(city, year, config) {
 function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, config, months, personalAccInput) {
 
   if (personalAccInput != null && personalAccInput > 0) {
-    const amount = Math.round(personalAccInput / months * 100) / 100
+    const raw = personalAccInput / months
+    // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+    const amount = config?.modules?.personal_account?.round_to_jiao
+      ? Math.round(raw * 10) / 10
+      : Math.round(raw * 100) / 100
     return {
       amount,
       balance: personalAccInput,
@@ -391,7 +408,11 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   }
 
   totalAcc = Math.round(totalAcc * 100) / 100
-  const amount = Math.round(totalAcc / months * 100) / 100
+  const rawAmt = totalAcc / months
+  // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+  const amount = config?.modules?.personal_account?.round_to_jiao
+    ? Math.round(rawAmt * 10) / 10
+    : Math.round(rawAmt * 100) / 100
 
   return {
     amount,
@@ -421,6 +442,24 @@ function calcTransitionalPension(params) {
   // 天津/江苏等双指数省份：过渡性养老金使用 transIndex（如天津的"全部平均工资指数"）
   const transIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
   if (!mod || !mod.enabled) return { amount: 0, description: '未启用' }
+
+  // 山西双指数（晋政发〔2006〕32号）：
+  // 过渡性养老金必须使用「过渡平均缴费指数」trans_index（与基础养老金的 avg_index 不同）。
+  // 引擎本身不自动反推双指数，依赖案例/前端显式注入 trans_index；此处强制校验，
+  // 缺失时明确告警并回落 avg_index（避免静默误用基础指数导致结果偏差）。
+  if (mod.formula_type === 'shanxi') {
+    if (transIndex == null || transIndex <= 0) {
+      console.warn('[山西/双指数] 未提供 trans_index（过渡平均缴费指数），过渡性养老金将误用基础指数 avgIndex，请补充！')
+    }
+    const shTransIdx = (transIndex != null && transIndex > 0) ? transIndex : avgIndex
+    const coef = mod.coefficient || 0.013
+    const idxSalary = provBase * shTransIdx  // 指数化月平均工资（过渡性）
+    const amount = Math.round(idxSalary * sightYears * coef * 100) / 100
+    return {
+      amount,
+      description: `山西双指数(过渡): ${provBase.toLocaleString()} × 指数${shTransIdx.toFixed(4)}(指数化${idxSalary.toFixed(2)}) × ${sightYears.toFixed(4)}年 × ${(coef * 100).toFixed(1)}% = ${amount.toFixed(2)}元`
+    }
+  }
 
   // 深圳独立体系：城市级公式覆盖（非省配置级别）
   if ((params.city === 'sz' || params.city === 'shenzhen') && params.province === 'guangdong' && params.szModules?.transitional_pension) {
@@ -461,7 +500,8 @@ function calcTransitionalPension(params) {
 
     const basePart = retireBase * sight * 1.0 * coefSH
     const xuzhangPart = xuzhang > 0 ? xuzhang / 120 : 0
-    const amount = Math.round((basePart + xuzhangPart) * 100) / 100
+    // 上海（沪人社规〔2021〕27号）：过渡性养老金同样"分进角"
+    const amount = Math.round((basePart + xuzhangPart) * 10) / 10
 
     let desc = '上海过渡性养老金: ' + retireBase.toFixed(2) + ' × 1.0 × ' + sight.toFixed(2) + '年 × 1.2%'
     if (xuzhang > 0) {
@@ -960,7 +1000,11 @@ function getRetireMonths(ageExact, config) {
 
   // 将精确年龄四舍五入到小数点后1位（月份），用于直接查表
   // 注意：表键格式为 "50.0"、"51.1" 等（有小数点），需确保格式一致
-  const keyAge = Math.round(ageExact * 10) / 10
+  let keyAge = Math.round(ageExact * 10) / 10
+  // 弹性退休年龄可能超出国标计发月数表边界（40~70岁），按沪人社规〔2021〕27号兜底：
+  // 低于40周岁按40周岁、高于70周岁按70周岁对应的计发月数计发
+  if (keyAge < 40) keyAge = 40
+  if (keyAge > 70) keyAge = 70
   // 整数部分直接写 .0，例如 50 → "50.0"，50.1 → "50.1"
   const keyStr = keyAge % 1 === 0 ? keyAge + '.0' : String(keyAge)
 
@@ -1373,6 +1417,12 @@ function parseInput(inputData) {
   // 格式：{ year: 1998, month: 12 }
   const accountStartInput = inputData.accountStart || null
 
+  // paymentStartInput: 用户实际开始缴费年月（陕西特殊）
+  // 陕西过渡性养老金年限截止到实际缴费开始时间，不是全省统账时间；
+  // 统账前已有实际缴费的年限不计入过渡性年限。
+  // 格式：{ year: 1993, month: 1 }
+  const paymentStartInput = inputData.paymentStart || null
+
   // totalYearsInput: 用户可显式指定累计缴费年限（精确值，覆盖自动计算结果）
   // 用于处理档案认定导致的不规则年限（如特殊工龄、中断认定等）
   const totalYearsInput = inputData.totalYears != null ? parseFloat(inputData.totalYears)
@@ -1447,6 +1497,7 @@ function parseInput(inputData) {
     personalAccInput,
     sightYearsInput,  // 用户显式指定的视同缴费年限（可为null）
     accountStartInput,  // 用户显式指定的个人账户开始缴费年月（可为null）
+    paymentStartInput,  // 用户显式指定的实际缴费开始年月（陕西特殊，可为null）
     totalYearsInput,  // 用户显式指定的累计缴费年限（可为null）
     baseRetireInput,  // 用户显式指定的退休地计发基数（可为null）
     baseProvInput,    // 用户显式指定的全省计发基数（可为null）
@@ -1592,19 +1643,28 @@ function calculate(config, inputData) {
   // ===== 确定城市 =====
   // 只要 cityType 不是 'prov'，就尝试用它查 base_rates（支持 shenyang/dalian 等）
   const city = (data.cityType && data.cityType !== 'prov') ? data.cityType : 'prov'
-  const hasSight = data.work.year < config.account_start?.year ||
-    (data.work.year === config.account_start?.year && data.work.month < config.account_start?.month)
 
   // 实际缴费起始时间：优先用用户指定的，否则用配置文件
   const accountStartConfigured = data.accountStartInput || config.account_start || { year: 1995, month: 7 }
-  // 有视同缴费时，实际缴费从建账时间开始；无视同时从参保时间开始
-  const actualStart = hasSight ? accountStartConfigured : data.work
+
+  // 陕西特殊：过渡性养老金年限截止到“实际缴费开始时间”，不是全省统账时间。
+  // 若配置 sight_cutoff_by_payment_start=true 且用户传入 paymentStart，
+  // 则视同年限算到 paymentStart，实际缴费从 paymentStart 开始；个人账户仍从 accountStart 起算。
+  const paymentStartConfigured = data.paymentStartInput || accountStartConfigured
+  const usePaymentStart = config.sight_cutoff_by_payment_start === true && data.paymentStartInput != null
+  const sightCutoff = usePaymentStart ? paymentStartConfigured : accountStartConfigured
+
+  const hasSight = data.work.year < sightCutoff.year ||
+    (data.work.year === sightCutoff.year && data.work.month < sightCutoff.month)
+
+  // 有视同缴费时，实际缴费从 sightCutoff 开始；无视同时从参保时间开始
+  const actualStart = hasSight ? sightCutoff : data.work
   const accountStart = accountStartConfigured
 
   // 年限计算
   // 优先使用用户显式指定的累计缴费年限（来自官方核定表），否则自动计算
   // 优先使用用户显式指定的视同缴费年限（来自官方核定表），否则自动计算
-  const autoSightYears = hasSight ? calcYears(data.work, accountStartConfigured) : 0
+  const autoSightYears = hasSight ? calcYears(data.work, sightCutoff) : 0
   let sightYears = data.sightYearsInput != null ? data.sightYearsInput : autoSightYears
   const autoTotalYears = calcYears(actualStart, legalDate) + sightYears
   let totalYears = data.totalYearsInput != null ? data.totalYearsInput : autoTotalYears
@@ -1626,33 +1686,43 @@ function calculate(config, inputData) {
   }
 
   // 北京特殊：自动计算建账前实际缴费年限（用于G实）
-
-  // 北京特殊：自动计算建账前实际缴费年限（用于G实）
   // preAccountYears = max(工作起始, 建账时间) 到 cutoff_date 的年数
-  // 例如：1995-11工作，account_start=1992-10，cutoff=1998-06 → preAccountYears=1995-11~1998-06 ≈ 2.58年
+  // 【核定表校验 2026-07-23】北京规则：cutoff当月整月计入（算到当月月底）
+  //   即 calcYears(preStart, cutoff+1月)，例：1997-04~1998-06 → 15个月=1.25年（非14月=1.1667年）
+  //   核对依据：朝阳区核定表(2026-07-10) 过渡性366.41=12049×2.4328×1.25×1% ✅
   if (preAccountYears === null && (config.province === 'bj' || config.province === 'beijing')) {
     console.log('[engine] 北京 preAccountYears 自动计算: work=', data.work, 'accountStart=', accountStartConfigured, 'cutoff=', config.cutoff_date)
     const cutoffConfigured = config.cutoff_date || { year: 1998, month: 6 }
     const preStart = (data.work.year < accountStartConfigured.year || (data.work.year === accountStartConfigured.year && data.work.month < accountStartConfigured.month)) ? accountStartConfigured : data.work
-    preAccountYears = calcYears(preStart, cutoffConfigured)
-    console.log('[engine] 北京 preAccountYears 计算结果:', preAccountYears)
+    // 北京 cutoff 当月整月计入（算到月底），故截止月+1
+    const bjCutoffEnd = {
+      year: cutoffConfigured.month === 12 ? cutoffConfigured.year + 1 : cutoffConfigured.year,
+      month: cutoffConfigured.month === 12 ? 1 : cutoffConfigured.month + 1,
+    }
+    preAccountYears = calcYears(preStart, bjCutoffEnd)
+    console.log('[engine] 北京 preAccountYears 计算结果(cutoff含当月):', preAccountYears)
   }
 
   // ===== 省份特殊取整规则 =====
-  // 安徽等省份：缴费年限取1位小数，指数保留4位，结果保留2位
+  // 安徽等省份：缴费年限取1位小数（years_round_mode:'ceil' 时只进不退/向上取整），指数保留4位，结果保留2位
   // 福建等省份：年限按半段进整（不足半年按半年，大于半年不足一年按一年）
   const roundingRules = config.rounding
   if (roundingRules) {
     const yDec = roundingRules.years_decimal
     const iDec = roundingRules.index_decimal
     const rDec = roundingRules.result_decimal
-    
+
     // 年限取整（总年限、视同年限、建账前年限）
+    // years_round_mode: 'ceil' = 只进不退（向上取整到指定位数，例：安徽 40年5月=40.4167→40.5）
+    //                    'round'(默认) = 四舍五入
     if (yDec != null) {
       const factor = Math.pow(10, yDec)
-      if (totalYears != null) totalYears = Math.round(totalYears * factor) / factor
-      if (sightYears != null) sightYears = Math.round(sightYears * factor) / factor
-      if (preAccountYears != null) preAccountYears = Math.round(preAccountYears * factor) / factor
+      const yRound = (v) => (roundingRules.years_round_mode === 'ceil')
+        ? Math.ceil(v * factor) / factor
+        : Math.round(v * factor) / factor
+      if (totalYears != null) totalYears = yRound(totalYears)
+      if (sightYears != null) sightYears = yRound(sightYears)
+      if (preAccountYears != null) preAccountYears = yRound(preAccountYears)
     }
     
     // 福建等省份：年限按半段进整（0.5年步进）
@@ -1859,7 +1929,11 @@ function calculate(config, inputData) {
   // 广东/深圳过渡性养老金调整额（单列，计入总额）
   const transAdjustment = (config.province === 'guangdong' && transPension._adjustment)
     ? transPension._adjustment : 0
-  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment
+  // 上海"当年增加养老金"（沪人社规，每年地方固定额，如2026年度为325元）：
+  // 非公式计算项，按退休年度由输入提供，直接计入月基本养老金总额；其他省份无此项
+  const currentYearIncrease = ((config.province === 'sh' || config.province === 'shanghai') && inputData.currentYearIncrease)
+    ? Number(inputData.currentYearIncrease) : 0
+  const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment + currentYearIncrease
   // 浙江：见分进角补足 — 合计金额向上取整到角（0.1元）
   const total = config.round_to_jiao
     ? Math.ceil(rawSum * 10) / 10
@@ -1949,6 +2023,7 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
+      currentYearIncrease: currentYearIncrease,
       total: total,
       totalYears,
       actualYears,

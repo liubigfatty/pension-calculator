@@ -16,9 +16,66 @@
   </header>
 
   <main class="container">
-    <!-- 相关工具 -->
-    <section class="card" style="padding:14px 22px">
-      <a href="https://liubigfatty.github.io/contribution-index-calculator/" style="color:#1d4ed8;font-weight:600;text-decoration:none;font-size:15px">› 平均缴费指数计算器（算本人历年缴费水平）</a>
+    <!-- 第一步：算本人平均缴费指数（可选，算完自动填入下方） -->
+    <section class="card index-calc-card">
+      <div class="card-title toggle-title" id="indexToggle">
+        <span>第一步 · 算本人平均缴费指数</span>
+        <span class="opt">（可选 · 算完自动填入下方）</span>
+        <span class="toggle-arrow" id="indexArrow">展开 ▼</span>
+      </div>
+      <div class="index-calc-body" id="indexCalcBody" style="display:none">
+        <p class="index-intro">填入历年缴费基数，按参保地官方规则算出平均缴费指数，结果自动填入下方「本人平均缴费指数」。不填可直接手动填写下方。</p>
+
+        <div class="field">
+          <label for="idxStartDate">首次缴费年月</label>
+          <input type="month" id="idxStartDate" min="1990-01">
+        </div>
+
+        <div class="field">
+          <label for="idxDeemedYears">视同缴费年限（年）</label>
+          <input type="number" id="idxDeemedYears" min="0" max="40" step="1" value="0" placeholder="如 10（部分省份纳入指数）">
+          <div class="hint" id="idxDeemedHint"></div>
+        </div>
+
+        <div class="field" id="idxDeemedStartField" style="display:none">
+          <label for="idxDeemedStartYear">视同起始年</label>
+          <input type="number" id="idxDeemedStartYear" min="1970" max="2025" step="1" value="1990" placeholder="如 1990">
+          <div class="hint" id="idxDeemedStartHint"></div>
+        </div>
+
+        <div class="field" id="idxGdCityField" style="display:none">
+          <label for="idxGdCity">广东参保城市</label>
+          <select id="idxGdCity"><option value="">全省（默认 D=1.000）</option></select>
+          <div class="hint">广东省视同缴费指数(D)按粤府函〔2021〕294号查表；深圳用独立社平算分母。</div>
+        </div>
+
+        <div class="warn" id="idxGapHint" style="display:none"></div>
+
+        <button type="button" class="ghost-btn" id="idxGenBtn">生成逐年清单</button>
+        <div id="idxYearlyWrap" style="display:none">
+          <div class="tbl" style="margin-top:10px">
+            <div class="tr th"><span class="c1">年份</span><span class="c2">月数</span><span class="c3">月均缴费基数</span></div>
+            <div id="idxYearlyRows"></div>
+          </div>
+        </div>
+
+        <button type="button" class="primary-btn" id="idxCalcBtn" style="margin-top:12px">计算并填入下方</button>
+
+        <div class="index-result" id="idxResult" style="display:none">
+          <div class="metric-row"><span>本人平均缴费指数：</span><b id="idxAvgIndex">-</b></div>
+          <div class="metric-row" id="idxTransRow" style="display:none"><span>过渡性指数 (transIndex)：</span><b id="idxTransIndex">-</b></div>
+          <div class="metric-row"><span>累计缴费：</span><b id="idxTotalMonths">-</b></div>
+          <div class="metric-row"><span>个人账户余额（估算）：</span><b id="idxBalance">-</b></div>
+          <div class="warn" id="idxNote" style="display:none"></div>
+          <details style="margin-top:10px">
+            <summary style="cursor:pointer;color:#1d4ed8;font-size:14px">逐年明细</summary>
+            <div class="tbl" style="margin-top:8px">
+              <div class="tr th"><span class="c1">年份</span><span class="c2">月数</span><span class="c3">基数</span><span class="c4">指数</span></div>
+              <div id="idxDetailRows"></div>
+            </div>
+          </details>
+        </div>
+      </div>
     </section>
 
     <!-- 表单 -->
@@ -132,7 +189,7 @@
         <div><span>退休时间</span><b id="retireDate">—</b></div>
         <div><span>退休年龄</span><b id="retireAge">—</b></div>
         <div><span>计发月数</span><b id="retireMonths">—</b></div>
-        <div><span>替代率</span><b id="rate">—</b></div>
+        <div><span>个人替代率</span><b id="rate">—</b></div>
       </div>
 
       <div class="block">
@@ -164,6 +221,8 @@
 
   <script src="engine.js"></script>
   <script src="provinces-bundle.js"></script>
+  <script src="provinces-index-data.js"></script>
+  <script src="calc-index.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
