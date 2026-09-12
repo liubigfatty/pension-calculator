@@ -5,7 +5,7 @@
 //    云端 require('./provinces/xx.js') 会报 Cannot find module（2026-09-09 事故）。
 //    改完省份配置后必须重跑：node scripts/build-cloud-provinces.js
 //
-// 生成时间：2026-09-12T03:33:58.166Z
+// 生成时间：2026-09-12T13:34:50.129Z
 
 const _CONFIGS = {}
 function _register(name, cfg) { _CONFIGS[name] = cfg }

@@ -885,7 +885,9 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   // 防御：config 可能未传入
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
-  if (type === 'fw50' || type === 'fw' || type === 'ef50') return 0;
+  // 2026-09-12 修复 P3：原 50 岁退休女性（企业女职工/女工人）同样适用延迟退休。
+  //   国办发〔2025〕5号：1975-01 起出生者，出生年月每往后 2 个月延迟 1 个月，逐步至 55 岁（cap 60）。
+  //   此前此处有一行短路 return 0，使 fw / fw50 / ef50 三类人群延迟量恒为 0，与政策不符。
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
   const delayConfig = config.delay_retirement || {}
@@ -915,7 +917,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   let baseYear, step, cap
 
   // 引擎类型标识 → 配置文件键名映射
-  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw55': 'female_worker' }
+  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw50': 'female_worker', 'ef50': 'female_worker', 'fw55': 'female_worker' }
   const delayConfigKey = delayKeyMap[type] || type
 
   // 优先使用配置文件的参数
@@ -940,6 +942,8 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 灵活就业女 / 女干部 55 岁退休
         break
       case 'fw':
+        case 'fw50':
+        case 'ef50':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
         break
       default:

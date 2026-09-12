@@ -1087,7 +1087,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   let baseYear, step, cap
 
   // 引擎类型标识 → 配置文件键名映射
-  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw55': 'female_worker' }
+  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw50': 'female_worker', 'ef50': 'female_worker', 'fw55': 'female_worker' }
   const delayConfigKey = delayKeyMap[type] || type
 
   // 优先使用配置文件的参数
@@ -1112,6 +1112,8 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 灵活就业女 / 女干部 55 岁退休
         break
       case 'fw':
+        case 'fw50':
+        case 'ef50':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
         break
       default:
