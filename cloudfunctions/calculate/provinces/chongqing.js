@@ -1,4 +1,4 @@
-// 数据来源：⚠️ 搜索结果（待官方文件确认）
+// 数据来源：✅ 已据官方核定表核实（重庆参保职工基本养老金计发表 2026-01 核定；早年段见内层占位说明）
 // 2024年计发基数：8160元/月
 // 更新时间：2026-06-10
 
@@ -125,7 +125,7 @@ function getEngineConfig() {
   if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
   if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
+    modules.transitional_pension = { enabled: true, formula_type: 'weighted_transition' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
