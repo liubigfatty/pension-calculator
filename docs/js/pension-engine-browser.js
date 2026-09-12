@@ -850,7 +850,10 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 女干部延迟36个月
         break
       case 'fw55':
-        baseYear = 1975; step = 2; cap = 60  // 灵活就业女55岁退休
+        // 2026-09-12 修复：原为 1975/2/60 —— 那是「原 50 岁女职工」的参数，
+        // 与本分支 baseAge=55 自相矛盾（1975 年生人 55 岁已是 2030 年，delay 会爆表）。
+        // 国办发〔2025〕5号：原 55 岁女职工自 1970 年起每 4 个月延迟 1 个月，逐步至 58 岁（cap 36）
+        baseYear = 1970; step = 4; cap = 36  // 灵活就业女 / 女干部 55 岁退休
         break
       case 'fw':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
@@ -864,10 +867,13 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
 
   // 计算出生年月与基准年份的差值（月）
   const diff = (birthYear - baseYear) * 12 + (birthMonth - 1)
-  if (diff <= 0) return 0
+  if (diff < 0) return 0
 
   // 阶梯计算延迟月数
-  const delay = Math.floor((diff - 1) / step) + 1
+  // 国办发〔2025〕5号附表：基准年 1 月出生即延迟 1 个月，其后每 step 个月加 1 个月
+  // 2026-09-12 修复：原式 floor((diff-1)/step)+1 使每组首月少算 1 个月
+  //   （出生月落 1/5/9 月时命中，占 male/fc 人群约 20.8%）
+  const delay = Math.floor(diff / step) + 1
   return Math.min(delay, cap)
 }
 
@@ -938,13 +944,15 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
  * @returns {Object} 退休日期 { year, month }
  */
 function getRetireDate(birthYear, birthMonth, totalMonths) {
-  const year = birthYear + Math.floor(totalMonths / 12)
-  const month = birthMonth + (totalMonths % 12)
-
-  return {
-    year,
-    month: month > 12 ? month - 12 : month
-  }
+  // 2026-09-12 修复：原实现先算 year = birthYear + floor(totalMonths/12)，
+  // 再算 month = birthMonth + (totalMonths%12)，当 month > 12 时只把月份回拨、
+  // 未给年份进位。例：「1965-12 生 · 60岁3个月」被算成 2025-03（应为 2026-03），
+  // 与同一次返回的 ageStr「60岁3个月」自相矛盾。
+  // 该错误经 legalDate 传染到：缴费年限（calcYears）、计发基数取值年份、社平取值
+  // 年份、最低缴费年限判断、弹性提前退休日期（flexDate）。
+  // 改用总月数直接换算，进位天然正确。
+  const t = birthYear * 12 + (birthMonth - 1) + totalMonths
+  return { year: Math.floor(t / 12), month: (t % 12) + 1 }
 }
 
 /**

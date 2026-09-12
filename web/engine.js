@@ -1079,7 +1079,11 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 女干部延迟36个月
         break
       case 'fw55':
-        baseYear = 1975; step = 2; cap = 60  // 灵活就业女55岁退休
+        // 原法定 55 岁女职工（女干部 / 灵活就业女）→ 1970-01 起每 4 个月延 1 个月，至 58 岁
+        // 2026-09-12 修复：原为 1975/2/60（那是原法定 50 岁女工人的参数），与 baseAge=55 自相矛盾。
+        // 成因：ace9938 提交说明称「fw55默认参数 baseYear=1975→1970, step=2→4, cap=60→36」，
+        // 但该提交实际未改动引擎文件，只删除了 31 省的 delay_retirement 配置 → 参数就此丢失。
+        baseYear = 1970; step = 4; cap = 36
         break
       case 'fw':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
@@ -1093,10 +1097,13 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
 
   // 计算出生年月与基准年份的差值（月）
   const diff = (birthYear - baseYear) * 12 + (birthMonth - 1)
-  if (diff <= 0) return 0
+  if (diff < 0) return 0
 
   // 阶梯计算延迟月数
-  const delay = Math.floor((diff - 1) / step) + 1
+  // 国办发〔2025〕5号附表：基准月的当月起即延迟 1 个月
+  //   male 1965-01 → 60岁1个月；1965-05 → 60岁2个月；1976-09 及以后 → 63岁（cap 36）
+  // 2026-09-12 修复：原式 floor((diff-1)/step)+1 使每组首月少算 1 个月（出生月 1/5/9 月）
+  const delay = Math.floor(diff / step) + 1
   return Math.min(delay, cap)
 }
 
@@ -1190,13 +1197,14 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
  * @returns {Object} 退休日期 { year, month }
  */
 function getRetireDate(birthYear, birthMonth, totalMonths) {
-  const year = birthYear + Math.floor(totalMonths / 12)
-  const month = birthMonth + (totalMonths % 12)
-
-  return {
-    year,
-    month: month > 12 ? month - 12 : month
-  }
+  // 2026-09-12 修复：原实现 `month = birthMonth + (totalMonths % 12)`，当和 > 12 时只回拨月份、
+  // 未给年份进位 —— 例如「1965-12 生 · 60岁3个月」被算成 2025-03（应为 2026-03），
+  // 与同函数返回的 ageStr「60岁3个月」自相矛盾。
+  // 该错误经 legalDate 传染到：缴费年限（calcYears）、计发基数取值年份、社平取值年份、
+  // 最低缴费年限判断，以及弹性提前退休日期（flexDate）。
+  // 改用总月数直接换算，进位天然正确。
+  const t = birthYear * 12 + (birthMonth - 1) + totalMonths
+  return { year: Math.floor(t / 12), month: (t % 12) + 1 }
 }
 
 /**
