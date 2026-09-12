@@ -2,8 +2,6 @@
  * 忠实镜像 index-mini（input → calcIndex 引擎 → result），
  * 全部在浏览器端计算，无后端依赖。 */
 (function () {
-  // 断缴年份按指数0计入平均指数分母的省份（与云函数 GAP_ZERO_PROVINCES 一致）
-  const GAP_ZERO_PROVINCES = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
 
   const PROVINCES = [
     { slug: 'beijing', name: '北京市' },
@@ -70,6 +68,11 @@
   // 首次进入展示同意条幅，并禁用计算按钮
   applyPrivacyGate()
 
+  // 各参保地逐省规则（来自 calc-index.js 的 PROVINCE_RULES）
+  function getRule(slug) {
+    try { return window.CalcIndex.PROVINCE_RULES[slug] || null } catch (e) { return null }
+  }
+
   // 填充省份下拉
   const provinceSel = $('province')
   PROVINCES.forEach((p) => {
@@ -85,13 +88,45 @@
   provinceSel.addEventListener('change', () => {
     const slug = provinceSel.value
     const hint = $('gapHint')
-    if (GAP_ZERO_PROVINCES.has(slug)) {
+    const deemedHint = $('deemedHint')
+    const rule = getRule(slug)
+    // 广东城市选择（D值查表 + 深圳独立社平）
+    const gdField = $('gdCityField')
+    if (slug === 'guangdong') {
+      gdField.style.display = 'block'
+    } else {
+      gdField.style.display = 'none'
+      $('gdCity').value = ''
+    }
+    // 浙/苏/赣 分段视同指数：需视同起始年
+    const dsField = $('deemedStartField')
+    if (slug === 'zhejiang' || slug === 'jiangsu' || slug === 'jiangxi') {
+      dsField.style.display = 'block'
+      const label = { zhejiang: '浙江：1992年底前替代指数≈1.279（温州1.1），1993年起1.0', jiangsu: '江苏：1985.6前=1.0、1985.7-1991分段联动', jiangxi: '江西：1992.9前=1.0、1992.10-1995.9按设区市/全省比' }[slug]
+      $('deemedStartHint').textContent = label + '——填写视同起始年以精确取分段值。'
+    } else {
+      dsField.style.display = 'none'
+    }
+    // 断缴年处理提示（逐省：gapZero记0 / gapFloor记0.6 / 其余跳过）
+    if (rule && (rule.gapZero || rule.gapFloor)) {
       const name = PROVINCES.find((p) => p.slug === slug).name
+      const v = rule.gapZero ? 0 : rule.gapFloor
       hint.textContent =
-        '提示：' + name + '执行“断缴年份按指数0计入平均指数”规则——中间断缴的年份会拉低您的平均指数，请如实逐年填写。'
+        '提示：' + name + '执行“断缴年份按指数' + v + '计入平均指数”规则——中间断缴的年份会按指数' + v + '计入分母，请如实逐年填写。'
       hint.style.display = 'block'
     } else {
       hint.style.display = 'none'
+    }
+    if (rule) {
+      if (rule.deemedInDenom) {
+        deemedHint.textContent = '该省将视同缴费年限计入平均指数分母（指数默认1.0，广东查表/浙江替代指数等特例已内置），请填写上方视同年限。'
+        deemedHint.style.display = 'block'
+      } else {
+        deemedHint.textContent = '该省视同缴费年限不计入平均指数分母（仅用于养老金年限计算），可不填或填0。'
+        deemedHint.style.display = 'block'
+      }
+    } else {
+      deemedHint.style.display = 'none'
     }
   })
 
@@ -180,11 +215,17 @@
     }
 
     const provinceConfig = window.INDEX_PROVINCES[slug]
+    const deemedYears = Number($('deemedYears').value) || 0
+    const deemedStartYear = Number($('deemedStartYear').value) || null
+    const city = slug === 'guangdong' ? ($('gdCity').value || null) : null
     const fwd = window.CalcIndex.calculateIndex({
       provinceConfig: provinceConfig,
+      provinceCode: slug,
       contribution: yearlyData,
       granularity: 'A',
-      gapYearCountsInAvg: GAP_ZERO_PROVINCES.has(slug)
+      deemedYears: deemedYears,
+      deemedStartYear: deemedStartYear,
+      city: city
     })
     if (fwd.error) {
       toast(fwd.error)
@@ -209,6 +250,38 @@
       gapNote.style.display = 'block'
     } else {
       gapNote.style.display = 'none'
+    }
+
+    // 过渡性指数（双指数/双基数省）
+    const transRow = $('transRow')
+    const transIdx = $('transIndex')
+    if (fwd.transIndex != null && fwd.transIndex > 0) {
+      transRow.style.display = 'flex'
+      transIdx.textContent = fwd.transIndex.toFixed(4)
+    } else {
+      transRow.style.display = 'none'
+    }
+
+    // 视同年 / 城市 D 值提示
+    const deemedNote = $('deemedNote')
+    let dParts = []
+    if (meta.deemedInDenom && meta.deemedYears > 0) {
+      dParts.push('已按' + (meta.province || '该省') + '规则将 ' + meta.deemedYears + ' 年视同缴费计入平均指数分母（指数默认1.0，特例省按省规）')
+    } else if (meta.deemedInDenom && meta.deemedYears === 0) {
+      dParts.push('该省视同年计入指数分母，但您未填写视同缴费年限；如有视同年限请填写以得准确结果')
+    }
+    if (meta.city) {
+      const dval = (window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP && window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP[meta.city.replace(/市$/, '')]) || 1.0
+      dParts.push('广东省「' + meta.city + '」视同缴费指数(D)按粤府函〔2021〕294号 查表 = ' + dval + (meta.city === '深圳' ? '，分母用深圳独立社平' : ''))
+    }
+    if (meta.deemedStartYear && (meta.provinceCode === 'zhejiang' || meta.provinceCode === 'jiangsu' || meta.provinceCode === 'jiangxi')) {
+      dParts.push('已用视同起始年 ' + meta.deemedStartYear + ' 取分段视同指数')
+    }
+    if (dParts.length > 0) {
+      deemedNote.textContent = dParts.join('；') + '。'
+      deemedNote.style.display = 'block'
+    } else {
+      deemedNote.style.display = 'none'
     }
 
     const box = $('detailRows')

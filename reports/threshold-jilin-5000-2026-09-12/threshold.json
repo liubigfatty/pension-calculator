@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "province": "jilin",
+    "city": "cc",
+    "startAge": 22,
+    "target": 5000,
+    "retireMonth": "2025-12",
+    "workMonth": 7,
+    "cohorts": {
+      "50": {
+        "type": "fw",
+        "label": "女工人",
+        "birth": {
+          "year": 1975,
+          "month": 8
+        },
+        "work": {
+          "year": 1997,
+          "month": 7
+        },
+        "delay": 4,
+        "realAgeStr": "50岁4个月"
+      },
+      "55": {
+        "type": "fc",
+        "label": "女干部",
+        "birth": {
+          "year": 1970,
+          "month": 9
+        },
+        "work": {
+          "year": 1992,
+          "month": 7
+        },
+        "delay": 3,
+        "realAgeStr": "55岁3个月"
+      },
+      "60": {
+        "type": "male",
+        "label": "男职工",
+        "birth": {
+          "year": 1965,
+          "month": 9
+        },
+        "work": {
+          "year": 1987,
+          "month": 7
+        },
+        "delay": 3,
+        "realAgeStr": "60岁3个月"
+      }
+    },
+    "provSocial": 7322,
+    "basis": "延迟退休出生年月依据：国办发〔2025〕5号附件对照表",
+    "generatedAt": "2026-09-12T02:53:10.735Z"
+  },
+  "results": [
+    {
+      "age": 50,
+      "exact": 210.77,
+      "nearest": 211,
+      "above": 211,
+      "nearestResult": {
+        "age": 50,
+        "tier": 211,
+        "genderType": "fw",
+        "genderLabel": "女工人",
+        "birth": "1975-08",
+        "work": "1997-07",
+        "delayMonths": 4,
+        "realAgeStr": "50岁4个月",
+        "total": 5004.27,
+        "months": 195,
+        "basic": 3328.68,
+        "extra": 167.9,
+        "personal": 1507.69,
+        "transitional": 0,
+        "balance": 294000,
+        "sightYears": 0,
+        "actualYears": 28.42,
+        "totalYears": 28.4167,
+        "payBase": 15449
+      },
+      "aboveResult": {
+        "age": 50,
+        "tier": 211,
+        "genderType": "fw",
+        "genderLabel": "女工人",
+        "birth": "1975-08",
+        "work": "1997-07",
+        "delayMonths": 4,
+        "realAgeStr": "50岁4个月",
+        "total": 5004.27,
+        "months": 195,
+        "basic": 3328.68,
+        "extra": 167.9,
+        "personal": 1507.69,
+        "transitional": 0,
+        "balance": 294000,
+        "sightYears": 0,
+        "actualYears": 28.42,
+        "totalYears": 28.4167,
+        "payBase": 15449
+      }
+    },
+    {
+      "age": 55,
+      "exact": 144.79,
+      "nearest": 145,
+      "above": 145,
+      "nearestResult": {
+        "age": 55,
+        "tier": 145,
+        "genderType": "fc",
+        "genderLabel": "女干部",
+        "birth": "1970-09",
+        "work": "1992-07",
+        "delayMonths": 3,
+        "realAgeStr": "55岁3个月",
+        "total": 5005.21,
+        "months": 170,
+        "basic": 3106.94,
+        "extra": 242.12,
+        "personal": 1210.24,
+        "transitional": 445.91,
+        "balance": 205741,
+        "sightYears": 3,
+        "actualYears": 30.42,
+        "totalYears": 33.4167,
+        "payBase": 10617
+      },
+      "aboveResult": {
+        "age": 55,
+        "tier": 145,
+        "genderType": "fc",
+        "genderLabel": "女干部",
+        "birth": "1970-09",
+        "work": "1992-07",
+        "delayMonths": 3,
+        "realAgeStr": "55岁3个月",
+        "total": 5005.21,
+        "months": 170,
+        "basic": 3106.94,
+        "extra": 242.12,
+        "personal": 1210.24,
+        "transitional": 445.91,
+        "balance": 205741,
+        "sightYears": 3,
+        "actualYears": 30.42,
+        "totalYears": 33.4167,
+        "payBase": 10617
+      }
+    },
+    {
+      "age": 60,
+      "exact": 97.8,
+      "nearest": 98,
+      "above": 98,
+      "nearestResult": {
+        "age": 60,
+        "tier": 98,
+        "genderType": "male",
+        "genderLabel": "男职工",
+        "birth": "1965-09",
+        "work": "1987-07",
+        "delayMonths": 3,
+        "realAgeStr": "60岁3个月",
+        "total": 5006.86,
+        "months": 139,
+        "basic": 2910.79,
+        "extra": 292.03,
+        "personal": 1000.38,
+        "transitional": 803.66,
+        "balance": 139052,
+        "sightYears": 8,
+        "actualYears": 30.42,
+        "totalYears": 38.4167,
+        "payBase": 7176
+      },
+      "aboveResult": {
+        "age": 60,
+        "tier": 98,
+        "genderType": "male",
+        "genderLabel": "男职工",
+        "birth": "1965-09",
+        "work": "1987-07",
+        "delayMonths": 3,
+        "realAgeStr": "60岁3个月",
+        "total": 5006.86,
+        "months": 139,
+        "basic": 2910.79,
+        "extra": 292.03,
+        "personal": 1000.38,
+        "transitional": 803.66,
+        "balance": 139052,
+        "sightYears": 8,
+        "actualYears": 30.42,
+        "totalYears": 38.4167,
+        "payBase": 7176
+      }
+    }
+  ]
+}

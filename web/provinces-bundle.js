@@ -7015,12 +7015,12 @@ const MIN_YEARS_CONFIG = {
   2039: 20, 2040: 20, 2041: 20, 2042: 20, 2043: 20, 2044: 20, 2045: 20
 }
 
-const DELAY_RETIREMENT = {
-  effective_date: "2026-01-01",
-  male:   { base_year: 1965, step: 4, cap_months: 36 },
-  fc:     { base_year: 1970, step: 4, cap_months: 36 },
-  fw55:   { base_year: 1975, step: 2, cap_months: 60 }
-}
+// 延迟退休参数由引擎统一处理（国办发〔2025〕5号，全国一致），省份不再配置。
+// 2026-09-12 修复 P0：原 DELAY_RETIREMENT 带 effective_date="2026-01-01"（政策为 2025-01-01），
+// 且是 ace9938「各省已删除」时漏删的唯一一份（写的是常量引用，批量脚本只匹配字面量）。
+// 后果：四川 2025 年退休人群被判「政策未生效 ⇒ 不延迟」。本段其余键（fc/fw55）因键名与引擎
+// delayKeyMap（female_cadre/female_worker）不匹配本就未被读取，male 值与引擎默认值相同。
+// 删除后四川与其余 30 省走同一份引擎默认参数。
 
 // 引擎用的 modules 格式（含 enabled、formula_type、formula 等字段）
 const ENGINE_MODULES = {
@@ -7086,7 +7086,6 @@ function getEngineConfig() {
     avg_salary_history: AVG_SALARY_HISTORY,
     monthly_payment_months: MONTHLY_PAYMENT_MONTHS,
     min_years: MIN_YEARS_CONFIG,
-    delay_retirement: DELAY_RETIREMENT,
     modules: ENGINE_MODULES,
     cities: CITIES,
     cases: cases,

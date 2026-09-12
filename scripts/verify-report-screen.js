@@ -1,7 +1,7 @@
 // 验证报告屏显回归修复：A1/A2/B1
 // A1: report.wxml 不再写死"40-45%"，改用动态 {{replaceRateDesc}}
 // A2: report.wxml 退休前工资改用 {{estPreRetireSalary}}（非 baseRetireStr）
-// B1: report.js 的 setData 顶层须含 medicareRequirement（WXML 医保行引用）
+// B1: report.js 的 setData 顶层须含 medicareRequirement（经 advicePoints 的 desc 渲染，见 2026-09-09 修订）
 const fs = require('fs')
 const path = require('path')
 
@@ -32,14 +32,23 @@ setDataBlock.split('\n').forEach(line => {
   const mm = line.match(/^      ([a-zA-Z_$][\w$]*)\s*[:,]/)
   if (mm) topKeys.add(mm[1])
 })
-assert(topKeys.has('medicareRequirement'), 'B1: setData 顶层含 medicareRequirement（WXML 医保行需引用）')
+assert(topKeys.has('medicareRequirement'), 'B1: setData 顶层含 medicareRequirement（经 advicePoints.desc 渲染）')
 assert(topKeys.has('replaceRateDesc'), 'A1: setData 含 replaceRateDesc')
 assert(topKeys.has('estPreRetireSalary'), 'A2: setData 含 estPreRetireSalary')
 assert(topKeys.has('medicareLabel') && topKeys.has('medicareYears') && topKeys.has('medicareMet'),
   'B1: setData 含其余医保字段(medicareLabel/Years/Met)')
 
-// WXML 医保行引用 medicareRequirement 的位置（127/163）仍存在
-assert(/medicareRequirement/.test(wxml), 'B1: WXML 医保建议行引用 {{medicareRequirement}}')
+// B1（2026-09-09 修订）: 医保信息现通过 advicePoints 的 desc 字段渲染，WXML 只写 {{item.desc}}，
+// 不再直接引用 {{medicareRequirement}}。旧断言（WXML 含 medicareRequirement 字样）已过时并误报。
+// 改为校验渲染链路完整：① js 拼接进 desc ② WXML 有 advicePoints 循环 + {{item.desc}} 输出。
+assert(
+  /medicareRequirement/.test(js.match(/\{ title: '医疗保险'[\s\S]{0,200}?\}/)?.[0] || ''),
+  'B1: 医保建议项 desc 已拼接 medicareRequirement'
+)
+assert(
+  /wx:for="\{\{(worker|flexible)AdvicePoints\}\}"/.test(wxml) && /\{\{item\.desc\}\}/.test(wxml),
+  'B1: WXML 通过 advicePoints 循环 + {{item.desc}} 渲染医保建议'
+)
 
 console.log('\n结果: ' + pass + ' passed, ' + fail + ' failed')
 process.exit(fail > 0 ? 1 : 0)
