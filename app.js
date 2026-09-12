@@ -39,8 +39,10 @@
 
   // 双基数省份城市 key → 中文标签
   var CITY_LABELS = { shenzhen: '深圳', zhengzhou: '郑州', shenyang: '沈阳', dalian: '大连', cc: '长春' }
-  // 双指数省份（显示过渡性指数输入框）
-  var DOUBLE_INDEX = { zhejiang: 1, guangdong: 1, shaanxi: 1 }
+  // 双指数省份（显示过渡性指数输入框）：基础养老金与过渡性养老金使用不同平均缴费指数
+  //   浙江/广东/陕西：引擎原生支持，前端透传 transIndex
+  //   天津/山西/江苏：双指数省份此前遗漏，2026-07-23 补齐（天津/山西见 MEMORY；江苏 use_trans_index:true）
+  var DOUBLE_INDEX = { zhejiang: 1, guangdong: 1, shaanxi: 1, tianjin: 1, shanxi: 1, jiangsu: 1 }
 
   var INDEX_PRESETS = [0.6, 0.8, 1.0, 1.5, 2.0, 2.5, 3.0]
 
@@ -62,6 +64,19 @@
   var elOneChildType = $('oneChildType')
   var elRegionCategory = $('regionCategory')
   var elTibetWorkYears = $('tibetWorkYears')
+
+  // ── 第一步：缴费指数计算器分区 ──
+  var IC = {
+    toggle: $('indexToggle'), body: $('indexCalcBody'), arrow: $('indexArrow'),
+    startDate: $('idxStartDate'), deemedYears: $('idxDeemedYears'), deemedHint: $('idxDeemedHint'),
+    deemedStartField: $('idxDeemedStartField'), deemedStartYear: $('idxDeemedStartYear'), deemedStartHint: $('idxDeemedStartHint'),
+    gdCityField: $('idxGdCityField'), gdCity: $('idxGdCity'),
+    gapHint: $('idxGapHint'), genBtn: $('idxGenBtn'), calcBtn: $('idxCalcBtn'),
+    yearlyWrap: $('idxYearlyWrap'), yearlyRows: $('idxYearlyRows'),
+    result: $('idxResult'), avgIndex: $('idxAvgIndex'), transRow: $('idxTransRow'), transIndex: $('idxTransIndex'),
+    totalMonths: $('idxTotalMonths'), balance: $('idxBalance'), note: $('idxNote'), detailRows: $('idxDetailRows')
+  }
+  var idxYearlyList = []
 
   var currentScenario = 'legal'
   var lastResult = null
@@ -112,6 +127,7 @@
 
     refreshCityOptions()
     refreshExtraOptions()
+    initIndexCalc()
   }
 
   // 省份变化：双基数省显示城市选择；双指数省显示过渡指数；加发项按省显示
@@ -121,6 +137,7 @@
     var slug = elProvince.value
     elTransField.hidden = !DOUBLE_INDEX[slug]
     if (!DOUBLE_INDEX[slug]) elTrans.value = ''
+    refreshIndexCalcProvince(slug)
   }
 
   // 加发项区块：仅显示当前参保地适用的项目
@@ -262,15 +279,19 @@
     var cmp = lastResult.comparison
 
     $('totalAmount').textContent = fmt(sc.total)
-    var rateTxt = (sc.rate != null && !isNaN(sc.rate))
-      ? '替代率约 ' + sc.rate.toFixed(1) + '%（月养老金 ÷ 退休时计发基数）'
+    // 个人替代率 = 本人养老金 ÷ (退休地计发基数 × 本人平均缴费指数)，与报告页口径一致（本人收入口径，对标国际/官方个人替代率）
+    var personalRate = (sc.baseRetire && sc.avgIndex && sc.baseRetire > 0 && sc.avgIndex > 0)
+      ? Math.round(sc.total / (sc.baseRetire * sc.avgIndex) * 100)
+      : null
+    var rateTxt = (personalRate != null)
+      ? '个人替代率约 ' + personalRate + '%（月养老金 ÷ 指数化缴费工资）'
       : ''
     $('replaceRate').textContent = rateTxt
 
     $('retireDate').textContent = fmtDate(sc.date)
     $('retireAge').textContent = sc.ageStr || '—'
     $('retireMonths').textContent = sc.months != null ? sc.months + ' 个月' : '—'
-    $('rate').textContent = (sc.rate != null && !isNaN(sc.rate)) ? sc.rate.toFixed(1) + '%' : '—'
+    $('rate').textContent = (personalRate != null) ? personalRate + '%' : '—'
 
     $('basePension').textContent = fmt(sc.basicPension && sc.basicPension.amount)
     $('personalPension').textContent = fmt(sc.personalAccount && sc.personalAccount.amount)
@@ -315,6 +336,198 @@
       '最多提前 <span class="hl">' + advStr + '</span>。' +
       '<br>代价：每月养老金减少 <span class="down">' + fmt(Math.abs(diff)) + '</span>' +
       '（约为法定的 ' + (cmp.diffPercent != null ? cmp.diffPercent.toFixed(1) : '0') + '%）。'
+  }
+
+  // ---------- 第一步：缴费指数计算器 ----------
+  function initIndexCalc() {
+    // 折叠/展开
+    IC.toggle.addEventListener('click', function () {
+      var open = IC.body.style.display !== 'none'
+      IC.body.style.display = open ? 'none' : 'block'
+      IC.arrow.textContent = open ? '展开 ▼' : '收起 ▲'
+    })
+    // 广东城市选项（从引擎 D 值表动态生成）
+    try {
+      var map = window.CalcIndex && window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP
+      if (map) {
+        var labels = { guangzhou:'广州市',shenzhen:'深圳市',zhuhai:'珠海市',shantou:'汕头市',shaoguan:'韶关市',heyuan:'河源市',meizhou:'梅州市',huizhou:'惠州市',shanwei:'汕尾市',dongguan:'东莞市',zhongshan:'中山市',jiangmen:'江门市',foshan:'佛山市',yangjiang:'阳江市',zhanjiang:'湛江市',maoming:'茂名市',zhaoqing:'肇庆市',yunfu:'云浮市',qingyuan:'清远市',chaozhou:'潮州市',jieyang:'揭阳市' }
+        Object.keys(map).forEach(function (k) {
+          if (k === 'prov' || !labels[k]) return
+          var o = document.createElement('option')
+          o.value = labels[k]
+          o.textContent = labels[k] + '（D=' + map[k] + (k === 'shenzhen' ? '，独立社平' : '') + '）'
+          IC.gdCity.appendChild(o)
+        })
+      }
+    } catch (e) { console.warn('广东城市填充失败', e) }
+
+    IC.genBtn.addEventListener('click', function () { idxGenYearly(false) })
+    IC.calcBtn.addEventListener('click', idxCalcAndFill)
+    IC.startDate.addEventListener('change', function () { idxGenYearly(true) })
+    // 初始刷新一次（默认省份的提示）
+    refreshIndexCalcProvince(elProvince.value)
+  }
+
+  function refreshIndexCalcProvince(slug) {
+    var rule = null
+    try { rule = window.CalcIndex && window.CalcIndex.PROVINCE_RULES[slug] } catch (e) {}
+    // 广东城市
+    IC.gdCityField.style.display = (slug === 'guangdong') ? 'block' : 'none'
+    if (slug !== 'guangdong') IC.gdCity.value = ''
+    // 浙苏赣视同起始年
+    if (slug === 'zhejiang' || slug === 'jiangsu' || slug === 'jiangxi') {
+      IC.deemedStartField.style.display = 'block'
+      var tip = { zhejiang:'浙江：1992年底前替代指数≈1.279（温州1.1），1993年起1.0', jiangsu:'江苏：1985.6前=1.0、1985.7-1991分段联动', jiangxi:'江西：1992.9前=1.0、1992.10-1995.9按设区市/全省比' }[slug]
+      IC.deemedStartHint.textContent = tip + '——填写视同起始年以精确取分段值。'
+    } else {
+      IC.deemedStartField.style.display = 'none'
+    }
+    // 断缴提示
+    if (rule && (rule.gapZero || rule.gapFloor)) {
+      var name = PROVINCES.find(function (p) { return p.slug === slug }).name
+      var v = rule.gapZero ? 0 : rule.gapFloor
+      IC.gapHint.textContent = '提示：' + name + '执行"断缴年份按指数' + v + '计入平均指数"规则——中间断缴年份会按指数' + v + '计入分母，请如实逐年填写。'
+      IC.gapHint.style.display = 'block'
+    } else {
+      IC.gapHint.style.display = 'none'
+    }
+    // 视同年提示
+    if (rule) {
+      IC.deemedHint.textContent = rule.deemedInDenom
+        ? '该省将视同缴费年限计入平均指数分母（指数默认1.0，广东查表/浙江替代指数等特例已内置），请填写上方视同年限。'
+        : '该省视同缴费年限不计入平均指数分母（仅用于养老金年限计算），可不填或填0。'
+      IC.deemedHint.style.display = 'block'
+    } else {
+      IC.deemedHint.style.display = 'none'
+    }
+  }
+
+  function idxGenYearly(silent) {
+    var sd = IC.startDate.value
+    if (!sd) { if (!silent) alert('请先选择首次缴费年月'); return }
+    var parts = sd.split('-').map(Number)
+    var sy = parts[0], sm = parts[1]
+    var ey = new Date().getFullYear()
+    if (sy > ey) { if (!silent) alert('起始年不能晚于今年'); return }
+    var oldMap = {}
+    idxYearlyList.forEach(function (r) { if (r.year && r.baseAvg !== '' && r.baseAvg != null) oldMap[r.year] = r.baseAvg })
+    var rows = [], y = sy
+    while (y <= ey) {
+      var months = y === sy ? (sm > 1 ? 13 - sm : 12) : 12
+      rows.push({ year: y, months: months, baseAvg: oldMap[y] !== undefined ? oldMap[y] : '' })
+      y += 1
+    }
+    idxYearlyList = rows
+    idxRenderYearly()
+    IC.yearlyWrap.style.display = 'block'
+  }
+
+  function idxRenderYearly() {
+    IC.yearlyRows.innerHTML = ''
+    idxYearlyList.forEach(function (r, idx) {
+      var tr = document.createElement('div')
+      tr.className = 'tr'
+      tr.innerHTML =
+        '<span class="c1">' + r.year + '年</span>' +
+        '<input class="c2" type="number" min="0" max="12" value="' + r.months + '" data-idx="' + idx + '" data-sub="months" style="width:50px">' +
+        '<input class="c3" type="number" step="0.01" placeholder="如4980" value="' + r.baseAvg + '" data-idx="' + idx + '" data-sub="baseAvg" style="width:120px">'
+      IC.yearlyRows.appendChild(tr)
+      tr.querySelector('[data-sub="months"]').addEventListener('input', idxOnYearlyInput)
+      tr.querySelector('[data-sub="baseAvg"]').addEventListener('input', idxOnYearlyInput)
+    })
+  }
+
+  function idxOnYearlyInput(e) {
+    var idx = Number(e.target.dataset.idx)
+    idxYearlyList[idx][e.target.dataset.sub] = e.target.value
+  }
+
+  function idxCalcAndFill() {
+    var CalcIndex = window.CalcIndex
+    if (!CalcIndex || !window.INDEX_PROVINCES) { alert('计算器引擎未加载'); return }
+    var slug = elProvince.value
+    var sd = IC.startDate.value
+    if (!sd) { alert('请选择首次缴费年月'); return }
+    if (idxYearlyList.length === 0) { alert('请先生成逐年清单'); return }
+    var yearlyData = idxYearlyList
+      .filter(function (r) { return Number(r.year) > 0 && Number(r.months) > 0 })
+      .map(function (r) { return { year: Number(r.year), months: Number(r.months), baseAvg: Number(r.baseAvg) || 0 } })
+    if (!yearlyData.some(function (r) { return r.baseAvg > 0 })) { alert('请至少填写一年的月均缴费基数'); return }
+
+    var provinceConfig = window.INDEX_PROVINCES[slug]
+    var deemedYears = Number(IC.deemedYears.value) || 0
+    var deemedStartYear = Number(IC.deemedStartYear.value) || null
+    var city = (slug === 'guangdong' && IC.gdCity.value) ? IC.gdCity.value : null
+    var fwd
+    try {
+      fwd = CalcIndex.calculateIndex({
+        provinceConfig: provinceConfig, provinceCode: slug, contribution: yearlyData,
+        granularity: 'A', deemedYears: deemedYears, deemedStartYear: deemedStartYear, city: city
+      })
+    } catch (err) { alert('计算出错：' + err.message); console.error(err); return }
+    if (fwd.error) { alert(fwd.error); return }
+
+    idxRenderResult(fwd, slug)
+
+    // ── 自动填入下方养老金表单 ──
+    elAvg.value = fwd.avgIndex.toFixed(4)
+    document.querySelectorAll('#indexChips .chip').forEach(function (x) { x.classList.remove('active') })
+    if (fwd.transIndex != null && fwd.transIndex > 0 && DOUBLE_INDEX[slug]) {
+      elTrans.value = fwd.transIndex.toFixed(4)
+      elTransField.hidden = false
+    }
+    // 个人账户余额也可填入
+    if (fwd.accountBalance && fwd.accountBalance > 0) {
+      elBalance.value = Math.round(fwd.accountBalance)
+    }
+    IC.calcBtn.textContent = '已填入下方 ✓'
+    setTimeout(function () { IC.calcBtn.textContent = '计算并填入下方' }, 2000)
+  }
+
+  function idxRenderResult(fwd, slug) {
+    IC.avgIndex.textContent = fwd.avgIndex.toFixed(4)
+    IC.balance.textContent = '¥' + fwd.accountBalance.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    IC.totalMonths.textContent = fwd.totalMonths + ' 个月（' + (fwd.totalYears || 0).toFixed(1) + ' 年）'
+    var meta = fwd._meta || {}
+    // 过渡性指数
+    if (fwd.transIndex != null && fwd.transIndex > 0) {
+      IC.transRow.style.display = 'flex'
+      IC.transIndex.textContent = fwd.transIndex.toFixed(4)
+    } else {
+      IC.transRow.style.display = 'none'
+    }
+    // 提示
+    var parts = []
+    if (meta.gapZero && meta.gapYears > 0) {
+      parts.push('有 ' + meta.gapYears + ' 个断缴年份按指数0计入分母')
+    }
+    if (meta.gapFloor && meta.gapYears > 0) {
+      parts.push('有 ' + meta.gapYears + ' 个断缴年份按指数' + meta.gapFloor + '计入分母')
+    }
+    if (meta.deemedInDenom && meta.deemedYears > 0) {
+      parts.push('已将 ' + meta.deemedYears + ' 年视同缴费计入指数分母')
+    } else if (meta.deemedInDenom && meta.deemedYears === 0) {
+      parts.push('该省视同年计入指数分母，未填写视同年限可能影响准确度')
+    }
+    if (meta.city) {
+      var dval = (window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP && window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP[meta.city.replace(/市$/, '')]) || 1.0
+      parts.push('广东「' + meta.city + '」D=' + dval + (meta.city === '深圳' ? '（深圳独立社平）' : ''))
+    }
+    IC.note.textContent = parts.length ? parts.join('；') + '。' : ''
+    IC.note.style.display = parts.length ? 'block' : 'none'
+    // 逐年明细
+    IC.detailRows.innerHTML = ''
+    ;(fwd.yearsDetail || []).filter(function (y) { return y.index !== null && y.index !== undefined }).forEach(function (y) {
+      var tr = document.createElement('div')
+      tr.className = 'tr'
+      tr.innerHTML =
+        '<span class="c1">' + y.year + '</span>' +
+        '<span class="c2">' + y.months + '</span>' +
+        '<span class="c3">' + (y.baseAvg || 0).toFixed(0) + '</span>' +
+        '<span class="c4">' + y.index.toFixed(4) + '</span>'
+      IC.detailRows.appendChild(tr)
+    })
+    IC.result.style.display = 'block'
   }
 
   // ---------- 启动 ----------
