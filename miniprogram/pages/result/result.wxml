@@ -112,7 +112,7 @@
 
     <view class="btn-area">
       <button class="btn-share" bindtap="onShareResult">分享结果</button>
-      <button class="btn-report" bindtap="goReport">查看详细退休计划报告</button>
+      <button class="btn-report" bindtap="onReportTap">解锁深度报告 · ¥1</button>
     </view>
 
     <view class="disclaimer">
@@ -120,5 +120,30 @@
     </view>
 
     <canvas type="2d" id="shareCanvas" class="shareWidget" style="position:absolute;left:-9999px;top:0;width:375px;height:700px;"></canvas>
+
+    <!-- 价值预销弹窗：先看报告里有什么，再 ¥1 解锁 -->
+    <view class="pay-mask" wx:if="{{showPayModal}}" bindtap="closePayModal">
+      <view class="pay-modal" catchtap="noop">
+        <view class="pay-modal-head">
+          <text class="pay-modal-title">深度退休计划报告</text>
+          <text class="pay-modal-sub">花 1 块钱，看清退休后的每一笔账</text>
+        </view>
+
+        <view class="pay-modal-list">
+          <view class="pay-item" wx:for="{{reportModules}}" wx:key="index">
+            <text class="pay-dot">✓</text>
+            <text class="pay-text">{{item}}</text>
+          </view>
+        </view>
+
+        <view class="pay-modal-preview">
+          <text class="pay-preview-label">先看一眼</text>
+          <text class="pay-preview-text">{{reportPreview}}</text>
+        </view>
+
+        <button class="pay-btn" bindtap="doPay">¥1 解锁报告</button>
+        <text class="pay-modal-foot">虚拟商品 · 支付后即时解锁 · 不支持退款</text>
+      </view>
+    </view>
   </block>
 </view>

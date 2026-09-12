@@ -14,10 +14,10 @@ App({
     // 强制指定云环境 ID，确保云函数调用打到正确的环境
     if (wx.cloud) {
       wx.cloud.init({
-        env: 'cyz0813-d0go10t7vfbe3bc47',
+        env: 'cloud1-d2gfe2lrpe9cdf8a0',
         traceUser: true
       })
-      console.log('[app.js] 初始化完成（env: cyz0813-d0go10t7vfbe3bc47）')
+      console.log('[app.js] 初始化完成（env: cloud1-d2gfe2lrpe9cdf8a0）')
     } else {
       console.error('[app.js] wx.cloud 不存在，云开发初始化失败')
     }

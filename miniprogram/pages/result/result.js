@@ -32,6 +32,18 @@ Page({
     // 分享图预览
     showSharePreview: false,
     shareImagePath: '',
+
+    // 付费预销弹窗
+    showPayModal: false,
+    reportModules: [
+      '弹性提前 / 延迟退休，每月差多少对比',
+      '累计能领多少 + 几岁回本（追平年龄）',
+      '专属退休规划建议',
+      '缴费指数优化表（怎么缴更划算）',
+      '完整计算明细与参数',
+      '一键保存报告长图'
+    ],
+    reportPreview: '比如：你 60 岁退，预计 68 岁前后把交的钱领回来。',
   },
 
   onLoad(options) {
@@ -266,14 +278,9 @@ Page({
   },
 
   /**
-   * 查看方案对比和退休建议（¥1.00，虚拟支付）
-   *
-   * 支付流程：
-   *   1. wx.login 拿 code → 调用云函数 createOrder 换 session_key + 生成虚拟支付签名
-   *   2. 调起 wx.requestVirtualPayment（道具直购，内部自动下单）
-   *   3. 支付成功 → 标记已购买 → 跳转报告页
+   * 点击"查看详细报告"按钮：先弹价值预销弹窗，不直接拉支付（避免突袭式付费）
    */
-  goReport() {
+  onReportTap() {
     // 付费开关：false=线下自测直接解锁报告；true=发布收费版（需主体已开通虚拟支付能力 + 云端 createOrder 配 VP_APP_SECRET）
     const PAY_ENABLED = true
     if (!PAY_ENABLED) {
@@ -282,7 +289,7 @@ Page({
       return
     }
 
-    // 审核模式：连续点击5次绕过支付
+    // 审核模式：连续点击5次绕过支付（保留原能力，便于过审/自测）
     this._debugTapCount = (this._debugTapCount || 0) + 1
     if (this._debugTapCount >= 5) {
       wx.setStorageSync('audit_paid', '1')
@@ -293,6 +300,24 @@ Page({
       return
     }
 
+    // 弹窗先展示报告里有什么，让用户看清价值再决定是否付费
+    this.setData({ showPayModal: true })
+  },
+
+  /**
+   * 关闭预销弹窗
+   */
+  closePayModal() {
+    this.setData({ showPayModal: false })
+  },
+
+  noop() {},
+
+  /**
+   * 弹窗内"¥1 解锁"按钮：拉起虚拟支付（核心支付逻辑）
+   */
+  doPay() {
+    this.setData({ showPayModal: false })
     var self = this
     wx.showLoading({ title: '加载支付中...', mask: true })
 

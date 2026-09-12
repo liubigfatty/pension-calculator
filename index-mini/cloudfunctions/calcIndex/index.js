@@ -1,25 +1,29 @@
 // 云函数入口：calcIndex
-// 简化版（v2）：只服务「有逐年缴费明细」的人
-//   前端只传：province + startYear/startMonth（信息用）+ yearlyData（逐年明细）
-//   返回：正向计算结果（平均指数 + 个人账户余额 + 逐年明细）
-//   不再处理「当前月缴费基数」和「账户余额反推」（那是无明细人群用的，本次未做）
-const cloud = require('wx-server-sdk')
+// 逐省一致版 v2.1.0：只服务「有逐年缴费明细」的人
+//   前端传：province + startYear/startMonth（信息用）+ yearlyData（逐年明细）
+//          + deemedYears（视同年限）+ deemedStartYear（浙苏赣分段起始年）+ city（广东城市）
+//   返回：正向计算结果（平均指数 + 个人账户余额 + 逐年明细 + transIndex）
+//   逐省规则（分母口径/视同年/双指数/封顶/断缴）全部由 calcIndex 引擎 PROVINCE_RULES 驱动，
+//   不再在入口硬编码（旧版 GAP_ZERO_PROVINCES 已废弃，改用引擎 rule.gapZero）。
+// 纯计算函数：不依赖 wx-server-sdk（不使用云数据库 / 存储 / OpenID）。
+//   CLI 部署不安装依赖，云端 node16 运行时又不内置该 SDK，会报 Cannot find module 'wx-server-sdk'。
+//   若将来需要云服务，再恢复：const cloud = require('wx-server-sdk') + cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const { calculateIndex } = require('./calcIndex')
 const PROVINCES = require('./provinces-data')
 
-// 断缴年份计入平均指数分母（指数记0）的省份：北京/天津/陕西/浙江/云南
-// 这些地区计算平均缴费指数时用“应缴费年限”作分母，断缴年不仅算在分母里、分子还按0计，
-// 因此断缴会严重稀释平均指数。其余省份断缴年直接忽略（不计入公式）。
-const GAP_ZERO_PROVINCES = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
-
-cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+// 广东省 21 地市（D值查表用，粤府函〔2021〕294号）
+const GD_CITIES = ['全省', '广州', '深圳', '珠海', '汕头', '韶关', '河源', '梅州', '惠州', '汕尾',
+  '东莞', '中山', '江门', '佛山', '阳江', '湛江', '茂名', '肇庆', '云浮', '清远', '潮州', '揭阳']
 
 exports.main = async (event, context) => {
   const {
     province,
     startYear,
     startMonth,
-    yearlyData           // 逐年明细数组 [{year, months, baseAvg}]
+    yearlyData,           // 逐年明细数组 [{year, months, baseAvg}]
+    deemedYears,          // 视同缴费年限（年）
+    deemedStartYear,      // 视同起始年（浙/苏/赣分段取值）
+    city                  // 广东参保城市
   } = event
 
   if (!province || !PROVINCES[province]) {
@@ -33,11 +37,20 @@ exports.main = async (event, context) => {
     return { success: false, error: '请填写逐年缴费明细（每年月均缴费基数）' }
   }
 
+  // 广东：校验并归一化城市（首位为"全省"→null，使用默认 D=1.000）
+  let gdCity = null
+  if (province === 'guangdong') {
+    gdCity = (city && city !== '全省' && GD_CITIES.includes(city)) ? city : null
+  }
+
   const fwd = calculateIndex({
     provinceConfig,
+    provinceCode: province,
     contribution: yearlyData,
     granularity: 'A',
-    gapYearCountsInAvg: GAP_ZERO_PROVINCES.has(province)
+    deemedYears: Number(deemedYears) || 0,
+    deemedStartYear: deemedStartYear ? Number(deemedStartYear) : null,
+    city: gdCity
   })
   if (fwd.error) return { success: false, error: fwd.error }
 

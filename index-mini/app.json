@@ -1,13 +1,30 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/result/result"
+    "pages/result/result",
+    "pages/salary/index"
   ],
   "window": {
     "navigationBarTitleText": "平均缴费指数计算器",
     "navigationBarBackgroundColor": "#1d4ed8",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#f5f6fa"
+  },
+  "tabBar": {
+    "color": "#6C584B",
+    "selectedColor": "#8B7355",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "指数计算"
+      },
+      {
+        "pagePath": "pages/salary/index",
+        "text": "全国社平"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

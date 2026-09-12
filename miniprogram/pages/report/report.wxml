@@ -149,6 +149,7 @@
             <text class="rate-value highlight">{{replaceRate}}%</text>
           </view>
           <text class="rate-desc">替代率 = 月养老金 ÷ 推算退休前工资。{{replaceRateDesc}}</text>
+          <text class="rate-note">口径说明：本指标为「个人替代率」（本人收入口径），即本人月养老金 ÷ 本人退休前指数化缴费工资，对标国际通用的"养老金 ÷ 本人收入"定义；区别于以社会平均工资为分母的"制度平均替代率"。</text>
         </view>
 
       </view>

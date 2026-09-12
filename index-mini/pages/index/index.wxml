@@ -25,6 +25,31 @@
         </view>
       </picker>
     </view>
+
+    <!-- 视同缴费年限（逐省进/不进指数分母，由引擎按省规处理） -->
+    <view class="form-item">
+      <text class="form-label">视同缴费年限（年）</text>
+      <input class="input-field" type="number" value="{{deemedYears}}" placeholder="如10（仅部分省份纳入指数）" bindinput="onDeemedYears"/>
+    </view>
+
+    <!-- 浙/苏/赣 分段视同指数：需视同起始年 -->
+    <view class="form-item" wx:if="{{showDeemedStart}}">
+      <text class="form-label">视同起始年</text>
+      <input class="input-field" type="number" value="{{deemedStartYear}}" placeholder="如1990（浙/苏/赣分段取值）" bindinput="onDeemedStartYear"/>
+      <view class="warn" wx:if="{{deemedStartHint}}">{{deemedStartHint}}</view>
+    </view>
+
+    <!-- 广东参保城市（D值查表 + 深圳独立社平） -->
+    <view class="form-item" wx:if="{{showGdCity}}">
+      <text class="form-label">广东参保城市</text>
+      <picker mode="selector" range="{{gdCities}}" value="{{gdCityIndex}}" bindchange="onGdCityChange">
+        <view class="picker-box selected">
+          <text class="picker-value">{{gdCities[gdCityIndex]}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+      </picker>
+      <view class="warn">广东省1993年底前视同缴费指数(D)按粤府函〔2021〕294号查表；深圳用独立社平算分母。</view>
+    </view>
   </view>
 
   <!-- 逐年缴费明细卡片 -->

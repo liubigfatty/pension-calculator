@@ -403,6 +403,9 @@ Page({
         }
       })
       wx.hideLoading()
+      console.log('[onEstimateBalance] 请求参数:', JSON.stringify({
+        province, cityType: cityType || 'prov', gender, identity, genderType, birthDate, workStartDate, averageIndex
+      }))
 
       if (res.result && res.result.success) {
         const balance = res.result.data.estimatedBalance
@@ -413,12 +416,25 @@ Page({
           wx.showToast({ title: '估算失败，请手动输入', icon: 'none' })
         }
       } else {
-        wx.showToast({ title: '估算失败，请稍后重试', icon: 'none' })
+        // 云端返回 success:false —— 把真实原因显示出来，别只说"稍后重试"
+        console.error('[onEstimateBalance] 云函数返回失败:', JSON.stringify(res.result))
+        const msg = (res.result && res.result.message) ? String(res.result.message) : '云端未返回原因'
+        wx.showModal({
+          title: '估算失败',
+          content: msg,
+          showCancel: false,
+          confirmText: '知道了'
+        })
       }
     } catch (err) {
       wx.hideLoading()
       console.error('[onEstimateBalance] 云函数调用异常:', err)
-      wx.showToast({ title: '网络异常，请重试', icon: 'none' })
+      wx.showModal({
+        title: '云函数调用失败',
+        content: (err && err.errMsg) ? String(err.errMsg).slice(0, 200) : '未知错误',
+        showCancel: false,
+        confirmText: '知道了'
+      })
     }
   },
 

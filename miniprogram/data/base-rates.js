@@ -43,8 +43,9 @@ const PROV_BASE_LATEST = [
 const CITY_TYPE_CONFIG = {
   // 河南双基数城市（values 必须与 henan.js base_rates key 一致：引擎按 cityType 直接查 base_rates，无缩写映射）
   15: {
+    // ⚠️ names 与 values 必须同序对应（曾错序：names[2]='开封市' 却配到 values[2]='xinyang'）
     names: ['郑州市', '洛阳市', '开封市', '信阳市', '平顶山市', '新乡市', '全省其他'],
-    values: ['zhengzhou', 'luoyang', 'xinyang', 'kaifeng', 'pingdingshan', 'xinxiang', 'prov']
+    values: ['zhengzhou', 'luoyang', 'kaifeng', 'xinyang', 'pingdingshan', 'xinxiang', 'prov']
   },
   // 吉林：长春市 / 全省其他
   6: {
