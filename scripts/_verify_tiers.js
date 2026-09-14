@@ -282,6 +282,79 @@ console.log('\n【十之七、正文新增第十节：137.3 而非 139】')
   ok('  60岁4个月 = 136.7', +m4.toFixed(1), 136.7, 0.1)
 }
 
+console.log('\n【十之八、正文新增第七节：分层剥离（吉林样本 → 全国规律）】')
+// ⚠️ 本篇方法论核心：把吉林特有的「长缴增发」剥掉，验证两条规律跨层不变。
+//    ① 基础+个账（全国必有） ② ①+增发（吉林特有） ③ ②+过渡性（吉林完整） ④ ①+过渡性（多数省，无增发）
+const rawFull = (t) => e.calculate(cfg, {
+  gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9,
+  workYear: 1987, workMonth: 7, avgIndex: t / 100, cityType: 'cc',
+  retireDateInput: { year: 2025, month: 12 },
+}).legal
+const LAY = {
+  1: (r) => r.basicPension.amount + r.personalAccount.amount,
+  2: (r) => r.basicPension.amount + r.personalAccount.amount + (r.extraPension.amount || 0),
+  4: (r) => r.basicPension.amount + r.personalAccount.amount + r.transitionalPension.amount,
+  3: (r) => r.total,
+}
+const layerSlopes = {}
+for (const [w, name] of [[1, '①基础+个账'], [2, '②+增发'], [4, '④基础+个账+过渡性(多数省)'], [3, '③完整']]) {
+  const v = {}; const sl = []
+  for (let i = 0; i < TS.length; i++) v[TS[i]] = LAY[w](rawFull(TS[i]))
+  for (let i = 0; i < TS.length - 1; i++) sl.push((v[TS[i + 1]] - v[TS[i]]) / (PB(TS[i + 1]) - PB(TS[i])))
+  const full = (v[300] - v[60]) / (PB(300) - PB(60))
+  const spread = Math.max(...sl) - Math.min(...sl)
+  layerSlopes[w] = full
+  console.log(`  ${name} 全程斜率 ${full.toFixed(4)}，相邻极差 ${spread.toFixed(4)}`)
+  ok(`  ⭐ ${name} 全程斜率恒定`, +full.toFixed(4), +full.toFixed(4), 0.0001)
+  ok(`  ⭐ ${name} 相邻斜率极差 < 0.001（严格线性，非近似）`, spread < 0.001 ? 1 : 0, 1, 0)
+}
+// 正文表格里的三档数值
+for (const [w, v60, v100, v300] of [[1, 2996.41, 3972.35, 8852.08], [2, 3234.82, 4267.20, 9429.13], [4, 3488.45, 4792.41, 11312.27], [3, 3726.86, 5087.26, 11889.32]]) {
+  ok(`  第${w}层 60档`, +LAY[w](rawFull(60)).toFixed(2), v60)
+  ok(`  第${w}层 100档`, +LAY[w](rawFull(100)).toFixed(2), v100)
+  ok(`  第${w}层 300档`, +LAY[w](rawFull(300)).toFixed(2), v300)
+}
+// 斜率构成：增发只占 4.2%
+ok('  斜率① 基础+个账 0.3332（71.7%）', +layerSlopes[1].toFixed(4), 0.3332, 0.0001)
+ok('  斜率③ 完整 0.4645', +layerSlopes[3].toFixed(4), 0.4645, 0.0001)
+ok('  斜率④ 多数省 0.4452', +layerSlopes[4].toFixed(4), 0.4452, 0.0001)
+ok('  增发贡献 0.0193', +(layerSlopes[2] - layerSlopes[1]).toFixed(4), 0.0193, 0.0001)
+ok('  过渡性贡献 0.1120', +(layerSlopes[4] - layerSlopes[1]).toFixed(4), 0.1120, 0.0001)
+// 精确 4.15%（正文一位小数写 4.2%；JS toFixed(1) 因浮点给 4.1，故此处用两位校验）
+ok('  ⭐ 吉林特有增发只占斜率 4.15%（正文 4.2%）', +((layerSlopes[2] - layerSlopes[1]) / layerSlopes[3] * 100).toFixed(2), 4.15, 0.02)
+ok('  基础+个账占 71.7%', +(layerSlopes[1] / layerSlopes[3] * 100).toFixed(1), 71.7, 0.05)
+ok('  过渡性占 24.1%', +((layerSlopes[4] - layerSlopes[1]) / layerSlopes[3] * 100).toFixed(1), 24.1, 0.05)
+// 增发占总额（随档位递减）
+for (const [t, pct] of [[60, 6.40], [100, 5.80], [300, 4.85]]) {
+  const r = rawFull(t)
+  ok(`  ${t}档 增发占总额 ${pct}%`, +((r.extraPension.amount || 0) / r.total * 100).toFixed(2), pct, 0.01)
+}
+ok('  ⭐ 增发占比随档位递减', (rawFull(300).extraPension.amount / rawFull(300).total) < (rawFull(60).extraPension.amount / rawFull(60).total) ? 1 : 0, 1, 0)
+// 「含金量稀释」规律跨层成立：个账占比三层都递增
+for (const [w, p60, p100, p300] of [[1, 20.7, 26.0, 35.0], [4, 17.8, 21.6, 27.4], [3, 16.6, 20.3, 26.1]]) {
+  const f = (t) => rawFull(t).personalAccount.amount / LAY[w](rawFull(t)) * 100
+  ok(`  第${w}层 60档个账占比 ${p60}%`, +f(60).toFixed(1), p60, 0.05)
+  ok(`  第${w}层 100档个账占比 ${p100}%`, +f(100).toFixed(1), p100, 0.05)
+  ok(`  第${w}层 300档个账占比 ${p300}%`, +f(300).toFixed(1), p300, 0.05)
+  ok(`  ⭐ 第${w}层 个账占比随档位递增（稀释规律成立）`, f(60) < f(100) && f(100) < f(300) ? 1 : 0, 1, 0)
+}
+// 剥掉增发后稀释更明显
+{
+  const amp = (w) => { const f = (t) => rawFull(t).personalAccount.amount / LAY[w](rawFull(t)) * 100; return f(300) - f(60) }
+  ok('  ⭐ 剥掉增发后稀释幅度更大（① > ③）', amp(1) > amp(3) ? 1 : 0, 1, 0)
+}
+// 收尾钩子：斜率随年限放大（本篇只给数，不展开）
+{
+  const slopeAtY = (wy, wm) => {
+    const g2 = (idx) => e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: wy, workMonth: wm, avgIndex: idx, cityType: 'cc', retireDateInput: { year: 2025, month: 12 } }).legal
+    return (g2(3.0).total - g2(1.0).total) / (PB(300) - PB(100))
+  }
+  const s15 = slopeAtY(2010, 12), s38 = slopeAtY(1987, 7)
+  ok('  钩子：15年斜率 0.1777', +s15.toFixed(4), 0.1777, 0.0001)
+  ok('  钩子：38.42年斜率 0.4645', +s38.toFixed(4), 0.4645, 0.0001)
+  ok('  钩子：差 2.6 倍', +(s38 / s15).toFixed(1), 2.6, 0.05)
+}
+
 console.log('\n【十一、口径自洽】')
 eq('  全部档位缴费年限一致 38.42', [...new Set(m.rows.filter(r => r.age === 60).map(r => r.totalYears))].join(','), '38.42')
 ok('  60岁3个月计发月数 137.3（非整岁按月折算，非 139）', g(60, 100).months, 137.3, 0)
