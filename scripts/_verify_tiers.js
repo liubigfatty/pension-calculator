@@ -139,6 +139,55 @@ ok('  300档灵活就业 52,718 元/年', +(21966 * 0.2 * 12).toFixed(0), 52718,
 ok('  100档灵活就业 1,464 元/月', +(7322 * 0.2).toFixed(0), 1464, 0.5)
 ok('  100档灵活就业 17,573 元/年', +(7322 * 0.2 * 12).toFixed(0), 17573, 2)
 
+console.log('\n【十之二、斜率随年限放大（正文新增第六节·核心论证）】')
+const PB = (t) => Math.round(7322 * t / 100)
+const slopeAt = (wy, wm) => {
+  const g2 = (idx) => e.calculate(cfg, {
+    gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9,
+    workYear: wy, workMonth: wm, avgIndex: idx, cityType: 'cc',
+    retireDateInput: { year: 2025, month: 12 },
+  }).legal
+  const a = g2(1.0), b = g2(3.0)
+  return { a: a.total, b: b.total, s: (b.total - a.total) / (PB(300) - PB(100)), years: a.totalYears, sight: a.sightYears || 0 }
+}
+for (const [label, wy, wm, sa, sb, ss, sy, sight] of [
+  ['15.00年全实缴', 2010, 12, 1899.22, 4500.91, 0.1777, 15, 0],
+  ['30.42年全实缴', 1995, 7, 3494.22, 7916.32, 0.3020, 30.42, 0],
+  ['38.42年含视同8年', 1987, 7, 5087.26, 11889.32, 0.4645, 38.42, 8],
+]) {
+  const r = slopeAt(wy, wm)
+  ok(`  ${label} 100档`, +r.a.toFixed(2), sa)
+  ok(`  ${label} 300档`, +r.b.toFixed(2), sb)
+  ok(`  ${label} 斜率`, +r.s.toFixed(4), ss, 0.0001)
+  ok(`  ${label} 年限`, +r.years.toFixed(2), sy, 0.01)
+  ok(`  ${label} 视同年`, +r.sight.toFixed(2), sight, 0.01)
+}
+// 全实缴可比口径：年限 ×2.03，斜率 ×1.70
+{
+  const s1 = slopeAt(2010, 12), s2 = slopeAt(1995, 7)
+  ok('  年限倍数 15→30.42 = 2.03', +(s2.years / s1.years).toFixed(2), 2.03, 0.01)
+  ok('  斜率倍数 15→30.42 = 1.70', +(s2.s / s1.s).toFixed(2), 1.70, 0.01)
+  ok('  ⚠️ 斜率倍数 < 年限倍数（档位被稀释）', s2.s / s1.s < s2.years / s1.years ? 1 : 0, 1)
+}
+
+console.log('\n【十之三、15年口径六档全表（数据稿按137.3订正）】')
+for (const [t, total, basic, per, rr] of [
+  [60, 1378.88, 927.86, 451.02, 31.39], [80, 1639.05, 1037.69, 601.36, 27.98],
+  [100, 1899.22, 1147.52, 751.70, 25.94], [150, 2549.63, 1422.09, 1127.54, 23.21],
+  [200, 3200.06, 1696.67, 1503.39, 21.85], [300, 4500.91, 2245.82, 2255.09, 20.49],
+]) {
+  const r = e.calculate(cfg, {
+    gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9,
+    workYear: 2010, workMonth: 12, avgIndex: t / 100, cityType: 'cc',
+    retireDateInput: { year: 2025, month: 12 },
+  }).legal
+  ok(`  15年 ${t}档 月领`, +r.total.toFixed(2), total)
+  ok(`  15年 ${t}档 基础`, +r.basicPension.amount.toFixed(2), basic)
+  ok(`  15年 ${t}档 个账`, +r.personalAccount.amount.toFixed(2), per)
+  ok(`  15年 ${t}档 替代率%`, +(r.total / PB(t) * 100).toFixed(2), rr)
+  ok(`  15年 ${t}档 计发月数=137.3`, r.months, 137.3, 0)
+}
+
 console.log('\n【十一、口径自洽】')
 eq('  全部档位缴费年限一致 38.42', [...new Set(m.rows.filter(r => r.age === 60).map(r => r.totalYears))].join(','), '38.42')
 ok('  60岁3个月计发月数 137.3（非整岁按月折算，非 139）', g(60, 100).months, 137.3, 0)
