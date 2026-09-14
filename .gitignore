@@ -34,3 +34,6 @@ backup_*/
 
 # Windows 保留设备名（junction层误生成，不可删）
 nul
+
+# CLI 上传脚本产物
+.upload-info.json

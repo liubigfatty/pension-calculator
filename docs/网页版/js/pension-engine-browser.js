@@ -1244,12 +1244,47 @@ function getMinYears(retireYear, config) {
   const minYearsTable = config.min_years || {}
   if (minYearsTable[retireYear] !== undefined) return minYearsTable[retireYear]
 
-  // 默认逻辑
-  if (retireYear < 2025) return 15
-  return 20
+  // 默认逻辑（政策：《国务院关于渐进式延迟法定退休年龄的办法》第二条 +
+  //          人社部《延迟法定退休年龄30问》第11、12条）
+  //   2029-12-31 前退休：最低缴费年限仍为 15 年
+  //   2030-01-01 起：每年提高 6 个月，15→20 年，2039 年起固定 20 年
+  // ⚠️ 修复 2026-09-14：原实现「retireYear >= 2025 一律返回 20」，
+  //    使 2025-2029 退休被误判为 20 年、2030-2038 缺失渐变档，仅四川因自带 min_years 表正确。
+  if (retireYear <= 2029) return 15
+  if (retireYear >= 2039) return 20
+  return 15 + (retireYear - 2029) * 0.5
 }
 
 // ==================== 基础数据查询 ====================
+
+/**
+ * 推断「未来计发基数」的年增长率（外推率）
+ *
+ * 纪律（2026-09-14 立）：**未发布年份不写固定值**，一律按「上一年已公布的增幅」复合外推。
+ *   - 取该基数表最近两个已公布年份的增幅（即 rates[last] / rates[prev] - 1）
+ *   - 尾部「预发年」（与上一年同值，说明官方尚未公布新基数）不参与计算，往前跳过
+ *   - 夹到 [0, 3%]：个别省单年跳变（如新疆 2025 较 2024 +9.01%）不应把远期基数推到离谱
+ *   - 历史数据不足或异常 → 回退 config.growth_rate，再回退 0.02
+ *
+ * @param {Object} rates - 年份→基数 的映射（全省表或城市表）
+ * @param {Object} config - 省份配置
+ * @returns {number} 年增长率（小数）
+ */
+function inferGrowthRate(rates, config) {
+  const fallback = (config && config.growth_rate != null) ? config.growth_rate : 0.02
+  if (!rates || typeof rates !== 'object') return fallback
+  const ks = Object.keys(rates).map(Number)
+    .filter(y => y >= 2000 && typeof rates[y] === 'number' && isFinite(rates[y]) && rates[y] > 0)
+    .sort((a, b) => a - b)
+  // 跳过尾部预发年（与上一年同值）
+  while (ks.length > 2 && rates[ks[ks.length - 1]] === rates[ks[ks.length - 2]]) ks.pop()
+  if (ks.length < 2) return fallback
+  const last = ks[ks.length - 1]
+  const prev = ks[ks.length - 2]
+  const g = rates[last] / rates[prev] - 1
+  if (!isFinite(g)) return fallback
+  return Math.max(0, Math.min(g, 0.03))
+}
 
 /**
  * 获取指定年份的计发基数
@@ -1313,14 +1348,16 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+  // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
+  const GROWTH_RATE = inferGrowthRate(provRates, config)
+  const CITY_GROWTH_RATE = cityRates ? inferGrowthRate(cityRates, config) : GROWTH_RATE
 
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
     if (cityKeys[i] <= year) {
       const baseVal = cityRates[cityKeys[i]]
       const diff = year - cityKeys[i]
-      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + CITY_GROWTH_RATE, diff) * 100) / 100 : baseVal
     }
   }
   // 从全省向前找

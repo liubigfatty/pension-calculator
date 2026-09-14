@@ -1077,9 +1077,15 @@ function getMinYears(retireYear, config) {
   const minYearsTable = config.min_years || {}
   if (minYearsTable[retireYear] !== undefined) return minYearsTable[retireYear]
 
-  // 默认逻辑
-  if (retireYear < 2025) return 15
-  return 20
+  // 默认逻辑（政策：《国务院关于渐进式延迟法定退休年龄的办法》第二条 +
+  //          人社部《延迟法定退休年龄30问》第11、12条）
+  //   2029-12-31 前退休：最低缴费年限仍为 15 年
+  //   2030-01-01 起：每年提高 6 个月，15→20 年，2039 年起固定 20 年
+  // ⚠️ 修复 2026-09-14：原实现「retireYear >= 2025 一律返回 20」，
+  //    使 2025-2029 退休被误判为 20 年、2030-2038 缺失渐变档，仅四川因自带 min_years 表正确。
+  if (retireYear <= 2029) return 15
+  if (retireYear >= 2039) return 20
+  return 15 + (retireYear - 2029) * 0.5
 }
 
 // ==================== 基础数据查询 ====================
@@ -1146,26 +1152,35 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
-  // 2.1 预发机制：查询年份晚于已有数据最大年份时，直接用最大年份实际值（不上浮）
-  // 例如北京2026年计发基数尚未公布，2026年退休者按2025年基数12049预发，年底公布后再重算
+  // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
+  const GROWTH_RATE = inferGrowthRate(provRates, config)
+  const CITY_GROWTH_RATE = cityRates ? inferGrowthRate(cityRates, config) : GROWTH_RATE
+
+  // 2.1 计发基数外推规则（全省/城市统一执行）
+  // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
+  // - 退休年 > 数据最大年+1：远期退休，按 GROWTH_RATE 统一前推最后已知基数（与数据范围内外推一致）
   const lastCityYear = cityKeys[cityKeys.length - 1]
   const lastProvYear = provKeys[provKeys.length - 1]
   const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
   if (year > lastYear) {
-    if (lastCityYear > lastProvYear) {
-      return cityRates[lastCityYear] || provRates[lastProvYear] || 0
+    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
+    if (year === lastYear + 1) {
+      // 预发年：用上年（数据最大年）基数原值
+      return baseVal
     }
-    return provRates[lastProvYear] || cityRates[lastCityYear] || 0
+    const diff = year - lastYear
+    const g = useCity ? CITY_GROWTH_RATE : GROWTH_RATE
+    return Math.round(baseVal * Math.pow(1 + g, diff) * 100) / 100
   }
 
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
 
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
     if (cityKeys[i] <= year) {
       const baseVal = cityRates[cityKeys[i]]
       const diff = year - cityKeys[i]
-      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + CITY_GROWTH_RATE, diff) * 100) / 100 : baseVal
     }
   }
   // 从全省向前找
@@ -1190,6 +1205,22 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }
   return provRates[lastProvYear] || 0
+}
+
+function inferGrowthRate(rates, config) {
+  const fallback = (config && config.growth_rate != null) ? config.growth_rate : 0.02
+  if (!rates || typeof rates !== 'object') return fallback
+  const ks = Object.keys(rates).map(Number)
+    .filter(y => y >= 2000 && typeof rates[y] === 'number' && isFinite(rates[y]) && rates[y] > 0)
+    .sort((a, b) => a - b)
+  // 跳过尾部预发年（与上一年同值）
+  while (ks.length > 2 && rates[ks[ks.length - 1]] === rates[ks[ks.length - 2]]) ks.pop()
+  if (ks.length < 2) return fallback
+  const last = ks[ks.length - 1]
+  const prev = ks[ks.length - 2]
+  const g = rates[last] / rates[prev] - 1
+  if (!isFinite(g)) return fallback
+  return Math.max(0, Math.min(g, 0.03))
 }
 
 /**

@@ -19,7 +19,8 @@ window.PROVINCE_CONFIGS = {};
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -208,7 +209,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -483,7 +485,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -695,7 +698,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -928,7 +932,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -1204,7 +1209,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -1673,7 +1679,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -1897,7 +1904,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数=7324.5；2025社平7376.75→2026计发基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -2135,7 +2143,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -2343,7 +2352,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -2526,7 +2536,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -2582,7 +2593,9 @@ const PROV_BASE = {
   2023: 7010,
   2024: 7570,
   2025: 7705,
-  2027: 7906,
+  // ⚠️ 纪律：未发布年份不写固定值。2026 起由引擎 getBase() 处理
+  //   （2026=预发年取 2025 原值 7705；2027 起按 2025/2024 实际增幅 1.78% 复合）。
+  //   2026-09-14 删除了原 2027: 7906（按 PROV_GROWTH 2.6% 外推，无官方来源）。
 };;
 
 // 黑龙江省基数增长预测参数
@@ -2915,7 +2928,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -3225,7 +3239,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -3473,7 +3488,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -3781,7 +3797,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -4119,7 +4136,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -4346,7 +4364,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -4404,15 +4423,9 @@ const PROV_BASE = {
   2022: 6709.83,
   2023: 7058.67,
   2024: 7178.5,
-  2027: 7977.54,
-  2028: 8326.96,
-  2029: 8691.68,
-  2030: 9072.37,
-  2031: 9308.26,
-  2032: 9550.27,
-  2033: 9798.58,
-  2034: 10053.34,
-  2035: 10314.73,
+  // ⚠️ 纪律：未发布年份不写固定值。2026 起一律由引擎 getBase() 按「上一年已公布增幅」外推
+  //   （2026=预发年取 2025 原值；2027 起按 2025/2024 实际增幅 2.00% 复合）。
+  //   2026-09-14 删除了原 2027-2035 九条按 PROV_GROWTH 4.38% 外推的写死值（无官方来源）。
    2025: 7322,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
@@ -4754,7 +4767,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -5125,7 +5139,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -5352,7 +5367,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -5668,7 +5684,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -5882,7 +5899,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -6111,7 +6129,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -6340,7 +6359,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 // 数据来源：✅ 官方数据（沪人社规各年度文件）
@@ -6628,7 +6648,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -6865,7 +6886,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -6930,17 +6952,10 @@ const PROV_BASE = {
   2022: 7822,
   2023: 8079,
   2024: 8321,
-  2027: 9018,
-  2028: 9255,
-  2029: 9497,
-  2030: 9745,
-  2031: 10000,
-  2032: 10260,
-  2033: 10517,
-  2034: 10780,
-  2035: 11049,
+  // ⚠️ 纪律：未发布年份不写固定值。2026 起由引擎 getBase() 处理
+  //   （2026=预发年取 2025 原值 8462；2027 起按 2025/2024 实际增幅 1.69% 复合）。
+  //   2026-09-14 删除了原 2026-2035 十条写死值（2027+ 原按 PROV_GROWTH 5% 外推，无官方来源）。
    2025: 8462,  // ✅2025计发基数，经真实核定表验证(案例3/6 baseRetire=8462)；独立官方值，≠全口径社平(AVG[2024]=7646)
-  2026: 8462,  // 2026计发基数官方未公布，MD口径暂按2025基数预发，待公布后填
 };
 
 // 四川省历年平均工资（元/月，用于计算缴费基数）
@@ -7336,7 +7351,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -7584,7 +7600,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -7805,7 +7822,8 @@ module.exports = {
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式（西藏特例）：某年计发基数 = 当年社平工资（如 2025退休用2025社平÷12=11777；2024退休用2024社平÷12=11546）。
 // 这与多数省份"计发基数=上年社平"不同，由官方核定表多张交叉验证。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -8055,7 +8073,8 @@ module.exports = {
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -8107,12 +8126,8 @@ const BASE_PARAMS = {
     2023: 3431,  // 真实表确认：2023年全省退休人员月平均基本养老金3431元
     2024: 3431,  // 2024年尚未公布，预发暂用2023年值
     2025: 3431,  // 2025年尚未公布，预发暂用2023年值
-    // 预测值（按约5%年增长）
-    2026: 4100,
-    2027: 4300,
-    2028: 4520,
-    2029: 4750,
-    2030: 4990,
+    // ⚠️ 纪律：未发布年份不写固定值。2026-09-14 删除了原 2026-2030 五条「按约5%年增长」的
+    //   预测值（无官方来源）。缺失年份引擎回退到 2023 年真实值 3431。
   },
   PROV_2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 }
@@ -8151,8 +8166,8 @@ const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
 // 计发基数预测函数（云南省专用）
 function predictBase(year) {
-  const lastYear = 2026
-  const lastVal  = PROV_BASE[lastYear] || 8700
+  const lastYear = 2025
+  const lastVal  = PROV_BASE[lastYear] || 8265
   if (year <= lastYear) return PROV_BASE[year] || 0
   return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
 }
@@ -8376,7 +8391,8 @@ getEngineConfig,
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 

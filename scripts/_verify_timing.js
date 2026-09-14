@@ -30,7 +30,9 @@ ok('  法定 月数 139', B.months, 139, 0)
 ok('  法定 月领 5,074.62', +B.total.toFixed(2), 5074.62)
 ok('  晚退 年限 41.42', +C.totalYears.toFixed(2), 41.42)
 ok('  晚退 月数 117', C.months, 117, 0)
-ok('  晚退 月领 5,802.56（静态）', +C.total.toFixed(2), 5802.56)
+// 2026-09-14 更新：外推率改为「按上一年已公布增幅」后，个人账户余额微降 0.63 元，
+//   月领由 5802.56 → 5802.55（基础养老金 3168.43 不变，静态口径结论不受影响）
+ok('  晚退 月领 5,802.55（静态）', +C.total.toFixed(2), 5802.55)
 ok('  基数 市县 7,978.25', B.baseRetire, 7978.25)
 ok('  基数 全省 7,322', B.baseProv, 7322)
 ok('  晚退口径确实冻结在 7,978.25', C.baseRetire, 7978.25)
@@ -43,7 +45,7 @@ ok('  要活到 91.3 岁', +(60 + A.total * 3 / (B.total - A.total) / 12).toFixe
 
 console.log('\n【三、晚退（正文第三节·静态口径）】')
 const dTot = C.total - B.total
-ok('  每月多 727.94', +dTot.toFixed(2), 727.94)
+ok('  每月多 727.93', +dTot.toFixed(2), 727.93)
 ok('  少领36个月 182,686', +(B.total * 36).toFixed(0), 182686, 1)
 const p8 = 7322 * 0.08 * 36, p12 = 7322 * 0.12 * 36, p20 = 7322 * 0.20 * 36
 ok('  自缴8%（进个人账户）21,087', +p8.toFixed(0), 21087, 1)
@@ -64,13 +66,16 @@ ok('  月统筹部分多 286.88', +((C.total - C.personalAccount.amount) - (B.to
 ok('  两块之和 = 月领差', +(C.personalAccount.amount - B.personalAccount.amount + (C.total - C.personalAccount.amount) - (B.total - B.personalAccount.amount)).toFixed(2), +dTot.toFixed(2))
 
 console.log('\n【五、外推口径对比（正文第四节）】')
-ok('  外推 2028 基数 8,326.96', +C2.baseRetire.toFixed(2), 8326.96)
-ok('  外推月领 6,226.61', +C2.total.toFixed(2), 6226.61)
-ok('  外推每月多 1,151.99', +(C2.total - B.total).toFixed(2), 1151.99)
-ok('  外推回本 13.22 年', +(B.total * 36 / (C2.total - B.total) / 12).toFixed(2), 13.22)
-ok('  外推活到 76.5 岁', +(63.25 + B.total * 36 / (C2.total - B.total) / 12).toFixed(1), 76.5, 0.05)
-ok('  两种口径回本差 7.7 年', +(B.total * 36 / dTot / 12 - B.total * 36 / (C2.total - B.total) / 12).toFixed(1), 7.7, 0.05)
-console.log(`  ℹ️  外推基数来自 BASE_PARAMS.PROV_GROWTH=${cfg.BASE_PARAMS ? cfg.BASE_PARAMS.PROV_GROWTH : '（未导出，配置中 4.38%）'} —— 属预测值，非官方数据`)
+// ⚠️ 2026-09-14 口径变更：原"外推"走的是配置里写死的 2027-2035 值（按 PROV_GROWTH 4.38% 生成，
+//    无官方来源），现一律改为「按该省上一年已公布增幅」复合外推（吉林全省 2.00% / 长春 1.60%）。
+//    故以下数字整体下移，且更保守；正文不采用外推口径（用静态口径），此处仅作对比留档。
+ok('  外推 2028 基数 8,367.46', +C2.baseRetire.toFixed(2), 8367.46)
+ok('  外推月领 6,045.36', +C2.total.toFixed(2), 6045.36)
+ok('  外推每月多 970.74', +(C2.total - B.total).toFixed(2), 970.74)
+ok('  外推回本 15.68 年', +(B.total * 36 / (C2.total - B.total) / 12).toFixed(2), 15.68)
+ok('  外推活到 78.9 岁', +(63.25 + B.total * 36 / (C2.total - B.total) / 12).toFixed(1), 78.9, 0.05)
+ok('  两种口径回本差 5.2 年', +(B.total * 36 / dTot / 12 - B.total * 36 / (C2.total - B.total) / 12).toFixed(1), 5.2, 0.05)
+console.log('  ℹ️  外推基数现由引擎按「上一年已公布增幅」外推（吉林全省 2.00% / 长春 1.60%）—— 属预测值，非官方数据')
 
 console.log('\n【六、有工作的净账（正文第五节）】')
 const wage = 7322 * 36

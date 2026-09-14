@@ -990,9 +990,15 @@ function getMinYears(retireYear, config) {
   const minYearsTable = config.min_years || {}
   if (minYearsTable[retireYear] !== undefined) return minYearsTable[retireYear]
 
-  // 默认逻辑
-  if (retireYear < 2025) return 15
-  return 20
+  // 默认逻辑（政策：《国务院关于渐进式延迟法定退休年龄的办法》第二条 +
+  //          人社部《延迟法定退休年龄30问》第11、12条）
+  //   2029-12-31 前退休：最低缴费年限仍为 15 年
+  //   2030-01-01 起：每年提高 6 个月，15→20 年，2039 年起固定 20 年
+  // ⚠️ 修复 2026-09-14：原实现「retireYear >= 2025 一律返回 20」，
+  //    使 2025-2029 退休被误判为 20 年、2030-2038 缺失渐变档，仅四川因自带 min_years 表正确。
+  if (retireYear <= 2029) return 15
+  if (retireYear >= 2039) return 20
+  return 15 + (retireYear - 2029) * 0.5
 }
 
 // ==================== 基础数据查询 ====================
@@ -1010,8 +1016,8 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   // 2. 新格式（JS模块）：config.PROV_BASE, config.CC_BASE
   let allRates = config[sourceField] || {};
   
-  // 如果是新格式，构建base_rates对象
-  if (config.PROV_BASE || config.CC_BASE) {
+  // 如果是新格式，构建base_rates对象（仅当 sourceField 为 base_rates 时）
+  if ((config.PROV_BASE || config.CC_BASE) && sourceField === 'base_rates') {
     allRates = {
       prov: config.PROV_BASE || {},
     };
@@ -1026,25 +1032,68 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   }
   
   const provRates = allRates['prov'] || (sourceField === 'avg_salary_history' ? allRates : {});
-  const cityRates = allRates[city];
+  // 城市名归一化：尝试多种匹配方式
+  let cityKey = city;
+  if (cityKey && allRates[cityKey] === undefined) {
+    // 方式1：去掉末尾的"省"或"市"
+    const normalized = city.replace(/[省市]$/, '');
+    if (allRates[normalized] !== undefined) {
+      cityKey = normalized;
+    } else {
+      // 方式2：尝试拼音键（如 shenyang、dalian）
+      const lower = city.toLowerCase();
+      const foundKey = Object.keys(allRates).find(k => k.toLowerCase() === lower);
+      if (foundKey) {
+        cityKey = foundKey;
+      } else {
+        // 方式3：尝试去掉"省"/"市"后再查拼音
+        const normalizedLower = normalized.toLowerCase();
+        const foundKey2 = Object.keys(allRates).find(k => k.toLowerCase() === normalizedLower);
+        if (foundKey2) {
+          cityKey = foundKey2;
+        }
+      }
+    }
+  }
+  const cityRates = cityKey && allRates[cityKey] !== undefined ? allRates[cityKey] : null;
 
   // 1. 精确年份匹配
   if (cityRates && cityRates[year] !== undefined) return cityRates[year]
   if (provRates[year] !== undefined) return provRates[year]
 
-  // 2. 向前回退到最近年份（城市表优先，再查全省）
+  // 2. 向前回退到最近年份，若晚于该年则按2.0%社平增长率外推（城市表优先，再查全省）
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
-  // 找到最近年份后，若晚于该年则按2.0%社平增长率外推
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+  // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
+  const GROWTH_RATE = inferGrowthRate(provRates, config)
+  const CITY_GROWTH_RATE = cityRates ? inferGrowthRate(cityRates, config) : GROWTH_RATE
+
+  // 2.1 计发基数外推规则（全省/城市统一执行）
+  // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
+  // - 退休年 > 数据最大年+1：远期退休，按 GROWTH_RATE 统一前推最后已知基数（与数据范围内外推一致）
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
+  if (year > lastYear) {
+    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
+    if (year === lastYear + 1) {
+      // 预发年：用上年（数据最大年）基数原值
+      return baseVal
+    }
+    const diff = year - lastYear
+    const g = useCity ? CITY_GROWTH_RATE : GROWTH_RATE
+    return Math.round(baseVal * Math.pow(1 + g, diff) * 100) / 100
+  }
+
 
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
     if (cityKeys[i] <= year) {
       const baseVal = cityRates[cityKeys[i]]
       const diff = year - cityKeys[i]
-      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + CITY_GROWTH_RATE, diff) * 100) / 100 : baseVal
     }
   }
   // 从全省向前找
@@ -1056,13 +1105,35 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     }
   }
 
-  // 3. 所有年份都大于查询年份 → 回退到最后已知年份
-  const lastCityYear = cityKeys[cityKeys.length - 1]
-  const lastProvYear = provKeys[provKeys.length - 1]
+  // 3. 所有年份都大于查询年份 → 回退到最早已知年份（查询年份早于数据开始）
+  const firstCityYear = cityKeys[0]
+  const firstProvYear = provKeys[0]
+  if (year < (firstCityYear != null ? firstCityYear : firstProvYear)) {
+    // 查询年份早于数据范围，用最早已知值
+    if (cityRates && firstCityYear != null) return cityRates[firstCityYear]
+    return provRates[firstProvYear] || 0
+  }
+  // 4. 所有年份都小于查询年份 → 回退到最后已知年份（查询年份晚于数据结束）
   if (lastCityYear > lastProvYear) {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }
   return provRates[lastProvYear] || 0
+}
+
+function inferGrowthRate(rates, config) {
+  const fallback = (config && config.growth_rate != null) ? config.growth_rate : 0.02
+  if (!rates || typeof rates !== 'object') return fallback
+  const ks = Object.keys(rates).map(Number)
+    .filter(y => y >= 2000 && typeof rates[y] === 'number' && isFinite(rates[y]) && rates[y] > 0)
+    .sort((a, b) => a - b)
+  // 跳过尾部预发年（与上一年同值）
+  while (ks.length > 2 && rates[ks[ks.length - 1]] === rates[ks[ks.length - 2]]) ks.pop()
+  if (ks.length < 2) return fallback
+  const last = ks[ks.length - 1]
+  const prev = ks[ks.length - 2]
+  const g = rates[last] / rates[prev] - 1
+  if (!isFinite(g)) return fallback
+  return Math.max(0, Math.min(g, 0.03))
 }
 
 /**

@@ -289,15 +289,21 @@ Page({
       return
     }
 
-    // 审核模式：连续点击5次绕过支付（保留原能力，便于过审/自测）
-    this._debugTapCount = (this._debugTapCount || 0) + 1
-    if (this._debugTapCount >= 5) {
-      wx.setStorageSync('audit_paid', '1')
-      wx.showToast({ title: '审核模式已启用，跳过支付', icon: 'success' })
-      this._debugTapCount = 0
-      wx.setStorageSync('report_paid', '1')
-      wx.navigateTo({ url: '/pages/report/report' })
-      return
+    // 自测通道：连续点击5次跳过支付。
+    // ⚠️ 2026-09-14 收窄：原实现对「所有环境」生效 —— 等于给审核员留了一个绕过支付的入口，
+    //    属审核高压线（绕过支付 / 欺骗审核），故限定 envVersion==='develop'（仅开发者工具与开发版）。
+    //    体验版 / 审核版 / 线上正式版 一律无此逻辑。自测也可直接在开发者工具 Storage 面板写 report_paid=1。
+    const envVersion = (wx.getAccountInfoSync && wx.getAccountInfoSync().miniProgram.envVersion) || 'release'
+    if (envVersion === 'develop') {
+      this._debugTapCount = (this._debugTapCount || 0) + 1
+      if (this._debugTapCount >= 5) {
+        wx.setStorageSync('audit_paid', '1')
+        wx.showToast({ title: '审核模式已启用，跳过支付', icon: 'success' })
+        this._debugTapCount = 0
+        wx.setStorageSync('report_paid', '1')
+        wx.navigateTo({ url: '/pages/report/report' })
+        return
+      }
     }
 
     // 弹窗先展示报告里有什么，让用户看清价值再决定是否付费

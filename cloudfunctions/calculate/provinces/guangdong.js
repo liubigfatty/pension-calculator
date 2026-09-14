@@ -14,7 +14,8 @@
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 

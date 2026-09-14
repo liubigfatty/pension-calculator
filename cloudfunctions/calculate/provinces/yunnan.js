@@ -14,7 +14,8 @@
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
 // 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按 GROWTH_RATE（默认2%）外推产生。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
 // ==============================================================
 
@@ -66,12 +67,8 @@ const BASE_PARAMS = {
     2023: 3431,  // 真实表确认：2023年全省退休人员月平均基本养老金3431元
     2024: 3431,  // 2024年尚未公布，预发暂用2023年值
     2025: 3431,  // 2025年尚未公布，预发暂用2023年值
-    // 预测值（按约5%年增长）
-    2026: 4100,
-    2027: 4300,
-    2028: 4520,
-    2029: 4750,
-    2030: 4990,
+    // ⚠️ 纪律：未发布年份不写固定值。2026-09-14 删除了原 2026-2030 五条「按约5%年增长」的
+    //   预测值（无官方来源）。缺失年份引擎回退到 2023 年真实值 3431。
   },
   PROV_2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 }
@@ -110,8 +107,8 @@ const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
 // 计发基数预测函数（云南省专用）
 function predictBase(year) {
-  const lastYear = 2026
-  const lastVal  = PROV_BASE[lastYear] || 8700
+  const lastYear = 2025
+  const lastVal  = PROV_BASE[lastYear] || 8265
   if (year <= lastYear) return PROV_BASE[year] || 0
   return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
 }
