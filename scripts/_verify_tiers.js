@@ -27,8 +27,8 @@ const eq = (label, got, want) => {
 
 console.log('【一、六档缴基与月领（正文第一节）】')
 const TIERS = [
-  [60, 4393, 3719.27], [80, 5858, 4396.95], [100, 7322, 5074.62],
-  [150, 10983, 6768.83], [200, 14644, 8463.02], [300, 21966, 11851.40],
+  [60, 4393, 3726.86], [80, 5858, 4407.06], [100, 7322, 5087.26],
+  [150, 10983, 6787.79], [200, 14644, 8488.30], [300, 21966, 11889.32],
 ]
 for (const [tier, pay, total] of TIERS) {
   const r = g(60, tier)
@@ -37,7 +37,7 @@ for (const [tier, pay, total] of TIERS) {
 }
 
 console.log('\n【二、三档构成对账（正文第一节拆分）】')
-const COMP = { 60: [2376.35, 492.04, 612.47, 238.41], 100: [2938.92, 820.06, 1020.79, 294.85], 300: [5751.79, 2460.19, 3062.37, 577.05] }
+const COMP = { 60: [2376.35, 492.04, 620.06, 238.41], 100: [2938.92, 820.06, 1033.43, 294.85], 300: [5751.79, 2460.19, 3100.29, 577.05] }
 for (const t of [60, 100, 300]) {
   const r = g(60, t), [b, tr, pe, ex] = COMP[t]
   ok(`  ${t}档 基础`, r.basic, b)
@@ -47,30 +47,31 @@ for (const t of [60, 100, 300]) {
   ok(`  ${t}档 四项合计=月领`, +(b + tr + pe + ex).toFixed(2), r.total)
 }
 
-console.log('\n【三、兑换率恒定 0.4628（正文第二节）】')
+console.log('\n【三、兑换率恒定 ≈0.4645（正文第二节）】')
 const TS = [60, 80, 100, 150, 200, 300]
-const SLOPES = [0.4626, 0.4629, 0.4628, 0.4628, 0.4628]
+// 注：斜率在 0.4643~0.4646 间微抖，原因是缴基按元取整（7322×20%=1464.4→1464/1465），非制度非线性
+const SLOPES = [0.4643, 0.4646, 0.4645, 0.4645, 0.4645]
 for (let i = 1; i < TS.length; i++) {
   const a = g(60, TS[i - 1]), b = g(60, TS[i])
   ok(`  ${TS[i - 1]}→${TS[i]} 斜率`, +((b.total - a.total) / (b.payBase - a.payBase)).toFixed(4), SLOPES[i - 1], 0.0001)
 }
 const lo = g(60, 60), hi = g(60, 300)
-ok('  全程 60→300 斜率 0.4628', +((hi.total - lo.total) / (hi.payBase - lo.payBase)).toFixed(4), 0.4628, 0.0001)
+ok('  全程 60→300 斜率 0.4628', +((hi.total - lo.total) / (hi.payBase - lo.payBase)).toFixed(4), 0.4645, 0.0001)
 
 console.log('\n【四、制度边界 0.6 / 3.0（正文第三节）】')
 ok('  60档缴基/社平 = 0.6000', +(lo.payBase / 7322).toFixed(4), 0.6, 0.0001)
 ok('  300档缴基/社平 = 3.0000', +(hi.payBase / 7322).toFixed(4), 3, 0.0001)
 
 console.log('\n【五、替代率与倍数（正文第四节）】')
-ok('  60档 真实替代率 84.66%', +(lo.total / lo.payBase * 100).toFixed(2), 84.66)
-ok('  100档 真实替代率 69.31%', +(g(60, 100).total / g(60, 100).payBase * 100).toFixed(2), 69.31)
-ok('  300档 真实替代率 53.95%', +(hi.total / hi.payBase * 100).toFixed(2), 53.95)
+ok('  60档 真实替代率 84.66%', +(lo.total / lo.payBase * 100).toFixed(2), 84.84)
+ok('  100档 真实替代率 69.31%', +(g(60, 100).total / g(60, 100).payBase * 100).toFixed(2), 69.48)
+ok('  300档 真实替代率 53.95%', +(hi.total / hi.payBase * 100).toFixed(2), 54.13)
 ok('  缴基倍数 5.00', +(hi.payBase / lo.payBase).toFixed(2), 5)
 ok('  月领倍数 3.19', +(hi.total / lo.total).toFixed(2), 3.19)
-ok('  报告字段 replaceRate(300档,分母100档) 161.86%', +hi.replaceRate.toFixed(2), 161.86)
+ok('  报告字段 replaceRate(300档,分母100档) 161.86%', +hi.replaceRate.toFixed(2), 162.38)
 
 console.log('\n【六、结构占比（正文第五节）】')
-for (const [t, pct, poolPct] of [[60, 16.5, 70.7], [100, 20.1, 55.4], [300, 25.8, 40.0]]) {
+for (const [t, pct, poolPct] of [[60, 16.6, 70.7], [100, 20.3, 55.4], [300, 26.1, 40.0]]) {
   const r = g(60, t)
   ok(`  ${t}档 个账占月领 ${pct}%`, +(r.personal / r.total * 100).toFixed(1), pct, 0.05)
   ok(`  ${t}档 统筹÷本人缴基 ${poolPct}%`, +((r.total - r.personal) / r.payBase * 100).toFixed(1), poolPct, 0.05)
@@ -104,20 +105,23 @@ const dTot = B.total - A.total
 const dPer = B.personalAccount.amount - A.personalAccount.amount
 const dPool = dTot - dPer
 const dP = p3 - p1
-ok('  月领多 6,776.78', +dTot.toFixed(2), 6802.06)
-ok('  其中个人账户多 2,041.58', +dPer.toFixed(2), 2066.86)
-ok('  其中统筹多 4,735.20', +dPool.toFixed(2), 4735.2)
-ok('  两块之和=月领差', +(dPer + dPool).toFixed(2), +dTot.toFixed(2))
-ok('  企业职工回本 2.29 年', +(dP / dTot / 12).toFixed(2), 2.28)
-ok('  企业职工回本年龄 62.5', +(60.25 + dP / dTot / 12).toFixed(1), 62.5, 0.05)
-ok('  灵活就业多掏 465,712', +(dP * 2.5).toFixed(0), 465712, 1)
-ok('  灵活就业回本 5.73 年', +(dP * 2.5 / dTot / 12).toFixed(2), 5.71)
-ok('  灵活就业回本年龄 66.0', +(60.25 + dP * 2.5 / dTot / 12).toFixed(1), 66, 0.05)
-ok('  个账按本金回本 7.60 年', +(dP / dPer / 12).toFixed(2), 7.51)
-const dBal = B.personalAccount.balance - A.personalAccount.balance
-ok('  个账按含息回本 139 个月', +(dBal / dPer).toFixed(0), 137, 1)
-ok('  139个月 = 11.58 年', +(139 / 12).toFixed(2), 11.58)
-ok('  含息回本年龄 71.8', +(60.25 + 139 / 12).toFixed(1), 71.8, 0.05)
+ok('  月领多 6,802.06', +dTot.toFixed(2), 6802.06)
+  ok('  其中个人账户多 2,066.86', +dPer.toFixed(2), 2066.86)
+  ok('  其中统筹多 4,735.20', +dPool.toFixed(2), 4735.2)
+  ok('  两块之和=月领差', +(dPer + dPool).toFixed(2), +dTot.toFixed(2))
+  ok('  企业职工回本 2.28 年', +(dP / dTot / 12).toFixed(2), 2.28)
+  ok('  企业职工回本年龄 62.5', +(60.25 + dP / dTot / 12).toFixed(1), 62.5, 0.05)
+  ok('  灵活就业多掏 465,712', +(dP * 2.5).toFixed(0), 465712, 1)
+  ok('  灵活就业回本 5.71 年', +(dP * 2.5 / dTot / 12).toFixed(2), 5.71)
+  ok('  灵活就业回本年龄 66.0', +(60.25 + dP * 2.5 / dTot / 12).toFixed(1), 66, 0.05)
+  ok('  个账按本金回本 7.51 年', +(dP / dPer / 12).toFixed(2), 7.51)
+  const dBal = B.personalAccount.balance - A.personalAccount.balance
+  // ⚠️ 计发月数：非整岁按月线性折算（60岁3个月 = 137.3，不是 139）。
+  //    必须引用实测值 RM，禁止把 139 之类的常量同时写进 got 和 want（常量对常量永不报错）
+  const RM = g(60, 100).months
+  ok('  个账按含息回本 = 计发月数 137.3', +(dBal / dPer).toFixed(1), RM, 0.1)
+  ok('  137.3个月 = 11.44 年', +(RM / 12).toFixed(2), 11.44)
+  ok('  含息回本年龄 71.7', +(60.25 + RM / 12).toFixed(1), 71.7, 0.05)
 ok('  灵活就业为统筹多掏 279,427', +(dP * 1.5).toFixed(0), 279427, 1)
 ok('  统筹回本 4.92 年', +(dP * 1.5 / dPool / 12).toFixed(2), 4.92)
 
@@ -137,7 +141,8 @@ ok('  100档灵活就业 17,573 元/年', +(7322 * 0.2 * 12).toFixed(0), 17573, 
 
 console.log('\n【十一、口径自洽】')
 eq('  全部档位缴费年限一致 38.42', [...new Set(m.rows.filter(r => r.age === 60).map(r => r.totalYears))].join(','), '38.42')
-ok('  60岁计发月数 139', g(60, 100).months, 139, 0)
+ok('  60岁3个月计发月数 137.3（非整岁按月折算，非 139）', g(60, 100).months, 137.3, 0)
+ok('  ⚠️ 防回归：计发月数 ≠ 整岁表 139', g(60, 100).months === 139 ? 1 : 0, 0)
 
 console.log(`\n===== 档位篇验算：${pass} 通过 / ${fail} 失败 =====`)
 if (!__UM) process.exit(fail ? 1 : 0)
