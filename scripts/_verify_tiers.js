@@ -188,6 +188,100 @@ for (const [t, total, basic, per, rr] of [
   ok(`  15年 ${t}档 计发月数=137.3`, r.months, 137.3, 0)
 }
 
+console.log('\n【十之四、正文新增第七节：每万元效率（跨脚本引用 lever 口径）】')
+// ⚠️ 口径：fee = 本金 × 2.5 = 灵活就业全口径（20% 全自掏）。
+//    正文第七节给的是灵活就业口径；括号内企业职工口径 = 本金（8%），倍数不变。
+const principalAt = (idx, wy, wm) => {
+  // 个人账户自 1995-07 起累计；起缴晚于 1995-07 的按起缴月算
+  if (wy >= 1995 && (wy > 1995 || wm >= 7)) {
+    let t = (wm >= 7 ? h[String(wy)] * idx * 0.08 * (13 - wm) : h[String(wy)] * idx * 0.08 * (12 - wm + 1))
+    for (let y = wy + 1; y <= 2024; y++) t += h[String(y)] * idx * 0.08 * 12
+    return t + 7322 * idx * 0.08 * 11
+  }
+  let t = h['1995'] * idx * 0.08 * 6
+  for (let y = 1996; y <= 2024; y++) t += h[String(y)] * idx * 0.08 * 12
+  return t + 7322 * idx * 0.08 * 11
+}
+const feeFlex = (idx, wy, wm) => principalAt(idx, wy, wm) * 2.5
+const effi = (dFee, dTot) => dTot / dFee * 10000
+const tot15_100 = 1899.22, tot15_300 = 4500.91, tot30_100 = 3494.22
+const f15_100 = feeFlex(1.0, 2010, 12), f15_300 = feeFlex(3.0, 2010, 12), f30_100 = feeFlex(1.0, 1995, 7)
+ok('  15年100档 灵活就业总投入 19.18万', +(f15_100 / 10000).toFixed(2), 19.18, 0.01)
+ok('  15年300档 灵活就业总投入 57.54万', +(f15_300 / 10000).toFixed(2), 57.54, 0.01)
+ok('  30.42年100档 灵活就业总投入 23.29万', +(f30_100 / 10000).toFixed(2), 23.29, 0.01)
+ok('  延年限 每万元 388.41', +effi(f30_100 - f15_100, tot30_100 - tot15_100).toFixed(2), 388.41, 0.1)
+ok('  提档 每万元 67.83', +effi(f15_300 - f15_100, tot15_300 - tot15_100).toFixed(2), 67.83, 0.1)
+const E_Y = effi(f30_100 - f15_100, tot30_100 - tot15_100)
+const E_T = effi(f15_300 - f15_100, tot15_300 - tot15_100)
+ok('  倍数 5.73', +(E_Y / E_T).toFixed(2), 5.73, 0.01)
+// 企业职工口径（本金 = 8%）：绝对值变大，倍数不变
+const E_Y_emp = E_Y * 2.5, E_T_emp = E_T * 2.5
+ok('  企业职工口径 延年限 971', +E_Y_emp.toFixed(0), 971, 1)
+ok('  企业职工口径 提档 170', +E_T_emp.toFixed(0), 170, 1)
+ok('  企业职工口径 倍数仍 5.73（与口径无关）', +(E_Y_emp / E_T_emp).toFixed(2), 5.73, 0.01)
+ok('  ⚠️ 倍数与缴费口径无关（2.5 倍同比例约掉）', Math.abs(E_Y / E_T - E_Y_emp / E_T_emp) < 1e-9 ? 1 : 0, 1, 0)
+
+console.log('\n【十之五、正文新增第九节：15年提档仍划算】')
+{
+  const a15 = e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: 2010, workMonth: 12, avgIndex: 1.0, cityType: 'cc', retireDateInput: { year: 2025, month: 12 } }).legal
+  const b15 = e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: 2010, workMonth: 12, avgIndex: 3.0, cityType: 'cc', retireDateInput: { year: 2025, month: 12 } }).legal
+  const p1 = principalAt(1.0, 2010, 12), p3 = principalAt(3.0, 2010, 12), dp = p3 - p1
+  const dT = b15.total - a15.total
+  ok('  15年 100→300 月领差 2,601.69', +dT.toFixed(2), 2601.69)
+  ok('  15年 多交本金 153,433', +dp.toFixed(0), 153433, 1)
+  ok('  灵活就业多掏 383,582', +(dp * 2.5).toFixed(0), 383582, 1)
+  const flexY = dp * 2.5 / dT / 12
+  ok('  灵活就业回本 12.29 年', +flexY.toFixed(2), 12.29)
+  ok('  灵活就业回本年龄 72.54', +(60.25 + flexY).toFixed(2), 72.54)
+  ok('  ⚠️ 72.54 < 男性预期寿命 76.71（低 4.17 岁 ⇒ 是赚的）', 76.71 - (60.25 + flexY) > 0 ? 1 : 0, 1, 0)
+  ok('  比预期寿命低 4.17 岁', +(76.71 - (60.25 + flexY)).toFixed(2), 4.17, 0.02)
+  const empY = dp / dT / 12
+  ok('  企业职工回本 4.91 年', +empY.toFixed(2), 4.91)
+  ok('  企业职工回本年龄 65.16', +(60.25 + empY).toFixed(2), 65.16, 0.02)
+}
+
+console.log('\n【十之六、正文新增第八节：社平增长（年限杠杆的根因）】')
+ok('  1995 吉林月社平 369.17', +h['1995'].toFixed(2), 369.17, 0.01)
+ok('  2024 吉林月社平 7,322', +h['2024'].toFixed(2), 7322, 0)
+ok('  30年涨 19.83 倍', +(h['2024'] / h['1995']).toFixed(2), 19.83, 0.01)
+ok('  年化 10.85%', +(Math.pow(h['2024'] / h['1995'], 1 / 29) * 100 - 100).toFixed(2), 10.85, 0.01)
+ok('  1995年个人年缴 354 元（100档·8%）', +(h['1995'] * 0.08 * 12).toFixed(0), 354, 1)
+ok('  2024年个人年缴 7,029 元（100档·8%）', +(h['2024'] * 0.08 * 12).toFixed(0), 7029, 1)
+ok('  两者差 19.83 倍', +((h['2024'] * 0.08 * 12) / (h['1995'] * 0.08 * 12)).toFixed(2), 19.83, 0.01)
+// 反证：3% 记账利率跑不过 10.85% 社平涨幅
+ok('  1.03^30 = 2.43 倍（补不回 19.83）', +Math.pow(1.03, 30).toFixed(2), 2.43, 0.01)
+ok('  ⚠️ 记账利率跑不过社平涨幅', Math.pow(1.03, 30) < h['2024'] / h['1995'] ? 1 : 0, 1, 0)
+
+console.log('\n【十之七、正文新增第十节：137.3 而非 139】')
+{
+  const r100 = e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: 1987, workMonth: 7, avgIndex: 1.0, cityType: 'cc', retireDateInput: { year: 2025, month: 12 } }).legal
+  const r300 = e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: 1987, workMonth: 7, avgIndex: 3.0, cityType: 'cc', retireDateInput: { year: 2025, month: 12 } }).legal
+  const RM = r100.months
+  ok('  60岁整岁计发月数 139（基准表）', 139, 139, 0)
+  ok('  61岁整岁计发月数 132（基准表）', 132, 132, 0)
+  ok('  折算 139−(139−132)/12×3 = 137.3', +(139 - (139 - 132) / 12 * 3).toFixed(1), 137.3, 0.05)
+  ok('  引擎实测 = 137.3', RM, 137.3, 0)
+  const perNew = r100.personalAccount.balance / RM
+  const perOld = r100.personalAccount.balance / 139
+  ok('  按137.3算 个账 1,033.43', +perNew.toFixed(2), 1033.43)
+  ok('  按139算 个账 1,020.79', +perOld.toFixed(2), 1020.79, 0.02)
+  ok('  少算 12.64 元/月', +(perNew - perOld).toFixed(2), 12.64, 0.02)
+  ok('  个账部分低估 1.22%', +((perNew - perOld) / perNew * 100).toFixed(2), 1.22, 0.01)
+  ok('  占总月领 0.25%', +((perNew - perOld) / r100.total * 100).toFixed(2), 0.25, 0.01)
+  // 定义式验证：多缴的钱按含息回本 = 计发月数（一分不差）
+  const dBal = r300.personalAccount.balance - r100.personalAccount.balance
+  const dPer = r300.personalAccount.amount - r100.personalAccount.amount
+  ok('  多存（含息）283,780', +dBal.toFixed(0), 283780, 1)
+  ok('  月多个账 2,066.86', +dPer.toFixed(2), 2066.86)
+  ok('  ⭐ 283,780 ÷ 2,066.86 = 137.3（定义式）', +(dBal / dPer).toFixed(1), RM, 0.1)
+  ok('  137.3 个月 = 11.44 年', +(RM / 12).toFixed(2), 11.44)
+  // 其他常用非整岁点
+  const fm = (bd, rd) => e.calculate(cfg, { gender: 'female', genderType: 'fw', birthYear: bd[0], birthMonth: bd[1], workYear: 2010, workMonth: 12, avgIndex: 1.0, cityType: 'cc', retireDateInput: rd }).legal.months
+  ok('  50岁6个月 = 192.5', +fm([1975, 8], { year: 2026, month: 2 }).toFixed(1), 192.5, 0.1)
+  const m4 = e.calculate(cfg, { gender: 'male', genderType: 'male', birthYear: 1965, birthMonth: 9, workYear: 1987, workMonth: 7, avgIndex: 1.0, cityType: 'cc', retireDateInput: { year: 2026, month: 1 } }).legal.months
+  ok('  60岁4个月 = 136.7', +m4.toFixed(1), 136.7, 0.1)
+}
+
 console.log('\n【十一、口径自洽】')
 eq('  全部档位缴费年限一致 38.42', [...new Set(m.rows.filter(r => r.age === 60).map(r => r.totalYears))].join(','), '38.42')
 ok('  60岁3个月计发月数 137.3（非整岁按月折算，非 139）', g(60, 100).months, 137.3, 0)
