@@ -1027,22 +1027,67 @@ function calcAdjustmentFund(params) {
 // ==================== 退休时间计算 ====================
 
 /**
- * 获取计发月数（精确到月份，直接查表）
- * @param {number} ageExact - 退休年龄（精确到小数点，如50.0833）
- * @param {Object} config - 省份配置
+ * 获取计发月数（精确到月）
+ *
+ * 依据：
+ *   ① 整岁基准表 = 国发〔2005〕38号 附表（40~70 岁，DEFAULT_MONTHLY_PAYMENT_MONTHS）
+ *   ② 非整岁（延迟退休后普遍现象，如 60 岁 3 个月）按月线性折算：
+ *        实际计发月数 = 上一整岁值 − (上一整岁值 − 下一整岁值) ÷ 12 × 超出月数
+ *      人社部延迟退休配套口径，各地社保系统统一采用、保留 1 位小数
+ *      （实证：深圳养老金核定单「60岁4月 → 计发月数 136.7」；
+ *        官方《2025年1月后退休个人账户养老金计发月份表》50岁6月=192.5、60岁3月=137.3）
+ *
+ * ⚠️ 2026-09-14 修正：此前实现是「四舍五入到整岁再查表」，
+ *    60岁3个月会取 139（应为 137.3）、50岁4个月取 195（应为 193.3），
+ *    导致延迟退休人群个人账户养老金被系统性低估约 1.3%。
+ *
+ * @param {number} ageExact - 退休年龄（十进制年，如 60.25 = 60 岁 3 个月）
+ * @param {Object} config - 省份配置（可选 monthly_payment_months 覆盖）
  * @returns {number} 计发月数
  */
 function getRetireMonths(ageExact, config) {
-  const table = config.monthly_payment_months || STANDARD_MONTHLY_PAYMENT_MONTHS
-  
-  // 将年龄转换为总月数（精确到月），避免浮点问题
-  const totalMonths = Math.round(ageExact * 12)
-  const key = String(totalMonths)
-  
-  if (table[key] !== undefined) return table[key]
-  
-  // 超出50-65岁范围，兜底返回60岁（139个月）
-  return 139
+  const cfg = config || {}
+  // 可选精细表：键为总月数（"723"）或「岁.月」（"60.3"）
+  const fine = cfg.monthly_payment_months
+    || (typeof STANDARD_MONTHLY_PAYMENT_MONTHS !== 'undefined' ? STANDARD_MONTHLY_PAYMENT_MONTHS : null)
+
+  // 归一化到「整岁 + 超出月数」，避免十进制年的浮点误差
+  let totalM = Math.round((ageExact || 0) * 12)
+  let y = Math.floor(totalM / 12)
+  let m = totalM % 12
+
+  // 边界：低于 40 周岁按 40 周岁、高于 70 周岁按 70 周岁（沪人社规〔2021〕27号）
+  if (y < 40) { y = 40; m = 0 } else if (y > 70) { y = 70; m = 0 } else if (y === 70) { m = 0 }
+
+  // ① 精细表优先（两种键格式都支持）
+  if (fine) {
+    if (fine[String(y * 12 + m)] !== undefined) return fine[String(y * 12 + m)]
+    if (fine[y + '.' + m] !== undefined) return fine[y + '.' + m]
+  }
+
+  // ② 整岁基准表（国发〔2005〕38号）
+  //    副本（浏览器 shim）可能没有 DEFAULT_MONTHLY_PAYMENT_MONTHS，故内联一份兜底
+  const DEF = (typeof DEFAULT_MONTHLY_PAYMENT_MONTHS !== 'undefined')
+    ? DEFAULT_MONTHLY_PAYMENT_MONTHS
+    : {
+      "40.0": 233, "41.0": 230, "42.0": 226, "43.0": 223, "44.0": 220,
+      "45.0": 216, "46.0": 212, "47.0": 208, "48.0": 204, "49.0": 199,
+      "50.0": 195, "51.0": 190, "52.0": 185, "53.0": 180, "54.0": 175,
+      "55.0": 170, "56.0": 164, "57.0": 158, "58.0": 152, "59.0": 145,
+      "60.0": 139, "61.0": 132, "62.0": 125, "63.0": 117, "64.0": 109,
+      "65.0": 101, "66.0": 93, "67.0": 84, "68.0": 75, "69.0": 65, "70.0": 56
+    }
+  const base = (cfg.monthly_payment_months && cfg.monthly_payment_months[y + '.0'] !== undefined)
+    ? cfg.monthly_payment_months
+    : DEF
+  const v0 = base[y + '.0']
+  const v1 = base[(y + 1) + '.0']
+  if (v0 === undefined) return 139
+  if (m === 0 || v1 === undefined) return v0
+
+  // ③ 非整岁：按月线性折算，保留 1 位小数
+  const v = v0 - (v0 - v1) * m / 12
+  return Math.round(v * 10) / 10
 }
 
 /**

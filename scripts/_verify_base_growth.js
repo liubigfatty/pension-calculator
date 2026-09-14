@@ -126,8 +126,8 @@ console.log('\n===== 6. 已公布年份零回归（吉林 2025-12 退休基准�
     retireDateInput: { year: 2025, month: 12 },
   }).legal
   const a = run(100), b = run(300)
-  ok('100 档 15 年月领 = 1890.02', near(a.total, 1890.02), `（实际 ${a.total.toFixed(2)}）`)
-  ok('300 档 15 年月领 = 4473.33', near(b.total, 4473.33), `（实际 ${b.total.toFixed(2)}）`)
+  ok('100 档 15 年月领 = 1899.22', near(a.total, 1899.22), `（实际 ${a.total.toFixed(2)}）`)
+  ok('300 档 15 年月领 = 4500.91', near(b.total, 4500.91), `（实际 ${b.total.toFixed(2)}）`)
 }
 
 console.log(`\n===== 汇总：${pass} 通过 / ${fail} 失败 =====`)

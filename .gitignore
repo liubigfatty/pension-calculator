@@ -37,3 +37,7 @@ nul
 
 # CLI 上传脚本产物
 .upload-info.json
+
+# 运行产物
+reports/
+deliverables/

@@ -260,16 +260,24 @@ test('标准计发月数表', () => {
   assert(engine.getRetireMonths(60, jilinConfig) === 139, `60岁应为139个月，实际${engine.getRetireMonths(60, jilinConfig)}`)
 })
 
-test('半年精度插值', () => {
-  // 50.5岁应该介于195和190之间
-  const m505 = engine.getRetireMonths(50.5, jilinConfig)
-  assert(m505 > 190 && m505 < 195, `50.5岁计发月数${m505}应在190-195之间`)
+test('非整岁按月线性折算', () => {
+  // 依据：人社部延迟退休配套口径，非整岁按月折算、保留1位小数
+  //   实际 = 上一整岁值 − (上一整岁值 − 下一整岁值) ÷ 12 × 超出月数
+  // 对照官方《2025年1月后退休个人账户养老金计发月份表》
+  assert(engine.getRetireMonths(50.5, jilinConfig) === 192.5, '50岁6月应为192.5')
+  assert(engine.getRetireMonths(50 + 3 / 12, jilinConfig) === 193.8, '50岁3月应为193.8')
+  assert(engine.getRetireMonths(50 + 4 / 12, jilinConfig) === 193.3, '50岁4月应为193.3')
+  assert(engine.getRetireMonths(60 + 3 / 12, jilinConfig) === 137.3, '60岁3月应为137.3')
+  assert(engine.getRetireMonths(60 + 4 / 12, jilinConfig) === 136.7, '60岁4月应为136.7（深圳核定单实证）')
 })
 
-test('未定义年龄插值', () => {
-  const m61 = engine.getRetireMonths(61, jilinConfig)
-  // 61岁应该介于60.5(136.1)和61.5(128.6)之间
-  assert(m61 > 128 && m61 < 137, `61岁计发月数${m61}应在合理范围`)
+test('整岁边界与超范围兜底', () => {
+  assert(engine.getRetireMonths(61, jilinConfig) === 132, '61岁整应为132')
+  assert(engine.getRetireMonths(40, jilinConfig) === 233, '40岁整应为233')
+  assert(engine.getRetireMonths(70, jilinConfig) === 56, '70岁整应为56')
+  // 低于40周岁按40周岁、高于70周岁按70周岁（沪人社规〔2021〕27号）
+  assert(engine.getRetireMonths(38, jilinConfig) === 233, '38岁应兜底为40岁值233')
+  assert(engine.getRetireMonths(75, jilinConfig) === 56, '75岁应兜底为70岁值56')
 })
 
 // ==================== 测试 6: 基础数据查询 ====================
