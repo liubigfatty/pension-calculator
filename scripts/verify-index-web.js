@@ -2,7 +2,7 @@
  * verify-index-web.js — 网页端缴费指数计算器「逐省一致」自检验证
  *
  * 用法：node scripts/verify-index-web.js
- * 覆盖维度：D1 分母(上年/当年) · D2 视同年进/不进 · D3 双指数(transIndex) ·
+ * 覆盖维度：D1 分母(31省统一：当年缴费工资÷当年使用的社平基数) · D2 视同年进/不进 · D3 双指数(transIndex) ·
  *          D4 视同指数(浙江替代) · D5 封顶保底(沪/渝/桂) · D6 断缴(GAP_ZERO)
  * 每个用例用真实社平数据反推 baseAvg，预期 avgIndex 由官方公式手算得到。
  */
@@ -151,12 +151,26 @@ console.log('═══ D5 封顶保底（沪分段 / 渝上限分段 / 桂建账
   check('重庆-93-97上限2/98后上限3', r.avgIndex, 2.5000)
 }
 
-// 广西：1995(建账前, <1按1) vs 1997(建账后, 保底0.6)
+// 广西：1995(建账前, <1按1) vs 1997(建账后；2019改革前不保底)
 {
   const contrib = [rec('guangxi', 1995, 0.5), rec('guangxi', 1997, 0.5)]
   const r = Calc.calculateIndex({ provinceConfig: cfg('guangxi'), provinceCode: 'guangxi', contribution: contrib, granularity: 'A' })
-  // 1995 建账前 raw0.5→1.0；1997 建账后 raw0.5→0.6；avg=(12+7.2)/24=0.8
-  check('广西-建账前<1按1/建账后保底0.6', r.avgIndex, 0.8000)
+  // 1995 建账前 raw0.5→1.0（省级明文，全时段）；1997 raw0.5 在 2019-05 前不保底→0.5；avg=(12+6)/24=0.75
+  check('广西-建账前<1按1/改革前不保底', r.avgIndex, 0.7500)
+}
+
+console.log('═══ D5 修订（2026-09-20）：保底封顶自 2019-05-01 起生效（国办发〔2019〕13号）═══')
+{
+  const run = (code, year, idx) => {
+    const r = Calc.calculateIndex({ provinceConfig: cfg(code), provinceCode: code, contribution: [rec(code, year, idx)], granularity: 'A' })
+    return r.avgIndex
+  }
+  // D5（2026-09-21 起）：缴费端约束不适用于计算端 ⇒ 全时段按实际比值，不夹取
+  check('2018年 0.4 不夹取', run('shandong', 2018, 0.4), 0.4000)
+  check('2018年 4.0 不夹取', run('shandong', 2018, 4.0), 4.0000)
+  check('2019年 0.4 不夹取', run('shandong', 2019, 0.4), 0.4000)
+  check('2020年 0.4 不夹取', run('shandong', 2020, 0.4), 0.4000)
+  check('2020年 4.0 不夹取', run('shandong', 2020, 4.0), 4.0000)
 }
 
 console.log('═══ D6 断缴计入分母（GAP_ZERO：云/京/津/陕/浙）═══')
@@ -183,12 +197,31 @@ console.log('═══ D6 断缴计入分母（GAP_ZERO：云/京/津/陕/浙）
 
 console.log('═══ D5 补充：上海分段保底边界（2011/2012/2013/2020）═══')
 
-// 上海：raw=0.5 各年保底 → 2011=1.0, 2012=0.85, 2013=0.75, 2020=0.6
+// 上海：省级明文分段保底 2011=1.0, 2012=0.85, 2013=0.75；2014 起无明文 ⇒ 2020 按实际 0.5
 {
   const contrib = [rec('shanghai', 2011, 0.5), rec('shanghai', 2012, 0.5), rec('shanghai', 2013, 0.5), rec('shanghai', 2020, 0.5)]
   const r = Calc.calculateIndex({ provinceConfig: cfg('shanghai'), provinceCode: 'shanghai', contribution: contrib, granularity: 'A' })
-  // (1.0+0.85+0.75+0.6)×12/48 = 38.4/48 = 0.8
-  check('上海-分段保底边界(11/12/13/20)', r.avgIndex, 0.8000)
+  // (1.0+0.85+0.75+0.5)×12/48 = 37.2/48 = 0.775
+  check('上海-分段保底边界(11/12/13/20)', r.avgIndex, 0.7750)
+}
+// D5 超区间提示：0.4 应产生 warning 且不改数值
+{
+  const r = Calc.calculateIndex({ provinceConfig: cfg('shandong'), provinceCode: 'shandong', contribution: [rec('shandong', 2020, 0.4)], granularity: 'A' })
+  check('超区间-数值不改', r.avgIndex, 0.4000)
+  const ok = r.warnings && r.warnings.length === 1 && r.warnings[0].type === 'below_0_6'
+  console.log(ok ? '  ✅ 超区间-warnings 已暴露' : '  ❌ 超区间-warnings 缺失')
+  if (!ok) process.exitCode = 1
+}
+// 跨省流动（国办发〔2009〕66号）：江西 60% 档缴费 → 上海退休，指数应 ≈0.31 而非被夹成 0.6
+{
+  const hj = cfg('jiangxi').avg_salary_history, hs = cfg('shanghai').avg_salary_history
+  const y = Object.keys(hj).map(Number).filter(v => hj[v] > 0 && hs[v] > 0).sort((a, b) => a - b).pop()
+  const r = Calc.calculateIndex({
+    provinceConfig: cfg('shanghai'), provinceCode: 'shanghai',
+    contribution: [{ year: y, months: 12, baseAvg: hj[y] * 0.6 }], granularity: 'A'
+  })
+  check('跨省流动-江西60%档→上海退休(按国家口径)', r.avgIndex, Math.round(hj[y] * 0.6 / hs[y] * 10000) / 10000)
+  console.log('     （' + y + ' 年：江西60%档 ' + (hj[y] * 0.6).toFixed(0) + ' ÷ 上海社平 ' + hs[y] + ' = ' + r.avgIndex + '，旧逻辑会被夹成 0.6000）')
 }
 
 console.log('═══ D6 补充：黑龙江断缴按0.6计入分母（gapFloor）═══')
@@ -228,16 +261,16 @@ console.log('═══ 阵营计数自检 ═══')
   const current = Object.keys(rules).filter(k => rules[k].denom === 'current').length
   const gap = Object.keys(rules).filter(k => rules[k].gapZero).length
   const dual = Object.keys(rules).filter(k => rules[k].dualIndex).length
-  console.log(`  视同年进=${inDenom} 不进=${notIn} | 当年社平=${current} | GAP_ZERO=${gap} | 双指数/双基数=${dual}`)
-  // 期望：进20 不进11；当年2；GAP_ZERO5；双指数/双基数6(京津晋苏吉+辽)
-  const expIn = 20, expNot = 11, expCur = 2, expGap = 5, expDual = 6
+  console.log(`  视同年进=${inDenom} 不进=${notIn} | 当年统计年口径=${current} | GAP_ZERO=${gap} | 双指数/双基数=${dual}`)
+  // 期望：进20 不进11；当年统计年口径 0（2026-09-20 起 31 省统一为「当年使用的社平基数」）；GAP_ZERO5；双指数/双基数6(京津晋苏吉+辽)
+  const expIn = 20, expNot = 11, expCur = 0, expGap = 5, expDual = 6
   const assertCount = (label, got, exp) => {
     if (got === exp) { pass++; console.log(`  ✅ ${label}=${got}`) }
     else { fail++; fails.push(label); console.log(`  ❌ ${label}: got=${got} exp=${exp}`) }
   }
   assertCount('视同年进', inDenom, expIn)
   assertCount('视同年不进', notIn, expNot)
-  assertCount('当年社平', current, expCur)
+  assertCount("当年统计年口径(31省统一后应为0)", current, expCur)
   assertCount('GAP_ZERO', gap, expGap)
   assertCount('双指数/双基数', dual, expDual)
 }

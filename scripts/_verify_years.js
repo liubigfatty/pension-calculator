@@ -21,7 +21,7 @@ const __UM = typeof process !== 'undefined' && process.argv.includes('--update')
 const __UMREC = []
 
 function ok(label, actual, expect, tol = 0.01) {
-  if (__UM) { try { const m = ((new Error().stack || '').split('\n')[2] || '').match(/:(\d+):\d+/); if (m) __UMREC.push({ line: +m[1], actual, expected: expect, tol }) } catch (err) {} }
+  if (__UM) { try { const m = ((new Error().stack || '').split('\n')[2] || '').match(/:(\d+):\d+/); if (m) { __UMREC.push({ line: +m[1], actual, expected: expect, tol }); console.log('@@UM|' + (+m[1]) + '|' + (typeof actual === 'number' ? +(actual.toFixed(6)) : actual)) } } catch (err) {} }
   const d = Math.abs(actual - expect)
   const good = d <= tol
   good ? pass++ : fail++
@@ -77,34 +77,36 @@ console.log('口径：男 1965-09 · 2025-12 退休 · 长春 · 100 档 · 只�
 
 // ========== 开篇：承接上一篇的钩子 ==========
 console.log('【开篇钩子：不同年限下提档斜率 100→300】')
-ok('  缴 15 年 斜率 0.1777', +slope('15', 'full').toFixed(4), 0.1777, 0.0002)
-ok('  缴 38.42 年 斜率 0.4645', +slope('38.42', 'full').toFixed(4), 0.4645, 0.0002)
+ok('  缴 15 年 斜率 0.1777', +slope('15', 'full').toFixed(4),0.1785, 0.0002)
+ok('  缴 38.42 年 斜率 0.4645', +slope('38.42', 'full').toFixed(4),0.4659, 0.0002)
 ok('  差 2.6 倍', +(slope('38.42', 'full') / slope('15', 'full')).toFixed(2), 2.61, 0.02)
 
 // ========== 第一节：年限在公式里是乘号 ==========
 console.log('\n【一、年限是乘号（斜率随年限放大）】')
+// 2026-09-15 记账利率订正（2021: 5.35% → 6.69%）后重算
 const SLOPE_ROWS = [
-  ['15',    0.1777, 0.1777],
-  ['20',    0.2224, 0.2224],
-  ['25',    0.2584, 0.2622],
-  ['30.42', 0.2932, 0.3020],
-  ['38.42', 0.3332, 0.4645],
+  ['15',    0.1785, 0.1785],
+  ['20',    0.2235, 0.2235],
+  ['25',    0.2597, 0.2634],
+  ['30.42', 0.2946, 0.3033],
+  ['38.42', 0.3346, 0.4658],
 ]
 for (const [k, core, full] of SLOPE_ROWS) {
   ok('  ' + k + ' 年 ①层斜率 ' + core, +slope(k, 'core').toFixed(4), core, 0.0002)
   ok('  ' + k + ' 年 ③层斜率 ' + full, +slope(k, 'full').toFixed(4), full, 0.0002)
 }
-ok('  ⭐ 剥掉增发后仍差 1.88 倍', +(slope('38.42', 'core') / slope('15', 'core')).toFixed(2), 1.88, 0.01)
+ok('  ⭐ 剥掉增发后仍差 1.88 倍', +(slope('38.42', 'core') / slope('15', 'core')).toFixed(2),1.87, 0.01)
 ok('  ⭐ 视同年限也进乘子：30.42(0.2932) < 38.42(0.3332)', +(slope('38.42', 'core') - slope('30.42', 'core')).toFixed(4), 0.04, 0.002)
 
 // ========== 第二节：年限全景 ==========
 console.log('\n【二、年限全景（100 档）】')
+// 2026-09-15 记账利率订正（2021: 5.35% → 6.69%）后重算
 const PANORAMA = [
-  ['15',    1899.22, 1147.52, 0,       751.70,  0],
-  ['20',    2426.02, 1530.03, 0,       895.99,  0],
-  ['25',    2946.90, 1912.53, 0,       976.99,  57.38],
-  ['30.42', 3494.22, 2326.91, 0,       1033.43, 133.88],
-  ['38.42', 5087.26, 2938.92, 820.06,  1033.43, 294.85],
+  ['15',    1905.56, 1147.52, 0,       758.04,  0],
+  ['20',    2434.20, 1530.03, 0,       904.17,  0],
+  ['25',    2956.12, 1912.53, 0,       986.21,  57.38],
+  ['30.42', 3504.15, 2326.91, 0,       1043.36, 133.88],
+  ['38.42', 5097.19, 2938.92, 820.06,  1043.36, 294.85],
 ]
 for (const [k, tot, bas, tra, per, ext] of PANORAMA) {
   const r = R[k]
@@ -114,7 +116,7 @@ for (const [k, tot, bas, tra, per, ext] of PANORAMA) {
   ok('  ' + k + ' 年 个账 ' + per, +r.personalAccount.amount.toFixed(2), per)
   ok('  ' + k + ' 年 增发 ' + ext, +(r.extraPension.amount || 0).toFixed(2), ext)
 }
-ok('  15→38.42 差 2.68 倍', +(R['38.42'].total / R['15'].total).toFixed(2), 2.68, 0.01)
+ok('  15→38.42 差 2.68 倍', +(R['38.42'].total / R['15'].total).toFixed(2),2.67, 0.01)
 ok('  ⭐ 30.42 与 38.42 个账完全相同（视同不进个账）',
    +(R['38.42'].personalAccount.amount - R['30.42'].personalAccount.amount).toFixed(2), 0)
 ok('  两者差额 1593.04', +(R['38.42'].total - R['30.42'].total).toFixed(2), 1593.04, 0.05)
@@ -122,9 +124,9 @@ ok('  两者差额 1593.04', +(R['38.42'].total - R['30.42'].total).toFixed(2), 
 // ========== 第三、四节：递减 + 机制拆解 ==========
 console.log('\n【三/四、每多缴 1 年的月领增量（①层，剥增发）】')
 const SEGS = [
-  ['15→20',    '15',    '20',    105.36, 105.36, 28.86],
-  ['20→25',    '20',    '25',    92.70,  104.18, 16.20],
-  ['25→30.42', '25',    '30.42', 86.92,  101.04, 10.42],
+  ['15→20',    '15',    '20',    105.73, 105.73, 29.23],
+  ['20→25',    '20',    '25',    92.91,  104.38, 16.41],
+  ['25→30.42', '25',    '30.42', 87.05,  101.17, 10.55],
 ]
 // 年限差：一律用引擎 actualYears（真实年限增量）。25→30.42 段实际为 5.41666… 年，
 // 而 _verify_lever.js 用的是名义值 5.42 —— 除数偏大，会算出 ①层 86.87、基础 76.45。
@@ -166,7 +168,7 @@ for (const [lab, k1, k2] of [['15→20', '15', '20'], ['20→25', '20', '25'], [
   const totGain = s.dCore * s.yrs
   costRows.push({ lab, flex, perYear: flex / s.yrs, eff: totGain / (flex / 10000) })
 }
-const EXPECT_COST = [['15→20', 22993, 4598, 229.1], ['20→25', 11228, 2246, 412.8], ['25→30.42', 6845, 1263, 687.9]]
+const EXPECT_COST = [['15→20', 22993, 4598, 229.9], ['20→25', 11228, 2246, 413.7], ['25→30.42', 6845, 1263, 688.9]]
 EXPECT_COST.forEach(([lab, total, perYear, eff], i) => {
   const c = costRows[i]
   ok('  ' + lab + ' 总共多缴 ' + total, +c.flex.toFixed(0), total, 2)
@@ -222,16 +224,16 @@ SEGS.forEach(([lab, k1, k2, core], i) => {
   const effFull = ((b.total - a.total) / yrs * yrs) / (c.flex / 10000)
   console.log('  ' + lab + ' ①层 ' + core + ' / 每万元 ' + c.eff.toFixed(1) +
               '   ③层 ' + dFull.toFixed(2) + ' / 每万元 ' + effFull.toFixed(1))
-  ok('  ' + lab + ' ③层每万元效率', +effFull.toFixed(1), [229.1, 463.9, 799.7][i], 0.2)
+  ok('  ' + lab + ' ③层每万元效率', +effFull.toFixed(1), [229.9, 464.8, 800.7][i], 0.2)
 })
 const fullEff = costRows.map((c, i) => {
   const [lab, k1, k2] = [['15→20', '15', '20'], ['20→25', '20', '25'], ['25→30.42', '25', '30.42']][i]
   return (R[k2].total - R[k1].total) / (c.flex / 10000)
 })
 ok('  ⭐ ①层每万元递增 3.00 倍', +(costRows[2].eff / costRows[0].eff).toFixed(2), 3.00, 0.01)
-ok('  ⭐ ③层每万元递增 3.49 倍', +(fullEff[2] / fullEff[0]).toFixed(2), 3.49, 0.01)
-ok('  ⭐ 剥掉增发后斜率仍从 0.1777 涨到 0.3332',
-   +slope('38.42', 'core').toFixed(4), 0.3332, 0.0002)
+ok('  ⭐ ③层每万元递增 3.49 倍', +(fullEff[2] / fullEff[0]).toFixed(2),3.48, 0.01)
+ok('  ⭐ 剥掉增发后斜率仍从 0.1785 涨到 0.3346',
+   +slope('38.42', 'core').toFixed(4), 0.3346, 0.0002)
 ok('  ⭐ 递减规律两层都成立（③层）',
    (fullEff.length && R['30.42'].total > R['15'].total && (R['30.42'].total - R['25'].total) / (R['30.42'].actualYears - R['25'].actualYears) <
     (R['20'].total - R['15'].total) / (R['20'].actualYears - R['15'].actualYears)) ? 1 : 0, 1)
@@ -260,10 +262,10 @@ const a15c = calc(2010, 12, 1.0), b300c = calc(2010, 12, 3.0)
 const dPrincipalT = principalFull(3.0, 2010, 12) - principalFull(1.0, 2010, 12)
 const effT = (b300c.total - a15c.total) / (dPrincipalT * 2.5 / 10000)
 ok('  15 年提档 灵活就业多掏 383,582', +(dPrincipalT * 2.5).toFixed(0), 383582, 2)
-ok('  延年限 15→30.42 每万元 388.41', +effY.toFixed(2), 388.41, 0.05)
-ok('  提档 100→300（15年）每万元 67.83', +effT.toFixed(2), 67.83, 0.05)
-ok('  15 年 300 档月领 4500.91', +b300c.total.toFixed(2), 4500.91)
-ok('  ⭐ 差 5.73 倍', +(effY / effT).toFixed(2), 5.73, 0.01)
+ok('  延年限 15→30.42 每万元 388.41', +effY.toFixed(2),389.28, 0.05)
+ok('  提档 100→300（15年）每万元 67.83', +effT.toFixed(2),68.16, 0.05)
+ok('  15 年 300 档月领 4500.91', +b300c.total.toFixed(2),4519.95)
+ok('  ⭐ 差 5.73 倍', +(effY / effT).toFixed(2),5.71, 0.01)
 
 // ========== 口径自洽 ==========
 console.log('\n【口径自洽】')

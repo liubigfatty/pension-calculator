@@ -8,8 +8,8 @@ const { CITY_TYPE_CONFIG, DOUBLE_BASE_PROVINCES, PROV_BASE_LATEST } = require('.
 // 2016年及以后：全国统一记账利率（人社部公布）
 const NATIONAL_INTEREST_RATES = {
   2016: 0.0831, 2017: 0.0712, 2018: 0.0829, 2019: 0.0761,
-  2020: 0.0604, 2021: 0.0669, 2022: 0.0397, 2023: 0.0397,
-  2024: 0.0262, 2025: 0.0150
+  2020: 0.0604, 2021: 0.0669, 2022: 0.0612, 2023: 0.0397,
+  2024: 0.0262, 2025: 0.0150, 2026: 0.0260
 }
 
 // 2016年之前全国统一记账利率估算值（分段均值）
@@ -27,8 +27,8 @@ function getInterestRate(year) {
     return NATIONAL_INTEREST_RATES[year]
   }
   if (PRE2016_RATES[year] !== undefined) return PRE2016_RATES[year]
-  // 2016年后：用最近已知值（2025=1.50%）
-  if (year > 2025) return NATIONAL_INTEREST_RATES[2025]
+  // 未来年份 → 取最新已知值与引擎保持一致（2026 = 2.60%）
+  if (year > 2026) return NATIONAL_INTEREST_RATES[2026]
   // 1998年前：兜底2.5%
   return 0.025
 }

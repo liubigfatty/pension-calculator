@@ -513,18 +513,26 @@
       var dval = (window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP && window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP[meta.city.replace(/市$/, '')]) || 1.0
       parts.push('广东「' + meta.city + '」D=' + dval + (meta.city === '深圳' ? '（深圳独立社平）' : ''))
     }
+    // 超常规区间 [0.6, 3.0] 提示（不改数值，仅提示核对）
+    if ((fwd.warnings || []).length) {
+      var ys = fwd.warnings.map(function (w) { return w.year }).join('、')
+      parts.push('共有 ' + fwd.warnings.length + ' 个年份的指数在常规区间 0.6–3.0 之外（' + ys + ' 年），已按实际比值计算。跨省流动按退休地社平计算属正常结果；若一直在本地参保，请核对缴费基数')
+    }
     IC.note.textContent = parts.length ? parts.join('；') + '。' : ''
     IC.note.style.display = parts.length ? 'block' : 'none'
     // 逐年明细
     IC.detailRows.innerHTML = ''
     ;(fwd.yearsDetail || []).filter(function (y) { return y.index !== null && y.index !== undefined }).forEach(function (y) {
       var tr = document.createElement('div')
-      tr.className = 'tr'
+      tr.className = 'tr' + (y.outOfRange ? ' oor' : '')
       tr.innerHTML =
         '<span class="c1">' + y.year + '</span>' +
         '<span class="c2">' + y.months + '</span>' +
         '<span class="c3">' + (y.baseAvg || 0).toFixed(0) + '</span>' +
-        '<span class="c4">' + y.index.toFixed(4) + '</span>'
+        '<span class="c4">' + y.index.toFixed(4) +
+        (y.outOfRange ? '<em class="oor-tag">' + (y.outOfRange === 'low' ? '低于0.6' : '高于3.0') + '</em>' : '') +
+        '</span>'
+      if (y.outOfRange) tr.title = y.year + ' 年指数 ' + y.index.toFixed(4) + '（实际比值 ' + (y.indexRaw != null ? y.indexRaw.toFixed(4) : '-') + '）在常规区间之外，请核对缴费基数是否与参保地匹配'
       IC.detailRows.appendChild(tr)
     })
     IC.result.style.display = 'block'

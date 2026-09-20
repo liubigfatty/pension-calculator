@@ -45,3 +45,8 @@ deliverables/
 # 运行产物
 reports/
 deliverables/
+
+# 云函数 download 回的验证副本（2026-09-20）
+_verify_dl/
+.upload-info*.json
+_backup_semantics_20260920/
