@@ -117,6 +117,15 @@ function getEngineConfig() {
     }
   }
 
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**；分三档，按退休地所属取暖区域
+  // 冀人社发〔2012〕3号：坝上地区 1560 元 / 张承其他县及青龙、涞源 1400 元 / 省内其他地区 1240 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '按退休地所属取暖区域分档；取暖期内退休的人员按 当地年度标准÷取暖期月数×剩余月数 计发',
+    items: [
+      { name: '冬季取暖补贴', tiers: { default: 1240, prov: 1240, bashang: 1560, mountain: 1400 }, unit: '元/年', when: '每年11月随当月养老金一次性发放', source: '冀人社发〔2012〕3号（2011年冬季取暖期起执行）' }
+    ]
+  };
   return {
     avg_salary_history: AVG_SALARY_HISTORY,
     base_rates: { prov: PROV_BASE },

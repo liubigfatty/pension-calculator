@@ -148,6 +148,15 @@ function getEngineConfig() {
     }
   }
 
+  // 供热采暖补贴：按采暖季发放，**不计入月基本养老金**
+  // 陕人社发〔2017〕57号：企业退休（职）人员供热采暖补贴标准调整为 2360 元，2017年冬季取暖季起执行
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '参加企业职工基本养老保险的退休（职）人员，从养老保险基金支付；发放时间为11、12月及次年1、2月',
+    items: [
+      { name: '供热采暖补贴', amount: 2360, unit: '元/采暖季', when: '11、12月及次年1、2月发放', source: '陕人社发〔2017〕57号' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,

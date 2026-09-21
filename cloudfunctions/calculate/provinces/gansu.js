@@ -194,7 +194,10 @@ function getEngineConfig() {
       }
     }
   }
-  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
+  // ⚠️ 原为 { enabled: true } 但缺 type —— calcSpecialAddition 匹配不到任何分支，恒返回 0（僵尸配置）。
+  //    甘肃冬季取暖补贴（网传约 1250 元/年）尚未查到省级官方文件，暂显式置 false，
+  //    避免"配了 enabled 却不生效"给用户造成误导。待查到官方文件后改用 modules.annual_subsidies。
+  modules.special_addition = { enabled: false };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,

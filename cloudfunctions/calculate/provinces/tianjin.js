@@ -155,6 +155,16 @@ function getEngineConfig() {
     }
   }
 
+  // 冬季取暖补贴 + 集中供热采暖补助费：按采暖季一次性发放，**不计入月基本养老金**
+  // 天津市人社局/财政局：冬季取暖补贴 335 元/年 + 集中供热采暖补助费 185 元/年 = 520 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '退休职工由企业职工基本养老保险基金发放；采暖季内新退休的按4个月平均折算后一次性发放',
+    items: [
+      { name: '冬季取暖补贴', amount: 335, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '天津市人社局2018年完善发放方式通知（2008年起由235元提至335元）' },
+      { name: '集中供热采暖补助费', amount: 185, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '津政发〔2000〕72号' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,

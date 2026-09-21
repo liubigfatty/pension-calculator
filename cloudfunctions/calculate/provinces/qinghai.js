@@ -139,6 +139,18 @@ function getEngineConfig() {
     other_addition: 13
   };
 
+  // 冬季取暖费：按年发放，**不计入月基本养老金**
+  // ⚠️ 待核：目前采信西宁市企业离退休人员口径 3900 元/年（西宁市社保局 2022 年公开发放数据）；
+  //    祁连县 2024 年度决算显示当地企业退休人员取暖费 4133 元/人，提示标准可能分地区、逐年浮动。
+  //    省级统一文件尚未查到，引用前须再核。
+  modules.annual_subsidies = {
+    enabled: true,
+    pendingVerify: true,
+    note: '西宁市企业离退休人员口径；省级统一标准待核，各地州可能不同',
+    items: [
+      { name: '冬季取暖费', amount: 3900, unit: '元/年', when: '每年10月随养老金发放', source: '西宁市社保局公开发放数据（省级统一文件待核）' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,

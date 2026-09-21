@@ -238,6 +238,17 @@ function getEngineConfig() {
     modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
   }
 
+  // 冬季取暖费补贴：按年发放，**不计入月基本养老金**；标准逐年浮动
+  // 机制（自治区人社厅）：= 上一年度全区企业参保退休人员月平均养老金 + 2010年以来增加的人均 750 元
+  //   2020年度 4193 元（月均 3443 + 750）；2021年度 4394 元（月均 3644 + 750）
+  // ⚠️ avgPensionData.latest 用的是最近一次已公布的月均基数，之后年份须按当年公布值更新
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '标准逐年浮动＝上年度全区企业参保退休人员月平均养老金＋750元；此处沿用最近一次已公布基数，非当年实际值',
+    items: [
+      { name: '冬季取暖费补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, unit: '元/年', when: '每年10月随养老金一次性发放', source: '自治区人社厅/财政厅年度通知（2021年度为4394元）' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: {

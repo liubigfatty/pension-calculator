@@ -308,6 +308,25 @@
 
     $('totalRow').textContent = fmt(sc.total)
 
+    // 年度补贴（冬季取暖补贴等）：按年/采暖季一次性发放，不计入上表月领合计
+    var ann = sc.annualSubsidies || { amount: 0, items: [] }
+    $('annualRow').hidden = !(ann.amount > 0)
+    if (ann.amount > 0) {
+      $('annualSubsidies').textContent = fmt(ann.amount) + ' 元/年'
+      var noteHtml = ann.items.map(function (i) {
+        return '<div class="ann-item"><b>' + i.name + '　' + i.amount + (i.unit || '元/年') + '</b>' +
+          (i.when ? '<div class="ann-when">' + i.when + '</div>' : '') +
+          (i.source ? '<div class="ann-src">依据：' + i.source + '</div>' : '')
+      }).join('')
+      if (ann.note) noteHtml += '<div class="ann-note">' + ann.note + '</div>'
+      if (ann.disclaimer) noteHtml += '<div class="ann-warn">' + ann.disclaimer + '</div>'
+      $('annualNote').innerHTML = noteHtml
+      $('annualNote').hidden = false
+    } else {
+      $('annualNote').innerHTML = ''
+      $('annualNote').hidden = true
+    }
+
     $('totalYears').textContent = fmtYears(sc.totalYears)
     $('actualYears').textContent = fmtYears(sc.actualYears)
     $('sightYears').textContent = fmtYears(sc.sightYears)

@@ -943,6 +943,72 @@ function calcSpecialAddition(params) {
 }
 
 /**
+ * 计算年度补贴 / 采暖季补贴（**不计入月基本养老金**）
+ *
+ * 与 special_addition 的本质区别：
+ *   冬季取暖补贴等是**按年（采暖季）一次性发放**的专项补助，随当年某月养老金一并发放，
+ *   但它不属于月基本养老金的组成部分 —— 不能摊成月均计入月领，也不参与养老金年度调整的挂钩基数。
+ *   （例：山西 3360 元/年 于每年 10 月一次性发放；若按月摊 280 元/月，会与真实核定表不符）
+ *
+ * 配置形状（province.modules.annual_subsidies）：
+ *   { enabled: true, note: '...', items: [
+ *       { name: '冬季取暖补贴', amount: 3360, unit: '元/年', when: '每年10月随养老金一次性发放', source: '晋人社厅发〔2017〕9号' },
+ *       { name: '冬季取暖补贴', tiers: { default: 1240, bashang: 1560, mountain: 1400 }, ... },   // 分档：按 location
+ *       { name: '冬季取暖补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, ... } // 与人均养老金挂钩、逐年浮动
+ *   ]}
+ */
+function calcAnnualSubsidies(params) {
+  const mod = params?.config?.modules?.annual_subsidies
+  const EMPTY = { amount: 0, items: [], note: '', disclaimer: '' }
+  if (!mod || !mod.enabled || !Array.isArray(mod.items) || mod.items.length === 0) return EMPTY
+
+  const location = params?.location || 'prov'
+  const retireYear = params?.retireYear
+  const items = []
+  let total = 0
+
+  for (const it of mod.items) {
+    let amount = 0
+    let detail = ''
+
+    if (it.tiers && typeof it.tiers === 'object') {
+      const t = it.tiers
+      amount = (location && t[location] != null)
+        ? t[location]
+        : (t.default != null ? t.default : (t.prov != null ? t.prov : 0))
+      detail = `按退休地所属档（${location}）计发`
+    } else if (it.formula === 'avgPensionPlus') {
+      const table = it.avgPensionData || {}
+      const base = (retireYear && table[retireYear] != null)
+        ? table[retireYear]
+        : (table.latest != null ? table.latest : 0)
+      amount = base + (it.plus || 0)
+      detail = `上年度全省（区）企业退休人员月人均养老金 ${base} + ${it.plus || 0}`
+    } else {
+      amount = it.amount || 0
+    }
+
+    if (!amount) continue
+    total += amount
+    items.push({
+      name: it.name || '年度补贴',
+      amount: Math.round(amount * 100) / 100,
+      unit: it.unit || '元/年',
+      when: it.when || '',
+      source: it.source || '',
+      detail
+    })
+  }
+
+  return {
+    amount: Math.round(total * 100) / 100,
+    items,
+    note: mod.note || '',
+    disclaimer: '按年（采暖季）一次性发放，不计入月基本养老金，也不参与养老金年度调整的挂钩基数'
+  }
+}
+
+/**
  * 计算调节金
  * 支持类型：
  * - 甘肃阈值型：建账前视同缴费年限≥阈值，+固定金额
@@ -1800,7 +1866,7 @@ function calculate(config, inputData) {
     const yDec = roundingRules.years_decimal
     const iDec = roundingRules.index_decimal
     const rDec = roundingRules.result_decimal
-
+    
     // 年限取整（总年限、视同年限、建账前年限）
     // years_round_mode: 'ceil' = 只进不退（向上取整到指定位数，例：安徽 40年5月=40.4167→40.5）
     //                    'round'(默认) = 四舍五入
@@ -1981,7 +2047,9 @@ function calculate(config, inputData) {
 
   // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)
   // 依据：黔劳社厅发〔2006〕20号；全省独生子女父母退休时按本人基本养老金的5%加发
-  // 由 province 全局开关（special_addition.enabled）控制
+  // ⚠️ 属**条件性待遇**，须持《独生子女父母光荣证》方可享受。
+  //    与重庆(3%)、海南(5%/10%)同性质，二者均由 data.oneChild 把关；
+  //    贵州此前漏了该判断，导致默认人人加发 5%（2026-09-19 修正）。
   if (config.province === 'guizhou' && config.modules?.special_addition?.enabled && data.oneChild) {
     const gzBase = basicPension.amount + personalAccount.amount + transPension.amount
     const gzAmount = Math.round(gzBase * 0.05 * 100) / 100
@@ -2022,6 +2090,13 @@ function calculate(config, inputData) {
   // 非公式计算项，按退休年度由输入提供，直接计入月基本养老金总额；其他省份无此项
   const currentYearIncrease = ((config.province === 'sh' || config.province === 'shanghai') && inputData.currentYearIncrease)
     ? Number(inputData.currentYearIncrease) : 0
+  // 年度补贴 / 采暖季补贴（冬季取暖补贴等）：按年一次性发放，**不进月领**
+  const annualSubsidies = calcAnnualSubsidies({
+    config,
+    location: city || 'prov',
+    retireYear: legalDate.year
+  })
+
   const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment + currentYearIncrease
   // 浙江：见分进角补足 — 合计金额向上取整到角（0.1元）
   const total = config.round_to_jiao
@@ -2113,6 +2188,7 @@ function calculate(config, inputData) {
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
       currentYearIncrease: currentYearIncrease,
+      annualSubsidies: annualSubsidies,
       total: total,
       totalYears,
       actualYears,
@@ -2137,6 +2213,7 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
+      annualSubsidies: annualSubsidies,
       total: flexTotal,
       totalYears: flexTotalYears,
       actualYears: flexActualYears,

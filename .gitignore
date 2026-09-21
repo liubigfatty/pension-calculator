@@ -50,3 +50,6 @@ deliverables/
 _verify_dl/
 .upload-info*.json
 _backup_semantics_20260920/
+
+# 临时抓取目录（2026-09）
+_tmp_online/

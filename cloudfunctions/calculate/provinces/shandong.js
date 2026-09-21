@@ -148,6 +148,15 @@ function getEngineConfig() {
       }
     }
   }
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**
+  // 鲁人社办发〔2013〕106号：企业退休职工年取暖补贴由 1100 元调整为每人每年 1700 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '企业退休、退职人员（含以灵活就业身份参加职工养老保险并办理退休的人员）',
+    items: [
+      { name: '冬季取暖补贴', amount: 1700, unit: '元/年', when: '每年10月随当月养老待遇一并发放', source: '鲁人社办发〔2013〕106号（原鲁人社发〔2010〕38号）' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,

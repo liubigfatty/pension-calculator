@@ -153,6 +153,15 @@ function getEngineConfig() {
     modules.transitional_pension.double_index = true;
   }
 
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**（企业离退休，统筹基金支付）
+  // 晋人社厅发〔2017〕9号：标准由 2400 元调整为每人每年 3360 元，每年 10 月随基本养老金一次性发放
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '参加山西省城镇企业职工基本养老保险、当年9月30日前办理离退休手续并按月领取基本养老金的人员',
+    items: [
+      { name: '冬季取暖补贴', amount: 3360, unit: '元/年', when: '每年10月随基本养老金一次性发放', source: '晋人社厅发〔2017〕9号（2016年10月起执行）' }
+    ]
+  };
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
 base_rates: PROV_BASE,

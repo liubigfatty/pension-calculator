@@ -303,7 +303,11 @@ function getEngineConfig() {
       }
     }
   }
-  if (MODULES.includes('other')) modules.special_addition = { enabled: true };
+  // 御寒津贴：按月发放、**计入月基本养老金**（注意：它不是取暖补贴，不限冬季取暖期）
+  // 黑劳社发〔2008〕79号：从2008年10月1日起，为已参加城镇企业职工基本养老保险的退休人员
+  //   每人每月发放 45 元御寒津贴，所需资金从养老保险统筹基金中支付；按月发放，不单限于冬季取暖期。
+  //   （财政部官网 2008-12-12《哈尔滨市40万参保退休职工每人每月45元御寒津贴本月发放》可查）
+  modules.special_addition = { enabled: true, type: 'fixed', amount: 45, label: '御寒津贴', source: '黑劳社发〔2008〕79号' };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
