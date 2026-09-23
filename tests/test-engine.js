@@ -260,16 +260,24 @@ test('标准计发月数表', () => {
   assert(engine.getRetireMonths(60, jilinConfig) === 139, `60岁应为139个月，实际${engine.getRetireMonths(60, jilinConfig)}`)
 })
 
-test('半年精度插值', () => {
-  // 50.5岁应该介于195和190之间
-  const m505 = engine.getRetireMonths(50.5, jilinConfig)
-  assert(m505 > 190 && m505 < 195, `50.5岁计发月数${m505}应在190-195之间`)
+test('非整岁按月线性折算', () => {
+  // 依据：人社部延迟退休配套口径，非整岁按月折算、保留1位小数
+  //   实际 = 上一整岁值 − (上一整岁值 − 下一整岁值) ÷ 12 × 超出月数
+  // 对照官方《2025年1月后退休个人账户养老金计发月份表》
+  assert(engine.getRetireMonths(50.5, jilinConfig) === 192.5, '50岁6月应为192.5')
+  assert(engine.getRetireMonths(50 + 3 / 12, jilinConfig) === 193.8, '50岁3月应为193.8')
+  assert(engine.getRetireMonths(50 + 4 / 12, jilinConfig) === 193.3, '50岁4月应为193.3')
+  assert(engine.getRetireMonths(60 + 3 / 12, jilinConfig) === 137.3, '60岁3月应为137.3')
+  assert(engine.getRetireMonths(60 + 4 / 12, jilinConfig) === 136.7, '60岁4月应为136.7（深圳核定单实证）')
 })
 
-test('未定义年龄插值', () => {
-  const m61 = engine.getRetireMonths(61, jilinConfig)
-  // 61岁应该介于60.5(136.1)和61.5(128.6)之间
-  assert(m61 > 128 && m61 < 137, `61岁计发月数${m61}应在合理范围`)
+test('整岁边界与超范围兜底', () => {
+  assert(engine.getRetireMonths(61, jilinConfig) === 132, '61岁整应为132')
+  assert(engine.getRetireMonths(40, jilinConfig) === 233, '40岁整应为233')
+  assert(engine.getRetireMonths(70, jilinConfig) === 56, '70岁整应为56')
+  // 低于40周岁按40周岁、高于70周岁按70周岁（沪人社规〔2021〕27号）
+  assert(engine.getRetireMonths(38, jilinConfig) === 233, '38岁应兜底为40岁值233')
+  assert(engine.getRetireMonths(75, jilinConfig) === 56, '75岁应兜底为70岁值56')
 })
 
 // ==================== 测试 6: 基础数据查询 ====================
@@ -284,13 +292,15 @@ test('全省计发基数 — 已有数据直接返回', () => {
 
 test('长春市计发基数 — 已有数据直接返回', () => {
   assert(engine.getBase('cc', 2025, jilinConfig) === 7978.25, '2025年长春基数应为7978.25')
-  assert(engine.getBase('cc', 2020, jilinConfig) === 6927.75, '2020年长春基数应为6927.75')
+  // 2026-09-14 更新：真相源 CC_BASE[2020] 已订正为 6605.23（旧测试期望 6927.75 为早期口径）
+  assert(engine.getBase('cc', 2020, jilinConfig) === 6605.23, '2020年长春基数应为6605.23')
 })
 
 test('基数查询 — 后向匹配', () => {
-  // 2026年没有数据，应该用2025年
+  // 2026年没有数据 → 预发年规则：取 2025 年原值（不上浮）
+  // 2026-09-14 更新：真相源 PROV_BASE[2025] = 7322（旧测试期望 7322.08 为早期口径）
   const b26 = engine.getBase('prov', 2026, jilinConfig)
-  assert(b26 === 7322.08, `2026年全省基数应后向匹配为7322.08，实际${b26}`)
+  assert(b26 === 7322, `2026年全省基数应预发为7322（=2025原值），实际${b26}`)
 })
 
 test('记账利率 — 已有数据', () => {
@@ -299,9 +309,10 @@ test('记账利率 — 已有数据', () => {
 })
 
 test('记账利率 — 缺失数据回退', () => {
-  // 2050年没有数据
+  // 2050年没有数据 —— 回退到利率表最新年份（2026年已固化为2.6%，2026-09-19 同步更新期望值）
   const r50 = engine.getAccRate(2050, jilinConfig)
-  assert(r50 === 0.015, `2050年记账利率应回退到0.015，实际${r50}`)
+  const latestRate = engine.getAccRate(2026, jilinConfig)
+  assert(r50 === latestRate, `2050年记账利率应回退到最新年份(2026=${latestRate})，实际${r50}`)
 })
 
 // ==================== 测试 7: 模块配置测试 ====================

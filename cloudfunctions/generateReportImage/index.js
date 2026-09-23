@@ -28,9 +28,19 @@ exports.main = async (event) => {
   const T0 = Date.now()
   try {
     const data = event && event.data
-    // 轻量预热：只返回 success，不渲染，用于触发云函数实例加载，降低首次保存冷启动
+    // 真实预热：注册字体 + 跑一遍完整渲染，让实例达到热态，
+    // 把字体注册 / 二维码 IO / canvas·Skia 首次初始化 / PNG 编码 这些重活提前做完，
+    // 避免个人版 3s 硬上限下「首次保存」时全部冷启动堆在一起导致超时。
+    // 预热调用本身即使因冷启动偏慢被平台杀死也无妨（用户无感知），
+    // 因为它已把字体、二维码、canvas 上下文热到实例内存，后续真实保存调用即为热态。
     if (data && data._warmup) {
-      console.log('[gen] warmup 响应耗时', Date.now() - T0, 'ms')
+      try {
+        ensureFont()
+        await renderReport({})
+      } catch (e) {
+        console.warn('[gen] warmup 预渲染异常（不影响实例启动）:', e.message)
+      }
+      console.log('[gen] warmup 完成(含预渲染) 耗时', Date.now() - T0, 'ms')
       return { success: true, _warmup: true }
     }
     if (!data || !data.legalTotalStr) {

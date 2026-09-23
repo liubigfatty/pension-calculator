@@ -2,8 +2,8 @@
   "province": "hunan",
   "name": "湖南省",
   "account_start": {
-    "year": 1996,
-    "month": 1
+    "year": 1995,
+    "month": 10
   },
   "viewing_start": {
     "year": 1996,
@@ -234,7 +234,11 @@
   ],
   "notes": {
     "policy": "湖南省养老金计发基数基于估算数据（参考山东省社平工资×0.84系数），实际数据请向当地社保部门核实。",
-    "data_source": "官方数据"
+    "data_source": "官方数据",
+    "contribution_base_2026": {
+      "min": 4106,
+      "max": 20529
+    }
   },
   "avg_salary_history": {
     "1990": 169.83,
@@ -272,7 +276,14 @@
     "2022": 5977,
     "2023": 6284,
     "2024": 6711,
-    "2025": 6787
+    "2025": 6787,
+    "2026": 6843
   },
-  "verified_count": 5
+  "verified_count": 5,
+  "cutoff_date": {
+    "year": 1995,
+    "month": 9
+  },
+  "_salary_semantics": "execution_year",
+  "_salary_semantics_note": "MARKER_V2: [Y]=Y年度执行=Y-1统计年；2026年度未公布省留空走外推"
 }

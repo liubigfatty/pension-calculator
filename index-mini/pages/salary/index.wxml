@@ -1,0 +1,93 @@
+<!--pages/salary/index.wxml-->
+<view class="container">
+
+  <!-- 头部 -->
+  <view class="hero">
+    <text class="hero-title">全国社平工资查询</text>
+    <text class="hero-sub">各省历年社平工资（元/月）· 数据随养老金引擎同步更新</text>
+  </view>
+
+  <!-- 省份选择 chips -->
+  <scroll-view class="chips" scroll-x="true" enhanced="true" show-scrollbar="false">
+    <view
+      wx:for="{{chips}}"
+      wx:key="code"
+      class="chip {{index === provIndex ? 'chip-on' : ''}}"
+      data-idx="{{index}}"
+      bindtap="onChipTap">{{item.name}}</view>
+  </scroll-view>
+
+  <!-- 当前数值卡 -->
+  <view class="card value-card">
+    <view class="vc-head">
+      <text class="vc-name">{{selName}}</text>
+      <text wx:if="{{isEstimate}}" class="tag-est">预发估算</text>
+      <text wx:else class="tag-off">官方公布</text>
+    </view>
+    <view class="vc-big">{{valueMonth}}<text class="vc-unit">元/月</text></view>
+    <view class="vc-year">≈ {{valueYear}} 元/年</view>
+
+    <!-- 年份选择 -->
+    <picker mode="selector" range="{{yearList}}" value="{{yearIndex}}" bindchange="onYearChange">
+      <view class="year-picker">
+        <text class="yp-label">年份</text>
+        <text class="yp-value">{{selYear}}年</text>
+        <text class="yp-arrow">▼</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 统计 -->
+  <view class="stat-row">
+    <view class="stat">
+      <text class="stat-v">{{yoy}}</text>
+      <text class="stat-k">同比涨幅</text>
+    </view>
+    <view class="stat">
+      <text class="stat-v">{{cagr10}}</text>
+      <text class="stat-k">近10年累计</text>
+    </view>
+    <view class="stat">
+      <text class="stat-v">{{span}}</text>
+      <text class="stat-k">历史区间</text>
+    </view>
+  </view>
+
+  <!-- 趋势图 -->
+  <view class="card">
+    <text class="title">历年趋势</text>
+    <canvas type="2d" id="trend" class="trend-canvas"></canvas>
+  </view>
+
+  <!-- 排名 -->
+  <view class="card">
+    <view class="rank-head">
+      <text class="title">各省排名（{{selYear}}年）</text>
+      <text class="rank-self">本省第 {{rankSelf}}/{{rankTotal}}</text>
+    </view>
+    <view class="rank-list">
+      <view wx:for="{{rankList}}" wx:key="rank" class="rank-item {{item.self ? 'rank-on' : ''}}">
+        <text class="ri-rank">{{item.rank}}</text>
+        <text class="ri-name">{{item.name}}</text>
+        <text class="ri-val">{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分享 -->
+  <view class="share-row">
+    <button class="btn-share" open-type="share">分享给好友</button>
+    <button class="btn-poster" bindtap="onMakePoster">生成分享图</button>
+  </view>
+  <view class="hint">分享图保存后可发朋友圈 / 微信群，好友点开即查各省社平。</view>
+
+  <!-- 口径说明 -->
+  <view class="disclaimer">
+    <text class="dc-t">数据口径说明</text>
+    <text class="dc-c">{{meta.note}}</text>
+    <text class="dc-c">来源：{{meta.source}}。单位：{{meta.unit}}。</text>
+  </view>
+
+  <!-- 海报离屏 canvas（不显示） -->
+  <canvas type="2d" id="poster" class="poster-canvas"></canvas>
+</view>

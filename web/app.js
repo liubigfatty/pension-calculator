@@ -308,6 +308,25 @@
 
     $('totalRow').textContent = fmt(sc.total)
 
+    // 年度补贴（冬季取暖补贴等）：按年/采暖季一次性发放，不计入上表月领合计
+    var ann = sc.annualSubsidies || { amount: 0, items: [] }
+    $('annualRow').hidden = !(ann.amount > 0)
+    if (ann.amount > 0) {
+      $('annualSubsidies').textContent = fmt(ann.amount) + ' 元/年'
+      var noteHtml = ann.items.map(function (i) {
+        return '<div class="ann-item"><b>' + i.name + '　' + i.amount + (i.unit || '元/年') + '</b>' +
+          (i.when ? '<div class="ann-when">' + i.when + '</div>' : '') +
+          (i.source ? '<div class="ann-src">依据：' + i.source + '</div>' : '')
+      }).join('')
+      if (ann.note) noteHtml += '<div class="ann-note">' + ann.note + '</div>'
+      if (ann.disclaimer) noteHtml += '<div class="ann-warn">' + ann.disclaimer + '</div>'
+      $('annualNote').innerHTML = noteHtml
+      $('annualNote').hidden = false
+    } else {
+      $('annualNote').innerHTML = ''
+      $('annualNote').hidden = true
+    }
+
     $('totalYears').textContent = fmtYears(sc.totalYears)
     $('actualYears').textContent = fmtYears(sc.actualYears)
     $('sightYears').textContent = fmtYears(sc.sightYears)
@@ -513,18 +532,26 @@
       var dval = (window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP && window.CalcIndex.GUANGDONG_SIGHT_INDEX_MAP[meta.city.replace(/市$/, '')]) || 1.0
       parts.push('广东「' + meta.city + '」D=' + dval + (meta.city === '深圳' ? '（深圳独立社平）' : ''))
     }
+    // 超常规区间 [0.6, 3.0] 提示（不改数值，仅提示核对）
+    if ((fwd.warnings || []).length) {
+      var ys = fwd.warnings.map(function (w) { return w.year }).join('、')
+      parts.push('共有 ' + fwd.warnings.length + ' 个年份的指数在常规区间 0.6–3.0 之外（' + ys + ' 年），已按实际比值计算。跨省流动按退休地社平计算属正常结果；若一直在本地参保，请核对缴费基数')
+    }
     IC.note.textContent = parts.length ? parts.join('；') + '。' : ''
     IC.note.style.display = parts.length ? 'block' : 'none'
     // 逐年明细
     IC.detailRows.innerHTML = ''
     ;(fwd.yearsDetail || []).filter(function (y) { return y.index !== null && y.index !== undefined }).forEach(function (y) {
       var tr = document.createElement('div')
-      tr.className = 'tr'
+      tr.className = 'tr' + (y.outOfRange ? ' oor' : '')
       tr.innerHTML =
         '<span class="c1">' + y.year + '</span>' +
         '<span class="c2">' + y.months + '</span>' +
         '<span class="c3">' + (y.baseAvg || 0).toFixed(0) + '</span>' +
-        '<span class="c4">' + y.index.toFixed(4) + '</span>'
+        '<span class="c4">' + y.index.toFixed(4) +
+        (y.outOfRange ? '<em class="oor-tag">' + (y.outOfRange === 'low' ? '低于0.6' : '高于3.0') + '</em>' : '') +
+        '</span>'
+      if (y.outOfRange) tr.title = y.year + ' 年指数 ' + y.index.toFixed(4) + '（实际比值 ' + (y.indexRaw != null ? y.indexRaw.toFixed(4) : '-') + '）在常规区间之外，请核对缴费基数是否与参保地匹配'
       IC.detailRows.appendChild(tr)
     })
     IC.result.style.display = 'block'

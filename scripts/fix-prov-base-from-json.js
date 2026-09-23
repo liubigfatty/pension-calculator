@@ -69,4 +69,4 @@ for (const provCode of TARGETS) {
   console.log(`   备份在 ${jsPath}.bak`);
 }
 
-console.log('\n完成。请运行 node scripts/verify.js 验证。');
+console.log('\n完成。请运行 node scripts/run-cases.js 验证。（verify.js 已于 2026-09-09 删除）');

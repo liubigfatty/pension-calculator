@@ -2,8 +2,8 @@
   "province": "hunan",
   "name": "湖南省",
   "account_start": {
-    "year": 1996,
-    "month": 1
+    "year": 1995,
+    "month": 10
   },
   "viewing_start": {
     "year": 1996,
@@ -203,5 +203,9 @@
     "2024": 6711,
     "2025": 6787
   },
-  "verified_count": 5
+  "verified_count": 5,
+  "cutoff_date": {
+    "year": 1995,
+    "month": 9
+  }
 }

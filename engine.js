@@ -29,10 +29,17 @@
  */
 
 // ════════════════════════════════════════════════════════
-//  全国统一记账利率表（1996-2025）
-//  数据来源：剪刀财经整理《缴费基数&记账利率 1996-2025年》
-//  2016年起人社部/财政部公布全国统一值；1996-2015为历史参考值
-//  注：此为唯一利率真相源，不再分 pre2016 / post2016 两套
+//  全国统一记账利率表（1996-2026）
+//  2016 年起由人社部、财政部每年 6 月联合公布全国统一值（依据《统一和规范职工养老保险
+//  个人账户记账利率办法》）；1996-2015 为各省自定时期的历史参考值
+//  注 1：此为唯一利率真相源，不再分 pre2016 / post2016 两套
+//  注 2：2026-09-15 核对《统一和规范职工养老保险个人账户记账利率办法》官方口径，
+//        订正 2021 年 5.35% → 6.69%（人社部/财政部官方公布值，多个官方信息披露交叉印证）
+//  注 3：2025 年 1.50% 已确认为官方值（多地 2025 年度社保信息披露）
+//  注 4：2026 = 2.60% 系内蒙古社保个人账户台账最早露出、广东「粤省事」利息数据二次
+//        印证（参保人按月积数法代入 2.6% 可复算到分）；截至 2026-09 人社部/财政部
+//        尚未公开发文，属「系统台账反推值」，正式文件公布后须回来核对
+//  注 5：超出范围年份回退到最新已知值（当前 = 2026 的 2.60%）
 // ════════════════════════════════════════════════════════
 const UNIFIED_INTEREST_RATES = {
   // ── 2016年前（各省自行制定时期，剪刀财经参考值）──>
@@ -62,11 +69,12 @@ const UNIFIED_INTEREST_RATES = {
   2018: 0.0829,  // 8.29%
   2019: 0.0761,  // 7.61%
   2020: 0.0604,  // 6.04%
-  2021: 0.0535,  // 5.35%（原错误值6.69%已修正）
+  2021: 0.0669,  // 6.69%
   2022: 0.0612,  // 6.12%（原错误值3.97%已修正）
   2023: 0.0397,  // 3.97%
   2024: 0.0262,  // 2.62%
-  2025: 0.0150   // 1.50%
+  2025: 0.0150,  // 1.50%（官方：多地人社局 2025 年度社保信息披露）
+  2026: 0.0260   // 2.60%（内蒙古/广东社保系统台账反推，人社部尚未正式发文）
 }
 
 // 国家标准计发月数表（国发〔2005〕38号）
@@ -939,6 +947,72 @@ function calcSpecialAddition(params) {
 }
 
 /**
+ * 计算年度补贴 / 采暖季补贴（**不计入月基本养老金**）
+ *
+ * 与 special_addition 的本质区别：
+ *   冬季取暖补贴等是**按年（采暖季）一次性发放**的专项补助，随当年某月养老金一并发放，
+ *   但它不属于月基本养老金的组成部分 —— 不能摊成月均计入月领，也不参与养老金年度调整的挂钩基数。
+ *   （例：山西 3360 元/年 于每年 10 月一次性发放；若按月摊 280 元/月，会与真实核定表不符）
+ *
+ * 配置形状（province.modules.annual_subsidies）：
+ *   { enabled: true, note: '...', items: [
+ *       { name: '冬季取暖补贴', amount: 3360, unit: '元/年', when: '每年10月随养老金一次性发放', source: '晋人社厅发〔2017〕9号' },
+ *       { name: '冬季取暖补贴', tiers: { default: 1240, bashang: 1560, mountain: 1400 }, ... },   // 分档：按 location
+ *       { name: '冬季取暖补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, ... } // 与人均养老金挂钩、逐年浮动
+ *   ]}
+ */
+function calcAnnualSubsidies(params) {
+  const mod = params?.config?.modules?.annual_subsidies
+  const EMPTY = { amount: 0, items: [], note: '', disclaimer: '' }
+  if (!mod || !mod.enabled || !Array.isArray(mod.items) || mod.items.length === 0) return EMPTY
+
+  const location = params?.location || 'prov'
+  const retireYear = params?.retireYear
+  const items = []
+  let total = 0
+
+  for (const it of mod.items) {
+    let amount = 0
+    let detail = ''
+
+    if (it.tiers && typeof it.tiers === 'object') {
+      const t = it.tiers
+      amount = (location && t[location] != null)
+        ? t[location]
+        : (t.default != null ? t.default : (t.prov != null ? t.prov : 0))
+      detail = `按退休地所属档（${location}）计发`
+    } else if (it.formula === 'avgPensionPlus') {
+      const table = it.avgPensionData || {}
+      const base = (retireYear && table[retireYear] != null)
+        ? table[retireYear]
+        : (table.latest != null ? table.latest : 0)
+      amount = base + (it.plus || 0)
+      detail = `上年度全省（区）企业退休人员月人均养老金 ${base} + ${it.plus || 0}`
+    } else {
+      amount = it.amount || 0
+    }
+
+    if (!amount) continue
+    total += amount
+    items.push({
+      name: it.name || '年度补贴',
+      amount: Math.round(amount * 100) / 100,
+      unit: it.unit || '元/年',
+      when: it.when || '',
+      source: it.source || '',
+      detail
+    })
+  }
+
+  return {
+    amount: Math.round(total * 100) / 100,
+    items,
+    note: mod.note || '',
+    disclaimer: '按年（采暖季）一次性发放，不计入月基本养老金，也不参与养老金年度调整的挂钩基数'
+  }
+}
+
+/**
  * 计算调节金
  * 支持类型：
  * - 甘肃阈值型：建账前视同缴费年限≥阈值，+固定金额
@@ -990,32 +1064,67 @@ function calcAdjustmentFund(params) {
 // ==================== 退休时间计算 ====================
 
 /**
- * 获取计发月数（精确到月份，直接查表）
- * @param {number} ageExact - 退休年龄（精确到小数点，如50.0833）
- * @param {Object} config - 省份配置
+ * 获取计发月数（精确到月）
+ *
+ * 依据：
+ *   ① 整岁基准表 = 国发〔2005〕38号 附表（40~70 岁，DEFAULT_MONTHLY_PAYMENT_MONTHS）
+ *   ② 非整岁（延迟退休后普遍现象，如 60 岁 3 个月）按月线性折算：
+ *        实际计发月数 = 上一整岁值 − (上一整岁值 − 下一整岁值) ÷ 12 × 超出月数
+ *      人社部延迟退休配套口径，各地社保系统统一采用、保留 1 位小数
+ *      （实证：深圳养老金核定单「60岁4月 → 计发月数 136.7」；
+ *        官方《2025年1月后退休个人账户养老金计发月份表》50岁6月=192.5、60岁3月=137.3）
+ *
+ * ⚠️ 2026-09-14 修正：此前实现是「四舍五入到整岁再查表」，
+ *    60岁3个月会取 139（应为 137.3）、50岁4个月取 195（应为 193.3），
+ *    导致延迟退休人群个人账户养老金被系统性低估约 1.3%。
+ *
+ * @param {number} ageExact - 退休年龄（十进制年，如 60.25 = 60 岁 3 个月）
+ * @param {Object} config - 省份配置（可选 monthly_payment_months 覆盖）
  * @returns {number} 计发月数
  */
 function getRetireMonths(ageExact, config) {
-  const table = config.monthly_payment_months || DEFAULT_MONTHLY_PAYMENT_MONTHS
+  const cfg = config || {}
+  // 可选精细表：键为总月数（"723"）或「岁.月」（"60.3"）
+  const fine = cfg.monthly_payment_months
+    || (typeof STANDARD_MONTHLY_PAYMENT_MONTHS !== 'undefined' ? STANDARD_MONTHLY_PAYMENT_MONTHS : null)
 
-  // 将精确年龄四舍五入到小数点后1位（月份），用于直接查表
-  // 注意：表键格式为 "50.0"、"51.1" 等（有小数点），需确保格式一致
-  let keyAge = Math.round(ageExact * 10) / 10
-  // 弹性退休年龄可能超出国标计发月数表边界（40~70岁），按沪人社规〔2021〕27号兜底：
-  // 低于40周岁按40周岁、高于70周岁按70周岁对应的计发月数计发
-  if (keyAge < 40) keyAge = 40
-  if (keyAge > 70) keyAge = 70
-  // 整数部分直接写 .0，例如 50 → "50.0"，50.1 → "50.1"
-  const keyStr = keyAge % 1 === 0 ? keyAge + '.0' : String(keyAge)
+  // 归一化到「整岁 + 超出月数」，避免十进制年的浮点误差
+  let totalM = Math.round((ageExact || 0) * 12)
+  let y = Math.floor(totalM / 12)
+  let m = totalM % 12
 
-  if (table[keyStr] !== undefined) return table[keyStr]
+  // 边界：低于 40 周岁按 40 周岁、高于 70 周岁按 70 周岁（沪人社规〔2021〕27号）
+  if (y < 40) { y = 40; m = 0 } else if (y > 70) { y = 70; m = 0 } else if (y === 70) { m = 0 }
 
-  // 非整数年龄（如54.5岁）：四舍五入取整后再查一次
-  const roundKey = Math.round(ageExact) + '.0'
-  if (table[roundKey] !== undefined) return table[roundKey]
+  // ① 精细表优先（两种键格式都支持）
+  if (fine) {
+    if (fine[String(y * 12 + m)] !== undefined) return fine[String(y * 12 + m)]
+    if (fine[y + '.' + m] !== undefined) return fine[y + '.' + m]
+  }
 
-  // 兜底：返回60岁对应值（最常用）
-  return 139
+  // ② 整岁基准表（国发〔2005〕38号）
+  //    副本（浏览器 shim）可能没有 DEFAULT_MONTHLY_PAYMENT_MONTHS，故内联一份兜底
+  const DEF = (typeof DEFAULT_MONTHLY_PAYMENT_MONTHS !== 'undefined')
+    ? DEFAULT_MONTHLY_PAYMENT_MONTHS
+    : {
+      "40.0": 233, "41.0": 230, "42.0": 226, "43.0": 223, "44.0": 220,
+      "45.0": 216, "46.0": 212, "47.0": 208, "48.0": 204, "49.0": 199,
+      "50.0": 195, "51.0": 190, "52.0": 185, "53.0": 180, "54.0": 175,
+      "55.0": 170, "56.0": 164, "57.0": 158, "58.0": 152, "59.0": 145,
+      "60.0": 139, "61.0": 132, "62.0": 125, "63.0": 117, "64.0": 109,
+      "65.0": 101, "66.0": 93, "67.0": 84, "68.0": 75, "69.0": 65, "70.0": 56
+    }
+  const base = (cfg.monthly_payment_months && cfg.monthly_payment_months[y + '.0'] !== undefined)
+    ? cfg.monthly_payment_months
+    : DEF
+  const v0 = base[y + '.0']
+  const v1 = base[(y + 1) + '.0']
+  if (v0 === undefined) return 139
+  if (m === 0 || v1 === undefined) return v0
+
+  // ③ 非整岁：按月线性折算，保留 1 位小数
+  const v = v0 - (v0 - v1) * m / 12
+  return Math.round(v * 10) / 10
 }
 
 /**
@@ -1030,7 +1139,9 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   // 防御：config 可能未传入
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
-  if (type === 'fw50' || type === 'fw' || type === 'ef50') return 0;
+  // 2026-09-12 修复 P3：原 50 岁退休女性（企业女职工/女工人）同样适用延迟退休。
+  //   国办发〔2025〕5号：1975-01 起出生者，出生年月每往后 2 个月延迟 1 个月，逐步至 55 岁（cap 60）。
+  //   此前此处有一行短路 return 0，使 fw / fw50 / ef50 三类人群延迟量恒为 0，与政策不符。
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
   const delayConfig = config.delay_retirement || {}
@@ -1060,7 +1171,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   let baseYear, step, cap
 
   // 引擎类型标识 → 配置文件键名映射
-  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw55': 'female_worker' }
+  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw50': 'female_worker', 'ef50': 'female_worker', 'fw55': 'female_worker' }
   const delayConfigKey = delayKeyMap[type] || type
 
   // 优先使用配置文件的参数
@@ -1079,9 +1190,15 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 女干部延迟36个月
         break
       case 'fw55':
-        baseYear = 1975; step = 2; cap = 60  // 灵活就业女55岁退休
+        // 原法定 55 岁女职工（女干部 / 灵活就业女）→ 1970-01 起每 4 个月延 1 个月，至 58 岁
+        // 2026-09-12 修复：原为 1975/2/60（那是原法定 50 岁女工人的参数），与 baseAge=55 自相矛盾。
+        // 成因：ace9938 提交说明称「fw55默认参数 baseYear=1975→1970, step=2→4, cap=60→36」，
+        // 但该提交实际未改动引擎文件，只删除了 31 省的 delay_retirement 配置 → 参数就此丢失。
+        baseYear = 1970; step = 4; cap = 36
         break
       case 'fw':
+        case 'fw50':
+        case 'ef50':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
         break
       default:
@@ -1093,10 +1210,13 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
 
   // 计算出生年月与基准年份的差值（月）
   const diff = (birthYear - baseYear) * 12 + (birthMonth - 1)
-  if (diff <= 0) return 0
+  if (diff < 0) return 0
 
   // 阶梯计算延迟月数
-  const delay = Math.floor((diff - 1) / step) + 1
+  // 国办发〔2025〕5号附表：基准月的当月起即延迟 1 个月
+  //   male 1965-01 → 60岁1个月；1965-05 → 60岁2个月；1976-09 及以后 → 63岁（cap 36）
+  // 2026-09-12 修复：原式 floor((diff-1)/step)+1 使每组首月少算 1 个月（出生月 1/5/9 月）
+  const delay = Math.floor(diff / step) + 1
   return Math.min(delay, cap)
 }
 
@@ -1190,13 +1310,14 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
  * @returns {Object} 退休日期 { year, month }
  */
 function getRetireDate(birthYear, birthMonth, totalMonths) {
-  const year = birthYear + Math.floor(totalMonths / 12)
-  const month = birthMonth + (totalMonths % 12)
-
-  return {
-    year,
-    month: month > 12 ? month - 12 : month
-  }
+  // 2026-09-12 修复：原实现 `month = birthMonth + (totalMonths % 12)`，当和 > 12 时只回拨月份、
+  // 未给年份进位 —— 例如「1965-12 生 · 60岁3个月」被算成 2025-03（应为 2026-03），
+  // 与同函数返回的 ageStr「60岁3个月」自相矛盾。
+  // 该错误经 legalDate 传染到：缴费年限（calcYears）、计发基数取值年份、社平取值年份、
+  // 最低缴费年限判断，以及弹性提前退休日期（flexDate）。
+  // 改用总月数直接换算，进位天然正确。
+  const t = birthYear * 12 + (birthMonth - 1) + totalMonths
+  return { year: Math.floor(t / 12), month: (t % 12) + 1 }
 }
 
 /**
@@ -1230,12 +1351,47 @@ function getMinYears(retireYear, config) {
   const minYearsTable = config.min_years || {}
   if (minYearsTable[retireYear] !== undefined) return minYearsTable[retireYear]
 
-  // 默认逻辑
-  if (retireYear < 2025) return 15
-  return 20
+  // 默认逻辑（政策：《国务院关于渐进式延迟法定退休年龄的办法》第二条 +
+  //          人社部《延迟法定退休年龄30问》第11、12条）
+  //   2029-12-31 前退休：最低缴费年限仍为 15 年
+  //   2030-01-01 起：每年提高 6 个月，15→20 年，2039 年起固定 20 年
+  // ⚠️ 修复 2026-09-14：原实现「retireYear >= 2025 一律返回 20」，
+  //    使 2025-2029 退休被误判为 20 年、2030-2038 缺失渐变档，仅四川因自带 min_years 表正确。
+  if (retireYear <= 2029) return 15
+  if (retireYear >= 2039) return 20
+  return 15 + (retireYear - 2029) * 0.5
 }
 
 // ==================== 基础数据查询 ====================
+
+/**
+ * 推断「未来计发基数」的年增长率（外推率）
+ *
+ * 纪律（2026-09-14 立）：**未发布年份不写固定值**，一律按「上一年已公布的增幅」复合外推。
+ *   - 取该基数表最近两个已公布年份的增幅（即 rates[last] / rates[prev] - 1）
+ *   - 尾部「预发年」（与上一年同值，说明官方尚未公布新基数）不参与计算，往前跳过
+ *   - 夹到 [0, 3%]：个别省单年跳变（如新疆 2025 较 2024 +9.01%）不应把远期基数推到离谱
+ *   - 历史数据不足或异常 → 回退 config.growth_rate，再回退 0.02
+ *
+ * @param {Object} rates - 年份→基数 的映射（全省表或城市表）
+ * @param {Object} config - 省份配置
+ * @returns {number} 年增长率（小数）
+ */
+function inferGrowthRate(rates, config) {
+  const fallback = (config && config.growth_rate != null) ? config.growth_rate : 0.02
+  if (!rates || typeof rates !== 'object') return fallback
+  const ks = Object.keys(rates).map(Number)
+    .filter(y => y >= 2000 && typeof rates[y] === 'number' && isFinite(rates[y]) && rates[y] > 0)
+    .sort((a, b) => a - b)
+  // 跳过尾部预发年（与上一年同值）
+  while (ks.length > 2 && rates[ks[ks.length - 1]] === rates[ks[ks.length - 2]]) ks.pop()
+  if (ks.length < 2) return fallback
+  const last = ks[ks.length - 1]
+  const prev = ks[ks.length - 2]
+  const g = rates[last] / rates[prev] - 1
+  if (!isFinite(g)) return fallback
+  return Math.max(0, Math.min(g, 0.03))
+}
 
 /**
  * 获取指定年份的计发基数
@@ -1299,7 +1455,9 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+  // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
+  const GROWTH_RATE = inferGrowthRate(provRates, config)
+  const CITY_GROWTH_RATE = cityRates ? inferGrowthRate(cityRates, config) : GROWTH_RATE
 
   // 2.1 计发基数外推规则（全省/城市统一执行）
   // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
@@ -1315,7 +1473,8 @@ function getBase(city, year, config, sourceField = 'base_rates') {
       return baseVal
     }
     const diff = year - lastYear
-    return Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100
+    const g = useCity ? CITY_GROWTH_RATE : GROWTH_RATE
+    return Math.round(baseVal * Math.pow(1 + g, diff) * 100) / 100
   }
 
 
@@ -1324,7 +1483,7 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     if (cityKeys[i] <= year) {
       const baseVal = cityRates[cityKeys[i]]
       const diff = year - cityKeys[i]
-      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + CITY_GROWTH_RATE, diff) * 100) / 100 : baseVal
     }
   }
   // 从全省向前找
@@ -1367,9 +1526,9 @@ function getAccRate(year, config) {
     return UNIFIED_INTEREST_RATES[year]
   }
 
-  // 未来年份 → 取最新已知（2025 = 1.50%）
-  if (year > 2025) {
-    return UNIFIED_INTEREST_RATES[2025]
+  // 未来年份 → 取最新已知（2026 = 2.60%）
+  if (year > 2026) {
+    return UNIFIED_INTEREST_RATES[2026]
   }
 
   // 兜底
@@ -1711,7 +1870,7 @@ function calculate(config, inputData) {
     const yDec = roundingRules.years_decimal
     const iDec = roundingRules.index_decimal
     const rDec = roundingRules.result_decimal
-
+    
     // 年限取整（总年限、视同年限、建账前年限）
     // years_round_mode: 'ceil' = 只进不退（向上取整到指定位数，例：安徽 40年5月=40.4167→40.5）
     //                    'round'(默认) = 四舍五入
@@ -1881,7 +2040,7 @@ function calculate(config, inputData) {
 
   // 重庆独生子女增发：3% × (基础+个人+过渡)
   // 由 case 的 oneChild 字段控制，而非 province 全局开关
-  if (config.province === 'chongqing' && data.oneChild) {
+  if (config.province === 'chongqing' && data.oneChild && transPension.amount > 0) {
     const oneChildBase = basicPension.amount + personalAccount.amount + transPension.amount
     const oneChildAmount = Math.round(oneChildBase * 0.03 * 100) / 100
     specialAddition = {
@@ -1892,8 +2051,10 @@ function calculate(config, inputData) {
 
   // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)
   // 依据：黔劳社厅发〔2006〕20号；全省独生子女父母退休时按本人基本养老金的5%加发
-  // 由 province 全局开关（special_addition.enabled）控制
-  if (config.province === 'guizhou' && config.modules?.special_addition?.enabled) {
+  // ⚠️ 属**条件性待遇**，须持《独生子女父母光荣证》方可享受。
+  //    与重庆(3%)、海南(5%/10%)同性质，二者均由 data.oneChild 把关；
+  //    贵州此前漏了该判断，导致默认人人加发 5%（2026-09-19 修正）。
+  if (config.province === 'guizhou' && config.modules?.special_addition?.enabled && data.oneChild) {
     const gzBase = basicPension.amount + personalAccount.amount + transPension.amount
     const gzAmount = Math.round(gzBase * 0.05 * 100) / 100
     specialAddition = {
@@ -1933,6 +2094,13 @@ function calculate(config, inputData) {
   // 非公式计算项，按退休年度由输入提供，直接计入月基本养老金总额；其他省份无此项
   const currentYearIncrease = ((config.province === 'sh' || config.province === 'shanghai') && inputData.currentYearIncrease)
     ? Number(inputData.currentYearIncrease) : 0
+  // 年度补贴 / 采暖季补贴（冬季取暖补贴等）：按年一次性发放，**不进月领**
+  const annualSubsidies = calcAnnualSubsidies({
+    config,
+    location: city || 'prov',
+    retireYear: legalDate.year
+  })
+
   const rawSum = basicPension.amount + extraPension.amount + personalAccount.amount + transPension.amount + specialAddition.amount + adjustmentFund.amount + transAdjustment + currentYearIncrease
   // 浙江：见分进角补足 — 合计金额向上取整到角（0.1元）
   const total = config.round_to_jiao
@@ -2024,6 +2192,7 @@ function calculate(config, inputData) {
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
       currentYearIncrease: currentYearIncrease,
+      annualSubsidies: annualSubsidies,
       total: total,
       totalYears,
       actualYears,
@@ -2048,6 +2217,7 @@ function calculate(config, inputData) {
       specialAddition: specialAddition,
       adjustmentFund: adjustmentFund,
       transitionalAdjustment: transAdjustment,
+      annualSubsidies: annualSubsidies,
       total: flexTotal,
       totalYears: flexTotalYears,
       actualYears: flexActualYears,

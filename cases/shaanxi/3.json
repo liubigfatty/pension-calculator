@@ -1,29 +1,33 @@
 {
-  "case_id": "shaanxi-xian-2024-male",
+  "case_id": "shaanxi-xian-202511-female",
   "province": "shaanxi",
-  "gender": "男",
-  "birth": "1964年12月",
-  "work_start": "1984年11月",
-  "retire_year": 2024,
-  "retire_month": 12,
-  "total_years": 40.1667,
-  "sight_years": 8.1667,
-  "personal_account": 118079.42,
-  "months": 139,
-  "expected": {
-    "basic_pension": 2666.06,
-    "personal_pension": 849.49,
-    "transitional_pension": 634.32,
-    "total": 4149.87
+  "city": "西安",
+  "gender": "女",
+  "birth": "1975年11月",
+  "work_start": "1996年10月",
+  "retire_year": 2025,
+  "retire_month": 11,
+  "total_years": 29.1667,
+  "sight_years": 0,
+  "personal_account": 97593.95,
+  "months": 195,
+  "avg_index": 0.583,
+  "base_number": 7881,
+  "base_prov": 7881,
+  "payment_start": {
+    "year": 1996,
+    "month": 10
   },
-  "notes": "陕西省西安市雁塔区真实表，男1964-12生，1984-11参工，2024-12退休(60岁)。视同8年2月=8.1667年(1984-11至1992-12)。累计40年2月=40.1667年。2024年基数7727，指数0.718，个账118079.42。基础=(7727+5547.99)/2×40.1667×1%=2666.06；过渡=5547.99×8.1667×1.4%=634.32。陕政发〔2006〕20号。",
-  "birth_year": 1964,
-  "birth_month": 12,
-  "work_year": 1984,
-  "work_month": 11,
-  "avg_index": 0.718,
-  "base_number": 7727,
-  "base_prov": 7727,
-  "recalibrated": false,
-  "verified": true
+  "expected": {
+    "basic_pension": 1819.36,
+    "personal_pension": 500.48,
+    "transitional_pension": 0,
+    "total": 2319.84
+  },
+  "notes": "陕西省西安市真实核定表，女1975-11生，1996-10-24参加工作并同时缴费，2025-11-16退休(50岁)。缴费年限29年2月=350月；因陕西特殊规则，过渡性养老金年限截止到实际缴费开始时间，故视同=0、过渡=0。2025年预发计发基数7881元。个人账户97593.95/195=500.48。基础=7881×(1+0.583)/2×29.1667×1%=1819.36。",
+  "verified": true,
+  "birth_year": 1975,
+  "birth_month": 11,
+  "work_year": 1996,
+  "work_month": 10
 }

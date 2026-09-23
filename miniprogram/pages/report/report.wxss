@@ -485,6 +485,16 @@
   margin-top: 12rpx;
   display: block;
 }
+.rate-note {
+  font-size: 21rpx;
+  color: #A08860;
+  line-height: 1.6;
+  margin-top: 10rpx;
+  padding: 12rpx 16rpx;
+  background: #FFF8E8;
+  border-radius: 8rpx;
+  display: block;
+}
 
 .green-color { color: #3A8B5C; }
 

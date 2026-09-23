@@ -34,3 +34,22 @@ backup_*/
 
 # Windows 保留设备名（junction层误生成，不可删）
 nul
+
+# CLI 上传脚本产物
+.upload-info.json
+
+# 运行产物
+reports/
+deliverables/
+
+# 运行产物
+reports/
+deliverables/
+
+# 云函数 download 回的验证副本（2026-09-20）
+_verify_dl/
+.upload-info*.json
+_backup_semantics_20260920/
+
+# 临时抓取目录（2026-09）
+_tmp_online/

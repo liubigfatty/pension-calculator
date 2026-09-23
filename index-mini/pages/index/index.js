@@ -47,6 +47,14 @@ Page({
     startDate: '',
     startYear: '',
     startMonth: '',
+    deemedYears: '',
+    deemedStartYear: '1990',
+    showDeemedStart: false,
+    deemedStartHint: '',
+    showGdCity: false,
+    gdCities: ['全省', '广州', '深圳', '珠海', '汕头', '韶关', '河源', '梅州', '惠州', '汕尾',
+      '东莞', '中山', '江门', '佛山', '阳江', '湛江', '茂名', '肇庆', '云浮', '清远', '潮州', '揭阳'],
+    gdCityIndex: 0,
     yearlyList: [],
     loading: false
   },
@@ -60,13 +68,36 @@ Page({
   onProvChange(e) {
     const provIndex = Number(e.detail.value)
     const prov = this.data.provinces[provIndex]
-    // 断缴年份按0计入平均指数的省份：北京/天津/陕西/浙江/云南
-    const GAP_SET = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
-    const gapHint = GAP_SET.has(prov.slug)
-      ? '提示：' + prov.name + '执行“断缴年份按指数0计入平均指数”规则——中间断缴的年份会拉低您的平均指数，请如实逐年填写。'
-      : ''
-    this.setData({ provIndex, gapHint })
+    // 断缴年份计入平均指数分母的省份（与引擎 PROVINCE_RULES 同步；引擎规则变更需同步此表）
+    //   gapZero(记0): 京/津/陕/浙/云；gapFloor(记0.6): 黑龙江
+    const GAP_ZERO_SET = new Set(['beijing', 'tianjin', 'shaanxi', 'zhejiang', 'yunnan'])
+    const GAP_FLOOR_SET = new Set(['heilongjiang'])
+    let gapHint = ''
+    if (GAP_ZERO_SET.has(prov.slug)) {
+      gapHint = '提示：' + prov.name + '执行"断缴年份按指数0计入平均指数"规则——中间断缴的年份会拉低您的平均指数，请如实逐年填写。'
+    } else if (GAP_FLOOR_SET.has(prov.slug)) {
+      gapHint = '提示：' + prov.name + '执行"断缴年份按指数0.6计入平均指数"规则——中间断缴的年份会按0.6计入分母，请如实逐年填写。'
+    }
+    // 广东城市选择
+    const showGdCity = prov.slug === 'guangdong'
+    // 浙/苏/赣 分段视同指数：需视同起始年
+    let showDeemedStart = false
+    let deemedStartHint = ''
+    if (prov.slug === 'zhejiang' || prov.slug === 'jiangsu' || prov.slug === 'jiangxi') {
+      showDeemedStart = true
+      const label = {
+        zhejiang: '浙江：1992年底前替代指数≈1.279（温州1.1），1993年起1.0',
+        jiangsu: '江苏：1985.6前=1.0、1985.7-1991分段联动',
+        jiangxi: '江西：1992.9前=1.0、1992.10-1995.9按设区市/全省比'
+      }[prov.slug]
+      deemedStartHint = label + '——填写视同起始年以精确取分段值。'
+    }
+    this.setData({ provIndex, gapHint, showGdCity, showDeemedStart, deemedStartHint, gdCityIndex: 0 })
   },
+
+  onDeemedYears(e) { this.setData({ deemedYears: e.detail.value }) },
+  onDeemedStartYear(e) { this.setData({ deemedStartYear: e.detail.value }) },
+  onGdCityChange(e) { this.setData({ gdCityIndex: Number(e.detail.value) }) },
 
   // 首次缴费年月：复用养老金主程序的「年月」时间选择器（picker mode=date fields=month）
   onStartDateChange(e) {
@@ -144,10 +175,15 @@ Page({
       return
     }
 
+    // 视同年 / 分段起始年 / 广东城市
+    const deemedYears = Number(this.data.deemedYears) || 0
+    const deemedStartYear = this.data.deemedStartYear ? Number(this.data.deemedStartYear) : null
+    const gdCity = this.data.showGdCity ? this.data.gdCities[this.data.gdCityIndex] : null
+
     this.setData({ loading: true })
     wx.cloud.callFunction({
       name: 'calcIndex',
-      data: { province, startYear: sy, startMonth: sm, yearlyData },
+      data: { province, startYear: sy, startMonth: sm, yearlyData, deemedYears, deemedStartYear, city: gdCity },
       success: res => {
         this.setData({ loading: false })
         const r = res.result

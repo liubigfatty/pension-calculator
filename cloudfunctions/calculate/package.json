@@ -1,9 +1,7 @@
 {
   "name": "calculate",
   "version": "1.0.0",
-  "description": "养老金计算云函数",
+  "description": "养老金计算云函数（纯计算，零第三方依赖；不使用 wx-server-sdk）",
   "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
+  "dependencies": {}
 }

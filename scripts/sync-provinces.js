@@ -50,16 +50,56 @@ function extractBlockText(file, name) {
   return txt.slice(start, i + 1); // 含 const NAME = { ... 闭合 }
 }
 
+// ---------- 通用：抽取真相源中全部顶层 const（含对象/数组/数值），供 eval 注入上下文 ----------
+// 解决 guangdong 等省 AVG_SALARY_HISTORY 引用 SHENZHEN_AVG_SALARY 等外部常量导致 eval 崩溃的预存 bug
+function extractAllConsts(file) {
+  const txt = fs.readFileSync(file, 'utf8');
+  const map = {};
+  const re = /const\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*/g;
+  let m;
+  while ((m = re.exec(txt))) {
+    const name = m[1];
+    if (name in map) continue;
+    let k = m.index + m[0].length;
+    while (k < txt.length && /\s/.test(txt[k])) k++;
+    if (txt[k] === '{' || txt[k] === '[') {
+      const close = txt[k] === '{' ? '}' : ']';
+      let depth = 0, i = k;
+      for (; i < txt.length; i++) {
+        if (txt[i] === '{' || txt[i] === '[') depth++;
+        else if (txt[i] === close) { depth--; if (depth === 0) break; }
+      }
+      const inner = txt.slice(k, i + 1);
+      try {
+        const ctx = { ...map };
+        const ctxKeys = Object.keys(ctx);
+        const fn = new Function(...ctxKeys, 'return ' + inner + ';');
+        map[name] = fn(...ctxKeys.map(k2 => ctx[k2]));
+      } catch (e) { /* 跳过无法求值的函数型 const */ }
+    } else {
+      let j = k;
+      while (j < txt.length && txt[j] !== ';' && txt[j] !== '\n') j++;
+      const val = txt.slice(k, j).trim();
+      try { map[name] = eval(val); } catch (e) { /* 跳过 */ }
+    }
+  }
+  return map;
+}
+
 // ---------- 通用：把真相源的某块求值为对象（用于写入 JSON） ----------
 function extractObj(file, name) {
   const b = extractBlockText(file, name);
   if (!b) return undefined;
   const open = b.indexOf('{');
-  const inner = b.slice(open + 1, b.lastIndexOf('}'))
+  const inner = b.slice(open, b.lastIndexOf('}') + 1)
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .replace(/\/\/[^\n]*/g, '');
-  try { return eval('({' + inner + '})'); }
-  catch (e) { return undefined; }
+  const consts = extractAllConsts(file);
+  const keys = Object.keys(consts);
+  try {
+    const fn = new Function(...keys, 'return ' + inner + ';');
+    return fn(...keys.map(k => consts[k]));
+  } catch (e) { return undefined; }
 }
 
 // ---------- .js 副本：用真相源块整体替换 const NAME = {...}; ----------
@@ -95,8 +135,13 @@ function extractAuth(file) {
     if (txt[i] === '{') depth++;
     else if (txt[i] === '}') { depth--; if (depth === 0) break; }
   }
-  const inner = txt.slice(bs + 1, i).replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-  return eval('({' + inner + '})');
+  const inner = txt.slice(bs, i + 1).replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  const consts = extractAllConsts(file);
+  const keys = Object.keys(consts);
+  try {
+    const fn = new Function(...keys, 'return ' + inner + ';');
+    return fn(...keys.map(k => consts[k]));
+  } catch (e) { return {}; }
 }
 
 function toJsBlock(obj) {
@@ -137,8 +182,18 @@ function syncJsonBaseRates(file, provBaseObj) {
   fs.writeFileSync(file, JSON.stringify(j, null, 2));
 }
 
+// ---------- account_start / cutoff_date：从真相源 .js 同步到 .json 镜像（建账时间同构） ----------
+// ⚠️ 历史坑：sync 脚本原只同步 AVG_SALARY_HISTORY 与 PROV_BASE，漏同步 account_start/cutoff_date，
+//    导致 .json 镜像的 account_start 长期漂移（如西藏曾错为 2005-07）。现补上。
+function syncJsonAccount(file, accountStart, cutoffDate) {
+  const j = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (accountStart) j.account_start = accountStart;
+  if (cutoffDate) j.cutoff_date = cutoffDate;
+  fs.writeFileSync(file, JSON.stringify(j, null, 2));
+}
+
 const provs = fs.readdirSync(AUTH).filter(f => f.endsWith('.js')).map(f => f.replace(/\.js$/, '')).sort();
-let ok = 0, skip = 0, baseBlocks = 0;
+let ok = 0, skip = 0, baseBlocks = 0, accountBlocks = 0;
 
 const targets = [
   { name: 'provinces (root json)', dir: PROVJSON, kind: 'json' },
@@ -166,6 +221,9 @@ for (const p of provs) {
     } else {
       syncJsonAvg(fp, authAvg); ok++;
       if (provBase) { syncJsonBaseRates(fp, provBase); baseBlocks++; }
+      const accountStart = extractObj(authFile, 'ACCOUNT_START');
+      const cutoffDate = extractObj(authFile, 'CUTOFF_DATE');
+      syncJsonAccount(fp, accountStart, cutoffDate); accountBlocks++;
     }
   }
 }
@@ -176,4 +234,4 @@ try {
   console.log('build-web.js 执行失败：', e.message);
 }
 
-console.log('SYNC_DONE avg=' + ok + ' base=' + baseBlocks + ' skip=' + skip);
+console.log('SYNC_DONE avg=' + ok + ' base=' + baseBlocks + ' account=' + accountBlocks + ' skip=' + skip);

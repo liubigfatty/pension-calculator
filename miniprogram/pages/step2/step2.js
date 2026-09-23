@@ -8,8 +8,8 @@ const { CITY_TYPE_CONFIG, DOUBLE_BASE_PROVINCES, PROV_BASE_LATEST } = require('.
 // 2016年及以后：全国统一记账利率（人社部公布）
 const NATIONAL_INTEREST_RATES = {
   2016: 0.0831, 2017: 0.0712, 2018: 0.0829, 2019: 0.0761,
-  2020: 0.0604, 2021: 0.0669, 2022: 0.0397, 2023: 0.0397,
-  2024: 0.0262, 2025: 0.0150
+  2020: 0.0604, 2021: 0.0669, 2022: 0.0612, 2023: 0.0397,
+  2024: 0.0262, 2025: 0.0150, 2026: 0.0260
 }
 
 // 2016年之前全国统一记账利率估算值（分段均值）
@@ -27,8 +27,8 @@ function getInterestRate(year) {
     return NATIONAL_INTEREST_RATES[year]
   }
   if (PRE2016_RATES[year] !== undefined) return PRE2016_RATES[year]
-  // 2016年后：用最近已知值（2025=1.50%）
-  if (year > 2025) return NATIONAL_INTEREST_RATES[2025]
+  // 未来年份 → 取最新已知值与引擎保持一致（2026 = 2.60%）
+  if (year > 2026) return NATIONAL_INTEREST_RATES[2026]
   // 1998年前：兜底2.5%
   return 0.025
 }
@@ -403,6 +403,9 @@ Page({
         }
       })
       wx.hideLoading()
+      console.log('[onEstimateBalance] 请求参数:', JSON.stringify({
+        province, cityType: cityType || 'prov', gender, identity, genderType, birthDate, workStartDate, averageIndex
+      }))
 
       if (res.result && res.result.success) {
         const balance = res.result.data.estimatedBalance
@@ -413,12 +416,25 @@ Page({
           wx.showToast({ title: '估算失败，请手动输入', icon: 'none' })
         }
       } else {
-        wx.showToast({ title: '估算失败，请稍后重试', icon: 'none' })
+        // 云端返回 success:false —— 把真实原因显示出来，别只说"稍后重试"
+        console.error('[onEstimateBalance] 云函数返回失败:', JSON.stringify(res.result))
+        const msg = (res.result && res.result.message) ? String(res.result.message) : '云端未返回原因'
+        wx.showModal({
+          title: '估算失败',
+          content: msg,
+          showCancel: false,
+          confirmText: '知道了'
+        })
       }
     } catch (err) {
       wx.hideLoading()
       console.error('[onEstimateBalance] 云函数调用异常:', err)
-      wx.showToast({ title: '网络异常，请重试', icon: 'none' })
+      wx.showModal({
+        title: '云函数调用失败',
+        content: (err && err.errMsg) ? String(err.errMsg).slice(0, 200) : '未知错误',
+        showCancel: false,
+        confirmText: '知道了'
+      })
     }
   },
 

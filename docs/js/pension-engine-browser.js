@@ -29,10 +29,11 @@ const NATIONAL_INTEREST_RATES = {
   2019: 0.0761,
   2020: 0.0604,
   2021: 0.0669,
-  2022: 0.0397,
+  2022: 0.0612,
   2023: 0.0397,
   2024: 0.0262,
-  2025: 0.0150
+  2025: 0.0150,  // 1.50%（官方：多地人社局 2025 年度社保信息披露）
+  2026: 0.0260   // 2.60%（内蒙古/广东社保系统台账反推，人社部尚未正式发文）
 }
 
 // ==================== 核心计算函数 ====================
@@ -769,24 +770,67 @@ function calcAdjustmentFund(params) {
 // ==================== 退休时间计算 ====================
 
 /**
- * 获取计发月数（精确到月份，直接查表）
- * @param {number} ageExact - 退休年龄（精确到小数点，如50.0833）
- * @param {Object} config - 省份配置
+ * 获取计发月数（精确到月）
+ *
+ * 依据：
+ *   ① 整岁基准表 = 国发〔2005〕38号 附表（40~70 岁，DEFAULT_MONTHLY_PAYMENT_MONTHS）
+ *   ② 非整岁（延迟退休后普遍现象，如 60 岁 3 个月）按月线性折算：
+ *        实际计发月数 = 上一整岁值 − (上一整岁值 − 下一整岁值) ÷ 12 × 超出月数
+ *      人社部延迟退休配套口径，各地社保系统统一采用、保留 1 位小数
+ *      （实证：深圳养老金核定单「60岁4月 → 计发月数 136.7」；
+ *        官方《2025年1月后退休个人账户养老金计发月份表》50岁6月=192.5、60岁3月=137.3）
+ *
+ * ⚠️ 2026-09-14 修正：此前实现是「四舍五入到整岁再查表」，
+ *    60岁3个月会取 139（应为 137.3）、50岁4个月取 195（应为 193.3），
+ *    导致延迟退休人群个人账户养老金被系统性低估约 1.3%。
+ *
+ * @param {number} ageExact - 退休年龄（十进制年，如 60.25 = 60 岁 3 个月）
+ * @param {Object} config - 省份配置（可选 monthly_payment_months 覆盖）
  * @returns {number} 计发月数
  */
 function getRetireMonths(ageExact, config) {
-  const table = config.monthly_payment_months || {}
+  const cfg = config || {}
+  // 可选精细表：键为总月数（"723"）或「岁.月」（"60.3"）
+  const fine = cfg.monthly_payment_months
+    || (typeof STANDARD_MONTHLY_PAYMENT_MONTHS !== 'undefined' ? STANDARD_MONTHLY_PAYMENT_MONTHS : null)
 
-  // 将精确年龄四舍五入到小数点后1位（月份），用于直接查表
-  // 注意：表键格式为 "50.0"、"51.1" 等（有小数点），需确保格式一致
-  const keyAge = Math.round(ageExact * 10) / 10
-  // 整数部分直接写 .0，例如 50 → "50.0"，50.1 → "50.1"
-  const keyStr = keyAge % 1 === 0 ? keyAge + '.0' : String(keyAge)
+  // 归一化到「整岁 + 超出月数」，避免十进制年的浮点误差
+  let totalM = Math.round((ageExact || 0) * 12)
+  let y = Math.floor(totalM / 12)
+  let m = totalM % 12
 
-  if (table[keyStr] !== undefined) return table[keyStr]
+  // 边界：低于 40 周岁按 40 周岁、高于 70 周岁按 70 周岁（沪人社规〔2021〕27号）
+  if (y < 40) { y = 40; m = 0 } else if (y > 70) { y = 70; m = 0 } else if (y === 70) { m = 0 }
 
-  // 回退默认值
-  return 139
+  // ① 精细表优先（两种键格式都支持）
+  if (fine) {
+    if (fine[String(y * 12 + m)] !== undefined) return fine[String(y * 12 + m)]
+    if (fine[y + '.' + m] !== undefined) return fine[y + '.' + m]
+  }
+
+  // ② 整岁基准表（国发〔2005〕38号）
+  //    副本（浏览器 shim）可能没有 DEFAULT_MONTHLY_PAYMENT_MONTHS，故内联一份兜底
+  const DEF = (typeof DEFAULT_MONTHLY_PAYMENT_MONTHS !== 'undefined')
+    ? DEFAULT_MONTHLY_PAYMENT_MONTHS
+    : {
+      "40.0": 233, "41.0": 230, "42.0": 226, "43.0": 223, "44.0": 220,
+      "45.0": 216, "46.0": 212, "47.0": 208, "48.0": 204, "49.0": 199,
+      "50.0": 195, "51.0": 190, "52.0": 185, "53.0": 180, "54.0": 175,
+      "55.0": 170, "56.0": 164, "57.0": 158, "58.0": 152, "59.0": 145,
+      "60.0": 139, "61.0": 132, "62.0": 125, "63.0": 117, "64.0": 109,
+      "65.0": 101, "66.0": 93, "67.0": 84, "68.0": 75, "69.0": 65, "70.0": 56
+    }
+  const base = (cfg.monthly_payment_months && cfg.monthly_payment_months[y + '.0'] !== undefined)
+    ? cfg.monthly_payment_months
+    : DEF
+  const v0 = base[y + '.0']
+  const v1 = base[(y + 1) + '.0']
+  if (v0 === undefined) return 139
+  if (m === 0 || v1 === undefined) return v0
+
+  // ③ 非整岁：按月线性折算，保留 1 位小数
+  const v = v0 - (v0 - v1) * m / 12
+  return Math.round(v * 10) / 10
 }
 
 /**
@@ -801,7 +845,9 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   // 防御：config 可能未传入
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
-  if (type === 'fw50' || type === 'fw') return 0;
+  // 2026-09-12 修复 P3：原 50 岁退休女性（企业女职工/女工人）同样适用延迟退休。
+  //   国办发〔2025〕5号：1975-01 起出生者，出生年月每往后 2 个月延迟 1 个月，逐步至 55 岁（cap 60）。
+  //   此前此处有一行短路 return 0，使 fw / fw50 / ef50 三类人群延迟量恒为 0，与政策不符。
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
   const delayConfig = config.delay_retirement || {}
@@ -831,7 +877,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   let baseYear, step, cap
 
   // 引擎类型标识 → 配置文件键名映射
-  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw55': 'female_worker' }
+  const delayKeyMap = { 'male': 'male', 'fc': 'female_cadre', 'fw': 'female_worker', 'fw50': 'female_worker', 'ef50': 'female_worker', 'fw55': 'female_worker' }
   const delayConfigKey = delayKeyMap[type] || type
 
   // 优先使用配置文件的参数
@@ -850,9 +896,14 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
         baseYear = 1970; step = 4; cap = 36  // 女干部延迟36个月
         break
       case 'fw55':
-        baseYear = 1975; step = 2; cap = 60  // 灵活就业女55岁退休
+        // 2026-09-12 修复：原为 1975/2/60 —— 那是「原 50 岁女职工」的参数，
+        // 与本分支 baseAge=55 自相矛盾（1975 年生人 55 岁已是 2030 年，delay 会爆表）。
+        // 国办发〔2025〕5号：原 55 岁女职工自 1970 年起每 4 个月延迟 1 个月，逐步至 58 岁（cap 36）
+        baseYear = 1970; step = 4; cap = 36  // 灵活就业女 / 女干部 55 岁退休
         break
       case 'fw':
+        case 'fw50':
+        case 'ef50':
         baseYear = 1975; step = 2; cap = 60  // 女工人50岁退休
         break
       default:
@@ -864,10 +915,13 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
 
   // 计算出生年月与基准年份的差值（月）
   const diff = (birthYear - baseYear) * 12 + (birthMonth - 1)
-  if (diff <= 0) return 0
+  if (diff < 0) return 0
 
   // 阶梯计算延迟月数
-  const delay = Math.floor((diff - 1) / step) + 1
+  // 国办发〔2025〕5号附表：基准年 1 月出生即延迟 1 个月，其后每 step 个月加 1 个月
+  // 2026-09-12 修复：原式 floor((diff-1)/step)+1 使每组首月少算 1 个月
+  //   （出生月落 1/5/9 月时命中，占 male/fc 人群约 20.8%）
+  const delay = Math.floor(diff / step) + 1
   return Math.min(delay, cap)
 }
 
@@ -938,13 +992,15 @@ function getRetireTotalMonthsFlex(birthYear, birthMonth, type, maxDelay, config)
  * @returns {Object} 退休日期 { year, month }
  */
 function getRetireDate(birthYear, birthMonth, totalMonths) {
-  const year = birthYear + Math.floor(totalMonths / 12)
-  const month = birthMonth + (totalMonths % 12)
-
-  return {
-    year,
-    month: month > 12 ? month - 12 : month
-  }
+  // 2026-09-12 修复：原实现先算 year = birthYear + floor(totalMonths/12)，
+  // 再算 month = birthMonth + (totalMonths%12)，当 month > 12 时只把月份回拨、
+  // 未给年份进位。例：「1965-12 生 · 60岁3个月」被算成 2025-03（应为 2026-03），
+  // 与同一次返回的 ageStr「60岁3个月」自相矛盾。
+  // 该错误经 legalDate 传染到：缴费年限（calcYears）、计发基数取值年份、社平取值
+  // 年份、最低缴费年限判断、弹性提前退休日期（flexDate）。
+  // 改用总月数直接换算，进位天然正确。
+  const t = birthYear * 12 + (birthMonth - 1) + totalMonths
+  return { year: Math.floor(t / 12), month: (t % 12) + 1 }
 }
 
 /**
@@ -978,9 +1034,15 @@ function getMinYears(retireYear, config) {
   const minYearsTable = config.min_years || {}
   if (minYearsTable[retireYear] !== undefined) return minYearsTable[retireYear]
 
-  // 默认逻辑
-  if (retireYear < 2025) return 15
-  return 20
+  // 默认逻辑（政策：《国务院关于渐进式延迟法定退休年龄的办法》第二条 +
+  //          人社部《延迟法定退休年龄30问》第11、12条）
+  //   2029-12-31 前退休：最低缴费年限仍为 15 年
+  //   2030-01-01 起：每年提高 6 个月，15→20 年，2039 年起固定 20 年
+  // ⚠️ 修复 2026-09-14：原实现「retireYear >= 2025 一律返回 20」，
+  //    使 2025-2029 退休被误判为 20 年、2030-2038 缺失渐变档，仅四川因自带 min_years 表正确。
+  if (retireYear <= 2029) return 15
+  if (retireYear >= 2039) return 20
+  return 15 + (retireYear - 2029) * 0.5
 }
 
 // ==================== 基础数据查询 ====================
@@ -998,8 +1060,8 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   // 2. 新格式（JS模块）：config.PROV_BASE, config.CC_BASE
   let allRates = config[sourceField] || {};
   
-  // 如果是新格式，构建base_rates对象
-  if (config.PROV_BASE || config.CC_BASE) {
+  // 如果是新格式，构建base_rates对象（仅当 sourceField 为 base_rates 时）
+  if ((config.PROV_BASE || config.CC_BASE) && sourceField === 'base_rates') {
     allRates = {
       prov: config.PROV_BASE || {},
     };
@@ -1014,25 +1076,68 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   }
   
   const provRates = allRates['prov'] || (sourceField === 'avg_salary_history' ? allRates : {});
-  const cityRates = allRates[city];
+  // 城市名归一化：尝试多种匹配方式
+  let cityKey = city;
+  if (cityKey && allRates[cityKey] === undefined) {
+    // 方式1：去掉末尾的"省"或"市"
+    const normalized = city.replace(/[省市]$/, '');
+    if (allRates[normalized] !== undefined) {
+      cityKey = normalized;
+    } else {
+      // 方式2：尝试拼音键（如 shenyang、dalian）
+      const lower = city.toLowerCase();
+      const foundKey = Object.keys(allRates).find(k => k.toLowerCase() === lower);
+      if (foundKey) {
+        cityKey = foundKey;
+      } else {
+        // 方式3：尝试去掉"省"/"市"后再查拼音
+        const normalizedLower = normalized.toLowerCase();
+        const foundKey2 = Object.keys(allRates).find(k => k.toLowerCase() === normalizedLower);
+        if (foundKey2) {
+          cityKey = foundKey2;
+        }
+      }
+    }
+  }
+  const cityRates = cityKey && allRates[cityKey] !== undefined ? allRates[cityKey] : null;
 
   // 1. 精确年份匹配
   if (cityRates && cityRates[year] !== undefined) return cityRates[year]
   if (provRates[year] !== undefined) return provRates[year]
 
-  // 2. 向前回退到最近年份（城市表优先，再查全省）
+  // 2. 向前回退到最近年份，若晚于该年则按2.0%社平增长率外推（城市表优先，再查全省）
   const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
   const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
-  // 找到最近年份后，若晚于该年则按2.0%社平增长率外推
-  const GROWTH_RATE = config.growth_rate != null ? config.growth_rate : 0.02
+  // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
+  const GROWTH_RATE = inferGrowthRate(provRates, config)
+  const CITY_GROWTH_RATE = cityRates ? inferGrowthRate(cityRates, config) : GROWTH_RATE
+
+  // 2.1 计发基数外推规则（全省/城市统一执行）
+  // - 退休年 = 数据最大年+1：视为“预发年”（当年基数尚未公布），直接用上年基数原值，不上浮
+  // - 退休年 > 数据最大年+1：远期退休，按 GROWTH_RATE 统一前推最后已知基数（与数据范围内外推一致）
+  const lastCityYear = cityKeys[cityKeys.length - 1]
+  const lastProvYear = provKeys[provKeys.length - 1]
+  const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
+  if (year > lastYear) {
+    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
+    if (year === lastYear + 1) {
+      // 预发年：用上年（数据最大年）基数原值
+      return baseVal
+    }
+    const diff = year - lastYear
+    const g = useCity ? CITY_GROWTH_RATE : GROWTH_RATE
+    return Math.round(baseVal * Math.pow(1 + g, diff) * 100) / 100
+  }
+
 
   // 从城市表向前找
   for (let i = cityKeys.length - 1; i >= 0; i--) {
     if (cityKeys[i] <= year) {
       const baseVal = cityRates[cityKeys[i]]
       const diff = year - cityKeys[i]
-      return diff > 0 ? Math.round(baseVal * Math.pow(1 + GROWTH_RATE, diff) * 100) / 100 : baseVal
+      return diff > 0 ? Math.round(baseVal * Math.pow(1 + CITY_GROWTH_RATE, diff) * 100) / 100 : baseVal
     }
   }
   // 从全省向前找
@@ -1044,13 +1149,35 @@ function getBase(city, year, config, sourceField = 'base_rates') {
     }
   }
 
-  // 3. 所有年份都大于查询年份 → 回退到最后已知年份
-  const lastCityYear = cityKeys[cityKeys.length - 1]
-  const lastProvYear = provKeys[provKeys.length - 1]
+  // 3. 所有年份都大于查询年份 → 回退到最早已知年份（查询年份早于数据开始）
+  const firstCityYear = cityKeys[0]
+  const firstProvYear = provKeys[0]
+  if (year < (firstCityYear != null ? firstCityYear : firstProvYear)) {
+    // 查询年份早于数据范围，用最早已知值
+    if (cityRates && firstCityYear != null) return cityRates[firstCityYear]
+    return provRates[firstProvYear] || 0
+  }
+  // 4. 所有年份都小于查询年份 → 回退到最后已知年份（查询年份晚于数据结束）
   if (lastCityYear > lastProvYear) {
     return cityRates[lastCityYear] || provRates[lastProvYear] || 0
   }
   return provRates[lastProvYear] || 0
+}
+
+function inferGrowthRate(rates, config) {
+  const fallback = (config && config.growth_rate != null) ? config.growth_rate : 0.02
+  if (!rates || typeof rates !== 'object') return fallback
+  const ks = Object.keys(rates).map(Number)
+    .filter(y => y >= 2000 && typeof rates[y] === 'number' && isFinite(rates[y]) && rates[y] > 0)
+    .sort((a, b) => a - b)
+  // 跳过尾部预发年（与上一年同值）
+  while (ks.length > 2 && rates[ks[ks.length - 1]] === rates[ks[ks.length - 2]]) ks.pop()
+  if (ks.length < 2) return fallback
+  const last = ks[ks.length - 1]
+  const prev = ks[ks.length - 2]
+  const g = rates[last] / rates[prev] - 1
+  if (!isFinite(g)) return fallback
+  return Math.max(0, Math.min(g, 0.03))
 }
 
 /**
@@ -1499,7 +1626,7 @@ function calculate(config, inputData) {
 
   // 重庆独生子女增发：3% × (基础+个人+过渡)
   // 由 case 的 oneChild 字段控制，而非 province 全局开关
-  if (config.province === 'chongqing' && data.oneChild) {
+  if (config.province === 'chongqing' && data.oneChild && transPension.amount > 0) {
     const oneChildBase = basicPension.amount + personalAccount.amount + transPension.amount
     const oneChildAmount = Math.round(oneChildBase * 0.03 * 100) / 100
     specialAddition = {

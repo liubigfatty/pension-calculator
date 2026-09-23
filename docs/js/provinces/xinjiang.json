@@ -176,5 +176,9 @@
       "quancaliber": "全口径数据已更新至2024年（m12333.cn汇总表）。"
     }
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  }
 }

@@ -3,7 +3,7 @@
   "name": "青海省",
   "verified_count": 0,
   "account_start": {
-    "year": 1998,
+    "year": 1996,
     "month": 1
   },
   "viewing_start": {
@@ -182,5 +182,9 @@
     "2023": 8643,
     "2024": 8816
   },
-  "interest_rates": {}
+  "interest_rates": {},
+  "cutoff_date": {
+    "year": 1995,
+    "month": 12
+  }
 }

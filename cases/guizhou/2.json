@@ -1,0 +1,30 @@
+{
+  "case_id": "guizhou-2025-male",
+  "province": "guizhou",
+  "city": "贵州",
+  "gender": "男",
+  "birth": "1965年10月",
+  "work_start": "1984年10月",
+  "retire_year": 2025,
+  "retire_month": 10,
+  "total_years": 41.08,
+  "sight_years": 8.1667,
+  "pre_account_years": 13.25,
+  "personal_account": 79111.16,
+  "months": 139,
+  "avg_index": 0.6824,
+  "base_number": 7324.5,
+  "base_prov": 7324.5,
+  "expected": {
+    "basic_pension": 2531.09,
+    "personal_pension": 569.15,
+    "transitional_pension": 927.17,
+    "total": 4228.78
+  },
+  "notes": "贵州省企业职工退休核定表，男1965-10-02生，1984-10-01参工，1992-12首次缴费，1998-01建账，2025-10-21退休(60岁)。视同缴费年限98月=8.17年；实际缴费395月=32.92年；合计493月=41.08年。2025年计发基数=2024年全口径社平7324.5元；平均缴费指数0.6824；指数化月平均工资4998.24元。基础=(4998.24+7324.5)/2×41.08×1%=2531.09；个人账户=79111.16/139=569.15；过渡=4998.24×13.25×1.4%=927.17。核定表'月基本养老金合计'4027.41元；独生子女父母加发201.37元；引擎total=4228.78元已含5%独生子女加发。",
+  "verified": true,
+  "birth_year": 1965,
+  "birth_month": 10,
+  "work_year": 1984,
+  "work_month": 10
+}

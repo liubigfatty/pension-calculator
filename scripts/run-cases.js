@@ -91,6 +91,7 @@ function mapCaseToInput(c, provConfig) {
     tibetWorkYears:  c.tibet_work_years ?? null,
     extraRate:       c.extra_rate     ?? null,
     accountStart:    c.account_start   ?? null,
+    paymentStart:    c.payment_start   ?? null,  // 陕西特殊：实际缴费开始时间
     xuzhang:         c.xuzhang        ?? null,
     oldIndexSalary:  c.old_index_salary ?? null,
     enjoymentRatio:  c.enjoyment_ratio ?? null,
@@ -102,6 +103,7 @@ function mapCaseToInput(c, provConfig) {
     oneChildType:    c.one_child_type ?? c.oneChildType ?? 'parent',
     oneChildAvgPension: c.one_child_avg_pension ?? c.oneChildAvgPension ?? null,
     extraFixedAmount: c.extra_fixed_amount ?? null,  // 四川无子女定额补贴等
+    currentYearIncrease: c.current_year_increase != null ? c.current_year_increase : null,  // 上海当年增加养老金（每年地方固定额）
     intellectual:    c.intellectual ?? false,
   };
 }
@@ -179,20 +181,35 @@ function runCase(prov, c, file) {
 
 // ===== 主流程 =====
 function main() {
+  // 支持单省/单案例过滤：node run-cases.js <province> [<caseFile>]
+  // 无参数时仍跑全量，行为不变。
+  const args = process.argv.slice(2);
+  const filterProv = args[0] || null;
+  const filterFile = args[1] || null;
+
   const casesDir = './cases';
   if (!fs.existsSync(casesDir)) { console.error('❌ cases/ 不存在'); process.exit(1); }
 
-  const provinces = fs.readdirSync(casesDir)
+  let provinces = fs.readdirSync(casesDir)
     .filter(f => fs.statSync(path.join(casesDir, f)).isDirectory());
+  if (filterProv) {
+    provinces = provinces.filter(p => p === filterProv);
+    if (provinces.length === 0) {
+      console.error(`❌ 未找到省份目录: ${filterProv}`);
+      process.exit(1);
+    }
+  }
 
   let total = 0, pass = 0, fail = 0;
   const failures = [];
 
-  console.log('=== 养老金计算平台 全量测试 ===\n');
+  const scope = filterProv ? ` [${filterProv}${filterFile ? '/' + filterFile : ''}]` : ' 全量';
+  console.log(`=== 养老金计算平台 测试${scope} ===\n`);
 
   for (const prov of provinces) {
     const provDir = path.join(casesDir, prov);
-    const files = fs.readdirSync(provDir).filter(f => f.endsWith('.json'));
+    let files = fs.readdirSync(provDir).filter(f => f.endsWith('.json'));
+    if (filterFile) files = files.filter(f => f === filterFile);
 
     for (const f of files) {
       total++;

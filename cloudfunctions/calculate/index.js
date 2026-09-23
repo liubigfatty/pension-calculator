@@ -1,10 +1,10 @@
 // 云函数入口文件
-const cloud = require('wx-server-sdk')
+// 纯计算函数：不依赖 wx-server-sdk。
+//   本函数不使用云数据库 / 云存储 / OpenID 等任何云服务，只需接收 event 返回计算结果，
+//   因此无需 cloud.init()。此前 package.json 声明 wx-server-sdk 但 CLI 部署不装依赖
+//   （云端运行时为 node16，SDK 不再内置），导致 "Cannot find module 'wx-server-sdk'" 报错。
+//   若将来需要云服务，再恢复：const cloud = require('wx-server-sdk') + cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const engine = require('./pension-engine.js')
-
-cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
-})
 
 // 云函数入口
 exports.main = async (event) => {
@@ -12,23 +12,43 @@ exports.main = async (event) => {
     const { province, cityType, gender, identity, genderType, birthDate, workStartDate, averageIndex, personalAccount, extras, estimateOnly } = event
 
     // 参数校验（personalAccount 不再必填，不填则引擎自动估算）
-    if (!gender || !birthDate || !workStartDate || !averageIndex) {
-      return { success: false, message: '参数不完整' }
+    // 逐个点名缺失字段，便于前端直接定位（曾因只回"参数不完整"无法排查）
+    const missing = []
+    if (!province) missing.push('province')
+    if (!gender) missing.push('gender')
+    if (!birthDate) missing.push('birthDate')
+    if (!workStartDate) missing.push('workStartDate')
+    if (!averageIndex) missing.push('averageIndex')
+    if (missing.length) {
+      return { success: false, message: `参数不完整：${missing.join('、')}`, missing }
     }
 
-    // 加载省份配置（require .js 模块，和 verify.js 完全一致）
+    // 加载省份配置
+    // 【必须走单文件】微信开发者工具 CLI 部署云函数时不上传子目录，
+    //   云端 require('./provinces/xx.js') 会报 Cannot find module（2026-09-09 线上事故）。
+    //   故优先读构建产物 provinces-data.js（31 省内联，由 scripts/build-cloud-provinces.js 生成），
+    //   仅在单文件缺失时回退到子目录（本地调试场景）。
     let config
     try {
-      const provModule = require(`./provinces/${province}.js`)
-      // 省份模块导出 { getEngineConfig, MODULES, ... }
-      // 需要调用 getEngineConfig() 获取引擎格式的配置
-      config = provModule.getEngineConfig()
+      let single = null
+      try { single = require('./provinces-data.js') } catch (_) { /* 单文件不存在，走回退 */ }
+
+      if (single && typeof single.getConfig === 'function') {
+        config = single.getConfig(province)
+        if (!config) {
+          return { success: false, message: `未找到省份[${province}]的配置（单文件 provinces-data.js 中无此省）` }
+        }
+      } else {
+        // 回退：子目录（仅限本地；云端无此目录）
+        const provModule = require(`./provinces/${province}.js`)
+        config = provModule.getEngineConfig()
+      }
     } catch (e) {
       console.error('加载省份配置失败：', e.message)
       return { success: false, message: `未找到省份[${province}]的配置：${e.message}` }
     }
 
-    // 构造引擎输入参数（字段名必须和 verify.js buildInput() 完全一致，驼峰命名）
+    // 构造引擎输入参数（字段名必须与引擎 calculate() 入参一致，驼峰命名）
     const input = {
       gender,
       identity,
@@ -67,7 +87,7 @@ exports.main = async (event) => {
       }
     }
 
-    // 调用真正的计算引擎（和 verify.js 同样的方式）
+    // 调用真正的计算引擎
     const result = engine.calculate(config, input)
 
     return {

@@ -380,5 +380,54 @@ select:focus, input:focus {
 .tbl .c3 { flex: 1; text-align: right; padding-right: 8px; }
 .tbl .c4 { flex: 0 0 70px; text-align: right; }
 .tbl .c5 { flex: 0 0 90px; text-align: right; }
+/* 超常规区间 [0.6,3.0] 年份：黄色底 + 角标（不改数值，仅提示核对） */
+.tbl .tr.oor { background: #fff8e6; }
+.tbl .tr.oor .c4 { color: #a06a00; font-weight: 600; }
+.tbl .oor-tag { display: inline-block; margin-left: 4px; padding: 0 4px; border-radius: 4px;
+  background: #ffe9b8; color: #8a5a00; font-size: 11px; font-style: normal; line-height: 16px; }
 .tbl input { border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; font-size: 13px; }
 .tbl input:focus { border-color: var(--primary); outline: none; }
+
+/* ===== 年度补贴（冬季取暖补贴等）：按年发放，不计入月领 ===== */
+.break-row#annualRow {
+  margin-top: 8px;
+  border-top: 1px dashed var(--line);
+  border-bottom: none;
+  padding-top: 10px;
+}
+.annual-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #a35a00;
+  font-size: 11px;
+  font-weight: 500;
+}
+.break-row#annualRow b { color: #a35a00; }
+.annual-note {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #fffaf3;
+  border: 1px solid #f3e2c7;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.annual-note .ann-item { margin-bottom: 8px; }
+.annual-note .ann-item:last-child { margin-bottom: 0; }
+.annual-note .ann-item b { color: var(--ink); font-weight: 600; }
+.annual-note .ann-when { margin-top: 2px; }
+.annual-note .ann-src { margin-top: 2px; color: #8a8f99; font-size: 11.5px; }
+.annual-note .ann-note {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0e3cf;
+}
+.annual-note .ann-warn {
+  margin-top: 6px;
+  color: #a35a00;
+  font-weight: 500;
+}
