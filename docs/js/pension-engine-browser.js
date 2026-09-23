@@ -1626,7 +1626,7 @@ function calculate(config, inputData) {
 
   // 重庆独生子女增发：3% × (基础+个人+过渡)
   // 由 case 的 oneChild 字段控制，而非 province 全局开关
-  if (config.province === 'chongqing' && data.oneChild) {
+  if (config.province === 'chongqing' && data.oneChild && transPension.amount > 0) {
     const oneChildBase = basicPension.amount + personalAccount.amount + transPension.amount
     const oneChildAmount = Math.round(oneChildBase * 0.03 * 100) / 100
     specialAddition = {
