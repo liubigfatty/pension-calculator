@@ -1,0 +1,41 @@
+{
+  "id": "jilin-reader-1986-2026-cc",
+  "province": "jilin",
+  "source": "同上读者留言，改为长春退休（计发基数7978.25）作为对照",
+  "article": "公众号内容库/08-总论与机关事业/_正文-吉林40年工龄100档退休金篇.md",
+  "created": "2026-10-01",
+  "assumptions": [
+    "与 prov 版同一人，仅退休地换成长春（cityType=cc）",
+    "长春计发基数显式传2025已发布值7978.25；全省基数仍为7322.08",
+    "个人账户由引擎估算，与退休地无关"
+  ],
+  "input": {
+    "gender": "male",
+    "genderType": "male",
+    "birthYear": 1966,
+    "birthMonth": 5,
+    "workYear": 1986,
+    "workMonth": 9,
+    "retireDateInput": {
+      "year": 2026,
+      "month": 10
+    },
+    "avgIndex": 1,
+    "personalAccInput": 0,
+    "cityType": "cc",
+    "baseRetireInput": 7978.25,
+    "baseProvInput": 7322.08,
+    "totalYearsInput": 40.17,
+    "sightYearsInput": 8.83
+  },
+  "baseline": {
+    "months": 136.1,
+    "basic": 3073.07,
+    "extra": 328.38,
+    "account": 1029.62,
+    "balance": 140131.16,
+    "trans": 905.5,
+    "total": 5336.57,
+    "saved": "2026-09-30"
+  }
+}

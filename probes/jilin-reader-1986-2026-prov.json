@@ -1,0 +1,43 @@
+{
+  "id": "jilin-reader-1986-2026-prov",
+  "province": "jilin",
+  "source": "读者留言（吉林省计算方法文章下）：86年9月上班，2026年10月退休，工龄40.17年，100%档，长春以外地区退休",
+  "article": "公众号内容库/08-总论与机关事业/_正文-吉林40年工龄100档退休金篇.md",
+  "created": "2026-10-01",
+  "assumptions": [
+    "出生1966年5月：由退休时点2026.10反推，法定60岁5个月（国办发〔2025〕5号延迟退休对照表），非60岁整",
+    "平均缴费指数=1.0（100%档）",
+    "个人账户由引擎估算（personalAccInput=0）：统一记账利率表+全程8%计入",
+    "计发基数显式传2025已发布值7322.08，不让引擎外推",
+    "年限按读者留言硬输入：总40.17年、视同8.83年（吉林1995.07建账）"
+  ],
+  "input": {
+    "gender": "male",
+    "genderType": "male",
+    "birthYear": 1966,
+    "birthMonth": 5,
+    "workYear": 1986,
+    "workMonth": 9,
+    "retireDateInput": {
+      "year": 2026,
+      "month": 10
+    },
+    "avgIndex": 1,
+    "personalAccInput": 0,
+    "cityType": "prov",
+    "baseRetireInput": 7322.08,
+    "baseProvInput": 7322.08,
+    "totalYearsInput": 40.17,
+    "sightYearsInput": 8.83
+  },
+  "baseline": {
+    "months": 136.1,
+    "basic": 2941.28,
+    "extra": 314.3,
+    "account": 1029.62,
+    "balance": 140131.16,
+    "trans": 905.5,
+    "total": 5190.7,
+    "saved": "2026-09-30"
+  }
+}
