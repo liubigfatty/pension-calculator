@@ -114,7 +114,9 @@ function healthCheck(pr, res) {
     const cityMissing = inp.cityType && inp.cityType !== 'prov' && !(cityTable[ry] !== undefined);
     add('计发基数年份', true, `base_rates最大年=${maxY}，退休年=${ry}` +
       (ry > maxY ? ' → 预发年，基数沿用上年（官方未发布，符合规则）' : ' → 已发布值') +
-      (cityMissing ? ` ⚠️ ${inp.cityType} 表无 ${ry} 年，实际回退取全省表 ${ry} 年值，请确认该市是否已并轨` : ''));
+      // 2026-10-01 起：城市单列但该年未公布 → 按「预发」沿用本市最后一个已公布值，
+      // 不再回退全省（回退全省会让单列高基数城市出现「退休越晚拿越少」的倒退）。
+      (cityMissing ? ` ℹ️ ${inp.cityType} 表无 ${ry} 年 → 按预发沿用本市 ${Math.max(...Object.keys(cityTable).map(Number))} 年值 ${cityTable[Math.max(...Object.keys(cityTable).map(Number))]}（未公布前不回落全省），官方公布后须复核` : ''));
   }
 
   // 4. 个人账户：引擎估算时余额应 > 0

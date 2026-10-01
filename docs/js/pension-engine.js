@@ -1443,13 +1443,33 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   }
   const cityRates = cityKey && allRates[cityKey] !== undefined ? allRates[cityKey] : null;
 
+  // 城市表 / 全省表的年份序列（供回退与外推使用）
+  const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
+  const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
+  const lastCityYear0 = cityKeys.length ? cityKeys[cityKeys.length - 1] : 0
+  const lastProvYear0 = provKeys.length ? provKeys[provKeys.length - 1] : 0
+  // 该市基数系列是否仍是「活的」：最大年 ≥ 全省最大年-1。
+  // ⇒ 说明该市一直在随省逐年更新、只是当年尚未单列公布，属「预发」而非「已并轨」。
+  // ⇒ 反之（该市最大年比全省落后 2 年以上，如深圳 2021 起并入全省）视为已并轨，可安全吃全省值。
+  const citySeriesLive = !!cityRates && cityKey !== 'prov' && lastCityYear0 > 0 && lastCityYear0 >= lastProvYear0 - 1
+
   // 1. 精确年份匹配
   if (cityRates && cityRates[year] !== undefined) return cityRates[year]
+
+  // 1.5 🔴 城市单列、但该年本市尚未公布，而全省该年已公布：
+  //     禁止直接取全省当年值 —— 否则「单列且高于全省」的城市会出现待遇倒退
+  //     （真实案例：长春 2025=7978.25 单列，全省 2026 仅 7481.5，直接吃全省 ⇒ 2026 退休比 2025 少 52.88 元/月）。
+  //     正确口径＝按「预发」处理：沿用本市最后一个已公布值原值，待官方公布后重算补差。
+  //     ⚠️ 只作用于计发基数（base_rates），社平口径（avg_salary_history）不受影响。
+  if (sourceField === 'base_rates' && citySeriesLive && provRates[year] !== undefined) {
+    const prevCity = cityRates[year - 1]
+    if (prevCity > 0) return prevCity
+    if (cityRates[lastCityYear0] > 0) return cityRates[lastCityYear0]
+  }
+
   if (provRates[year] !== undefined) return provRates[year]
 
   // 2. 向前回退到最近年份，若晚于该年则按2.0%社平增长率外推（城市表优先，再查全省）
-  const cityKeys = cityRates ? Object.keys(cityRates).map(Number).sort((a, b) => a - b) : []
-  const provKeys = Object.keys(provRates).map(Number).sort((a, b) => a - b)
 
   // 外推率按「该省上一年已公布的增幅」推断（见 inferGrowthRate），不再固定 2%
   const GROWTH_RATE = inferGrowthRate(provRates, config)
@@ -1462,7 +1482,9 @@ function getBase(city, year, config, sourceField = 'base_rates') {
   const lastProvYear = provKeys[provKeys.length - 1]
   const lastYear = Math.max(lastCityYear || 0, lastProvYear || 0)
   if (year > lastYear) {
-    const useCity = cityRates && cityKey !== 'prov' && lastCityYear >= lastProvYear
+    // 「活的」城市系列优先用本市最后已公布值（含 2027 及以后长春仍未单列公布的预发情形），
+    // 否则才会掉到全省值 —— 与上一步 1.5 的防倒退口径保持一致。
+    const useCity = citySeriesLive
     const baseVal = useCity ? (cityRates[lastCityYear] || provRates[lastProvYear]) : provRates[lastProvYear]
     if (year === lastYear + 1) {
       // 预发年：用上年（数据最大年）基数原值
