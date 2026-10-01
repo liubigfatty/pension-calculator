@@ -2,8 +2,8 @@
 
 > **本文件是项目状态的唯一权威来源。**
 > **每次完成一个阶段后，必须更新本文件。**
-> **最后更新**：2026-10-01
-> **当前版本**：主程序 v2.2.0（代码包本轮未变，只部署云函数）/ 缴费指数(index-mini) **v2.1.8（2026-10-01 已上传，待提审）**
+> **最后更新**：2026-10-02
+> **当前版本**：主程序 v2.2.0（代码包本轮未变，只部署云函数）/ 缴费指数(index-mini) **v2.1.8（✅ 审核通过，2026-10-02 已正式发布）**
 > 本次内容：**31 省 2026 年度官方数据订正（8 省）** + **docs 浏览器版引擎重建**
 >   - 计发基数 `base_rates.prov[2026]` 补 6 省：上海 12577 / 西藏 11954（藏人社发〔2026〕46号）/ 新疆 8744 /
 >     内蒙古 8430（内人社办发〔2026〕85号）/ 黑龙江 7705（黑人社函〔2025〕611号）/ 湖南 6843（湘人社规〔2026〕14号并轨）
@@ -15,24 +15,37 @@
 > **第二轮（2026-10-01 晚，吉林 2026 基数）**：补 `base_rates.prov[2026] = 7481.5`
 > （吉人社联〔2026〕74号，2025年全省全口径社平 89778元/年，+2.18%）。此前社平数组早就填了 7481.5，
 > 但**计发基数数组空着**，引擎回退 2025 的 7322.08 ⇒ 文章写成"2026预发年暂用2025"——是漏填，不是等公布。
-> 长春 2026 官方未单列（74号没提长春），**留空不写死**，引擎回退全省 7481.5。
+> 长春 2026 官方未单列（74号没提长春），**留空不写死**。
+>
+> **第三轮（2026-10-01 深夜，长春防倒退）**：引擎 `getBase()` 原在「城市表缺该年、全省表有该年」时
+> **直接吃全省值** ⇒ 长春 2026 取 7481.5 < 单列 2025 的 7978.25 ⇒ **2026 退休比 2025 退休少 52.88 元/月**
+> （缴得更多、退得更晚反而拿更少，社会成本无人承担得起）。
+> 修复：`getBase` 新增 `citySeriesLive` 判定（城市表最大年 ≥ 全省最大年−1 ⇒ 仍在单列、只是当年未公布），
+> 命中则**按预发沿用本市上年值**。修复后长春 2026 = 7978.25，2026 比 2025 **+57.03 元/月**。
+> 同步 7 份引擎副本（`scripts/_sync_getbase_20261001.js`）；回归 run-cases 185/185、test-engine 41/41、
+> 副本 147/147、探针 0 漂移。云函数 `calculate` + 主站 + 镜像站**均已发布生效**。
 >
 > 四端发布结果（2026-10-01）：
 > | 端 | 状态 |
 > |---|---|
 > | ① 主程序小程序 | 云函数 `calculate` **已部署并回验**（66 文件 / 310.4 KB；download 副本 31/31 通过，与本地逐字节一致）。前端无改动，**代码包不需重新上传** |
-> | ② 缴费指数小程序 | 云函数 `calcIndex` **已部署**；代码包 **v2.1.8 已上传**（84.3 KB）→ **待到微信后台提交审核**，文案见 `index-mini/更新说明-v2.1.8.md` |
+> | ② 缴费指数小程序 | 云函数 `calcIndex` **已部署**；代码包 **v2.1.8 ✅ 审核通过并已正式发布**（84.3 KB，2026-10-02 用户确认）。四端全部收口 |
 > | ③ 养老金网页 | **主站已推送**（pension-calculator main 2c47d94→49e5327）；**镜像站已推送**（pension-engine main 6c91019→9765ab1，docs/ 已同步浏览器版新引擎）。线上实测：`/web/provinces-bundle.js` 含 8744 ✓、镜像站 `/js/pension-engine-browser.js` 含 `UNIFIED_INTEREST_RATES` ✓ |
 > | ④ 缴费指数网页 | **已推送**（contribution-index-calculator main a8b5ae0→d3b933c）。线上实测 `provinces-index-data.js` 含 7008 ✓。注意：该网页此前还停在 **2026-09-08 旧语义版**（统计年口径），本次一并对齐「执行年度」口径 + 分母索引 +1 |
 >
-> ⚠️ **推送通道（2026-10-01 实测，下次必踩）**：GitHub SSH 22 端口 `Connection refused`；HTTPS 直连时 schannel 报
-> `CRYPT_E_NO_REVOCATION_CHECK`（吊销检查失败）**且会弹出 Git Credential Manager 的「Select a credential helper」窗口把 push 卡死**。
-> 正确姿势：弹窗选 **`<no helper>`**，然后
-> `GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0 GIT_SSL_NO_VERIFY=1 git -c credential.helper=store -c http.schannelCheckRevoke=false -c http.proxy= -c https.proxy= push https://github.com/liubigfatty/<repo>.git main`
-> （`-c http.proxy=` 与 `-c https.proxy=` 必须清空环境里的 `127.0.0.1:12797` 代理，它反而不通）
+> ⚠️ **推送通道（2026-10-01 晚已根治，旧写法作废）**：GitHub SSH 22 端口 `Connection refused`，走 HTTPS。
+> 以前的「Select a credential helper」弹窗卡死**已永久修复**（根因是 PortableGit system 配置的 `helper-selector`
+> 叠加全局 GCM；`~/.gitconfig` 已改为 `store` + `interactive=false`）。
+> **现在的正确姿势**（零弹窗，实测主站/镜像站均一次通过）：
+> `GIT_TERMINAL_PROMPT=0 git -c http.proxy= -c https.proxy= push https://github.com/liubigfatty/<repo>.git main`
+> 🔴 禁止再写 `GIT_CONFIG_GLOBAL=/dev/null`（弹窗元凶）、`-c credential.helper=store`（已是默认，叠加会挂）、
+> `-c http.schannelCheckRevoke=false`（全局 `sslNoRevoke=true` 已覆盖）。
+> 另：`pension-calculator` 主仓库可直推；`pension-engine` / `contribution-index-calculator` 曾挂起，
+> 若再挂检查是否**浅克隆**（须 `fetch --unshallow https://...` 显式给 HTTPS，再 `git checkout -B main FETCH_HEAD`）。
 >
 > **🟡 待办（2026-10-01）**：
-> 1. **指数小程序 v2.1.8 提交审核**（云函数已部署生效，但不提审线上仍跑旧版本）。提审文案见 `index-mini/更新说明-v2.1.8.md` 开头。
+> 1. ✅ **指数小程序 v2.1.8 审核通过、已正式发布**（2026-10-02 用户确认）—— 四端全部收口，无待提审版本。
+>    ⭐ 后续注意：云函数 deploy 对**所有版本即时生效**（含已发布正式版），前端包改才需重新上传+提审。
 > 2. ✅ **吉林长春历年计发基数已订正**（2026-10-01）：2020–2023 四个年份按官方原文恢复
 >    （6927.75 / 7297.75 / 7604.25 / 7726.67），2024/2025 原本即正确。云函数已部署回验一致，主站+镜像网页已推送。
 >    ⚠️ 教训：2026-09-14 那次是**把正确值反向改成错值**（还改了测试断言），
