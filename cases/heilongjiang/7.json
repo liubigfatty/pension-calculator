@@ -26,7 +26,8 @@
     "basic_pension": 2126.62,
     "personal_pension": 392.60,
     "transitional_pension": 200.92,
-    "total": 2720.14
+    "special_addition": 45,
+    "total": 2765.14
   },
   "verified": true,
   "data_source": "黑龙江参加基本养老保险人员基本养老金核定表（个体工商户，2026-01退休）",
@@ -34,6 +35,6 @@
   "calculation_details": {
     "formula_basic": "(7705 + 7705 × 0.6519) / 2 × 33.4167 × 1% = 2126.62",
     "formula_personal": "76556.96 / 195 = 392.60",
-    "formula_transition": "7705 × 3.3333 × 0.6519 × 1.2% = 200.92"
+    "formula_transition": "7705 × 3.3333 × 0.6519 × 1.2% = 200.92 [2026-10-01 订正] 黑龙江养老金由四部分构成，第四项为御寒津贴45元/月（黑劳社发〔2008〕79号，随基本养老金按月发放，不限取暖期）；原expected.total仅抄了前三块之和，现补为+45。"
   }
 }

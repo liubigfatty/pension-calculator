@@ -155,12 +155,14 @@ function runCase(prov, c, file) {
     basic_pension:       legal.basicPension?.amount       ?? legal.basicPension       ?? 0,
     personal_pension:     legal.personalAccount?.amount   ?? legal.personalAccountPension ?? 0,
     transitional_pension: legal.transitionalPension?.amount ?? legal.transitionalPension ?? 0,
+    // 地方加项（如黑龙江御寒津贴45元、贵州独子5%），仅当案例给了 expected 才比对
+    special_addition:    legal.specialAddition?.amount   ?? 0,
     total:               legal.total                    ?? 0,
   };
 
   // 对比（允许1元误差）
   const diffs = [];
-    for (const key of ['basic_pension', 'personal_pension', 'transitional_pension', 'total']) {
+    for (const key of ['basic_pension', 'personal_pension', 'transitional_pension', 'special_addition', 'total']) {
     if (exp[key] === undefined) continue;
     const av = act[key];
     if (av === null || av === undefined || Number.isNaN(av)) {
