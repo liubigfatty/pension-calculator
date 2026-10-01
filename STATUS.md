@@ -26,13 +26,12 @@
 > `GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0 GIT_SSL_NO_VERIFY=1 git -c credential.helper=store -c http.schannelCheckRevoke=false -c http.proxy= -c https.proxy= push https://github.com/liubigfatty/<repo>.git main`
 > （`-c http.proxy=` 与 `-c https.proxy=` 必须清空环境里的 `127.0.0.1:12797` 代理，它反而不通）
 >
-> **🔴 待办（需手动推送，本环境 HTTPS 推送挂起 / SSH 22 被封）**：
-> ```bash
-> cd C:/Users/14041/WorkBuddy/2026-07-16-10-20-33/_pe_mirror && git push https://github.com/liubigfatty/pension-engine.git main
-> cd C:/Users/14041/WorkBuddy/2026-07-16-10-20-33/_ci_mirror && git push https://github.com/liubigfatty/contribution-index-calculator.git main
-> ```
-> 注：④ 的线上版本此前还停在 **2026-09-08 旧语义**（统计年口径），这次提交一并带上「口径统一为执行年度 + 分母取数索引 +1」，
-> 与指数小程序 v2.1.7/2.1.8 对齐，务必推上去，否则网页与小程序算出来会差一年。
+> **🟡 待办（2026-10-01）**：
+> 1. **指数小程序 v2.1.8 提交审核**（云函数已部署生效，但不提审线上仍跑旧版本）。提审文案见 `index-mini/更新说明-v2.1.8.md` 开头。
+> 2. **吉林长春历年计发基数疑似偏低**：引擎 `CC_BASE` 2023=7320.86，官方（吉人社联〔2023〕158号附件表）长春 92720 元/年 = **7726.67 元/月**，低约 5.5%。
+>    2024(7852.58=94231/年, 吉人社联〔2024〕143号)/2025(7978.25) 与官方一致，即 **2020–2023 四个年份有问题、2024 起正确**。
+>    2022 及更早缺官方文件暂未动。改它要动 13 份副本 + 四端重发，待拍板。
+> 3. `scripts/` 下 70+ 一次性脚本建议归档到 `_archive/`。
 
 ---
 
@@ -51,7 +50,8 @@
 - 省份数据文件（31省全）
 
 ### 阶段二：案例验证 ✅
-- **185个测试案例，185通过 / 0失败**（2026-09-09 实跑 `scripts/run-cases.js`）
+- **185个测试案例，185通过 / 0失败**（2026-10-01 实跑 `scripts/run-cases.js`；此前 174/185 的 11 条历史遗留失败已全部清零，
+  三类根因均为案例标定口径错：贵州4条漏传 `one_child`、黑龙江7条漏计御寒津贴45元、吉林1条用错计发基数 7058.67（四平官方 6655.33））
 - 覆盖31省，含各种特殊情况（提前退休、特殊工种、灵活就业等）
 - 测试误差标准：≤ 3‰（0.3%）视为通过
 - ✅ 唯一的历史遗留失败 `cases/chongqing/6.json` 已于 2026-09-09 复核订正（详见文末「验证状态」）
