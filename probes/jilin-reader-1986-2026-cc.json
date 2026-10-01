@@ -6,8 +6,8 @@
   "created": "2026-10-01",
   "assumptions": [
     "与 prov 版同一人，仅退休地换成长春（cityType=cc）",
-    "长春计发基数显式传2025已发布值7978.25；全省基数仍为7322.08",
-    "个人账户由引擎估算，与退休地无关"
+    "个人账户由引擎估算，与退休地无关",
+    "计发基数由引擎按退休年取数：2026=7481.50（吉人社联〔2026〕74号已公布，2026-10-01 补填）；不再硬传 2025 旧值——硬传会绕过引擎取数导致漂移检测假绿"
   ],
   "input": {
     "gender": "male",
@@ -23,19 +23,17 @@
     "avgIndex": 1,
     "personalAccInput": 0,
     "cityType": "cc",
-    "baseRetireInput": 7978.25,
-    "baseProvInput": 7322.08,
     "totalYearsInput": 40.17,
     "sightYearsInput": 8.83
   },
   "baseline": {
     "months": 136.1,
-    "basic": 3073.07,
-    "extra": 328.38,
+    "basic": 3005.32,
+    "extra": 321.14,
     "account": 1029.62,
     "balance": 140131.16,
-    "trans": 905.5,
-    "total": 5336.57,
-    "saved": "2026-09-30"
+    "trans": 925.21,
+    "total": 5281.29,
+    "saved": "2026-10-01"
   }
 }

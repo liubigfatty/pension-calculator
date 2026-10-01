@@ -97,14 +97,24 @@ function healthCheck(pr, res) {
   }
 
   // 3. 计发基数是否走"预发年回退"（退休年 > base_rates 最大年）
+  // ⚠️ 2026-10-01 修正：城市表（如吉林 cc）缺某年时，getBase() 会回退取全省表同年的值。
+  //    只按城市表算 maxY 会误报「预发年 / 官方未发布」（吉林 cc 2026 即此坑：
+  //    CC_BASE 无 2026，但全省表有，实际取的是已发布的 7481.5）。
+  //    故 maxY 取「城市表与全省表的较大者」，与 getBase() 的 lastYear 判定保持一致。
   const br = res.cfg && res.cfg.base_rates;
-  const table = (br && (br[inp.cityType] || br.prov || br)) || {};
-  const years = Object.keys(table).filter(k => /^\d{4}$/.test(k)).map(Number).sort((a, b) => a - b);
-  const maxY = years[years.length - 1];
+  const cityTable = (br && br[inp.cityType]) || {};
+  const provTable = (br && br.prov) || {};
+  const maxOf = (t) => {
+    const ys = Object.keys(t).filter(k => /^\d{4}$/.test(k)).map(Number).sort((a, b) => a - b);
+    return ys[ys.length - 1];
+  };
+  const maxY = Math.max(maxOf(cityTable) || 0, maxOf(provTable) || 0) || undefined;
   const ry = (inp.retireDateInput && inp.retireDateInput.year) || inp.retire_year || inp.retireYear;
   if (maxY && ry) {
+    const cityMissing = inp.cityType && inp.cityType !== 'prov' && !(cityTable[ry] !== undefined);
     add('计发基数年份', true, `base_rates最大年=${maxY}，退休年=${ry}` +
-      (ry > maxY ? ' → 预发年，基数沿用上年（官方未发布，符合规则）' : ' → 已发布值'));
+      (ry > maxY ? ' → 预发年，基数沿用上年（官方未发布，符合规则）' : ' → 已发布值') +
+      (cityMissing ? ` ⚠️ ${inp.cityType} 表无 ${ry} 年，实际回退取全省表 ${ry} 年值，请确认该市是否已并轨` : ''));
   }
 
   // 4. 个人账户：引擎估算时余额应 > 0
