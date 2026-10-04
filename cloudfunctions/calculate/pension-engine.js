@@ -2128,6 +2128,11 @@ function calculate(config, inputData) {
   // ===== 弹性提前退休测算 =====
   const flexAge = flexTotalMonths / 12
   const flexMonths = getRetireMonths(flexAge, config)
+  // 弹性退休缴费年限：提前退休＝从退休当月起停缴，年限比法定少 flexAdvance 个月（与展示字段同源）
+  const flexAdvance = legalTotalMonths - flexTotalMonths
+  const flexAdjYears = flexAdvance / 12
+  const flexTotalYears = Math.max(0, (totalYears || 0) - flexAdjYears)
+  const flexActualYears = Math.max(0, (actualYears || 0) - flexAdjYears)
 
   // 弹性退休基数查询：同样用当年优先逻辑
   const allRates = config.base_rates || {}
@@ -2138,13 +2143,13 @@ function calculate(config, inputData) {
 
   const flexBasic = calcBasicPension({
     retireBase: flexRetBase, provBase: flexProvBase,
-    avgIndex: data.avgIndex, totalYears,
+    avgIndex: data.avgIndex, totalYears: flexTotalYears,
     mod: config.modules?.basic_pension || { enabled: true, rate_per_year: 0.01 }
   })
   const flexExtra = calcExtraPension({
     avgBase: Math.round((flexRetBase + flexProvBase * data.avgIndex) / 2 * 100) / 100,
-    actualYears,
-    totalYears,
+    actualYears: flexActualYears,
+    totalYears: flexTotalYears,
     mod: config.modules?.extra_pension || { enabled: false },
     retireBase: flexRetBase,
     avgIndex: data.avgIndex,
@@ -2159,8 +2164,8 @@ function calculate(config, inputData) {
     provBase: flexProvBase,
     retireBase: flexRetBase,
     sightYears, avgIndex: data.avgIndex,
-    actualYears,
-    totalYears,
+    actualYears: flexActualYears,
+    totalYears: flexTotalYears,
     mod: config.modules?.transitional_pension || { enabled: false, coefficient_over_20: 0.014, coefficient_under_20: 0.012 },
     preAccountYears,
     newMethodYears: data.newMethodYears,
@@ -2186,11 +2191,6 @@ function calculate(config, inputData) {
 
   // ===== 构建返回结果 =====
   const canFlex = flexTotalMonths < legalTotalMonths
-  const flexAdvance = legalTotalMonths - flexTotalMonths
-  // 弹性退休年限调整：提前退休意味着少缴费 flexAdvance 个月
-  const flexAdjYears = flexAdvance / 12
-  const flexTotalYears = Math.max(0, (totalYears || 0) - flexAdjYears)
-  const flexActualYears = Math.max(0, (actualYears || 0) - flexAdjYears)
   // 视同缴费年限不变（建立个人账户前的工作年限，不受弹性退休影响）
   const flexMinYears = getMinYears(flexDate.year, config)
   const flexMeetMin = flexTotalYears >= flexMinYears

@@ -1,0 +1,36 @@
+{
+  "id": "jilin-flexearly-m1966",
+  "province": "jilin",
+  "source": "合并重发③《50岁还是55岁退》主角C：男职工60档，1966-03生，1991-07起缴，法定退休60岁4个月(2026-07)，弹性提前到60岁(2026-03)",
+  "article": "公众号内容库/09-测算案例与规划/_正文-弹性提前退这笔账篇.md",
+  "created": "2026-10-04",
+  "assumptions": [
+    "同 jilin-flexearly-fw1979：**不传 retireDateInput**，让引擎自定法定退休时点",
+    "1966-03 生男60档 → 延迟后法定 60岁4个月（2026-07）；r.flex = 60岁（2026-03），提前 4 个月",
+    "缴费 35 年（1991-07 起缴），引擎自算",
+    "🔴 不传 baseRetireInput/baseProvInput：2026 年基数引擎自取 7481.50",
+    "触发吉林长缴增发（35 年 > 20 年，系数按分段）"
+  ],
+  "input": {
+    "province": "jilin",
+    "cityType": "prov",
+    "gender": "male",
+    "genderType": "male",
+    "birthYear": 1966,
+    "birthMonth": 3,
+    "workYear": 1991,
+    "workMonth": 7,
+    "avgIndex": 1,
+    "personalAccInput": 0
+  },
+  "baseline": {
+    "months": 136.7,
+    "basic": 2618.53,
+    "extra": 224.45,
+    "account": 1005.66,
+    "balance": 137473.72,
+    "trans": 418.96,
+    "total": 4267.6,
+    "saved": "2026-10-04"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "jilin-flex-30y-100",
+  "province": "jilin",
+  "source": "合并重发①《灵活就业同样交15年…》长缴对照场景：同一人另一种人生——1996-07 起缴、连续缴至 2026-10 退休 = 30.25 年，100% 档",
+  "article": "公众号内容库/09-测算案例与规划/_正文-灵活就业四档对比篇.md",
+  "created": "2026-10-04",
+  "assumptions": [
+    "与 jilin-flex-15y-100 只差起缴年：1996-07 起缴（早 15 年），缴至同一退休时点 2026-10 = 30.25 年",
+    "同一人、同学历、同退休时点、同 100% 档 ⇒ 唯一变量是「早缴 15 年」，用于隔离『每万元缴费的月领产出』",
+    "🔴 不传 baseRetireInput/baseProvInput：计发基数引擎自取 2026 = 7481.50",
+    "个人账户由引擎按 1996.7-2026.10 复利估算，余额 138,966.47（已与 cases/jilin/2 交叉验证量级合理）",
+    "🔴 触发吉林长缴增发：实际缴费 30.25 年 > 阈值 20 年，累计分段系数 0.0175，增发 130.93（吉政办明电〔2015〕11号）",
+    "计发月数 166.5（55 岁 7 个月，延迟退休插值）"
+  ],
+  "input": {
+    "province": "jilin",
+    "cityType": "prov",
+    "gender": "female",
+    "genderType": "fw55",
+    "birthYear": 1971,
+    "birthMonth": 3,
+    "workYear": 1996,
+    "workMonth": 7,
+    "retireDateInput": {
+      "year": 2026,
+      "month": 10
+    },
+    "avgIndex": 1,
+    "personalAccInput": 0
+  },
+  "baseline": {
+    "months": 166.5,
+    "basic": 2263.15,
+    "extra": 130.93,
+    "account": 834.63,
+    "balance": 138966.47,
+    "trans": 0,
+    "total": 3228.71,
+    "saved": "2026-10-04"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "jilin-flexearly-fw1979",
+  "province": "jilin",
+  "source": "合并重发③《50岁还是55岁退》主角A：女工50档，1979-03生，2004-07起缴，法定退休52岁2个月(2031-05)，弹性提前到50岁(2029-03)",
+  "article": "公众号内容库/09-测算案例与规划/_正文-弹性提前退这笔账篇.md",
+  "created": "2026-10-04",
+  "assumptions": [
+    "🔴 关键用法：算弹性提前退休**不传 retireDateInput**。传了它，legal 会按传入日期算（曾导致我误把 47 岁当法定退休、方向完全搞反）",
+    "不传时 legal = 延迟后的法定退休（1979-03生女工50档 → 52岁2个月，2031-05）；r.flex = 弹性提前3年内方案（50岁，2029-03）",
+    "缴费年限 26.83 年（2004-07 起缴至法定退休 2031-05），由引擎自算",
+    "🔴 不传 baseRetireInput/baseProvInput：计发基数引擎按退休年取（法定 2031 为外推年，弹性 2029 为外推年，均按规则标注）",
+    "个人账户 personalAccInput=0 ⇒ 引擎估算",
+    "渐进式延迟退休：《全国人大常委会关于实施渐进式延迟法定退休年龄的决定》2025-01-01 施行；1979-03 生女工50档被延迟 26 个月"
+  ],
+  "input": {
+    "province": "jilin",
+    "cityType": "prov",
+    "gender": "female",
+    "genderType": "fw50",
+    "birthYear": 1979,
+    "birthMonth": 3,
+    "workYear": 2004,
+    "workMonth": 7,
+    "avgIndex": 1,
+    "personalAccInput": 0
+  },
+  "baseline": {
+    "months": 184.2,
+    "basic": 2235.81,
+    "extra": 93.04,
+    "account": 966.75,
+    "balance": 178075.01,
+    "trans": 0,
+    "total": 3295.6,
+    "saved": "2026-10-04"
+  }
+}
