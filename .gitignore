@@ -53,3 +53,6 @@ _backup_semantics_20260920/
 
 # 临时抓取目录（2026-09）
 _tmp_online/
+
+# 删除仓库前的 git bundle 快照（本地留存，不入库）（2026-10-04）
+_archive/

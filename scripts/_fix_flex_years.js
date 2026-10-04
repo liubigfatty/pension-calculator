@@ -27,6 +27,11 @@ const TARGETS = [
 ];
 
 const dry = process.argv.includes('--dry');
+// 额外目标：node scripts/_fix_flex_years.js <相对ROOT的路径或绝对路径> ...
+// （用于给镜像站仓库等外部副本打同一个补丁）
+const extra = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+if (extra.length) TARGETS.length = 0;
+for (const e of extra) TARGETS.push(path.isAbsolute(e) ? e : path.join(ROOT, e));
 
 const B_FLEXMONTHS = '  const flexMonths = getRetireMonths(flexAge, config)';
 const B_BASICRET = '    retireBase: flexRetBase, provBase: flexProvBase,';
