@@ -1,0 +1,9 @@
+{
+  "name": "quota",
+  "version": "1.0.0",
+  "description": "额度账户云函数（跨端共享：AI 对话 + 小程序）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "2.6.3"
+  }
+}
