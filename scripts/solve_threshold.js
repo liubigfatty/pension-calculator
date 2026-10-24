@@ -167,7 +167,7 @@ fs.writeFileSync(path.join(outDir, 'threshold.json'), JSON.stringify({
     province: PROVINCE, city: CITY, startAge: START_AGE, target: TARGET,
     retireMonth: RETIRE, workMonth: WORK_MONTH,
     cohorts: COHORTS, provSocial: SOC,
-    basis: '延迟退休出生年月依据：国办发〔2025〕5号附件对照表',
+    basis: '延迟退休出生年月依据：《国务院关于渐进式延迟法定退休年龄的办法》附件对照表',
     generatedAt: new Date().toISOString(),
   },
   results: results.map(r => r && ({

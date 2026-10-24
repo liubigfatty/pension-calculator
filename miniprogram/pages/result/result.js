@@ -306,8 +306,9 @@ Page({
       }
     }
 
-    // 弹窗先展示报告里有什么，让用户看清价值再决定是否付费
-    this.setData({ showPayModal: true })
+    // 2026-10-18：解锁判断改为先查服务端额度（AI 对话里付过账，这里也要认），
+    // 查不到再降级回本地标记，绝不因为记账服务异常把已付费用户挡在门外。
+    this._checkQuotaAndOpen()
   },
 
   /**
@@ -315,6 +316,79 @@ Page({
    */
   closePayModal() {
     this.setData({ showPayModal: false })
+  },
+
+  /* ============================================================
+   * 额度判断（2026-10-18 新增，跨端共享账户）
+   * 规则：已永久解锁 → 直接进；有额度 → 扣 1 次再进；都没有 → 弹付费窗；
+   *       服务端查不到 → 降级回 localStorage，保证老用户不受影响。
+   * ============================================================ */
+
+  _goReport() {
+    try { wx.setStorageSync('report_paid', '1') } catch (e) {}
+    wx.navigateTo({ url: '/pages/report/report' })
+  },
+
+  _checkQuotaAndOpen() {
+    var self = this
+    wx.cloud.callFunction({
+      name: 'quota',
+      data: { action: 'get', channel: 'mp' },
+      success: function (res) {
+        var r = res && res.result
+        var acc = (r && r.code === 0 && r.data) || null
+        if (!acc) { self._fallbackUnlock(); return }
+
+        if (acc.unlocked) { self._goReport(); return }
+        if (acc.freeLeft > 0 || acc.paidLeft > 0) { self._consumeAndOpen(); return }
+
+        // 没额度了：老用户本地已付过钱的，静默补一次额度，别让人付两次
+        self._maybeSyncLegacy()
+        self.setData({ showPayModal: true })
+      },
+      fail: function (e) {
+        console.warn('[quota] 查询失败，降级本地判断:', e && e.errMsg)
+        self._fallbackUnlock()
+      }
+    })
+  },
+
+  _consumeAndOpen() {
+    var self = this
+    wx.cloud.callFunction({
+      name: 'quota',
+      data: { action: 'consume', channel: 'mp', scene: 'report' },
+      success: function (res) {
+        var d = (res && res.result && res.result.code === 0 && res.result.data) || null
+        // 并发下扣额度时才发现没额度 ⇒ 正常走付费窗
+        if (d && d.needPay) { self.setData({ showPayModal: true }); return }
+        self._goReport()
+      },
+      // 🔴 记账失败也要放行：不能让"额度服务的 bug"变成"用户看不了报告"
+      fail: function () { self._goReport() }
+    })
+  },
+
+  /** 本地还留着 report_paid 但服务端没有记录 ⇒ 补 3 次额度（只补额度，不重复解锁） */
+  _maybeSyncLegacy() {
+    var legacy = false
+    try { legacy = !!wx.getStorageSync('report_paid') } catch (e) {}
+    if (!legacy) return
+    var synced = false
+    try { synced = !!wx.getStorageSync('legacy_synced') } catch (e) {}
+    if (synced) return
+    try { wx.setStorageSync('legacy_synced', '1') } catch (e) {}
+    wx.cloud.callFunction({
+      name: 'payCallback',
+      data: { action: 'syncLegacy', channel: 'mp' }
+    }).catch(function () {})
+  },
+
+  _fallbackUnlock() {
+    var paid = false
+    try { paid = !!wx.getStorageSync('report_paid') } catch (e) {}
+    if (paid) { this._goReport(); return }
+    this.setData({ showPayModal: true })
   },
 
   noop() {},

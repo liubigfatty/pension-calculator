@@ -57,4 +57,17 @@ if (provinceCount !== 31) {
   console.error('❌ 省份数不为 31，请检查 provinces-data.js')
   process.exit(1)
 }
+
+// ── 镜像同步到 web/ ──
+// ⚠️ 漏网副本修复（2026-10-09）：web/index.html 第 224-228 行引用了
+//    engine.js / provinces-bundle.js / **provinces-index-data.js** / **calc-index.js**，
+//    但此前**没有任何脚本**生成 web/ 下的后两个文件 ⇒ 它们是历史遗留的孤儿快照，
+//    会随真相源静默漂移（实测浙江 2026 仍是占位值 8432.83，而真相源已是 8537）。
+//    此处双写，永久堵住这个漏网副本。
+const MIRROR_DIR = path.join(ROOT, 'web')
+if (fs.existsSync(MIRROR_DIR)) {
+  fs.writeFileSync(path.join(MIRROR_DIR, 'calc-index.js'), engineOut)
+  fs.writeFileSync(path.join(MIRROR_DIR, 'provinces-index-data.js'), dataOut)
+  console.log('✅ 镜像同步 web/calc-index.js + web/provinces-index-data.js（web/index.html 引用，堵漏网副本）')
+}
 console.log('✅ 构建完成')

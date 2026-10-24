@@ -99,6 +99,15 @@ const DEFAULT_MONTHLY_PAYMENT_MONTHS = {
  * @param {Object} params.mod - 模块配置
  * @returns {Object} 计算结果 { amount, description }
  */
+/**
+ * 见分进角（沪人社规〔2026〕16号 四）：金额保留到角，分位上有值即进位。
+ * 先归到"分"再向上取角，避免浮点残差把 3751.0000 误进位成 3751.1。
+ * 例：3751.0201 → 3751.1；3629.3919 → 3629.4；2981.0000 → 2981.0
+ */
+function jiaoCeil(x) {
+  return Math.ceil(Math.round(x * 100) / 10) / 10
+}
+
 function calcBasicPension(params) {
   let mod = params.mod
   // 深圳独立体系：城市级基础养老金覆盖（需在 enabled 检查前）
@@ -142,18 +151,17 @@ function calcBasicPension(params) {
     amount = Math.round(base * totalYears * rate * 100) / 100
     description = `(${retireBase.toLocaleString()} + ${provBase.toLocaleString()} × ${avgIndex.toFixed(2)}) / 2 × ${totalYears.toFixed(2)}年 × ${(rate*100).toFixed(2)}% = ${amount.toFixed(2)}元`
   } else if (mod.formula_type === 'shanghai') {
-    // 上海专属（沪人社规〔2021〕27号）：
-    // 基础养老金 = (计发基数 + 计发基数×指数) / 2 × (整年数×1% + 剩余月数×0.083%)
-    // 满整年后的剩余月数，每个月按 0.083% 计发（非整年换算 1%/年）。
-    // 政策第五条：基础/个人/过渡三项均"分进角"（四舍五入到角，分位进位），此处对基础养老金落地。
+    // 上海专属（沪人社规〔2026〕16号，2026-08-16 施行；同日废止 沪人社规〔2021〕32号 与 〔2021〕27号）：
+    //   一(一) 缴费年限满整年后的剩余月数**折算为年**，计算结果保留 4 位小数
+    //   二(一) 基础养老金 = (上年度全口径月均工资 + 本人指数化月均缴费工资) / 2 × 缴费年限 × 1%
+    //   四     基础/个人/过渡三项**分别见分进角**
+    // ⚠️ 不按退休时点分叉：27号文"剩余月数×0.083%/月"已随该文废止，历史时点一律用现行 16号文口径。
     const indexSalary = retireBase * avgIndex
     const totalMonths = Math.round((totalYears || 0) * 12)
-    const fullYears = Math.floor(totalMonths / 12)
-    const remMonths = totalMonths % 12
-    const coef = fullYears * 0.01 + remMonths * 0.00083
-    const raw = (retireBase + indexSalary) / 2 * coef
-    amount = Math.round(raw * 10) / 10  // 分进角：四舍五入到角
-    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(4)}) / 2 × (${fullYears}年×1% + ${remMonths}月×0.083%) = ${amount.toFixed(1)}元`
+    const yearsRounded = Math.round(totalMonths / 12 * 10000) / 10000  // 折算为年，保留 4 位小数
+    const raw = (retireBase + indexSalary) / 2 * yearsRounded * rate
+    amount = jiaoCeil(raw)  // 见分进角（沪人社规〔2026〕16号 四）
+    description = `(${retireBase.toLocaleString()} + ${retireBase.toLocaleString()} × ${avgIndex.toFixed(4)}) / 2 × ${yearsRounded.toFixed(4)}年 × ${(rate * 100).toFixed(2)}% = ${amount.toFixed(1)}元（见分进角）`
   } else {
     // 默认公式：(退休地计发基数 + 退休地计发基数 × 指数) / 2 × 累计缴费年限 × 1%
     const indexSalary = retireBase * avgIndex
@@ -191,20 +199,29 @@ function calcExtraPension(params) {
     const idx = avgIndex || 0
     const indexSalary = rBase * idx
     const calcYears = totalYears || actualYears
-    const oneChild = params?.oneChild !== false  // 默认有独生子女(向后兼容)
+    // ⭐ 2026-10-09 订正：原实现 `params?.oneChild !== false` 意味着「未传该字段 ⇒ 默认持证」，
+    //    导致非独子用户每月被多算 指数化工资×0.1%×年限（样本 299.70 元/月）。
+    //    川劳社发〔2006〕18号 第五十条：须**取得《独生子女父母光荣证》**才增发 ⇒ 默认应为「未持证」。
+    const oneChild = params?.oneChild === true  // 默认无《独生子女父母光荣证》，不增发
     const fixedAmount = params?.extraFixedAmount || 0
 
     // 无子女(oneChild显式=false)：纯定额补贴，不按公式算
-    // 未设置oneChild(undefined)：向后兼容，走公式（旧case无此字段）
-    const hasOneChildField = params.hasOwnProperty('oneChild')
-    if (hasOneChildField && !oneChild) {
+    if (params.hasOwnProperty('oneChild') && params.oneChild === false) {
       const amount = Math.round(fixedAmount * 100) / 100
       const desc = '四川增发养老金(无子女定额补贴): ' + amount.toFixed(2) + '元/月'
       return { amount, description: desc, bracketDetails: [] }
     }
 
-    // 有独生子女：公式计算 + 定额叠加
-    const rate = params?.extraRate != null ? params.extraRate : (mod.rate || 0.001)
+    // 有独生子女（或调用方显式传了增发比例，如艰苦边远/2005年底前工作等合并比例）：公式 + 定额叠加
+    // 未持证且未传比例 ⇒ rate=0，增发为 0，避免默认多给钱
+    const rate = params?.extraRate != null ? params.extraRate : (oneChild ? (mod.rate || 0.001) : 0)
+    if (rate === 0 && fixedAmount === 0) {
+      return {
+        amount: 0,
+        description: '四川增发养老金: 未确认持《独生子女父母光荣证》(川劳社发〔2006〕18号第五十条)，本项不计发；如持证请勾选，或按实际比例填入',
+        bracketDetails: []
+      }
+    }
     const formulaAmount = Math.round(indexSalary * rate * calcYears * 100) / 100
     const amount = Math.round((formulaAmount + fixedAmount) * 100) / 100
 
@@ -344,9 +361,9 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
 
   if (personalAccInput != null && personalAccInput > 0) {
     const raw = personalAccInput / months
-    // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+    // 上海（沪人社规〔2026〕16号 四）个人账户养老金"见分进角"；其他省份精确到分
     const amount = config?.modules?.personal_account?.round_to_jiao
-      ? Math.round(raw * 10) / 10
+      ? jiaoCeil(raw)
       : Math.round(raw * 100) / 100
     return {
       amount,
@@ -413,9 +430,9 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
 
   totalAcc = Math.round(totalAcc * 100) / 100
   const rawAmt = totalAcc / months
-  // 上海（沪人社规〔2021〕27号）个人账户养老金同样"分进角"；其他省份精确到分
+  // 上海（沪人社规〔2026〕16号 四）个人账户养老金"见分进角"；其他省份精确到分
   const amount = config?.modules?.personal_account?.round_to_jiao
-    ? Math.round(rawAmt * 10) / 10
+    ? jiaoCeil(rawAmt)
     : Math.round(rawAmt * 100) / 100
 
   return {
@@ -494,8 +511,8 @@ function calcTransitionalPension(params) {
     return { amount, _gShiAmount, description: desc }
   }
 
-  // 上海特殊公式（沪人社规〔2021〕32号）：
-  // 过渡性养老金 = 上年度全市月平均工资 × 1.0 × 1992年底前视同缴费年限 × 1.2% + 虚账实记总额 ÷ 120
+  // 上海特殊公式（沪人社规〔2026〕16号 三）：
+  // 过渡性养老金 = 上年度全口径月均工资 × 1.0 × 1992年底前视同缴费年限 × 1.2% + "虚账实记"总额 ÷ 120
   if (mod.formula_type === "shanghai") {
     const retireBase = params?.retireBase || provBase
     const sight = params?.sightYears || effectiveYears
@@ -504,8 +521,8 @@ function calcTransitionalPension(params) {
 
     const basePart = retireBase * sight * 1.0 * coefSH
     const xuzhangPart = xuzhang > 0 ? xuzhang / 120 : 0
-    // 上海（沪人社规〔2021〕27号）：过渡性养老金同样"分进角"
-    const amount = Math.round((basePart + xuzhangPart) * 10) / 10
+    // 上海（沪人社规〔2026〕16号 四）：过渡性养老金"见分进角"
+    const amount = jiaoCeil(basePart + xuzhangPart)
 
     let desc = '上海过渡性养老金: ' + retireBase.toFixed(2) + ' × 1.0 × ' + sight.toFixed(2) + '年 × 1.2%'
     if (xuzhang > 0) {
@@ -515,40 +532,48 @@ function calcTransitionalPension(params) {
     return { amount, description: desc }
   }
 
-  // 江苏特殊公式（苏政发〔2023〕?号）：
-  // 过渡性养老金 = 退休时上年度全省在岗职工月平均工资 × 1996年底前平均缴费工资指数 × 1996年底前缴费年限 × 1.2%
-  // 过渡期政策（2024-2026年）：新老办法差额按比例逐年发放
+  // 江苏特殊公式（江苏省人社厅、省财政厅 2024-01-12《关于调整企业职工基本养老保险过渡性养老金
+  //   计发办法的通知》，本通知自 2024-01-01 起执行）：
+  //   新办法 = 退休时基本养老金月计发基数 × 本人1995年底前平均缴费工资指数（或视同缴费指数）
+  //            × 1995年底前（或视同）缴费年限 × 1.2%
+  //   过渡期：新办法高于"原推算储存额办法（原办法）"的部分，2024年发40%、2025年发70%、
+  //           2026年及以后发100%；新办法 ≤ 原办法 时按原办法发放。
+  //   年限取值优先级：注入的 pre1996Years（核定表场景）→ 建账前年限 → 视同缴费年限（= 现行默认行为）
   if (mod.formula_type === "jiangsu") {
     const retireBase = params?.retireBase || provBase
     const transIdx = params?.transIndex || avgIndex
-    const pre96 = params?.pre1996Years || 0
+    const pre96 = (params?.pre1996Years != null && params.pre1996Years > 0)
+      ? params.pre1996Years
+      : ((params?.preAccountYears != null && params.preAccountYears > 0) ? params.preAccountYears : (params?.sightYears || 0))
     const coefJS = mod.coefficient || 0.012
     const retireYear = params?.retireYear || new Date().getFullYear()
 
-    if (pre96 <= 0) return { amount: 0, description: '1996年底前无缴费年限' }
+    if (pre96 <= 0) return { amount: 0, description: '1996年底前无缴费年限（无视同缴费权益）' }
 
     const amountNew = Math.round(retireBase * transIdx * pre96 * coefJS * 100) / 100
 
-    // 新老办法并存，过渡期政策
-    const oldMethod = params?.transPensionOld || 0
+    // 新老办法并存，过渡期政策。原办法金额只有核定表能给出（app 端无此输入 ⇒ 视为未知）
+    const oldMethod = (params?.transPensionOld > 0) ? params.transPensionOld : 0
+    const ratio = retireYear === 2024 ? 0.40 : retireYear === 2025 ? 0.70 : 1.00
     let finalAmount
 
     if (amountNew > oldMethod) {
-      // 新办法高于原办法，按过渡期比例发放差额
-      let ratio
-      if (retireYear === 2024) {
-        ratio = 0.40  // 2024年：40%
-      } else if (retireYear === 2025) {
-        ratio = 0.70  // 2025年：70%
-      } else {
-        ratio = 1.00  // 2026年及以后：100%
-      }
+      // 新办法高于原办法：差额按过渡期比例逐年发放
       const diff = amountNew - oldMethod
-      finalAmount = Math.round((oldMethod + diff * ratio) * 100) / 100
-
-      let desc = '江苏过渡性养老金: 新办法=' + amountNew.toFixed(2) + '元，原办法=' + oldMethod.toFixed(2) + '元'
-      desc += '，差额=' + diff.toFixed(2) + '元，' + retireYear + '年发放比例' + (ratio * 100).toFixed(0) + '%'
-      desc += '，实际=' + finalAmount.toFixed(2) + '元'
+      finalAmount = oldMethod > 0
+        ? Math.round((oldMethod + diff * ratio) * 100) / 100
+        : amountNew  // 原办法金额未知（app 端无输入）⇒ 不做差额折算，按新办法展示并在描述里告警
+      let desc = '江苏过渡性养老金: 新办法=' + amountNew.toFixed(2) + '元'
+      if (oldMethod > 0) {
+        desc += '，原办法=' + oldMethod.toFixed(2) + '元，差额=' + diff.toFixed(2) + '元'
+              + '，' + retireYear + '年发放比例' + (ratio * 100).toFixed(0) + '%'
+              + '，实际=' + finalAmount.toFixed(2) + '元'
+      } else if (ratio < 1) {
+        desc += '（⚠️ 未提供"原推算储存额办法"金额，无法做差额过渡：' + retireYear
+              + '年应发 = 原办法 + (新办法−原办法)×' + (ratio * 100).toFixed(0) + '%，此值未折算，实际发放 ≤ 此值）'
+      } else {
+        desc += '（' + retireYear + '年起全额发放）'
+      }
       return { amount: finalAmount, description: desc }
     } else {
       // 原办法高于或等于新办法，按原办法发放
@@ -665,8 +690,21 @@ function calcTransitionalPension(params) {
     }
 
     // 新办法加权年数：案例直接提供 newMethodYears = (视同指数×视同年月及93底实际缴费月数 + 1994-1998.6实际缴费指数和)/12
-    // 真实用户未注入时：用查表 D 值 × 有效年限（近似；精确需 newMethodYears 注入）
-    const newYears = (params?.newMethodYears != null) ? params.newMethodYears : (effectiveYears * gdTransIdx)
+    //   —— 与粤府函〔2021〕294号 一(一) 官方公式等价，注入时为精确值。
+    // 真实用户未注入时（newMethodYears == null）：分段近似（2026-10-09 修正）
+    //   官方正确值 = [D × 视同月数(及93年底前实际缴费月数) + 1994.1–1998.6 实际缴费指数和] ÷ 12
+    //   旧近似 = 建账前总年限 × D ⇒ 把 1994.1–1998.6 的**实际缴费**年限也按 1993 年底口径的
+    //            视同指数 D 计，偏差 = (建账前总年限 − 视同年限) × (D − 1994–1998.6 实际平均指数)
+    //            （广州 D=1.191 而实际指数 0.6、实际 4.5 年 ⇒ 高估约 2.66 指数年 ≈ 303 元/月）
+    //   现近似 = D × 视同年限 + 本人平均缴费指数 avgIndex × 建账前实际缴费年限
+    //            ⇒ 偏差收敛为 (建账前总年限 − 视同年限) × (avgIndex − 1994–1998.6 实际平均指数)
+    //            对"1994–1998.6 有实际缴费且 D≠本人实际指数"的情形严格优于旧近似；
+    //            仅当"1994–1998.6 无实际缴费"或"D 恰等于 1994–1998.6 实际平均指数"时旧近似无偏。
+    //   ⚠️ 仍为近似：精确值必须注入 newMethodYears（核定表上的"1998年6月前平均缴费指数×年限"）。
+    const gdSightYears = Math.min((sightYears || 0), (preAccountYears != null && preAccountYears > 0) ? preAccountYears : (sightYears || 0))
+    const gdActualYears = Math.max(0, effectiveYears - gdSightYears)
+    const newYearsFallback = gdTransIdx * gdSightYears + (avgIndex || 0) * gdActualYears
+    const newYears = (params?.newMethodYears != null) ? params.newMethodYears : newYearsFallback
     const newAmount = Math.round(provBase * newYears * coef * 100) / 100
     const xuzhang = params?.xuzhang || 0
     // 广东原办法过渡性养老金 = 视同账户额 ÷ 原过渡性养老金计发系数 K
@@ -687,16 +725,24 @@ function calcTransitionalPension(params) {
     const rawAdjustment = retireYear >= 2026 ? 0 : (newAmount - oldBase - allowance) * rate
     const adjustment = Math.max(0, Math.round(rawAdjustment * 100) / 100)
 
-    // 2026年起全用新办法（系数法），但固定津贴仍保留：
-    // 粤劳电[2009]32号加发100 + 粤人社[2014]8号缴费年限津贴(floor(总年限)×4)
+    // 2026-01-01 起（粤人社规〔2021〕24号；省人社厅政策解读「(二)逐步清理缴费年限津贴」
+    //   「(四)过渡期结束后待遇发放办法」）：
+    //   具有视同缴费权益者 → 不再发放粤人社发〔2014〕8号缴费年限津贴（floor(总年限)×4）；
+    //   粤劳电〔2009〕32号"加发100元" → 全员继续发放（省厅 2026 版核定表备注第4点已明确保留）。
+    //   视同缴费权益判据：1998-06-30 前有视同缴费年限或实际缴费记录（即 effectiveYears > 0）
     // 这两项与"过渡期调整额"无关，是独立发放的普惠性津贴
     if (retireYear >= 2026) {
-      const fixedSubsidy = Math.round((100 + allowance) * 100) / 100
+      const hasSightEntitlement = effectiveYears > 0
+      const allowance2026 = hasSightEntitlement ? 0 : allowance
+      const fixedSubsidy = Math.round((100 + allowance2026) * 100) / 100
       const amount = Math.round((newAmount + fixedSubsidy) * 100) / 100
+      const allowanceDesc = hasSightEntitlement
+        ? '（有视同缴费权益，缴费年限津贴已停发）'
+        : (allowance2026 > 0 ? ` + 缴费年限津贴${allowance2026}` : '')
       const desc = newAmount > 0
-        ? `粤府函[2021]294号新办法(${retireYear}年)：${newAmount.toFixed(2)} + 津贴${fixedSubsidy.toFixed(2)} = ${amount.toFixed(2)}元`
-        : `过渡性养老金(年限津贴${allowance} + 加发100) = ${amount.toFixed(2)}元`
-      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance, _rate: rate, _adjustment: 0, description: desc }
+        ? `粤府函[2021]294号新办法(${retireYear}年)：${newAmount.toFixed(2)} + 加发100${allowanceDesc} = ${amount.toFixed(2)}元`
+        : `过渡性养老金(加发100${allowanceDesc}) = ${amount.toFixed(2)}元`
+      return { amount, _newAmount: newAmount, _oldBase: oldBase, _allowance: allowance2026, _rate: rate, _adjustment: 0, description: desc }
     }
 
     // 过渡性养老金分项 = 原办法 + 100 + 津贴（调整额在 calculate 中单列）
@@ -783,12 +829,23 @@ function calcSpecialAddition(params) {
     // 知识分子补贴（宁夏）：工龄补贴 + 地区补贴
     // 仅在输入中标记 intellectual=true 时生效
     if (!params?.context?.intellectual) return { amount: 0, description: '非知识分子，不享受此补贴' }
-    const workAmount = mod.intellectual_work || 10
-    const areaAmount = mod.intellectual_area || 8.5
-    const total = workAmount + areaAmount
+    // ⭐ 2026-10-09 订正：宁党发〔1985〕27号的知识分子补贴是**浮动表**，不是常数——
+    //   地区津贴 = 地区类别(一/二/三类) × 学历职称(本科以上/大专/中专) × 工龄档(5/10/15年)，取值 5~40 元/月；
+    //   工龄补贴 = 在宁工作满 20 年后第 21 年起累计，每年 0.5~1.5 元/月。
+    //   配置里的 10 / 8.5 只是**某一个自然人**（银川 2026-01 核定表）的取值，不能当通用标准
+    //   （已有第二张核定表显示 10 + 5.5，实证 8.5 非常数）。
+    // ⇒ 优先级：用户手输金额 > 配置兜底值；使用配置兜底值时在描述里明确告警。
+    const ctx = params?.context || {}
+    const hasManual = ctx.intellectualAreaAmount != null || ctx.intellectualWorkAmount != null
+    const workAmount = ctx.intellectualWorkAmount != null
+      ? parseFloat(ctx.intellectualWorkAmount) : (mod.intellectual_work || 0)
+    const areaAmount = ctx.intellectualAreaAmount != null
+      ? parseFloat(ctx.intellectualAreaAmount) : (mod.intellectual_area || 0)
+    const total = Math.round((workAmount + areaAmount) * 100) / 100
+    const warn = hasManual ? '' : '（⚠️ 此项因人而异：宁党发〔1985〕27号按"地区类别×学历职称×工龄"分档 5~40 元/月，此处为参考值，请以本人核定表为准）'
     return {
       amount: total,
-      description: `知识分子补贴：工龄${workAmount}元/月 + 地区${areaAmount}元/月 = ${total}元/月`
+      description: `知识分子补贴：工龄${workAmount}元/月 + 地区${areaAmount}元/月 = ${total}元/月${warn}`
     }
   } else if (mod.type === 'fixed') {
     // 固定金额补贴（如黑龙江御寒津贴）
@@ -1124,7 +1181,7 @@ function getRetireMonths(ageExact, config) {
 }
 
 /**
- * 获取延迟退休月数（依据：国办发〔2025〕5号）
+ * 获取延迟退休月数（依据：《国务院关于渐进式延迟法定退休年龄的办法》）
  * @param {number} birthYear - 出生年份
  * @param {number} birthMonth - 出生月份
  * @param {string} type - 人员类型 'male'(男)/'fc'(女干部)/'fw50'(女工人50岁)/'fw55'(灵活就业女55岁)
@@ -1136,7 +1193,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   config = config || {};
   // 女性工人（50岁退休）不受延迟退休政策影响
   // 2026-09-12 修复 P3：原 50 岁退休女性（企业女职工/女工人）同样适用延迟退休。
-  //   国办发〔2025〕5号：1975-01 起出生者，出生年月每往后 2 个月延迟 1 个月，逐步至 55 岁（cap 60）。
+  //   《国务院关于渐进式延迟法定退休年龄的办法》：1975-01 起出生者，出生年月每往后 2 个月延迟 1 个月，逐步至 55 岁（cap 60）。
   //   此前此处有一行短路 return 0，使 fw / fw50 / ef50 三类人群延迟量恒为 0，与政策不符。
   // 检查延迟退休政策是否生效（以退休日期为准）
   // effective_date格式：YYYY-MM-DD
@@ -1209,7 +1266,7 @@ function getDelayMonths(birthYear, birthMonth, type, config) {
   if (diff < 0) return 0
 
   // 阶梯计算延迟月数
-  // 国办发〔2025〕5号附表：基准月的当月起即延迟 1 个月
+  // 《国务院关于渐进式延迟法定退休年龄的办法》附表：基准月的当月起即延迟 1 个月
   //   male 1965-01 → 60岁1个月；1965-05 → 60岁2个月；1976-09 及以后 → 63岁（cap 36）
   // 2026-09-12 修复：原式 floor((diff-1)/step)+1 使每组首月少算 1 个月（出生月 1/5/9 月）
   const delay = Math.floor(diff / step) + 1
@@ -1702,6 +1759,9 @@ function parseInput(inputData) {
     oneChildAvgPension: inputData.oneChildAvgPension != null ? parseFloat(inputData.oneChildAvgPension) : null, // 云南独生子女补贴计算基数（人均养老金）覆盖
     extraFixedAmount: inputData.extraFixedAmount != null ? parseFloat(inputData.extraFixedAmount) : null, // 四川增发定额补贴（无子女等固定金额，元/月）
     intellectual: inputData.intellectual === true, // 宁夏知识分子标记
+    // 宁夏知识分子补贴是浮动表（宁党发〔1985〕27号），允许按本人核定表手输
+    intellectualAreaAmount: inputData.intellectualAreaAmount != null ? parseFloat(inputData.intellectualAreaAmount) : null,
+    intellectualWorkAmount: inputData.intellectualWorkAmount != null ? parseFloat(inputData.intellectualWorkAmount) : null,
     regionCategory: inputData.regionCategory || null, // 地区类别（西藏特殊待遇分项用，可为null）
     tibetWorkYears: inputData.tibetWorkYears != null ? parseFloat(inputData.tibetWorkYears) : null, // 在西藏工作年限（高原补贴比例用，可为null）
     subsidyParam: inputData.subsidyParam != null ? parseFloat(inputData.subsidyParam) : null, // 郑州过渡性补贴参数（查表结果或核定表直供，可为null）
@@ -1829,7 +1889,14 @@ function calculate(config, inputData) {
   // 则视同年限算到 paymentStart，实际缴费从 paymentStart 开始；个人账户仍从 accountStart 起算。
   const paymentStartConfigured = data.paymentStartInput || accountStartConfigured
   const usePaymentStart = config.sight_cutoff_by_payment_start === true && data.paymentStartInput != null
-  const sightCutoff = usePaymentStart ? paymentStartConfigured : accountStartConfigured
+  // ⭐ sight_cutoff：省配置显式指定的「视同缴费年限截止时点」，优先级高于 account_start。
+  //   2026-10-09 补 —— 此前 sightCutoff 只认 account_start，导致天津/陕西/内蒙古等省
+  //   「视同截止 ≠ 建账时间」的省份在默认路径（用户不传 sight_years）上系统性算错年限。
+  //   语义同 calcYears(a,b)：**不含 b 当月**。故「截至 1992-12-31 前」要写 {year:1993, month:1}。
+  //   天津：津劳局〔2006〕329号 —— 截至 1997-12-31 前的缴费年限（含视同工龄和实际缴费）
+  //   陕西：陕政发〔2006〕27号 —— 1992-12-31 前视同缴费年限
+  const sightCutoff = usePaymentStart ? paymentStartConfigured
+    : (config.sight_cutoff || accountStartConfigured)
 
   const hasSight = data.work.year < sightCutoff.year ||
     (data.work.year === sightCutoff.year && data.work.month < sightCutoff.month)
@@ -2035,6 +2102,8 @@ function calculate(config, inputData) {
       location: data.cityType,
       retireYear: legalDate.year,
       intellectual: data.intellectual,
+      intellectualAreaAmount: data.intellectualAreaAmount,
+      intellectualWorkAmount: data.intellectualWorkAmount,
       oneChild: data.oneChild,
       oneChildAvgPension: data.oneChildAvgPension,
       totalWorkYears: totalYears,
@@ -2057,13 +2126,27 @@ function calculate(config, inputData) {
   })
 
   // 重庆独生子女增发：3% × (基础+个人+过渡)
-  // 由 case 的 oneChild 字段控制，而非 province 全局开关
-  if (config.province === 'chongqing' && data.oneChild && transPension.amount > 0) {
+  // 依据：渝劳办发〔2000〕261号 —— **1996-01-01 前参加工作或参加城镇企业职工基本养老保险**，
+  //   且持有《独生子女父母光荣证》的参保人，退休时按本人基本养老金（基础+个人+过渡）**增发 3%**。
+  //   1996-01-01 及以后参保的重庆职工**无此政策**（另有规定：其奖励由单位/财政渠道解决）。
+  //   由 case 的 oneChild 字段控制是否持证，参工年月由 workYear/workMonth 把关。
+  // ⚠️ 2026-10-09 订正：原实现多加了 `transPension.amount > 0` 条件（无视同缴费者会被漏掉），
+  //    且缺「1996-01-01 前参工」门槛（1996 后参保者会被多算）。两条都已修正。
+  if (config.province === 'chongqing' && data.oneChild) {
+    const _wy = parseInt(inputData.workYear)
+    const _wm = parseInt(inputData.workMonth)
+    const _hasWorkDate = !isNaN(_wy)
+    // 1996-01-01 以前参加工作 ⇒ 参工年 < 1996（1996 年 1 月及以后参保均不属"以前"）
+    const _eligible = _hasWorkDate ? (_wy < 1996) : true  // 未提供参工年月 ⇒ 无法校验，按已持证处理并在描述中标注
     const oneChildBase = basicPension.amount + personalAccount.amount + transPension.amount
-    const oneChildAmount = Math.round(oneChildBase * 0.03 * 100) / 100
+    const oneChildAmount = _eligible ? Math.round(oneChildBase * 0.03 * 100) / 100 : 0
+    const _gateNote = _hasWorkDate
+      ? (_eligible ? `（参工${_wy}年${isNaN(_wm) ? '' : _wm + '月'}，符合1996-01-01前参保门槛）`
+                   : `（参工${_wy}年${isNaN(_wm) ? '' : _wm + '月'}，不满足1996-01-01前参保门槛 ⇒ 不增发）`)
+      : '（⚠️ 未提供参工年月，未校验1996-01-01前参保门槛）'
     specialAddition = {
       amount: oneChildAmount,
-      description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 3% = ${oneChildAmount.toFixed(2)}元`
+      description: `独生子女增发: (${basicPension.amount.toFixed(2)}+${personalAccount.amount.toFixed(2)}+${transPension.amount.toFixed(2)}) × 3% = ${oneChildAmount.toFixed(2)}元${_gateNote}`
     }
   }
 

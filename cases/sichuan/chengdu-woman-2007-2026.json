@@ -19,6 +19,7 @@
   "pre_account_years": 0,
   "base_number": 8462,
   "account_start": { "year": 1996, "month": 1 },
+  "oneChild": true,
   "expected": {
     "basicPension": 1725.67,
     "personalPension": 1744.60,

@@ -137,7 +137,7 @@ if (my === 15) {
   console.log('✅  引擎 minYears = 15（已修复）')
 } else {
   console.log('🚩  引擎 minYears = ' + my + '，政策应为 15（2029-12-31 前不调整）—— 待修复')
-  console.log('    getMinYears() 默认：retireYear>=2025 → return 20，与国办发〔2025〕5号不符。')
+  console.log('    getMinYears() 默认：retireYear>=2025 → return 20，与《国务院关于渐进式延迟法定退休年龄的办法》不符。')
   console.log('    仅四川配了正确的 min_years（2025-2029:15 / 2030:15.5 / … / 2039:20），其余 30 省走默认。')
   console.log('    影响：web/app.js:314 会标红显示「最低缴费年限要求 20 年 ✗ 不足」。')
 }

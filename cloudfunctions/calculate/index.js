@@ -74,6 +74,49 @@ exports.main = async (event) => {
       if (v !== undefined && v !== null && v !== '') input[k] = v
     }
 
+    // ── 上海指数保底（沪人社规〔2021〕32号）──
+    // 背景：主程序 step2 让用户「选缴费档次」（60档→0.6）或手填平均缴费指数。
+    //   上海明文规则：1993-2011 年实际缴费指数低于 1 的按 1 计；2012 年 ≥0.85；2013 年 ≥0.75；
+    //   2014 年起无省级明文 ⇒ 按实际比值。
+    //   ⇒ 全程按最低档缴的真实平均指数约 0.84，而不是 0.6；直接把档位比例当平均指数传进来，
+    //     会系统性低估约 18.5%（1993参工/2026退休实测：4,744 vs 真实 5,823，差 1,078 元/月）。
+    // 触发条件（缺一不可，严防误伤）：
+    //   ① province === 'shanghai'
+    //   ② 调用方显式传了 indexLevel（= 全程按该档位缴纳的档位比例）
+    //   ⇒ 手填的 averageIndex 本身就是"平均值"，对它再保底 = 二次保底，会高估，故绝不重算。
+    //   ⇒ 参工年晚（2014 后）的上海用户逐年 floor 全为 null，重算结果 = 原档位，自动不触发。
+    let shanghaiFloorNote = null
+    if (province === 'shanghai' && event.indexLevel) {
+      const level = parseFloat(event.indexLevel)
+      if (!isNaN(level) && level > 0) {
+        try {
+          // 退休年只有引擎知道（延迟退休在引擎内算），先跑一次拿 legal.date.year
+          const probe = engine.calculate(config, input)
+          const retireYear = probe && probe.legal && probe.legal.date && probe.legal.date.year
+          const startYear = input.workYear
+          if (retireYear && startYear && retireYear >= startYear) {
+            let sum = 0, n = 0
+            for (let y = startYear; y <= retireYear; y++) {
+              let f = null
+              if (y >= 1993 && y <= 2011) f = 1.0
+              else if (y === 2012) f = 0.85
+              else if (y === 2013) f = 0.75
+              sum += (f != null ? Math.max(f, level) : level)
+              n++
+            }
+            const floored = n ? Math.round((sum / n) * 10000) / 10000 : level
+            const before = input.avgIndex
+            if (floored > before) {
+              input.avgIndex = floored
+              shanghaiFloorNote = { from: before, to: floored, level, startYear, retireYear }
+            }
+          }
+        } catch (e) {
+          console.error('上海保底重算失败，沿用原指数：', e.message)
+        }
+      }
+    }
+
     // 仅估算余额（快速路径，不跑完整测算）
     if (estimateOnly) {
       const result = engine.calculate(config, input)
@@ -92,7 +135,9 @@ exports.main = async (event) => {
 
     return {
       success: true,
-      data: result
+      data: result,
+      // 上海保底生效时回传（前端可据此提示"已按上海保底规则修正"）；未触发为 null
+      shanghaiFloor: shanghaiFloorNote
     }
 
   } catch (err) {

@@ -23,6 +23,7 @@
   "base_number": 8321,
   "personal_account": 72117.51,
   "months": 138.4,
+  "oneChild": true,
   "expected": {
     "basic_pension": 1660.94,
     "personal_pension": 521.08,

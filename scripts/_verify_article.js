@@ -60,7 +60,7 @@ ok('  98档', +(7322 * 0.98).toFixed(0), 7176, 1)
 ok('  145档', +(7322 * 1.45).toFixed(0), 10617, 1)
 ok('  211档', +(7322 * 2.11).toFixed(0), 15449, 1)
 
-console.log('\n【七、出生年月与延迟退休（正文口径表 · 依据国办发〔2025〕5号）】')
+console.log('\n【七、出生年月与延迟退休（正文口径表 · 依据《国务院关于渐进式延迟法定退休年龄的办法》）】')
 const { solveBirth } = require('C:/Users/14041/WorkBuddy/2026-07-16-10-20-33/养老金计算平台/scripts/cohort.js')
 const EXPECT_COHORT = {
   50: { type: 'fw',   label: '女工人', birth: '1975-08', delay: 4, realAge: '50岁4个月', work: '1997-07' },

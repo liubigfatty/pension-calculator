@@ -694,7 +694,7 @@ function build(data) {
   w += '</view></view>'  // close sectionBody, section
 
   // === 免责声明 ===
-  w += '<view class="disclaimer"><text class="disclaimerText">本报告依据国务院渐进式延迟退休政策（国办发〔2025〕5号）及' + data.province + '现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text></view>'
+  w += '<view class="disclaimer"><text class="disclaimerText">本报告依据《国务院关于渐进式延迟法定退休年龄的办法》（2025年1月1日施行）及' + data.province + '现行计发办法计算。个人账户余额为复利估算值，实际以社保系统查询为准。最终待遇以退休时社保部门核定结果为准。</text></view>'
 
   w += '</view>'  // close page
 

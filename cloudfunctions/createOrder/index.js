@@ -8,6 +8,11 @@
  *   4. 计算 signature（session_key）与 paySig（appKey）
  *   5. 返回给客户端，客户端调 wx.requestVirtualPayment（内部自动下单）
  *
+ * ⭐ 2026-10-18 改造（AI 场景额度制）：
+ *   - 支持两个道具：pension_report(¥1 永久解锁+赠1次) / pension_report_3(¥2 3次额度包)
+ *   - 下单即预写 orders 集合（status='created'），供对账与"下单未付"分析
+ *   - ⚠️ 商品表与 quota / payCallback 三处保持一致，改一处要改三处
+ *
  * 文档：
  *  - 虚拟支付：https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/virtual-payment.html
  *  - 客户端 API：wx.requestVirtualPayment
@@ -17,6 +22,14 @@ const https = require('https')
 const crypto = require('crypto')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+
+const db = cloud.database()
+
+/** 商品表（与 cloudfunctions/quota、payCallback 三处一致；price 单位=分） */
+const PRODUCTS = {
+  pension_report: { price: 100, desc: '报告解锁 ¥1（永久解锁完整报告，赠 1 次深度调用）' },
+  pension_report_3: { price: 200, desc: '深度调用 3 次 ¥2（不含报告解锁）' },
+}
 
 // ⚠️ APP_SECRET 为小程序密钥，请在小程序后台
 //    「开发管理 → 开发设置 → 开发者密钥(AppSecret)」获取并填入下方。
@@ -54,11 +67,18 @@ exports.main = async (event) => {
   try {
     const wxContext = cloud.getWXContext()
     const openid = wxContext.OPENID
-    const { loginCode, productId } = event
+    const { loginCode, productId, channel } = event
     const pid = productId || CONFIG.PRODUCT_ID
 
     if (!loginCode) {
       return { code: -1, msg: '缺少 loginCode（请先 wx.login）' }
+    }
+    // 🔴 道具白名单：goodsPrice 必须与微信虚拟支付后台该道具的价格完全一致，
+    //    否则拉起收银台会报价格不符 ⇒ 未知道具一律拒绝，不静默回退默认道具。
+    const product = PRODUCTS[pid]
+    if (!product) {
+      console.error('[vpay] 未知道具:', pid)
+      return { code: -1, msg: '未知道具：' + pid + '（可用：' + Object.keys(PRODUCTS).join(' / ') + '）' }
     }
     if (!CONFIG.APP_SECRET) {
       return { code: -1, msg: '云函数未配置 APP_SECRET，无法换取 session_key' }
@@ -91,11 +111,11 @@ exports.main = async (event) => {
     const outTradeNo = 'RP' + Date.now() + Math.random().toString(36).slice(-4).toUpperCase()
     const signDataObj = {
       offerId: CONFIG.OFFER_ID,                   // string（米大师应用ID）
-      buyQuantity: 1,                             // number（购买数量）
+      buyQuantity: 1,                             // number（购买数量；次数包用独立道具，不用数量叠加，避免单价×数量歧义）
       env: CONFIG.ENV,                            // number: 0=正式环境 1=沙箱
       currencyType: 'CNY',                        // string
       productId: pid,                             // string（道具ID）
-      goodsPrice: CONFIG.GOODS_PRICE,             // number，单位=分（官方文档 goodsPrice 单位为分；后台 1元=100分 → 传 100；实测传字符串报 -15016）
+      goodsPrice: product.price,                  // number，单位=分（官方文档 goodsPrice 单位为分；须与后台道具价格一致）
       outTradeNo: outTradeNo,                      // string（业务订单号）
       attach: JSON.stringify({ productId: pid }),  // string（透传）
     }
@@ -106,7 +126,26 @@ exports.main = async (event) => {
     const signature = hmacSha256Hex(sessionKey, signData)                       // 用户态签名
     const paySig = hmacSha256Hex(appKey, `requestVirtualPayment&${signData}`)   // 支付签名
 
-    console.log('[vpay] 签名生成完成 openid=', openid, 'orderNo=', outTradeNo)
+    console.log('[vpay] 签名生成完成 openid=', openid, 'orderNo=', outTradeNo, 'productId=', pid, 'price(分)=', product.price)
+
+    // 订单预入库（status='created'）：对账用，也便于分析"下单未付"。
+    // 失败不影响支付（best-effort）—— 支付链路不能被记账逻辑拖垮。
+    try {
+      await db.collection('orders').add({
+        data: {
+          orderNo: outTradeNo,
+          openid,
+          productId: pid,
+          price: product.price,
+          quantity: 1,
+          status: 'created',
+          channel: channel || 'unknown',
+          createdAt: Date.now(),
+        },
+      })
+    } catch (e) {
+      console.error('[vpay] 订单预入库失败（不影响支付）:', e.message)
+    }
 
     return {
       code: 0,
@@ -118,6 +157,8 @@ exports.main = async (event) => {
         env: CONFIG.ENV,
         offerId: CONFIG.OFFER_ID,
         productId: pid,
+        price: product.price,
+        desc: product.desc,
       },
     }
   } catch (e) {

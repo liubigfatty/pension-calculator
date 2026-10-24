@@ -96,6 +96,8 @@ function mapCaseToInput(c, provConfig) {
     oldIndexSalary:  c.old_index_salary ?? null,
     enjoymentRatio:  c.enjoyment_ratio ?? null,
     newMethodYears:  c.new_method_years ?? null,
+    // 江苏：原推算储存额办法算出的过渡性养老金（核定表「备注」栏常有），用于三年过渡期差额计算
+    transPensionOld: c.trans_pension_old ?? null,
     localPensionYears: c.local_pension_years ?? null,
     pre1992LocalYears: c.pre1992_local_years ?? null,
     oneChild:        c.one_child !== undefined ? !!c.one_child : (c.oneChild !== undefined ? !!c.oneChild : undefined),
@@ -217,6 +219,19 @@ function main() {
       total++;
       const c = JSON.parse(fs.readFileSync(path.join(provDir, f), 'utf8'));
       const r = runCase(prov, c, f);
+
+      // CASE_VERBOSE=1：逐项打印 期望/实算/差（用于核查容差内的系统性偏差）
+      if (process.env.CASE_VERBOSE === '1') {
+        const e = r.expected || {}, a = r.actual || {}
+        const parts = ['basic_pension', 'personal_pension', 'transitional_pension', 'special_addition', 'total']
+          .filter(k => e[k] !== undefined)
+          .map(k => {
+            const av = (a[k] == null || Number.isNaN(a[k])) ? null : Number(a[k])
+            return k + ' 期=' + e[k] + ' 实=' + (av == null ? 'NaN' : av.toFixed(2)) +
+                   ' 差=' + (av == null ? 'NaN' : (av - e[k]).toFixed(2))
+          })
+        console.log('     ' + parts.join(' | '))
+      }
 
       if (r.ok) {
         console.log(`  ✅ ${prov}/${f}`);

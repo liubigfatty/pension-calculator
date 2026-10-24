@@ -83,7 +83,7 @@ fs.writeFileSync(path.join(outDir, 'matrix.json'), JSON.stringify({
     }])),
     ages: AGES, tiers: TIERS,
     provSocial: PROV_SOCIAL, baseRetire: 7978.25,
-    basis: '延迟退休出生年月依据：国办发〔2025〕5号附件对照表',
+    basis: '延迟退休出生年月依据：《国务院关于渐进式延迟法定退休年龄的办法》附件对照表',
     generatedAt: new Date().toISOString(),
   },
   rows,

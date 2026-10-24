@@ -252,9 +252,13 @@ Page({
     }
 
     // 4. 平均缴费指数：灵活就业档次 → 数值，或直接用用户输入值
+    //    indexLevel：仅「选档位」时下发档位比例，供云函数按上海保底规则逐年重算（沪人社规〔2021〕32号）。
+    //    手填的 averageIndex 本身就是平均值 ⇒ 不下发 indexLevel，云函数不会二次保底。
     let averageIndex
+    let indexLevel = null
     if (d.isFlexible && d.levelIndex >= 0) {
       averageIndex = LEVEL_PERCENTS[d.levelIndex]
+      indexLevel = averageIndex
     } else {
       averageIndex = parseFloat(d.averageIndexInput) || 0
     }
@@ -310,6 +314,7 @@ Page({
           birthDate,
           workStartDate,
           averageIndex,
+          indexLevel,   // 仅「选档位」时非 null；上海保底逐年重算用，手填指数时为 null 不触发
           personalAccount: parseFloat(d.accountBalanceInput) || 0,
           extras: calcExtras
         }
