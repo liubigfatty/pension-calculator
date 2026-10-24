@@ -7,7 +7,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -57,18 +57,26 @@ const PROV_BASE = {
    2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 };;
 
+// ⚠️【2026-10-24】本块内的 PROV_GROWTH 外推率已删除（无官方来源，且只服务于已删除的 predictBase）。
+//   未来年份计发基数一律用引擎 inferGrowthRate()／getBase()。本块因 AVG_PENSIONER_PENSION 仍被引用而保留。
 const BASE_PARAMS = {
   
-  PROV_GROWTH: 0.026,
   // 全省退休人员人均养老金（元/月），用于计算独生子女补贴
   AVG_PENSIONER_PENSION: {
     2021: 3158,
     2022: 3293,
     2023: 3431,  // 真实表确认：2023年全省退休人员月平均基本养老金3431元
-    2024: 3431,  // 2024年尚未公布，预发暂用2023年值
-    2025: 3431,  // 2025年尚未公布，预发暂用2023年值
-    // ⚠️ 纪律：未发布年份不写固定值。2026-09-14 删除了原 2026-2030 五条「按约5%年增长」的
-    //   预测值（无官方来源）。缺失年份引擎回退到 2023 年真实值 3431。
+    2024: 3431,  // 2024年度值（= 2025年退休适用的"上年度"值）
+    // ⭐ 2026-10-09 订正（云劳社〔2002〕76号第十条第十三款：按**上年度**全省退休人员月平均基本养老金的 5% 增发）
+    //   槽位语义＝「退休年 → 应适用的上年度值」，故：
+    //     2025 年退休 → 2024 年度值 3553（2025-09 真实核定表实证）
+    //     2026 年退休 → 2025 年度值 3623（云人社发〔2026〕8号 明文「2025年度企业退休人员人均基本养老金为 3623 元/月」）
+    //   此前 2024/2025 两槽都回退 3431 ⇒ 2026 年退休者每月少发 (3623−3431)×5% = 9.60 元。
+    //   依据：https://ylbz.yn.gov.cn/index.php?c=show&id=6431
+    //        https://yn.people.com.cn/BIG5/n2/2026/0829/c378439-41680941.html
+    2025: 3553,
+    2026: 3623,
+    // ⚠️ 纪律：未发布年份不写固定值。2027 起缺失，引擎回退到 2023 年真实值 3431（保守，不会高估）。
   },
   PROV_2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 }
@@ -105,13 +113,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（云南省专用）
-function predictBase(year) {
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 8265
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -310,5 +313,4 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }

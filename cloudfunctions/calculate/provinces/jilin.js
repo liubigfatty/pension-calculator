@@ -7,7 +7,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -112,15 +112,18 @@ const CC_BASE = {
   2020: 6927.75, 2021: 7297.75, 2022: 7604.25, 2023: 7726.67, 2024: 7852.58, 2025: 7978.25
 }
 
-// 吉林省基数增长预测参数
-const BASE_PARAMS = {
-  CC_2025: 7978.25,
-  
-  CC_GROWTH: 0.026,
-  PROV_GROWTH: 0.0438,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7322,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ⛔【已废弃·2026-10-24 删除】原「吉林省基数增长预测参数」BASE_PARAMS 块已整块删除。
+//   原内容：CC_2025 7978.25 / CC_GROWTH 0.026 / PROV_GROWTH 0.0438 / MERGE_YEAR 2031 / PROV_2025 7322
+//   删除理由：
+//   ① PROV_GROWTH 4.38% **无官方来源**，是早期拍的估值。用它外推的 2027-2035 九条写死基数
+//      虽已于 2026-09-14 删除，但常量本身留了下来，成为"看似有据"的错误引用源
+//      ——已发生过事实源表照抄 4.38%、再扩散到文章的事故。
+//   ② MERGE_YEAR 2031（长春并轨全省）**没有任何官方文件**支撑，属臆设；
+//      按它外推长春 2038 得 12,752，而引擎现行口径为 9,688，高算 32%。
+//   ③ 本块只服务于本文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**，是死代码。
+//   ⇒ 现行唯一外推口径：引擎 inferGrowthRate() —— 取该基数表最近两个已公布年份的增幅，夹到 [0, 3%]。
+//     吉林当前实测：全省 2.18%（7481.5/7322.08）、长春 1.60%（7978.25/7852.58）。
+//   ⚠️ 不得以任何形式恢复本块。需要未来年份基数一律调用引擎 getBase(city, year, config)。
 
 // 吉林省行政区划
 const CITY_LIST = [
@@ -132,6 +135,23 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1995, month: 7 }  // 依据：吉政发[1995]18号
 const CUTOFF_DATE   = { year: 1995, month: 6 }   // 视同缴费截止 1995-06
 
+// ==================== 「1995-07 前参保判视同缴费 ⇒ 是否重复计算」核查结论（2026-10-09）====================
+// 结论：**不算重复，是正确口径**。视同缴费年限**同时**用于两处，各有独立政策依据：
+//   ① 计入基础养老金的「累计缴费年限」——吉政发〔2004〕28号 六(一) 明文：
+//      "参保人员达到法定退休年龄、企业和个人累计缴费年限（**含视同缴费年限**，下同）满15年的"
+//      且 基础养老金 =（退休时上一年度当地职工月平均工资 + 本人指数化月平均缴费工资）÷2 ×个人累计缴费年限×1%
+//      原文（吉林省政府信息公开）：http://xxgk.jl.gov.cn/PDFfile/201812/5347702.pdf
+//   ② 单独计发过渡性养老金——同文 六(二)1.：
+//      过渡性养老金月标准 = 退休时上一年度全省职工月平均工资 × 本人平均缴费工资指数
+//                          × 建立基本养老保险个人账户制度前**视同缴费年限** × 过渡系数（1.2%）
+//      （吉政办明电〔2015〕11号：实际缴费年限累计超20年的，过渡系数由 1.2% 调整为 1.4%，2015-01-01 起）
+//      长春市社保局官方答复复核：http://ccshbx.changchun.gov.cn/hdjl/wszx/202512/t20251215_3447165.html
+// ⇒ 与全国通行做法一致：过渡性养老金本身就是对"建账前无个人账户积累"这段年限的补偿，
+//   补偿的是**个人账户**的空账，与基础养老金按年限 1%/年计发是两笔不同性质的钱，不存在重复计发。
+// ⚠️ 注意区分：吉政办明电〔2015〕11号 另一条"实际缴费年限超20年分段增发（0.15%/0.20%/0.25%）"
+//    用的是**实际**缴费年限，不含视同年限（见 EXTRA_PARAMS.trigger = actual_years）——这条别混。
+// 本轮不改任何数值，仅留结论消除疑虑。
+
 
 // 吉林用分段系数，由引擎计算，此处设 null
 const TRANS_COEF = {
@@ -142,7 +162,7 @@ const TRANS_COEF = {
   }
 }
 
-// 吉林省增发养老金参数（吉政发〔1998〕28号）
+// 吉林省增发养老金参数（吉政办明电〔2015〕11号）
 const EXTRA_PARAMS = {
   trigger: { type: 'actual_years', threshold: 20 },
   brackets: [
@@ -170,28 +190,10 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0369a1','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（吉林省专用）
-function predictBase(year, cityType) {
-  // 2031年起长春/全省合并，用全省基数（不再区分cityType）
-  if (year >= BASE_PARAMS.MERGE_YEAR) {
-    const lastYear = 2025
-    const lastVal  = PROV_BASE[lastYear] || 7322.08
-    if (year <= lastYear) return PROV_BASE[year] || 0
-    return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-  }
-  // 2031年前：长春/全省分开预测
-  if (cityType === 'cc') {
-    const lastYear = 2025
-    const lastVal  = CC_BASE[lastYear] || 7978.25
-    if (year <= lastYear) return CC_BASE[year] || 0
-    return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.CC_GROWTH, year - lastYear))
-  }
-  // 全省（非长春）
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 7322.08
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase(year, cityType) 已删除。
+//   它依赖上面已删除的 BASE_PARAMS（4.38% / 2.6% / 2031 并轨臆设），且**全仓库零调用**
+//   ——引擎实际取数走的是 pension-engine.js 的 getBase()，此处属于历史遗留死代码。
+//   预测未来年份计发基数请统一用 getBase(city, year, config)，外推口径见 inferGrowthRate()。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -404,7 +406,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
   CC_BASE,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -417,5 +418,4 @@ module.exports = {
   EXTRA_PARAMS,
   cases,
   getEngineConfig,
-  predictBase,
 }

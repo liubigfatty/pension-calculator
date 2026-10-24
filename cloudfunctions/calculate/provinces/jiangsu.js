@@ -7,7 +7,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -74,12 +74,11 @@ const PROV_BASE = {
 };;
 
 // 江苏省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.018,  // 1.8%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 江苏省历年社保缴费基数（元/月，来源：用户提供的江苏省历年社保缴费基数表）
 // 注：此为缴费基数，用于计算缴费指数；计发基数见 PROV_BASE
@@ -151,15 +150,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（江苏省专用）
-function predictBase(year) {
-  const BASE = PROV_BASE
-  const bp = BASE_PARAMS
-  const lastYear = 2025
-  const lastVal  = BASE[lastYear] || 8917
-  if (year <= lastYear) return BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + bp.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -221,7 +213,13 @@ function getEngineConfig() {
   }
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, use_trans_index: true };
+    // formula_type:'jiangsu' ⇒ 走引擎的三年过渡期分支：
+    //   新办法 = 计发基数 × 1995年底前平均缴费工资指数(或视同缴费指数) × 1995年底前(或视同)缴费年限 × 1.2%
+    //   新办法高于"原推算储存额办法（原办法）"的部分，2024年发40%、2025年发70%、2026年及以后发100%
+    // 依据：江苏省人社厅、省财政厅 2024-01-12《关于调整企业职工基本养老保险过渡性养老金计发办法的通知》
+    //   （本通知自 2024-01-01 起执行）；参数与公式见《江苏省企业职工基本养老保险实施办法》苏人社规〔2024〕1号 第二十四条
+    // ⚠️ 原办法金额无法由 app 端推算（需 1995 年底前逐年缴费工资），未注入 transPensionOld 时按新办法展示并告警
+    modules.transitional_pension = { enabled: true, use_trans_index: true, formula_type: 'jiangsu' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -250,10 +248,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,  // 吉林省不用建账前缴费年限
+    usePreAccountYears: false,  // 江苏过渡性年限在 formula_type:'jiangsu' 分支内取 pre1996Years/视同年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数8613元，2024年基数8785元（苏人社发〔2023/2024〕XX号）',
+    notes: '2023年基数8613元，2024年基数8785元；过渡性养老金自2024-01-01起改新办法并与“原推算储存额办法”对比、差额按40%(2024)/70%(2025)/100%(2026起)过渡（苏人社厅、省财政厅2024-01-12通知）',
   };
 }
 
@@ -317,7 +315,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   SALARY_HISTORY,
   CITY_LIST,
   ACCOUNT_START,
@@ -329,5 +326,4 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }

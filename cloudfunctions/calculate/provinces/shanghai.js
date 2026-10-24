@@ -2,7 +2,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -76,15 +76,29 @@ const PROV_BASE = {
   2023: 12183,
   2024: 12307,
   2025: 12434,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-  2026: 12577,  // 2026年计发基数（沪已并轨全口径社平，2026年8月启用，较2025年12434增143元）
+  // ✅ 2026 计发基数 12577 已确认在配置中（无需补录）。
+  //   官方依据：上海市人社局 2026-08-18《本市调整2026年度社保缴费基数上下限》
+  //     "本市2025年度全口径城镇单位就业人员平均工资为12577元/月"
+  //     https://rsj.sh.gov.cn/tgsgg_17341/20260818/t0035_1443203.html
+  //   上海已实现"计发基数 = 上年度全口径社平"并轨 ⇒ 2026 计发基数 = 12577（较2025的12434增143，+1.15%）。
+  2026: 12577,
 };
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.045,
-  MERGE_YEAR: 2031,
-  PROV_2025: 12434,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ==================== "当年增加养老金" current_year_increase（2026-10-09 复核）====================
+// 性质：上海企退「补充计发待遇」（地方固定额），非公式计算项，由 case/前端以 current_year_increase 注入，
+//       引擎在 engine/pension-engine.js 中仅对 province==='sh' 计入月基本养老金总额（rawSum）。
+// 已知官方值：2023=280 / 2024=325 / 2025=325 元/月。
+// ⚠️ 2026 年度标准**尚未官宣**（截至 2026-08-20 未见沪人社规文件）：
+//    当前案例（cases/shanghai/2.json）沿用 2025 值 325，**但这是沿用值、不是已核实的 2026 值**。
+//    2026 年度标准公布后必须回核：若官宣值 ≠ 325，须同步改 cases/shanghai/2.json 的
+//    current_year_increase 与 expected.total（核定表 9747.3 = 9422.3 + 325）。
+// 数值本轮**不动**（未官宣 ⇒ 无依据可改）。
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 上海市行政区划（直辖市，无地级市区分）
 const CITY_LIST = []
@@ -112,13 +126,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（上海市专用）
-function predictBase(year) {
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 12434
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -170,6 +179,9 @@ const cases = [
 
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
+  // ⚠️ 计发办法依据已更新为《沪人社规〔2026〕16号》（2026-07-24 发布、2026-08-16 施行，有效期至 2031-08-15）；
+  //    该文同日废止 沪人社规〔2021〕32号 与 沪人社规〔2021〕27号。
+  //    一(一) 剩余月数折算为年、保留 4 位小数；二(一) 基础养老金公式；三 过渡性养老金（含虚账实记÷120）；四 三项分别见分进角。
   const modules = {};
   if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01, formula_type: 'shanghai' };
   if (MODULES.includes('extra')) {
@@ -179,6 +191,7 @@ function getEngineConfig() {
       modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
     }
   }
+  // round_to_jiao ⇒ 引擎对个人账户养老金做"见分进角"（沪人社规〔2026〕16号 四）
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true, round_to_jiao: true };
   if (MODULES.includes('transition')) {
     modules.transitional_pension = { enabled: true, formula_type: "shanghai" };
@@ -266,7 +279,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -277,5 +289,4 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }

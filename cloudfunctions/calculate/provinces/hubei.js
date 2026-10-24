@@ -8,7 +8,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -126,11 +126,11 @@ const CONTRIB_BASE_TIERS = {
   // 2025: { tier1: ?, tier2: ?, tier3: ? }, // 2026年度缴费基数月标准(=社平年2025全口径)待官方公布
 };
 
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.03,
-  MERGE_YEAR: 2031,
-  PROV_2025: 9112,  // 武汉/省直2025年计发基数
-};
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 const CITY_LIST = [
   '武汉市', '黄石市', '十堰市', '宜昌市', '襄阳市',
@@ -228,6 +228,7 @@ const AVG_SALARY_HISTORY = {
   2023: 7040,
   2024: 7489,
   2025: 7496,
+  2026: 7587,  // 鄂人社发〔2026〕29号：2026社保年度缴费基数月标准7587元（上限22761/下限4552）=2025统计年全口径社平
   // 2025: 官方全口径未公布，交由引擎预发年规则外推(=2024原值)，公布后再填
 };
 

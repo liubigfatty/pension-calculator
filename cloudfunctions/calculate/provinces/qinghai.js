@@ -1,221 +1,233 @@
-// 数据来源：✅ 官方数据
-// 2024年计发基数：8878元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/qinghai.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 青海省养老金计算模块
-// TODO：补充1995-2023年官方计发基数
-
-// ==================== 计发基数 ====================
-
-const PROV_BASE = {
-  1978: 941,
-  1979: 988,
-  1980: 1037,
-  1981: 1089,
-  1982: 1144,
-  1983: 1201,
-  1984: 1261,
-  1985: 1324,
-  1986: 1390,
-  1987: 1460,
-  1988: 1533,
-  1989: 1609,
-  1990: 1690,
-  1991: 1774,
-  1992: 1863,
-  1993: 1956,
-  1994: 2054,
-  1995: 2157,
-  1996: 2265,
-  1997: 2378,
-  1998: 2497,
-  1999: 2622,
-  2000: 2753,
-  2001: 2890,
-  2002: 3035,
-  2003: 3187,
-  2004: 3346,
-  2005: 3513,
-  2006: 3689,
-  2007: 3873,
-  2008: 4067,
-  2009: 4270,
-  2010: 4484,
-  2011: 4708,
-  2012: 4944,
-  2013: 5191,
-  2014: 5450,
-  2015: 5723,
-  2016: 6009,
-  2017: 6309,
-  2018: 6625,
-  2019: 6956,
-  2020: 7516,
-  2021: 7908,
-  2022: 8261,
-  2023: 8591,
-  2024: 8878,
-   2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号,2025-09-19官方公布;注意≠缴费基数/社平8816)
-};;
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号官方公布;原8816系缴费基数/社平,非计发基数)
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '西宁',
-  '海东'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-// 青海省企业职工基本养老保险个人账户统一建账时间：1996年1月1日（用户官方确认）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.014  // 青海省过渡系数 1.4000000000000001%
-
-const PROV_TAG = 'qinghai'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/qinghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
-  }
-
-  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
-  modules.special_addition = {
-    enabled: true,
-    type: 'qinghai_27_doc',
-    xining_addition: 12,
-    other_addition: 13
-  };
-
-  // 冬季取暖费：按年发放，**不计入月基本养老金**
-  // ⚠️ 待核：目前采信西宁市企业离退休人员口径 3900 元/年（西宁市社保局 2022 年公开发放数据）；
-  //    祁连县 2024 年度决算显示当地企业退休人员取暖费 4133 元/人，提示标准可能分地区、逐年浮动。
-  //    省级统一文件尚未查到，引用前须再核。
-  modules.annual_subsidies = {
-    enabled: true,
-    pendingVerify: true,
-    note: '西宁市企业离退休人员口径；省级统一标准待核，各地州可能不同',
-    items: [
-      { name: '冬季取暖费', amount: 3900, unit: '元/年', when: '每年10月随养老金发放', source: '西宁市社保局公开发放数据（省级统一文件待核）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: true,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1995: 479.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1996: 479.42,
-  1997: 557.25,
-  1998: 590.92,
-  1999: 667.58,
-  2000: 756.75,
-  2001: 837.5,
-  2002: 1075.5,
-  2003: 1206,
-  2004: 1279.67,
-  2005: 1435.75,
-  2006: 1590.33,
-  2007: 1889.92,
-  2008: 2180.5,
-  2009: 2581.92,
-  2010: 2796.75,
-  2011: 3098.5,
-  2012: 3541.08,
-  2013: 3902.25,
-  2014: 4342.08,
-  2015: 4817,
-  2016: 5155.67,
-  2017: 5620.92,
-  2018: 6377.92,
-  2019: 5682.83,
-  2020: 6084.5,
-  2021: 7023,
-  2022: 7604,
-  2023: 8029,
-  2024: 8643,
-  2025: 8816,
-  2026: 8888,   // 2025年统计口径社平（2026年度执行）：青海2026年缴费基数已公布（2026-09 官网）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 官方数据
+// 2024年计发基数：8878元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/qinghai.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 青海省养老金计算模块
+// TODO：补充1995-2023年官方计发基数
+
+// ==================== 计发基数 ====================
+
+const PROV_BASE = {
+  1978: 941,
+  1979: 988,
+  1980: 1037,
+  1981: 1089,
+  1982: 1144,
+  1983: 1201,
+  1984: 1261,
+  1985: 1324,
+  1986: 1390,
+  1987: 1460,
+  1988: 1533,
+  1989: 1609,
+  1990: 1690,
+  1991: 1774,
+  1992: 1863,
+  1993: 1956,
+  1994: 2054,
+  1995: 2157,
+  1996: 2265,
+  1997: 2378,
+  1998: 2497,
+  1999: 2622,
+  2000: 2753,
+  2001: 2890,
+  2002: 3035,
+  2003: 3187,
+  2004: 3346,
+  2005: 3513,
+  2006: 3689,
+  2007: 3873,
+  2008: 4067,
+  2009: 4270,
+  2010: 4484,
+  2011: 4708,
+  2012: 4944,
+  2013: 5191,
+  2014: 5450,
+  2015: 5723,
+  2016: 6009,
+  2017: 6309,
+  2018: 6625,
+  2019: 6956,
+  2020: 7516,
+  2021: 7908,
+  2022: 8261,
+  2023: 8591,
+  2024: 8878,
+   2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号,2025-09-19官方公布;注意≠缴费基数/社平8816)
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '西宁',
+  '海东'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+// 青海省企业职工基本养老保险个人账户统一建账时间：1996年1月1日（用户官方确认）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+// ⭐ 2026-10-09 订正：过渡性养老金的年限截止是 **1997-12-31**，不是建账日 1996-01。
+//   青劳社厅发〔2006〕59号 / 西宁市社保局《企业离退休人员服务指南》第十五条(三)：
+//     「过渡性养老金月计发标准 = 退休上一年度全省在岗职工月平均工资 × [(本人平均缴费工资指数+1)/2]
+//       × **1997年12月31日前的缴费年限（含视同缴费年限）** × 1.4%」
+//   青海 usePreAccountYears=true，preAccountYears = calcYears(work, viewing_start || account_start)
+//   ⇒ 靠 viewing_start 单独指定截止，不动 account_start（避免影响其它年限推算）。
+//   语义同 calcYears(a,b)：**不含 b 当月** ⇒ 「1997-12-31 前（含 1997-12 整月）」写 {year:1998, month:1}。
+//   实证：青海 case 2（1986-08 参工）官方过渡年限 11.42 年 = 137 个月 = calcYears(1986-08, 1998-01) ✅
+//       （旧口径算到 1995-12 只有 9.42 年，少 2 年，样本 −203.90 元/月）
+//   依据：https://lvshi.sogou.com/article/detail/DSLOHB6IKXG5.html（⚠️ 非政府域名，与多份公开核定表反演一致）
+const VIEWING_START = { year: 1998, month: 1 }
+
+const TRANS_COEF = 0.014  // 青海省过渡系数 1.4000000000000001%
+
+const PROV_TAG = 'qinghai'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：待用户提供官方核定表
+  // 案例2：待用户提供官方核定表
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/qinghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
+  }
+
+  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
+  modules.special_addition = {
+    enabled: true,
+    type: 'qinghai_27_doc',
+    xining_addition: 12,
+    other_addition: 13
+  };
+
+  // 冬季取暖费：按年发放，**不计入月基本养老金**
+  // ⚠️ 待核：目前采信西宁市企业离退休人员口径 3900 元/年（西宁市社保局 2022 年公开发放数据）；
+  //    祁连县 2024 年度决算显示当地企业退休人员取暖费 4133 元/人，提示标准可能分地区、逐年浮动。
+  //    省级统一文件尚未查到，引用前须再核。
+  modules.annual_subsidies = {
+    enabled: true,
+    pendingVerify: true,
+    note: '西宁市企业离退休人员口径；省级统一标准待核，各地州可能不同',
+    items: [
+      { name: '冬季取暖费', amount: 3900, unit: '元/年', when: '每年10月随养老金发放', source: '西宁市社保局公开发放数据（省级统一文件待核）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: true,
+    // ⭐ 过渡性养老金年限截止＝1997-12-31（青劳社厅发〔2006〕59号），与建账日 1996-01 分离
+    viewing_start: VIEWING_START,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1995: 479.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1996: 479.42,
+  1997: 557.25,
+  1998: 590.92,
+  1999: 667.58,
+  2000: 756.75,
+  2001: 837.5,
+  2002: 1075.5,
+  2003: 1206,
+  2004: 1279.67,
+  2005: 1435.75,
+  2006: 1590.33,
+  2007: 1889.92,
+  2008: 2180.5,
+  2009: 2581.92,
+  2010: 2796.75,
+  2011: 3098.5,
+  2012: 3541.08,
+  2013: 3902.25,
+  2014: 4342.08,
+  2015: 4817,
+  2016: 5155.67,
+  2017: 5620.92,
+  2018: 6377.92,
+  2019: 5682.83,
+  2020: 6084.5,
+  2021: 7023,
+  2022: 7604,
+  2023: 8029,
+  2024: 8643,
+  2025: 8816,
+  2026: 8888,   // 2025年统计口径社平（2026年度执行）：青海2026年缴费基数已公布（2026-09 官网）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}

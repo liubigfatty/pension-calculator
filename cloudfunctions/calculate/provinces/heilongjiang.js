@@ -7,7 +7,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -78,12 +78,11 @@ const PROV_BASE = {
 };;
 
 // 黑龙江省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.026,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7705,  // 2025年计发基数=2025年预发基数（2026-01退休核定表确认上年全省平均工资7705元）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 黑龙江省行政区划
 const CITY_LIST = [
@@ -121,13 +120,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（黑龙江省专用）
-function predictBase(year) {
-  const lastYear = 2027
-  const lastVal  = PROV_BASE[lastYear] || 7906
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -304,11 +298,15 @@ function getEngineConfig() {
       }
     }
   }
-  // 御寒津贴：按月发放、**计入月基本养老金**（注意：它不是取暖补贴，不限冬季取暖期）
-  // 黑劳社发〔2008〕79号：从2008年10月1日起，为已参加城镇企业职工基本养老保险的退休人员
+  // 御寒津贴（黑劳社发〔2008〕79号）：从2008年10月1日起，为已参加城镇企业职工基本养老保险的退休人员
   //   每人每月发放 45 元御寒津贴，所需资金从养老保险统筹基金中支付；按月发放，不单限于冬季取暖期。
   //   （财政部官网 2008-12-12《哈尔滨市40万参保退休职工每人每月45元御寒津贴本月发放》可查）
-  modules.special_addition = { enabled: true, type: 'fixed', amount: 45, label: '御寒津贴', source: '黑劳社发〔2008〕79号' };
+  // 🔴 2026-10-09 用户拍板**移除，不再计入月基本养老金**：
+  //   依据用户提供的黑龙江真实核定表（2024-11 退休）反演——「核定基本养老金合计」7855.30
+  //   ＝ 基础4421.52 + 个账2019.24 + 过渡性1414.54，**不含御寒津贴45**（虽随养老金一同发放，但不属该口径）。
+  //   ⇒ 引擎此前把 45 并进 total，导致比核定表高 45 元。现关闭该项，回归核定表口径。
+  //   ⚠️ 若日后要恢复，改 enabled:true 即可（type/amount/label 保留，勿删）。
+  modules.special_addition = { enabled: false, type: 'fixed', amount: 45, label: '御寒津贴', source: '黑劳社发〔2008〕79号', disabled_reason: '2026-10-09 核定表口径不含此项，用户拍板移除' };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -378,7 +376,6 @@ module.exports = {
   PROV_BASE,
 getEngineConfig,
   base_rates,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -389,5 +386,4 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }

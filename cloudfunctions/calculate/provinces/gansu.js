@@ -7,7 +7,7 @@
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -69,16 +69,24 @@ const PROV_BASE = {
   2022: 7077,
   2023: 7359,
   2024: 7594,
-   2025: 7746,  // 2025年计发基数=7746（2026-01退休核定表确认；2025-05退休时尚未公布，暂按2024基数7594预发）
+   2025: 7746,  // ⚠️ 未核到官方原文，数值来源待确认（2026-10-09 复核，数值保留不改）
+  //   检索结论：甘肃省人社厅官网 rst.gansu.gov.cn 上可查到的2025年度文件只有
+  //     · 甘人社通〔2025〕261号《关于公布2025年甘肃省职工基本养老保险缴费基数的通知》（2025-09-19，缴费基数7338、上限22014、下限4403）
+  //       URL: https://rst.gansu.gov.cn/rst/c113673/202509/174214102.shtml
+  //     · 甘人社通〔2025〕223号《关于2025年调整退休人员基本养老金的通知》（2025-07-26）
+  //     两文均**未出现"计发基数"四个字**，官网未公开发布2025年度养老金计发基数。
+  //   自媒体称"甘人社通〔2025〕262号、依申请公开、不对外发布"（今日头条@平静话社保），属网传文号，无官方可访问URL，不予采信为官方原文。
+  //   旁证（非官文）：多份 2025-10～2026-01 甘肃养老金核定表/领取资格认定表上计发基数栏均打印 7746，与 7746=7594×1.02 吻合，可佐证数值本身可信。
+  //   2024年=7594 的官方依据同样未核到官网原文（网传 甘人社通〔2024〕330号），一并标注待确认。
+  // ⚠️ 2026年计发基数：截至 2026-10-09 **未公布**，保持不写固定值 → 引擎外推（网传"2026暂按7746执行"为预发口径，非新基数）。
+  //    2026年度官方已发布的只有 甘人社通〔2026〕218号（2026-08-18，缴费基数7542、上限22626、下限4526），同样不含计发基数。
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.026,
-  account_start: 1996,
-  trans_coef: 0.012,
-  PROV_2025: 7746,  // 2025年计发基数=7746（2026-01退休核定表确认；纠正原误填2024全口径社平7338，同类津/陕/黔/青bug）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 const CITY_LIST = [
   '兰州市', '嘉峪关市', '金昌市', '白银市', '天水市',
@@ -112,13 +120,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（甘肃省专用）
-function predictBase(year) {
-  const lastYear = 2026
-  const lastVal  = PROV_BASE[lastYear] || 8100
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -261,7 +264,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -272,5 +274,4 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }

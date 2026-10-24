@@ -1,324 +1,323 @@
-// 数据来源：✅ 已据官方核定表核实（近年官方值已确认；早年段为引擎推算占位，已免责）
-// 2024年计发基数：8202元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/ningxia.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 宁夏回族自治区养老金计算模块
-// TODO：补充1995-2023年官方计发基数
-
-// ==================== 计发基数 ====================
-
-const PROV_BASE = {
-  1978: 869,
-  1979: 913,
-  1980: 958,
-  1981: 1006,
-  1982: 1057,
-  1983: 1110,
-  1984: 1165,
-  1985: 1223,
-  1986: 1284,
-  1987: 1349,
-  1988: 1416,
-  1989: 1487,
-  1990: 1561,
-  1991: 1639,
-  1992: 1721,
-  1993: 1807,
-  1994: 1898,
-  1995: 1993,
-  1996: 2092,
-  1997: 2197,
-  1998: 2307,
-  1999: 2422,
-  2000: 2543,
-  2001: 2670,
-  2002: 2804,
-  2003: 2944,
-  2004: 3091,
-  2005: 3246,
-  2006: 3408,
-  2007: 3579,
-  2008: 3757,
-  2009: 3945,
-  2010: 4143,
-  2011: 4350,
-  2012: 4567,
-  2013: 4796,
-  2014: 5035,
-  2015: 5287,
-  2016: 5551,
-  2017: 5829,
-  2018: 6120,
-  2019: 6426,
-  2020: 6885,
-  2021: 7215,
-  2022: 7648,
-  2023: 7953,
-  2024: 8202,
-   2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表：暂用2024年全口径社平作为2025年计发基数）
-};;
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表确认）
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '银川',
-  '石嘴山',
-  '吴忠',
-  '固原',
-  '中卫'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
-const PROV_TAG = 'ningxia'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition', 'special']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-  special:     '知识分子补贴',
-}
-
-// ==================== 特殊增发参数（知识分子补贴） ====================
-
-const SPECIAL_ADDITION_PARAMS = {
-  enabled: true,
-  type: 'intellectual',
-  intellectual_area: 10,    // 知识分子地区津贴（真实表：10.00元/月）
-  intellectual_work: 8.5,   // 知识分子工龄补贴（真实表：8.50元/月）
-  note: '知识分子补贴 = 地区津贴10元/月 + 工龄补贴8.5元/月 = 18.5元/月（宁政办发[2006]126号及相关规定）',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：宁夏男2024.04退休（非知识分子）
-  {
-    case_id: "1",
-    province: "ningxia",
-    base_rates: { prov: PROV_BASE },
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1964,
-    birth_month: 4,
-    work_year: 1983,
-    work_month: 6,
-    retire_year: 2024,
-    retire_month: 4,
-    total_years: 40.92,
-    sight_years: 7.58,
-    pre_account_years: 12.58,
-    personal_account: 95751.34,
-    months: 139,
-    expected: {
-      basic_pension: 2830,
-      personal_pension: 688.86,
-      transitional_pension: 960.13,
-      total: 4480.29
-    },
-    notes: "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数1.3%（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
-    avg_index: 0.7392,
-    base_number: 7953,
-    base_prov: 7953
-  },
-  // 案例2：宁夏男2026.01退休（知识分子）
-  {
-    case_id: "2",
-    province: "ningxia",
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1966,
-    birth_month: 1,
-    work_year: 1988,
-    work_month: 8,
-    retire_year: 2026,
-    retire_month: 1,
-    total_years: 37.5,
-    sight_years: 2.42,
-    pre_account_years: 7.42,
-    personal_account: 122313.73,
-    months: 139,
-    expected: {
-      basic_pension: 2771.13,
-      personal_pension: 879.95,
-      transitional_pension: 680.50,
-      total: 4350.08
-    },
-    notes: "宁夏2026年1月银川退休男职工（知识分子），1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%(1.3%+0.13%)；地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。",
-    intellectual: true,
-    avg_index: 0.7666,
-    base_number: 8366,
-    base_prov: 8366
-  },
-  // 案例3：宁夏男2026.01退休（知识分子，详细）
-  {
-    case_id: "3",
-    province: "ningxia",
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1966,
-    birth_month: 1,
-    work_year: 1988,
-    work_month: 8,
-    retire_year: 2026,
-    retire_month: 1,
-    total_years: 37.5,
-    sight_years: 7.67,
-    personal_account: 122312.42,
-    months: 139,
-    intellectual: true,
-    expected: {
-      basic_pension: 2632.36,
-      personal_pension: 879.95,
-      transitional_pension: 658.32,
-      intellectual_subsidy: 18.5,
-      total: 4189.13
-    },
-    notes: "宁夏2026年1月退休男知识分子。知识分子工龄补贴10.00元/月+地区补贴8.50元/月=18.50元/月。过渡养老金=8082×指数化月均×视同7.67年×(1.3%+知识分子增量)。",
-    avg_index: 0.7371,
-    base_number: 8082,
-    base_prov: 8082
-  }
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/ningxia.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-        // 知识分子过渡系数增加（1.3% → 1.43%）
-        modules.transitional_pension.coefficient_intellectual = 0.0143;
-      }
-    }
-  }
-  if (MODULES.includes('special')) {
-    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
-  }
-
-  // 冬季取暖费补贴：按年发放，**不计入月基本养老金**；标准逐年浮动
-  // 机制（自治区人社厅）：= 上一年度全区企业参保退休人员月平均养老金 + 2010年以来增加的人均 750 元
-  //   2020年度 4193 元（月均 3443 + 750）；2021年度 4394 元（月均 3644 + 750）
-  // ⚠️ avgPensionData.latest 用的是最近一次已公布的月均基数，之后年份须按当年公布值更新
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '标准逐年浮动＝上年度全区企业参保退休人员月平均养老金＋750元；此处沿用最近一次已公布基数，非当年实际值',
-    items: [
-      { name: '冬季取暖费补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, unit: '元/年', when: '每年10月随养老金一次性发放', source: '自治区人社厅/财政厅年度通知（2021年度为4394元）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: {
-      prov: PROV_BASE
-    },
-    
-      base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    base_rates: { prov: PROV_BASE },
-
-    province: PROV_TAG,
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '宁夏平均缴费工资指数算法：建账前各年缴费指数均视同为1；建账后按实际缴费工资÷上年社平计算当年指数；建账前年限下取整，累计缴费年限上取整，平均指数=(建账前年限下取整×1+建账后指数和)÷累计缴费年限上取整。知识分子过渡系数1.3%→1.43%，并发放地区津贴10元/月+工龄补贴8.5元/月。使用建账前缴费年限（preAccountYears）。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1995: 469.58,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1996: 469.58,
-  1997: 506.25,
-  1998: 568.5,
-  1999: 629.17,
-  2000: 723.42,
-  2001: 876.75,
-  2002: 976.92,
-  2003: 1088,
-  2004: 1225.75,
-  2005: 1434.25,
-  2006: 1769.92,
-  2007: 2184.17,
-  2008: 2559.92,
-  2009: 2840.25,
-  2010: 3262,
-  2011: 3714.5,
-  2012: 4080.08,
-  2013: 4348.75,
-  2014: 4734.25,
-  2015: 5206.83,
-  2016: 5652.5,
-  2017: 6064.92,
-  2018: 6532,
-  2019: 6885,
-  2020: 5595.17,
-  2021: 6110,
-  2022: 7104,
-  2023: 7666,
-  2024: 8088,
-  2025: 8258,
-  // [V2已删] 2025: 8574,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
-  2026: 8371,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 已据官方核定表核实（近年官方值已确认；早年段为引擎推算占位，已免责）
+// 2024年计发基数：8202元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/ningxia.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 宁夏回族自治区养老金计算模块
+// TODO：补充1995-2023年官方计发基数
+
+// ==================== 计发基数 ====================
+
+const PROV_BASE = {
+  1978: 869,
+  1979: 913,
+  1980: 958,
+  1981: 1006,
+  1982: 1057,
+  1983: 1110,
+  1984: 1165,
+  1985: 1223,
+  1986: 1284,
+  1987: 1349,
+  1988: 1416,
+  1989: 1487,
+  1990: 1561,
+  1991: 1639,
+  1992: 1721,
+  1993: 1807,
+  1994: 1898,
+  1995: 1993,
+  1996: 2092,
+  1997: 2197,
+  1998: 2307,
+  1999: 2422,
+  2000: 2543,
+  2001: 2670,
+  2002: 2804,
+  2003: 2944,
+  2004: 3091,
+  2005: 3246,
+  2006: 3408,
+  2007: 3579,
+  2008: 3757,
+  2009: 3945,
+  2010: 4143,
+  2011: 4350,
+  2012: 4567,
+  2013: 4796,
+  2014: 5035,
+  2015: 5287,
+  2016: 5551,
+  2017: 5829,
+  2018: 6120,
+  2019: 6426,
+  2020: 6885,
+  2021: 7215,
+  2022: 7648,
+  2023: 7953,
+  2024: 8202,
+   2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表：暂用2024年全口径社平作为2025年计发基数）
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '银川',
+  '石嘴山',
+  '吴忠',
+  '固原',
+  '中卫'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+
+const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
+const PROV_TAG = 'ningxia'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition', 'special']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+  special:     '知识分子补贴',
+}
+
+// ==================== 特殊增发参数（知识分子补贴） ====================
+
+const SPECIAL_ADDITION_PARAMS = {
+  enabled: true,
+  type: 'intellectual',
+  intellectual_area: 10,    // 知识分子地区津贴（真实表：10.00元/月）
+  intellectual_work: 8.5,   // 知识分子工龄补贴（真实表：8.50元/月）
+  note: '知识分子补贴 = 地区津贴10元/月 + 工龄补贴8.5元/月 = 18.5元/月（宁政办发[2006]126号及相关规定）',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：宁夏男2024.04退休（非知识分子）
+  {
+    case_id: "1",
+    province: "ningxia",
+    base_rates: { prov: PROV_BASE },
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1964,
+    birth_month: 4,
+    work_year: 1983,
+    work_month: 6,
+    retire_year: 2024,
+    retire_month: 4,
+    total_years: 40.92,
+    sight_years: 7.58,
+    pre_account_years: 12.58,
+    personal_account: 95751.34,
+    months: 139,
+    expected: {
+      basic_pension: 2830,
+      personal_pension: 688.86,
+      transitional_pension: 960.13,
+      total: 4480.29
+    },
+    notes: "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数1.3%（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
+    avg_index: 0.7392,
+    base_number: 7953,
+    base_prov: 7953
+  },
+  // 案例2：宁夏男2026.01退休（知识分子）
+  {
+    case_id: "2",
+    province: "ningxia",
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1966,
+    birth_month: 1,
+    work_year: 1988,
+    work_month: 8,
+    retire_year: 2026,
+    retire_month: 1,
+    total_years: 37.5,
+    sight_years: 2.42,
+    pre_account_years: 7.42,
+    personal_account: 122313.73,
+    months: 139,
+    expected: {
+      basic_pension: 2771.13,
+      personal_pension: 879.95,
+      transitional_pension: 680.50,
+      total: 4350.08
+    },
+    notes: "宁夏2026年1月银川退休男职工（知识分子），1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%(1.3%+0.13%)；地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。",
+    intellectual: true,
+    avg_index: 0.7666,
+    base_number: 8366,
+    base_prov: 8366
+  },
+  // 案例3：宁夏男2026.01退休（知识分子，详细）
+  {
+    case_id: "3",
+    province: "ningxia",
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1966,
+    birth_month: 1,
+    work_year: 1988,
+    work_month: 8,
+    retire_year: 2026,
+    retire_month: 1,
+    total_years: 37.5,
+    sight_years: 7.67,
+    personal_account: 122312.42,
+    months: 139,
+    intellectual: true,
+    expected: {
+      basic_pension: 2632.36,
+      personal_pension: 879.95,
+      transitional_pension: 658.32,
+      intellectual_subsidy: 18.5,
+      total: 4189.13
+    },
+    notes: "宁夏2026年1月退休男知识分子。知识分子工龄补贴10.00元/月+地区补贴8.50元/月=18.50元/月。过渡养老金=8082×指数化月均×视同7.67年×(1.3%+知识分子增量)。",
+    avg_index: 0.7371,
+    base_number: 8082,
+    base_prov: 8082
+  }
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/ningxia.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+        // 知识分子过渡系数增加（1.3% → 1.43%）
+        modules.transitional_pension.coefficient_intellectual = 0.0143;
+      }
+    }
+  }
+  if (MODULES.includes('special')) {
+    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
+  }
+
+  // 冬季取暖费补贴：按年发放，**不计入月基本养老金**；标准逐年浮动
+  // 机制（自治区人社厅）：= 上一年度全区企业参保退休人员月平均养老金 + 2010年以来增加的人均 750 元
+  //   2020年度 4193 元（月均 3443 + 750）；2021年度 4394 元（月均 3644 + 750）
+  // ⚠️ avgPensionData.latest 用的是最近一次已公布的月均基数，之后年份须按当年公布值更新
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '标准逐年浮动＝上年度全区企业参保退休人员月平均养老金＋750元；此处沿用最近一次已公布基数，非当年实际值',
+    items: [
+      { name: '冬季取暖费补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, unit: '元/年', when: '每年10月随养老金一次性发放', source: '自治区人社厅/财政厅年度通知（2021年度为4394元）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: {
+      prov: PROV_BASE
+    },
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    base_rates: { prov: PROV_BASE },
+
+    province: PROV_TAG,
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '宁夏平均缴费工资指数算法：建账前各年缴费指数均视同为1；建账后按实际缴费工资÷上年社平计算当年指数；建账前年限下取整，累计缴费年限上取整，平均指数=(建账前年限下取整×1+建账后指数和)÷累计缴费年限上取整。知识分子过渡系数1.3%→1.43%，并发放地区津贴10元/月+工龄补贴8.5元/月。使用建账前缴费年限（preAccountYears）。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1995: 469.58,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1996: 469.58,
+  1997: 506.25,
+  1998: 568.5,
+  1999: 629.17,
+  2000: 723.42,
+  2001: 876.75,
+  2002: 976.92,
+  2003: 1088,
+  2004: 1225.75,
+  2005: 1434.25,
+  2006: 1769.92,
+  2007: 2184.17,
+  2008: 2559.92,
+  2009: 2840.25,
+  2010: 3262,
+  2011: 3714.5,
+  2012: 4080.08,
+  2013: 4348.75,
+  2014: 4734.25,
+  2015: 5206.83,
+  2016: 5652.5,
+  2017: 6064.92,
+  2018: 6532,
+  2019: 6885,
+  2020: 5595.17,
+  2021: 6110,
+  2022: 7104,
+  2023: 7666,
+  2024: 8088,
+  2025: 8258,
+  // [V2已删] 2025: 8574,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2026: 8371,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}

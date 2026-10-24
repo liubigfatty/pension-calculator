@@ -12,7 +12,7 @@ window.PROVINCE_CONFIGS = {};
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -78,12 +78,11 @@ const PROV_BASE = {
    2025: 7999,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.03,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7999,  // 2025年计发基数=7999（皖人社秘〔2025〕?号,2025-09-17公布；官方核定表"上年省月平均工资=7999.00"逐项吻合✅）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 const CITY_LIST = [
   '合肥市', '芜湖市', '蚌埠市', '淮南市', '马鞍山市',
@@ -205,7 +204,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -272,12 +271,11 @@ const PROV_BASE = {
   2025: 12049,  // 2025年计发基数=2024年度全口径社平144588元/年÷12（北京核定表口径）
 };;
 
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.03,    // 3.0%
-  LATEST_BASE_YEAR: 2025,
-  LATEST_BASE_VALUE: 12049,  // 2025年官方值（2024年度全口径社平144588元/年÷12）
-  PROV_2025: 12049,  // 2025年计发基数=2024年度全口径社平
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 北京市行政区划（直辖市，无地级市区分）
 const CITY_LIST = []
@@ -305,14 +303,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（北京市专用）
-function predictBase(year) {
-  const bp = BASE_PARAMS
-  const latestYear = bp.LATEST_BASE_YEAR
-  const latestBase = bp.LATEST_BASE_VALUE
-  if (year <= latestYear) return PROV_BASE[year] || 0
-  return Math.round(latestBase * Math.pow(1 + bp.PROV_GROWTH, year - latestYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -455,7 +447,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -466,7 +457,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -484,7 +474,7 @@ getEngineConfig,
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -552,12 +542,11 @@ const PROV_BASE = {
    2025: 8240,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 7339,  // 2025年全口径社平=2024全口径社平(7339)；2025计发基数见PROV_BASE[2025]=8240
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -700,7 +689,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -715,6 +704,26 @@ module.exports = {
 // 福建省养老金计算数据模块
 // PROV_BASE 时间标记：2023-2025 来自官方（2023=7528/2024=7776/2025=7932，闽人社规+核定表佐证）；1978-2022 为推定（1998-2019=复制社平AVG，2020-2022 无源更高值待官方）
 // 依据：闽人社规〔2024〕?号、闽人社规〔2025〕?号
+//
+// ==================== 厦门市市级差异核查结论（台账列"增项缺失"，2026-10-09）====================
+// ① 计发基数：**厦门不单列，与省本级一致**。
+//    依据：福建省人社厅/财政厅/税务局《关于调整2025年城镇职工基本养老保险缴费基数和计发基数的通知》
+//    "三、2025年我省城镇职工基本养老保险计发基数为 7932元/月"（全省统一，含厦门）
+//    https://cloud.xm.gov.cn/165/service/2957162.xhtml
+//    ⇒ base_rates 无需为厦门单列，本轮**不改** PROV_BASE / base_rates。
+// ② 确有市级差异（厦府规〔2022〕16号，https://xm.gov.cn/zfgb/99833459 ）：
+//    (a) **10年过渡期"就高补差"**（2022-01-01 至 2031-12-31）：
+//        自2022-01-01 起厦门退休人员统一按"省办法"计发；过渡期内符合原"市办法"享受条件的"过渡期人员"，
+//        省办法低于市办法的**差额部分予以补齐，补差待遇核定后保持不变**；
+//        市办法口径"采用 2022 年度的计算公式、计发基数、计发月数和缴费指数计算方法，不再变动"。
+//    (b) **过渡高龄补贴 60 元/月**（70周岁及以上）：对象为 2021-12-31 前退休且按市办法享受待遇者 + 过渡期人员；
+//        福建统一的高龄倾斜增发另按省规定执行。
+// ③ 引擎未实现，本轮**不改代码**。评估：
+//    (a) 补差额是经办机构按"市办法"逐人核定的**固定额**（且核定后冻结），不属公式可算项，
+//        复刻需完整引入厦门市办法 2022 版公式+参数，收益/成本比过低 ⇒ 不补。
+//    (b) 过渡高龄补贴 60 元虽为定额，但资格判定依赖"是否市办法享受人员/过渡期人员"这一非引擎输入，
+//        且只覆盖 2021-12-31 前退休或过渡期人员 ⇒ 影响面窄，暂不补；如后续要补，
+//        应做成与 intellectual 类似的开关型津贴，并把 70 岁门槛写进配置。
 
 // ==================== 基础数据 ====================
 
@@ -772,12 +781,11 @@ const PROV_BASE = {
 };;
 
 // 福建省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 约2%年增速
-  MERGE_YEAR: 2031,
-  PROV_2025: 7535,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 福建省城市列表（地级市）
 const CITY_LIST = [
@@ -848,9 +856,11 @@ base_rates: PROV_BASE,
     
     cutoff_date: CUTOFF_DATE,
     usePreAccountYears: false,
+    // 缴费年限"半段进整"（闽政〔2006〕24号）：累计月数尾数 ≤6 个月按 0.5 年、≥7 个月按 1 年计
+    rounding: { years_half_step: true },
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '福建过渡系数约1.3%（核定表备注）；基础养老金与过渡性养老金均使用平均缴费指数(单指数)。',
+    notes: '福建过渡系数约1.3%（核定表备注）；基础养老金与过渡性养老金均使用平均缴费指数(单指数)。缴费年限按闽政〔2006〕24号"半段进整"（尾数≤6个月计0.5年、≥7个月计1年）。',
   }
 }
 
@@ -937,7 +947,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -999,16 +1009,24 @@ const PROV_BASE = {
   2022: 7077,
   2023: 7359,
   2024: 7594,
-   2025: 7746,  // 2025年计发基数=7746（2026-01退休核定表确认；2025-05退休时尚未公布，暂按2024基数7594预发）
+   2025: 7746,  // ⚠️ 未核到官方原文，数值来源待确认（2026-10-09 复核，数值保留不改）
+  //   检索结论：甘肃省人社厅官网 rst.gansu.gov.cn 上可查到的2025年度文件只有
+  //     · 甘人社通〔2025〕261号《关于公布2025年甘肃省职工基本养老保险缴费基数的通知》（2025-09-19，缴费基数7338、上限22014、下限4403）
+  //       URL: https://rst.gansu.gov.cn/rst/c113673/202509/174214102.shtml
+  //     · 甘人社通〔2025〕223号《关于2025年调整退休人员基本养老金的通知》（2025-07-26）
+  //     两文均**未出现"计发基数"四个字**，官网未公开发布2025年度养老金计发基数。
+  //   自媒体称"甘人社通〔2025〕262号、依申请公开、不对外发布"（今日头条@平静话社保），属网传文号，无官方可访问URL，不予采信为官方原文。
+  //   旁证（非官文）：多份 2025-10～2026-01 甘肃养老金核定表/领取资格认定表上计发基数栏均打印 7746，与 7746=7594×1.02 吻合，可佐证数值本身可信。
+  //   2024年=7594 的官方依据同样未核到官网原文（网传 甘人社通〔2024〕330号），一并标注待确认。
+  // ⚠️ 2026年计发基数：截至 2026-10-09 **未公布**，保持不写固定值 → 引擎外推（网传"2026暂按7746执行"为预发口径，非新基数）。
+  //    2026年度官方已发布的只有 甘人社通〔2026〕218号（2026-08-18，缴费基数7542、上限22626、下限4526），同样不含计发基数。
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.026,
-  account_start: 1996,
-  trans_coef: 0.012,
-  PROV_2025: 7746,  // 2025年计发基数=7746（2026-01退休核定表确认；纠正原误填2024全口径社平7338，同类津/陕/黔/青bug）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 const CITY_LIST = [
   '兰州市', '嘉峪关市', '金昌市', '白银市', '天水市',
@@ -1042,13 +1060,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（甘肃省专用）
-function predictBase(year) {
-  const lastYear = 2026
-  const lastVal  = PROV_BASE[lastYear] || 8100
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -1191,7 +1204,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -1202,7 +1214,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -1220,7 +1231,7 @@ getEngineConfig,
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -1537,12 +1548,11 @@ const GUANGDONG_SIGHT_INDEX_MAP = {
   '揭西县': 0.452,
 }
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.040,  // 约 4.0%/年
-  MERGE_YEAR: 2031,
-  PROV_2025: 9183,  // 2024年全口径社平=9183(元/月)；2025计发基数见PROV_BASE[2025]=9493(粤人社发〔2025〕32号)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 广东省城市列表（地级市）
 // 注：深圳市单列计发基数已由粤人社发〔2025〕32号确认("深圳市计发基数另行公布")，SHENZHEN_BASE 为深圳自行公布值
@@ -1572,6 +1582,40 @@ const MODULE_LABELS = {
   personal:    '个人账户养老金',
   transition:  '过渡性养老金',
 }
+
+// ==================== 过渡性养老金「新办法」口径说明（2026-10-09 核对）====================
+// 【官方公式】粤府函〔2021〕294号 一(一)（原文见 https://www.gd.gov.cn/gkmlpt/content/3/3577/post_3577073.html ）
+//   过渡性养老金月标准 = 计发基数 × 本人1998年6月前的平均缴费指数 × (视同缴费年限 + 1998年6月前实际缴费年限) × 1.2%
+//   本人1998年6月前的平均缴费指数 = (视同缴费指数 × 视同缴费年限 + [1994.1–1998.6 实际缴费指数平均值 × 该段实际缴费年限])
+//                                   ÷ (视同缴费年限 + 1994.1–1998.6 实际缴费年限)
+//   ⇒ 实务等价写法（省厅/各市复议决定书通用）：计发基数 × [D×视同月数(含93年底前实际缴费月数) + 1994.1–1998.6实际缴费指数和] ÷ 12 × 1.2%
+//     印证：佛山南海 9028×(0.618×30+4.3455)÷12×1.2%=206.61（nanhai.gov.cn 复议决定书）
+//           佛山南海 6071×(0.51×134+26.28)÷12×1.2%=574.5；广州番禺 8332×(0.534×149+23.6601)÷12×1.2%=860.8
+// 【引擎实现】newMethodYears（= 上式方括号 ÷ 12）注入时为**精确值**；本省全部案例均已注入，故回归不受影响。
+// 【未注入时的近似（2026-10-09 已由"整段×D"改为分段近似，见 engine/pension-engine.js）】
+//   现近似 = 查表 D × 视同年限 + 本人平均缴费指数 × 建账前实际缴费年限
+//   仍会偏的触发条件：1994.1–1998.6 有实际缴费，且该段实际平均指数 ≠ 本人平均缴费指数（如工资逐年走高/走低）。
+//   偏差量 =(建账前实际缴费年限) × (avgIndex − 1994–1998.6实际平均指数)，再 × 计发基数 × 1.2%。
+//   1994.1–1998.6 无实际缴费、或该段指数恰等于 avgIndex 时无偏。
+//   ⇒ 要精确必须注入 newMethodYears（核定表"1998年6月前的平均缴费指数 × 年限"）。
+// ==================== 「地方养老金」（台账列为增项缺失，2026-10-09 核查）====================
+// 【政策真实且现行】粤府〔2006〕96号 第五条第三款：
+//   "在建立地方养老保险制度前，2005年度在岗职工月平均工资高于全省2005年度在岗职工月平均工资的市，
+//    可为 2006年6月30日前参加基本养老保险、2006年7月1日后申领基本养老金的参保人计发地方养老金。
+//    地方养老金月标准 = (所在市2005年度在岗职工月平均工资 − 全省2005年度在岗职工月平均工资) ÷ 2
+//                      × 本人2006年6月30日前缴费年限 × 1%"
+//   依据（粤府〔2006〕96号全文）：https://www.gz.gov.cn/zwgk/fggw/szfwj/content/post_2833052.html
+//   现行性佐证：广州番禺府行复〔2024〕972号（2024年仍按第五条核定，申请人地方养老金0元）
+//               https://www.panyu.gov.cn/gzhd/xzfy/xzfyjdgk/content/post_10135735.html
+//               佛山禅城 2025-10-16 决定书："佛山市没有建立地方性养老金，因此申请人的地方养老金为0"
+//               ⇒ 只存在于"2005年在岗工资高于全省"的市（穗/深/莞等），佛山等市为0，非全员项目。
+// 【"最长发120个月"仅适用于省内转移情形，非普遍规则】同条第五款：
+//   "参保人在省内转移养老保险关系时，地方养老金按月标准乘以120后实账转移……
+//    实账转入的地方养老金总额支付完后，即停止发放地方养老金。地方养老金月标准=实账转入的地方养老金总额÷120"
+//   ⇒ 台账"发120个月止"是**转移**口径；本地计发的地方养老金按月标准长期发放，无120个月上限。
+// 【本轮不改代码】两条原因：① 缺各市2005年度在岗职工月平均工资（全省2005在岗工资亦未核到官方原文），
+//   拿不到差额就套不出金额；② 引擎当前无 local_pension 处理分支，仅在 getEngineConfig 里加 modules 条目不会生效。
+//   ⇒ 待补齐"各市2005在岗工资"数据后再议，本轮只留结论。
 
 // ==================== 测试案例 ====================
 
@@ -1660,6 +1704,7 @@ const AVG_SALARY_HISTORY = {
     2023: 8807,
     2024: 9167,
     2025: 9183,
+    2026: 9201,  // 粤人社发〔2026〕24号：2026年机关事业缴费基数上限27603/下限5521 ⇒ 全省全口径社平9201元/月。⚠️文件未明文社平，为上下限反推值(27603÷3)，广州12345答复佐证
     // 2025: 官方全口径未公布，交由引擎预发年规则外推，公布后再填
   },
   shenzhen: SHENZHEN_AVG_SALARY,
@@ -1692,7 +1737,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -1762,12 +1807,11 @@ const PROV_BASE = {
    2025: 6983,  // ✅ 2025年计发基数=6983(已公布，桂林2026退按此预发；非"=2024全口径社平")
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 6905,  // 2024年全口径社平=6905(元/月)；2025计发基数见PROV_BASE[2025]=6983
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -1920,7 +1964,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -1993,13 +2037,11 @@ const PROV_BASE = {
    2026: 7376.75, // ✅ 2026年计发基数=2025全口径社平 88521÷12(黔人社等四部门 2026-07-08公布)
 };
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 7324.5,  // ✅ 2025年计发基数=2024全口径社平 87894÷12
-  PROV_2026: 7376.75, // ✅ 2026年计发基数=2025全口径社平 88521÷12(2026-07-08公布)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -2057,12 +2099,33 @@ function getEngineConfig() {
       }
     }
   }
-  // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)，依据黔劳社厅发〔2006〕20号
+  // 贵州独生子女父母退休奖励：5% × (基础+个人+过渡)
+  // 【2026-10-09 字号订正】原注释"黔劳社厅发〔2006〕20号"**错误**，官方实为
+  //   **黔劳社厅发〔2005〕33号**《关于领取〈独生子女证〉的企业职工退休时加发百分之五基本养老金
+  //   有关问题的通知》（原省劳动和社会保障厅+省财政厅+原省人口计生委，2005年联合下发）；
+  //   2005-07-01 及以后办理退休手续的企业职工，从退休次日起按其退休时初次核定的基本养老金的 5% 予以加发。
+  //   依据①：贵州省人社厅《关于省十三届人大五次会议第471号建议的答复》（2022-07-28）原文
+  //           https://rst.guizhou.gov.cn/zwgk/zfxxgk/fdzdgknr/qtfdxx/jytabl/202207/t20220728_75826723.html
+  //   依据②（上位法）：《贵州省人口与计划生育条例》（2021修订）第三十八条
+  //   依据③（现行流程文件，办事指南"服务依据"）：黔人社通〔2024〕45号
+  //           https://zwfw.guizhou.gov.cn/bsznindex.do?otheritemcode=11522729009823185J400201400600802&orgcode=G73630018&areacode=522729
+  //   ⚠️ 只有**注释里的字号**改了，加发比例 5% 与基数口径（基础+个人+过渡）**未动**——数值本身一直是对的。
   modules.special_addition = {
     enabled: true,
     type: 'one_child',
     rate: 0.05,
   };
+  // ⚠️【2026-10-09 未实现项·待人工决策】"灵活就业人员缴费超15年，每多缴1个月加发5元"
+  //   规则本身**真实存在**：《贵州省完善企业职工基本养老金计发办法》第五条——
+  //   「对缴费年限超过15年并按相关规定办理基本养老金申领手续的灵活就业人员，依据本人超过15年后的
+  //     灵活就业人员参保缴费年限加发年限基础养老金……计算公式为：
+  //     **月年限基础养老金 = 本人超过15年后的灵活就业人员参保缴费月数 × 5**」
+  //     （即自媒体常写的「年限基础养老金=(累计缴费月数-180)×5」）
+  //   ⚠️ 但**未核到贵州省人社厅官网原文**（仅澎湃/搜狐/头条等转载全文，表述高度一致），
+  //      按纪律不得凭转载直接落地引擎改动 ⇒ **本轮不实现**，先报请人工决策。
+  //   实现难度评估（若决定补）：引擎需新增"灵活就业身份 + 灵活就业缴费月数"两个输入，
+  //   且要区分"单位缴费月数"与"灵活就业缴费月数"（只对后者计发），改动面 > 2 处 + UI 两处入参；
+  //   量级：每多缴1年=60元/月，15年封顶外最多约 25 年×60 = 1500 元/月，量级不小，值得补但需先定口径。
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -2079,7 +2142,12 @@ base_rates: PROV_BASE,
     usePreAccountYears: true,  // 贵州过渡性养老金按建账前缴费年限计（工作起始→1998-01建账），非仅视同年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '计发基数=上年全口径社平(全省统一)：2023:6857.58(黔人社通〔2024〕53号,=2022全口径82291÷12) / 2024:7272(黔人社发〔2025〕16号,=2023全口径87267÷12) / 2025:7324.5(=2024全口径87894÷12) / 2026:7376.75(=2025全口径88521÷12,2026-07-08公布)；过渡系数1.4%（黔劳社厅发〔2006〕20号）；独生子女奖励5%×(基础+个人+过渡)。',
+    // 【2026-10-09 订正】独生子女加发的依据字号 黔劳社厅发〔2006〕20号 → **黔劳社厅发〔2005〕33号**
+    //   （贵州省人社厅 2022-07-28 人大建议答复原文
+    //    https://rst.guizhou.gov.cn/zwgk/zfxxgk/fdzdgknr/qtfdxx/jytabl/202207/t20220728_75826723.html）
+    //   ⚠️ 下方 TRANS_COEF=0.014（过渡系数1.4%）注释里的"黔劳社厅发〔2006〕20号"**本轮未核**，
+    //      未一并改动（该字号是否也错属另一独立问题，待核）。
+    notes: '计发基数=上年全口径社平(全省统一)：2023:6857.58(黔人社通〔2024〕53号,=2022全口径82291÷12) / 2024:7272(黔人社发〔2025〕16号,=2023全口径87267÷12) / 2025:7324.5(=2024全口径87894÷12) / 2026:7376.75(=2025全口径88521÷12,2026-07-08公布)；过渡系数1.4%；独生子女奖励5%×(基础+个人+过渡)，依据《贵州省人口与计划生育条例》第三十八条 + 黔劳社厅发〔2005〕33号 + 黔人社通〔2024〕45号。⚠️未实现：灵活就业超15年「(缴费月数-180)×5」年限基础养老金（规则真实存在，未核到官网原文，待人工决策）。',
   }
 }
 
@@ -2162,7 +2230,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -2230,12 +2298,11 @@ const PROV_BASE = {
    2025: 8188,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8188,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -2364,195 +2431,201 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 已据官方核定表核实（河北省统计公报/人社厅公开数据整理；早年段见内层占位说明）
-// 2024年计发基数：7265元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/hebei.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 河北省养老金计算数据模块（框架版，待补充官方数据）
-// TODO：补充官方计发基数、过渡系数、建账时间等
-
-const PROV_BASE = {
-  1978: 770,
-  1979: 809,
-  1980: 849,
-  1981: 891,
-  1982: 936,
-  1983: 983,
-  1984: 1032,
-  1985: 1084,
-  1986: 1138,
-  1987: 1195,
-  1988: 1254,
-  1989: 1317,
-  1990: 1383,
-  1991: 1452,
-  1992: 1525,
-  1993: 1601,
-  1994: 1681,
-  1995: 1765,
-  1996: 1853,
-  1997: 1946,
-  1998: 2043,
-  1999: 2145,
-  2000: 2253,
-  2001: 2365,
-  2002: 2484,
-  2003: 2608,
-  2004: 2738,
-  2005: 2875,
-  2006: 3019,
-  2007: 3170,
-  2008: 3328,
-  2009: 3495,
-  2010: 3669,
-  2011: 3853,
-  2012: 4045,
-  2013: 4248,
-  2014: 4460,
-  2015: 4683,
-  2016: 4917,
-  2017: 5163,
-  2018: 5421,
-  2019: 5692,
-  2020: 6291,
-  2021: 6575,
-  2022: 6849,
-  2023: 7122,
-  2024: 7265,
-   2025: 7410,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-};;
-
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.03,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7410,  // 2025年保定真实核定表（待全省官方文件）
-}
-
-const CITY_LIST = [
-  '石家庄市', '唐山市', '秦皇岛市', '邯郸市', '邢台市',
-  '保定市', '张家口市', '承德市', '沧州市', '廊坊市',
-  '衡水市',
-]
-
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-const TRANS_COEF = 0.013
-const PROV_TAG = 'hebei'
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-const cases = []
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/hebei.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {}
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 }
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true }
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, formula_type: 'hebei' }
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF
-      }
-    }
-  }
-
-  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**；分三档，按退休地所属取暖区域
-  // 冀人社发〔2012〕3号：坝上地区 1560 元 / 张承其他县及青龙、涞源 1400 元 / 省内其他地区 1240 元
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '按退休地所属取暖区域分档；取暖期内退休的人员按 当地年度标准÷取暖期月数×剩余月数 计发',
-    items: [
-      { name: '冬季取暖补贴', tiers: { default: 1240, prov: 1240, bashang: 1560, mountain: 1400 }, unit: '元/年', when: '每年11月随当月养老金一次性发放', source: '冀人社发〔2012〕3号（2011年冬季取暖期起执行）' }
-    ]
-  };
-  return {
-    avg_salary_history: AVG_SALARY_HISTORY,
-    base_rates: { prov: PROV_BASE },
-    account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    province: PROV_TAG,
-    name: '河北省',
-    modules,
-  }
-}
-
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1993: 252.83,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1994: 252.83,
-  1995: 348.75,
-  1996: 403.25,
-  1997: 440.5,
-  1998: 474.33,
-  1999: 485,
-  2000: 535,
-  2001: 586.92,
-  2002: 655.33,
-  2003: 746.58,
-  2004: 932.42,
-  2005: 1077,
-  2006: 1225.58,
-  2007: 1382.5,
-  2008: 1659.25,
-  2009: 2063,
-  2010: 2365.25,
-  2011: 2692.17,
-  2012: 3013.83,
-  2013: 3295.17,
-  2014: 3544.33,
-  2015: 3853.25,
-  2016: 4367.42,
-  2017: 4748.92,
-  2018: 5438.83,
-  2019: 5969.42,
-  2020: 5078.08,
-  2021: 5409.17,
-  2022: 5788.75,
-  2023: 6211.08,
-  2024: 6534.25,
-  2025: 6678,
-  // [V2已删] 2025: 6794,  // 2025年保定真实核定表（待全省官方文件）
-  2026: 6794,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 已据官方核定表核实（河北省统计公报/人社厅公开数据整理；早年段见内层占位说明）
+// 2024年计发基数：7265元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/hebei.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 河北省养老金计算数据模块（框架版，待补充官方数据）
+// TODO：补充官方计发基数、过渡系数、建账时间等
+
+const PROV_BASE = {
+  1978: 770,
+  1979: 809,
+  1980: 849,
+  1981: 891,
+  1982: 936,
+  1983: 983,
+  1984: 1032,
+  1985: 1084,
+  1986: 1138,
+  1987: 1195,
+  1988: 1254,
+  1989: 1317,
+  1990: 1383,
+  1991: 1452,
+  1992: 1525,
+  1993: 1601,
+  1994: 1681,
+  1995: 1765,
+  1996: 1853,
+  1997: 1946,
+  1998: 2043,
+  1999: 2145,
+  2000: 2253,
+  2001: 2365,
+  2002: 2484,
+  2003: 2608,
+  2004: 2738,
+  2005: 2875,
+  2006: 3019,
+  2007: 3170,
+  2008: 3328,
+  2009: 3495,
+  2010: 3669,
+  2011: 3853,
+  2012: 4045,
+  2013: 4248,
+  2014: 4460,
+  2015: 4683,
+  2016: 4917,
+  2017: 5163,
+  2018: 5421,
+  2019: 5692,
+  2020: 6291,
+  2021: 6575,
+  2022: 6849,
+  2023: 7122,
+  2024: 7265,
+   2025: 7410,  // 2025年计发基数=7410元/月（官方原文：冀人社字〔2025〕105号《关于公布2025年度社会保险缴费基数上下限和养老保险计发基数的通知》，河北省人社厅+财政厅 2025-09-18，"2025年全省职工基本养老保险计发基数为7410元"）
+  // ⚠️ 2026年计发基数：截至 2026-10-09 **河北省人社厅未公布**，保持不写固定值 → 由引擎 getBase() 按已公布增幅外推（回退到2025年7410）。
+  //    官方仅发布 冀人社字〔2026〕57号《关于公布2026年社保缴费有关基数的通知》（2026-07-14，主动公开），
+  //    该文只有「2026年全省社保缴费基数以2025年全口径月均6794元确定，下限4076、上限20382」，**全文无"计发基数"四个字**。
+  //    ❌ 网传"2026年河北计发基数7521元"（多家自媒体/汇总站）系由 7410 外推的反推值（7410×1.015≈7521），非官方发布，不予采信。
+  //    依据 URL：https://rst.hebei.gov.cn/pageWarp?isId=1784107904415nkh&id=1
+  //    待冀人社字〔2026〕xx号 公布计发基数后，再在此处纯文本插入 2026 固定值。
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+const CITY_LIST = [
+  '石家庄市', '唐山市', '秦皇岛市', '邯郸市', '邢台市',
+  '保定市', '张家口市', '承德市', '沧州市', '廊坊市',
+  '衡水市',
+]
+
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+const TRANS_COEF = 0.013
+const PROV_TAG = 'hebei'
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+const cases = []
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/hebei.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {}
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 }
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true }
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, formula_type: 'hebei' }
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF
+      }
+    }
+  }
+
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**；分三档，按退休地所属取暖区域
+  // 冀人社发〔2012〕3号：坝上地区 1560 元 / 张承其他县及青龙、涞源 1400 元 / 省内其他地区 1240 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '按退休地所属取暖区域分档；取暖期内退休的人员按 当地年度标准÷取暖期月数×剩余月数 计发',
+    items: [
+      { name: '冬季取暖补贴', tiers: { default: 1240, prov: 1240, bashang: 1560, mountain: 1400 }, unit: '元/年', when: '每年11月随当月养老金一次性发放', source: '冀人社发〔2012〕3号（2011年冬季取暖期起执行）' }
+    ]
+  };
+  return {
+    avg_salary_history: AVG_SALARY_HISTORY,
+    base_rates: { prov: PROV_BASE },
+    account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    province: PROV_TAG,
+    name: '河北省',
+    modules,
+  }
+}
+
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1993: 252.83,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1994: 252.83,
+  1995: 348.75,
+  1996: 403.25,
+  1997: 440.5,
+  1998: 474.33,
+  1999: 485,
+  2000: 535,
+  2001: 586.92,
+  2002: 655.33,
+  2003: 746.58,
+  2004: 932.42,
+  2005: 1077,
+  2006: 1225.58,
+  2007: 1382.5,
+  2008: 1659.25,
+  2009: 2063,
+  2010: 2365.25,
+  2011: 2692.17,
+  2012: 3013.83,
+  2013: 3295.17,
+  2014: 3544.33,
+  2015: 3853.25,
+  2016: 4367.42,
+  2017: 4748.92,
+  2018: 5438.83,
+  2019: 5969.42,
+  2020: 5078.08,
+  2021: 5409.17,
+  2022: 5788.75,
+  2023: 6211.08,
+  2024: 6534.25,
+  2025: 6678,
+  // [V2已删] 2025: 6794,  // 2025年保定真实核定表（待全省官方文件）
+  2026: 6794,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["hebei"] = cfg;
@@ -2569,7 +2642,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -2640,12 +2713,11 @@ const PROV_BASE = {
 };;
 
 // 黑龙江省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.026,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7705,  // 2025年计发基数=2025年预发基数（2026-01退休核定表确认上年全省平均工资7705元）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 黑龙江省行政区划
 const CITY_LIST = [
@@ -2683,13 +2755,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（黑龙江省专用）
-function predictBase(year) {
-  const lastYear = 2027
-  const lastVal  = PROV_BASE[lastYear] || 7906
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -2866,11 +2933,15 @@ function getEngineConfig() {
       }
     }
   }
-  // 御寒津贴：按月发放、**计入月基本养老金**（注意：它不是取暖补贴，不限冬季取暖期）
-  // 黑劳社发〔2008〕79号：从2008年10月1日起，为已参加城镇企业职工基本养老保险的退休人员
+  // 御寒津贴（黑劳社发〔2008〕79号）：从2008年10月1日起，为已参加城镇企业职工基本养老保险的退休人员
   //   每人每月发放 45 元御寒津贴，所需资金从养老保险统筹基金中支付；按月发放，不单限于冬季取暖期。
   //   （财政部官网 2008-12-12《哈尔滨市40万参保退休职工每人每月45元御寒津贴本月发放》可查）
-  modules.special_addition = { enabled: true, type: 'fixed', amount: 45, label: '御寒津贴', source: '黑劳社发〔2008〕79号' };
+  // 🔴 2026-10-09 用户拍板**移除，不再计入月基本养老金**：
+  //   依据用户提供的黑龙江真实核定表（2024-11 退休）反演——「核定基本养老金合计」7855.30
+  //   ＝ 基础4421.52 + 个账2019.24 + 过渡性1414.54，**不含御寒津贴45**（虽随养老金一同发放，但不属该口径）。
+  //   ⇒ 引擎此前把 45 并进 total，导致比核定表高 45 元。现关闭该项，回归核定表口径。
+  //   ⚠️ 若日后要恢复，改 enabled:true 即可（type/amount/label 保留，勿删）。
+  modules.special_addition = { enabled: false, type: 'fixed', amount: 45, label: '御寒津贴', source: '黑劳社发〔2008〕79号', disabled_reason: '2026-10-09 核定表口径不含此项，用户拍板移除' };
 
   return {
   avg_salary_history: AVG_SALARY_HISTORY,
@@ -2940,7 +3011,6 @@ module.exports = {
   PROV_BASE,
 getEngineConfig,
   base_rates,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -2951,7 +3021,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -2969,7 +3038,7 @@ getEngineConfig,
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -3099,13 +3168,34 @@ XINXIANG_BASE[2026] = 6385;  // 2026年退休暂用2025年基数（预发）
 // 信阳市：6260（平顶山核定表证实6260为真实地市计发基数，信阳可能同属"非核心地市低基数档"，不再标"疑似误标"）
 // 郑州过渡性补贴参数表（郑劳社〔2007〕36号 附表二）
 // 查表维度：视同缴费年限（见月进年，取整，非零小数进1）× 过渡性养老金平均指数（保留1位小数，第2位向上进位）
+//
+// 【2026-10-09 官方口径复核】✅ 公式与查表规则已核到郑州市社会保险中心官方问答页原文：
+//   过渡性补贴=[(95年后的实际缴费年限×过渡性补贴参数)/参加工作至退休时的全部年限×1%)]
+//             ×(当地上年度在岗职工月平均工资/全市上年度在岗职工月平均工资)
+//   查表规则：表内"指数"＝计算过渡性养老金采用的历年平均缴费指数，查表时小数点后保留一位、
+//             **第二位向上进位**（如 0.8001 按 0.9 查）；"视同"＝1994-12-31 前按规定计算的视同缴费年限，
+//             **采用见月进年**（如 1 年零 1 个月按 2 年查）。年限计算到月，保留两位小数。
+//   https://www.zzsi.com.cn/site-data/sbzx/html/2023/04/23/1623036540.html
+//   https://www.zzsi.com.cn/site-data/sbzx/html/2023/04/23/1516896092.html
+//   享受资格（郑州市政府令第161号 第七条）：2007-06-30 前在本市统筹区域内参保、2007-01-01 后退休、
+//   且视同缴费年限发生在 **1994-12-31 以前** 的人员；2007-07-01 后参保或由外统筹区转入的不计发。
+//
 // 已知坐标（均来自真实核定表/官方案例验证）：
 //   (sight=1,  idx=0.7)→4.62  [cases/henan/6.json 郑州2025-12，补贴453.51]
-//   (sight=5,  idx=0.9)→5.26  [官方案例]
+//   (sight=5,  idx=0.9)→5.26  [官方案例，与 zzsi 查表规则示例"50月→5、0.8723→0.9、参数5.26"一致]
 //   (sight=12, idx=2.6)→8.85  [官方案例]
-//   (sight=13, idx=0.6)→6.32  [官方案例]
+//   (sight=13, idx=0.6)→6.32  [官方案例；另有自媒体案例复算 (30.83×6.32)/(43.25×1%)=450.51 印证]
 //   (sight=14, idx=0.9)→6.45  [cases/henan/3.json 郑州2024-01，补贴419.9，反推参数6.445取6.45]
-// ⚠️ 完整官方附表二尚未获取，当前为稀疏表（仅5个确认坐标）；缺失坐标返回 null 引擎报 warning 并算 0
+//
+// ⚠️【缺失坐标区间】郑劳社〔2007〕36号 **附表二全文未在网上公开**（省/市人社官网、郑州社保官网均只有
+//    公式与查表规则，无表体）⇒ 本轮**无法补全**，维持 5 个坐标。已知但未采信的疑似坐标（自媒体反推，
+//    未核到官方原文，**故意不录入**）：(sight=10, idx=0.7)→5.94 —— 若日后拿到官方附表二再补。
+//    当前缺失范围：
+//      · 视同年限 1–40 中，仅 1/5/12/13/14 五年有值，2/3/4/6/7/8/9/10/11/15…40 **全缺**
+//      · 指数维度 0.6–3.0（步进0.1）中，各年限档仅各 1 个指数点有值，其余 **全缺**
+//    ⇒ 缺失坐标返回 null，引擎报 warning 并按 0 计（真实郑州用户存在**漏算**风险，非"多算"）。
+//    ⇒ 兜底值见 getEngineConfig().modules.special_addition.subsidy_param = 8.85（表内最大值，
+//      仅兼容旧数据用，⚠️ 可能高估）。
 const ZZ_SUBSIDY_PARAM_TABLE = {
   // 格式：[视同年限][指数字符串] = 参数值
   1:  { '0.7': 4.62 },
@@ -3130,12 +3220,11 @@ function lookupZZSubsidyParam(sightYears, transIndex) {
   return (ZZ_SUBSIDY_PARAM_TABLE[sightKey] || {})[idxStr] || null
 }
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.03,  // 约3%年增速
-  MERGE_YEAR: 2031,
-  PROV_2025: 6738,  // 2025年全省企业计发基数（豫人社发〔2025〕61号及真实表验证）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 河南省城市列表（地级市）
 const CITY_LIST = [
@@ -3190,6 +3279,13 @@ account_start: ACCOUNT_START,
     cutoff_date: CUTOFF_DATE,
     province: PROV_TAG,
     name: '河南省',
+    // 【年限进位 2026-10-09 已核】豫劳社养老〔2006〕26号 第七条原文（省人社厅官网存件）：
+    //   「如果参保人员缴费年限不是整年数，缴费年限等于整年数与剩余月数除以12的值相加。
+    //     **缴费年限小数点后保留两位，第三位四舍五入。**」
+    //   ⇒ years_decimal:2 + years_round_mode:'round'（官方明文"四舍五入"，非截断）
+    //   官方附件算例复核：37年9个月→37.75；10+7÷12→10.58(10.5833→round)；27+11÷12→27.92(27.9167→round)
+    //   https://hrss.henan.gov.cn/2014/12-25/1576315.html
+    rounding: { years_decimal: 2, years_round_mode: 'round' },
     base_rates: {
       prov: PROV_BASE,
       zhengzhou: ZHENGZHOU_BASE,
@@ -3282,7 +3378,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -3400,11 +3496,11 @@ const CONTRIB_BASE_TIERS = {
   // 2025: { tier1: ?, tier2: ?, tier3: ? }, // 2026年度缴费基数月标准(=社平年2025全口径)待官方公布
 };
 
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.03,
-  MERGE_YEAR: 2031,
-  PROV_2025: 9112,  // 武汉/省直2025年计发基数
-};
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 const CITY_LIST = [
   '武汉市', '黄石市', '十堰市', '宜昌市', '襄阳市',
@@ -3502,6 +3598,7 @@ const AVG_SALARY_HISTORY = {
   2023: 7040,
   2024: 7489,
   2025: 7496,
+  2026: 7587,  // 鄂人社发〔2026〕29号：2026社保年度缴费基数月标准7587元（上限22761/下限4552）=2025统计年全口径社平
   // 2025: 官方全口径未公布，交由引擎预发年规则外推(=2024原值)，公布后再填
 };
 
@@ -3533,7 +3630,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -3602,16 +3699,21 @@ const PROV_BASE = {
   2023: 7417,
   2024: 7618,  // 2024年计发基数（湖南女2024-09预发表确认）
   2025: 7694,  // 2025年正式计发基数（株洲2025-11核定表确认）
-  2026: 6843,  // ⚠️ 2026年并轨：湘人社规〔2026〕14号，2026年计发基数=全口径社平6843（较2025年7694下调851元，非降待遇而是并轨）
+  // 🔴 2026-10-09 订正：**删除 `2026: 6843`**（原注释称"2026年并轨，计发基数=全口径社平6843"是错的）。
+  //   依据①：湘人社规〔2026〕14号原文——6843 是 **2026年社会保险「缴费基准值」**（=2025年全口径社平月均），
+  //           原文只说"计算职工基本养老金计发办法中的**2026年度缴费工资指数**时相应进行调整"，
+  //           **通篇未调整计发基数**。社平可作指数分母，但绝不等于计发基数。
+  //   依据②：本仓库两张 2026 年真实核定表实证 —— 株洲 2026-03 用 **7694**、娄底 2026-06 用 **7699**。
+  //   ⇒ 湖南 2026 年度计发基数**官方尚未公布**，按纪律不写死，删键让引擎自动回退上年（2025=7694）。
+  //   ⚠️ 日后若官方公布 2026 计发基数，直接补 `2026: <值>`；**切勿再把社平 6843 填进来**。
 };;;;
 
 // 湖南省基数增长预测参数
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.026,
-  LATEST_BASE_YEAR: 2024,
-  LATEST_BASE_VALUE: 7417,
-  PROV_2025: 7694,  // 2025年正式计发基数（株洲2025-11核定表确认）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 湖南省城市列表（地级市+自治州）
 const CITY_LIST = [
@@ -3623,11 +3725,37 @@ const CITY_LIST = [
 // ==================== 核心规则 ====================
 
 // 湖南省养老保险建账时间和 cutoff 时间
-// ⚠️ 待确认：建账时间（目前按1995-10估算，待官方文件确认）
-// ⚠️ 待确认：视同缴费cutoff时间（目前按1995-09估算，待官方文件确认）
-// TODO：搜索关键词"湘人社规 个人账户建立 1995"或"湘政发〔2006〕XX号 养老保险办法"
-const ACCOUNT_START = { year: 1995, month: 10 }
-const CUTOFF_DATE   = { year: 1995, month: 9 }
+// 【2026-10-09 全量核实】结论：湖南"统账结合/个人账户建立"**没有全省统一日期，按统筹地区（市州）分档**。
+//   因此本文件只能放一个单一占位值，**不存在"官方正确答案"**，改动需人工拍板。
+//
+// 依据①（省级红头，外边界）：湘政发〔2006〕7号 五、改革基本养老金计发办法——
+//   「1、**1996年1月1日**后参加工作、2006年1月1日后退休……基本养老金由基础养老金和个人账户养老金组成。
+//     2、**1996年1月1日**前参加工作、2006年1月1日后退休……再增加**过渡性养老金**。」
+//   https://www.huarong.gov.cn/33159/37006/37008/37028/37187/content_1142044.html
+//   ⚠️ 注意：这里的 1996-01-01 是"过渡性养老金资格"划线（参加工作日期），**并非各市州的实际建账月**。
+//
+// 依据②（省人社厅现行口径，分档表，决定性）：
+//   湘劳社政字〔2006〕13号：「**各市州**统账结合制度实施前职工按国家政策计算的连续工龄视同缴费年限」
+//   ——明确"各市州"，即无全省统一日（长沙市雨花区人社局 2025-08-21 答复引述）
+//   https://people.rednet.cn/front/messages/detail?id=4561825
+//   省人社厅《对省政协十三届二次会议第0371号提案的答复》附件2-1《湘鄂职工基本养老保险个人账户建立时间表》：
+//     省本级/省属企业 1995-05 ｜ 娄底/怀化/衡阳 1995-08 ｜ 株洲/郴州/湘西(+巴陵·省冶金) 1995-09
+//     邵阳/常德/张家界 1995-10 ｜ 湘潭/益阳/岳阳/永州 1996-01 ｜ 机关事业单位 2014-10
+//   http://rst.hunan.gov.cn/rst/ztzl/jyta/202410/33470068/files/0f6ea5c11b6c402980e245110aadaa6c.pdf
+//   长沙市（市政府问答 + 市司法局行政复议决定书 + 芙蓉/雨花区政府）：**长沙市 = 1995年4月**
+//   https://zcwd.changsha.gov.cn/wdk/zssrlzyhshbzjwd/202304/t20230414_11059356.html
+//   http://sfj.changsha.gov.cn/fzfw/xzfy/wssw/202201/t20220121_10451779.html
+//
+// ⇒ 【为何本轮不把 account_start 改成 1996-01】
+//    若改 1996-01，14 个市州中 10 个（长沙/娄底/怀化/衡阳/株洲/郴州/湘西/邵阳/常德/张家界）
+//    会把"已建账后的实缴月份"错误计入视同 ⇒ 系统性**多算**过渡性养老金（长沙多 9 个月）。
+//    保留 1995-10 的绝对误差更小（长沙 +6、娄底怀化衡阳 +2、株洲郴州湘西 +1、邵阳常德张家界 0、湘潭益阳岳阳永州 −3）。
+//    台账原"1995-10 vs 1996-01 差 3 个月"这一前提**本身不成立**（两者不是同一口径）。
+// ⇒ 【彻底修法（超出本轮范围，需人工决策）】引擎需支持城市级 account_start
+//    （现有 engine 仅读 config.account_start 单一值，且湖南在 miniprogram/assets/province-meta.js 中
+//     cityTypes 只有 ["prov"]，UI 无城市档位可选），同时补 14 市州档位。
+const ACCOUNT_START = { year: 1995, month: 10 }  // ⚠️ 占位中位值（=邵阳/常德/张家界档），非官方全省统一值
+const CUTOFF_DATE   = { year: 1995, month: 9 }   // ⚠️ 同上；与 ACCOUNT_START 保持"上月"关系
 
 const TRANS_COEF = 0.013  // 湖南过渡系数固定 1.3%
 // 依据：m12333.cn（湖南省退休人员养老金计算办法）
@@ -3760,6 +3888,13 @@ base_rates: PROV_BASE,
     cutoff_date: CUTOFF_DATE,
 
     province: PROV_TAG,
+    // 【年限进位 2026-10-09 已核】长沙市人社局官方算例（2025-09-03）：
+    //   299个月 ⇒ 24.92 年（24.91667 精确值：round→24.92 ✅ / floor→24.91 ❌）
+    //   181个月 ⇒ 15.08 年（15.08333 精确值：round→15.08 ✅ / floor→15.08 两者同）
+    //   ⇒ 24.92 一组即把"截断"排除，确认为 **四舍五入保留 2 位**
+    //   http://rsj.changsha.gov.cn/jdhy_0/hygq_131345/202509/t20250903_11983338.html
+    //   本仓库案例反证：hunan/1 376月→31.33、98月→8.17；hunan/3 35月→2.92、384月→32.00 均为 2 位
+    rounding: { years_decimal: 2, years_round_mode: 'round' },
     base_rates: { prov: PROV_BASE },
     name: '湖南省',
  avg_salary_history: AVG_SALARY_HISTORY,
@@ -3819,7 +3954,6 @@ const AVG_SALARY_HISTORY = {
 
 module.exports = {
   PROV_BASE,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -3845,7 +3979,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -3912,12 +4046,11 @@ const PROV_BASE = {
 };;
 
 // 江苏省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.018,  // 1.8%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8917,  // 2025年计发基数（苏州2026-02核定表使用值）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 江苏省历年社保缴费基数（元/月，来源：用户提供的江苏省历年社保缴费基数表）
 // 注：此为缴费基数，用于计算缴费指数；计发基数见 PROV_BASE
@@ -3989,15 +4122,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（江苏省专用）
-function predictBase(year) {
-  const BASE = PROV_BASE
-  const bp = BASE_PARAMS
-  const lastYear = 2025
-  const lastVal  = BASE[lastYear] || 8917
-  if (year <= lastYear) return BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + bp.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -4059,7 +4185,13 @@ function getEngineConfig() {
   }
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true };
   if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, use_trans_index: true };
+    // formula_type:'jiangsu' ⇒ 走引擎的三年过渡期分支：
+    //   新办法 = 计发基数 × 1995年底前平均缴费工资指数(或视同缴费指数) × 1995年底前(或视同)缴费年限 × 1.2%
+    //   新办法高于"原推算储存额办法（原办法）"的部分，2024年发40%、2025年发70%、2026年及以后发100%
+    // 依据：江苏省人社厅、省财政厅 2024-01-12《关于调整企业职工基本养老保险过渡性养老金计发办法的通知》
+    //   （本通知自 2024-01-01 起执行）；参数与公式见《江苏省企业职工基本养老保险实施办法》苏人社规〔2024〕1号 第二十四条
+    // ⚠️ 原办法金额无法由 app 端推算（需 1995 年底前逐年缴费工资），未注入 transPensionOld 时按新办法展示并告警
+    modules.transitional_pension = { enabled: true, use_trans_index: true, formula_type: 'jiangsu' };
     if (TRANS_COEF) {
       if (typeof TRANS_COEF === 'number') {
         modules.transitional_pension.coefficient = TRANS_COEF;
@@ -4088,10 +4220,10 @@ base_rates: PROV_BASE,
  modules: modules,
     
     cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,  // 吉林省不用建账前缴费年限
+    usePreAccountYears: false,  // 江苏过渡性年限在 formula_type:'jiangsu' 分支内取 pre1996Years/视同年限
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '2023年基数8613元，2024年基数8785元（苏人社发〔2023/2024〕XX号）',
+    notes: '2023年基数8613元，2024年基数8785元；过渡性养老金自2024-01-01起改新办法并与“原推算储存额办法”对比、差额按40%(2024)/70%(2025)/100%(2026起)过渡（苏人社厅、省财政厅2024-01-12通知）',
   };
 }
 
@@ -4155,7 +4287,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   SALARY_HISTORY,
   CITY_LIST,
   ACCOUNT_START,
@@ -4167,7 +4298,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -4186,7 +4316,7 @@ getEngineConfig,
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -4264,12 +4394,11 @@ const PROV_BASE = {
 
 ;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 6525,  // 2024年全口径社平=6525(元/月)；2025计发基数见PROV_BASE[2025]=7054
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -4416,7 +4545,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -4521,15 +4650,18 @@ const CC_BASE = {
   2020: 6927.75, 2021: 7297.75, 2022: 7604.25, 2023: 7726.67, 2024: 7852.58, 2025: 7978.25
 }
 
-// 吉林省基数增长预测参数
-const BASE_PARAMS = {
-  CC_2025: 7978.25,
-  
-  CC_GROWTH: 0.026,
-  PROV_GROWTH: 0.0438,
-  MERGE_YEAR: 2031,
-  PROV_2025: 7322,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ⛔【已废弃·2026-10-24 删除】原「吉林省基数增长预测参数」BASE_PARAMS 块已整块删除。
+//   原内容：CC_2025 7978.25 / CC_GROWTH 0.026 / PROV_GROWTH 0.0438 / MERGE_YEAR 2031 / PROV_2025 7322
+//   删除理由：
+//   ① PROV_GROWTH 4.38% **无官方来源**，是早期拍的估值。用它外推的 2027-2035 九条写死基数
+//      虽已于 2026-09-14 删除，但常量本身留了下来，成为"看似有据"的错误引用源
+//      ——已发生过事实源表照抄 4.38%、再扩散到文章的事故。
+//   ② MERGE_YEAR 2031（长春并轨全省）**没有任何官方文件**支撑，属臆设；
+//      按它外推长春 2038 得 12,752，而引擎现行口径为 9,688，高算 32%。
+//   ③ 本块只服务于本文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**，是死代码。
+//   ⇒ 现行唯一外推口径：引擎 inferGrowthRate() —— 取该基数表最近两个已公布年份的增幅，夹到 [0, 3%]。
+//     吉林当前实测：全省 2.18%（7481.5/7322.08）、长春 1.60%（7978.25/7852.58）。
+//   ⚠️ 不得以任何形式恢复本块。需要未来年份基数一律调用引擎 getBase(city, year, config)。
 
 // 吉林省行政区划
 const CITY_LIST = [
@@ -4541,6 +4673,23 @@ const CITY_LIST = [
 const ACCOUNT_START = { year: 1995, month: 7 }  // 依据：吉政发[1995]18号
 const CUTOFF_DATE   = { year: 1995, month: 6 }   // 视同缴费截止 1995-06
 
+// ==================== 「1995-07 前参保判视同缴费 ⇒ 是否重复计算」核查结论（2026-10-09）====================
+// 结论：**不算重复，是正确口径**。视同缴费年限**同时**用于两处，各有独立政策依据：
+//   ① 计入基础养老金的「累计缴费年限」——吉政发〔2004〕28号 六(一) 明文：
+//      "参保人员达到法定退休年龄、企业和个人累计缴费年限（**含视同缴费年限**，下同）满15年的"
+//      且 基础养老金 =（退休时上一年度当地职工月平均工资 + 本人指数化月平均缴费工资）÷2 ×个人累计缴费年限×1%
+//      原文（吉林省政府信息公开）：http://xxgk.jl.gov.cn/PDFfile/201812/5347702.pdf
+//   ② 单独计发过渡性养老金——同文 六(二)1.：
+//      过渡性养老金月标准 = 退休时上一年度全省职工月平均工资 × 本人平均缴费工资指数
+//                          × 建立基本养老保险个人账户制度前**视同缴费年限** × 过渡系数（1.2%）
+//      （吉政办明电〔2015〕11号：实际缴费年限累计超20年的，过渡系数由 1.2% 调整为 1.4%，2015-01-01 起）
+//      长春市社保局官方答复复核：http://ccshbx.changchun.gov.cn/hdjl/wszx/202512/t20251215_3447165.html
+// ⇒ 与全国通行做法一致：过渡性养老金本身就是对"建账前无个人账户积累"这段年限的补偿，
+//   补偿的是**个人账户**的空账，与基础养老金按年限 1%/年计发是两笔不同性质的钱，不存在重复计发。
+// ⚠️ 注意区分：吉政办明电〔2015〕11号 另一条"实际缴费年限超20年分段增发（0.15%/0.20%/0.25%）"
+//    用的是**实际**缴费年限，不含视同年限（见 EXTRA_PARAMS.trigger = actual_years）——这条别混。
+// 本轮不改任何数值，仅留结论消除疑虑。
+
 
 // 吉林用分段系数，由引擎计算，此处设 null
 const TRANS_COEF = {
@@ -4551,7 +4700,7 @@ const TRANS_COEF = {
   }
 }
 
-// 吉林省增发养老金参数（吉政发〔1998〕28号）
+// 吉林省增发养老金参数（吉政办明电〔2015〕11号）
 const EXTRA_PARAMS = {
   trigger: { type: 'actual_years', threshold: 20 },
   brackets: [
@@ -4579,28 +4728,10 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0369a1','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（吉林省专用）
-function predictBase(year, cityType) {
-  // 2031年起长春/全省合并，用全省基数（不再区分cityType）
-  if (year >= BASE_PARAMS.MERGE_YEAR) {
-    const lastYear = 2025
-    const lastVal  = PROV_BASE[lastYear] || 7322.08
-    if (year <= lastYear) return PROV_BASE[year] || 0
-    return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-  }
-  // 2031年前：长春/全省分开预测
-  if (cityType === 'cc') {
-    const lastYear = 2025
-    const lastVal  = CC_BASE[lastYear] || 7978.25
-    if (year <= lastYear) return CC_BASE[year] || 0
-    return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.CC_GROWTH, year - lastYear))
-  }
-  // 全省（非长春）
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 7322.08
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase(year, cityType) 已删除。
+//   它依赖上面已删除的 BASE_PARAMS（4.38% / 2.6% / 2031 并轨臆设），且**全仓库零调用**
+//   ——引擎实际取数走的是 pension-engine.js 的 getBase()，此处属于历史遗留死代码。
+//   预测未来年份计发基数请统一用 getBase(city, year, config)，外推口径见 inferGrowthRate()。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -4813,7 +4944,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
   CC_BASE,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -4826,7 +4956,6 @@ module.exports = {
   EXTRA_PARAMS,
   cases,
   getEngineConfig,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -4846,7 +4975,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -4921,11 +5050,11 @@ const DL_BASE = {
   2025: 8956,  // 辽人社〔2025〕17号：大连市月计发基数8956元
 };
 
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 7346,  // 辽人社〔2025〕17号
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -5221,7 +5350,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -5286,16 +5415,19 @@ const PROV_BASE = {
   2022: 7089,  // 2022年度计发基数（官方7089元/月，2022-09退休官方核定表案例验证）
   2023: 7469,
   2024: 8105,
-   2025: 8179,  // 2025年计发基数=2024全口径社平8179（内人社办发〔2025〕160号：2024全口径月均8179；内蒙古计发基数=上年社平规则）
+   2025: 8179,  // ✅ 2026-10-09 独立复查通过：内人社办发〔2025〕160号原文"2024年自治区全口径城镇单位就业人员月平均工资为8179元"
+  //   （同文：2025年养老/工伤个人缴费基数下限4907=8179×60%、上限24537=8179×300%；"计算2025年职工养老保险实际缴费指数使用的月平均工资为8179元"）
+  //   内蒙古已实现「计发基数=上年度全口径社平」并轨，故 8179 即 2025年度计发基数（非缴费基数，缴费基数是8179本身的上下限基准）。
+  //   官方依据 URL：https://rst.nmg.gov.cn/zfxxgk/fdzdgknr/zhengcejiedu/202509/t20250918_2792313.html （自治区人社厅《关于2025年社会保险缴费基数有关问题的通知》政策解读，2025-09-18）
+  //   原文全文另见：https://www.kailu.gov.cn/jczwgkpt/jczwgkbzmlyssqk/swgl/ssqk_21534/202511/t20251112_1013436.html 
    2026: 8430,  // 2026年计发基数（内人社办发〔2026〕85号，2026年8月公布，较2025年8179增251元）
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8179,  // 2025年计发基数=2024全口径社平8179（内人社办发〔2025〕160号确认，非预发）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -5313,10 +5445,17 @@ const CITY_LIST = [
 
 // ==================== 核心参数 ====================
 
-// 建账时间（个人账户制度建立时间）：多数1996-01，最迟1998-01（例：1984-07参工、1998-01建账）
-// 视同缴费年限固定至1997-12（统账结合前），与建账具体月份无关
-const ACCOUNT_START = { year: 1998, month: 1 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
+// ⭐ 2026-10-09 订正：1998-01 → 1996-01。
+//   内政办字〔2006〕253号（三）：过渡性养老金按「**统账结合**」前的缴费年限计发。
+//   锡林郭勒盟人社局官方问答：「『统账结合』前的缴费年限从参加工作时间到 **1995 年 12 月 31 日**」
+//   ⇒ 即视同截止 1995-12（不含 1996-01 当月），故 ACCOUNT_START = {1996, 1}。
+//   实证：内蒙古 case 2（1984-09 参工，2025-09 官方核定表）视同 11.3333 年 = 136 个月
+//        = calcYears(1984-09, 1996-01) ✅（旧值 1998-01 会算出 13.33 年，多 2 年，样本 +196.30 元/月）
+//   依据：https://www.nmg.gov.cn/zwgk/zfgb/2006n_5054/200609/200609/t20060928_299450.html
+//        https://rsj.xlgl.gov.cn/rsj/xwdt9/tpxw/389a077dd857437e892a6ae7b104b73a/index.shtml
+//   ⚠️ 旧注释称「多数1996-01、最迟1998-01」——1998-01 是**个别个案**，不该做全区默认值。
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
 
 const TRANS_COEF = 0.012  // 内蒙古自治区过渡系数 1.2%（内养老发〔2006〕?号）。过渡=指数化月均工资×统账结合前年限×1.2%；平均缴费指数<1时按1计过渡
 
@@ -5444,330 +5583,329 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 已据官方核定表核实（近年官方值已确认；早年段为引擎推算占位，已免责）
-// 2024年计发基数：8202元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/ningxia.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 宁夏回族自治区养老金计算模块
-// TODO：补充1995-2023年官方计发基数
-
-// ==================== 计发基数 ====================
-
-const PROV_BASE = {
-  1978: 869,
-  1979: 913,
-  1980: 958,
-  1981: 1006,
-  1982: 1057,
-  1983: 1110,
-  1984: 1165,
-  1985: 1223,
-  1986: 1284,
-  1987: 1349,
-  1988: 1416,
-  1989: 1487,
-  1990: 1561,
-  1991: 1639,
-  1992: 1721,
-  1993: 1807,
-  1994: 1898,
-  1995: 1993,
-  1996: 2092,
-  1997: 2197,
-  1998: 2307,
-  1999: 2422,
-  2000: 2543,
-  2001: 2670,
-  2002: 2804,
-  2003: 2944,
-  2004: 3091,
-  2005: 3246,
-  2006: 3408,
-  2007: 3579,
-  2008: 3757,
-  2009: 3945,
-  2010: 4143,
-  2011: 4350,
-  2012: 4567,
-  2013: 4796,
-  2014: 5035,
-  2015: 5287,
-  2016: 5551,
-  2017: 5829,
-  2018: 6120,
-  2019: 6426,
-  2020: 6885,
-  2021: 7215,
-  2022: 7648,
-  2023: 7953,
-  2024: 8202,
-   2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表：暂用2024年全口径社平作为2025年计发基数）
-};;
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表确认）
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '银川',
-  '石嘴山',
-  '吴忠',
-  '固原',
-  '中卫'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
-const PROV_TAG = 'ningxia'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition', 'special']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-  special:     '知识分子补贴',
-}
-
-// ==================== 特殊增发参数（知识分子补贴） ====================
-
-const SPECIAL_ADDITION_PARAMS = {
-  enabled: true,
-  type: 'intellectual',
-  intellectual_area: 10,    // 知识分子地区津贴（真实表：10.00元/月）
-  intellectual_work: 8.5,   // 知识分子工龄补贴（真实表：8.50元/月）
-  note: '知识分子补贴 = 地区津贴10元/月 + 工龄补贴8.5元/月 = 18.5元/月（宁政办发[2006]126号及相关规定）',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：宁夏男2024.04退休（非知识分子）
-  {
-    case_id: "1",
-    province: "ningxia",
-    base_rates: { prov: PROV_BASE },
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1964,
-    birth_month: 4,
-    work_year: 1983,
-    work_month: 6,
-    retire_year: 2024,
-    retire_month: 4,
-    total_years: 40.92,
-    sight_years: 7.58,
-    pre_account_years: 12.58,
-    personal_account: 95751.34,
-    months: 139,
-    expected: {
-      basic_pension: 2830,
-      personal_pension: 688.86,
-      transitional_pension: 960.13,
-      total: 4480.29
-    },
-    notes: "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数1.3%（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
-    avg_index: 0.7392,
-    base_number: 7953,
-    base_prov: 7953
-  },
-  // 案例2：宁夏男2026.01退休（知识分子）
-  {
-    case_id: "2",
-    province: "ningxia",
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1966,
-    birth_month: 1,
-    work_year: 1988,
-    work_month: 8,
-    retire_year: 2026,
-    retire_month: 1,
-    total_years: 37.5,
-    sight_years: 2.42,
-    pre_account_years: 7.42,
-    personal_account: 122313.73,
-    months: 139,
-    expected: {
-      basic_pension: 2771.13,
-      personal_pension: 879.95,
-      transitional_pension: 680.50,
-      total: 4350.08
-    },
-    notes: "宁夏2026年1月银川退休男职工（知识分子），1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%(1.3%+0.13%)；地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。",
-    intellectual: true,
-    avg_index: 0.7666,
-    base_number: 8366,
-    base_prov: 8366
-  },
-  // 案例3：宁夏男2026.01退休（知识分子，详细）
-  {
-    case_id: "3",
-    province: "ningxia",
-    city: "宁夏",
-    gender: "男",
-    birth_year: 1966,
-    birth_month: 1,
-    work_year: 1988,
-    work_month: 8,
-    retire_year: 2026,
-    retire_month: 1,
-    total_years: 37.5,
-    sight_years: 7.67,
-    personal_account: 122312.42,
-    months: 139,
-    intellectual: true,
-    expected: {
-      basic_pension: 2632.36,
-      personal_pension: 879.95,
-      transitional_pension: 658.32,
-      intellectual_subsidy: 18.5,
-      total: 4189.13
-    },
-    notes: "宁夏2026年1月退休男知识分子。知识分子工龄补贴10.00元/月+地区补贴8.50元/月=18.50元/月。过渡养老金=8082×指数化月均×视同7.67年×(1.3%+知识分子增量)。",
-    avg_index: 0.7371,
-    base_number: 8082,
-    base_prov: 8082
-  }
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/ningxia.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-        // 知识分子过渡系数增加（1.3% → 1.43%）
-        modules.transitional_pension.coefficient_intellectual = 0.0143;
-      }
-    }
-  }
-  if (MODULES.includes('special')) {
-    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
-  }
-
-  // 冬季取暖费补贴：按年发放，**不计入月基本养老金**；标准逐年浮动
-  // 机制（自治区人社厅）：= 上一年度全区企业参保退休人员月平均养老金 + 2010年以来增加的人均 750 元
-  //   2020年度 4193 元（月均 3443 + 750）；2021年度 4394 元（月均 3644 + 750）
-  // ⚠️ avgPensionData.latest 用的是最近一次已公布的月均基数，之后年份须按当年公布值更新
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '标准逐年浮动＝上年度全区企业参保退休人员月平均养老金＋750元；此处沿用最近一次已公布基数，非当年实际值',
-    items: [
-      { name: '冬季取暖费补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, unit: '元/年', when: '每年10月随养老金一次性发放', source: '自治区人社厅/财政厅年度通知（2021年度为4394元）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: {
-      prov: PROV_BASE
-    },
-    
-      base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-    base_rates: { prov: PROV_BASE },
-
-    province: PROV_TAG,
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '宁夏平均缴费工资指数算法：建账前各年缴费指数均视同为1；建账后按实际缴费工资÷上年社平计算当年指数；建账前年限下取整，累计缴费年限上取整，平均指数=(建账前年限下取整×1+建账后指数和)÷累计缴费年限上取整。知识分子过渡系数1.3%→1.43%，并发放地区津贴10元/月+工龄补贴8.5元/月。使用建账前缴费年限（preAccountYears）。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1995: 469.58,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1996: 469.58,
-  1997: 506.25,
-  1998: 568.5,
-  1999: 629.17,
-  2000: 723.42,
-  2001: 876.75,
-  2002: 976.92,
-  2003: 1088,
-  2004: 1225.75,
-  2005: 1434.25,
-  2006: 1769.92,
-  2007: 2184.17,
-  2008: 2559.92,
-  2009: 2840.25,
-  2010: 3262,
-  2011: 3714.5,
-  2012: 4080.08,
-  2013: 4348.75,
-  2014: 4734.25,
-  2015: 5206.83,
-  2016: 5652.5,
-  2017: 6064.92,
-  2018: 6532,
-  2019: 6885,
-  2020: 5595.17,
-  2021: 6110,
-  2022: 7104,
-  2023: 7666,
-  2024: 8088,
-  2025: 8258,
-  // [V2已删] 2025: 8574,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
-  2026: 8371,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 已据官方核定表核实（近年官方值已确认；早年段为引擎推算占位，已免责）
+// 2024年计发基数：8202元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/ningxia.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 宁夏回族自治区养老金计算模块
+// TODO：补充1995-2023年官方计发基数
+
+// ==================== 计发基数 ====================
+
+const PROV_BASE = {
+  1978: 869,
+  1979: 913,
+  1980: 958,
+  1981: 1006,
+  1982: 1057,
+  1983: 1110,
+  1984: 1165,
+  1985: 1223,
+  1986: 1284,
+  1987: 1349,
+  1988: 1416,
+  1989: 1487,
+  1990: 1561,
+  1991: 1639,
+  1992: 1721,
+  1993: 1807,
+  1994: 1898,
+  1995: 1993,
+  1996: 2092,
+  1997: 2197,
+  1998: 2307,
+  1999: 2422,
+  2000: 2543,
+  2001: 2670,
+  2002: 2804,
+  2003: 2944,
+  2004: 3091,
+  2005: 3246,
+  2006: 3408,
+  2007: 3579,
+  2008: 3757,
+  2009: 3945,
+  2010: 4143,
+  2011: 4350,
+  2012: 4567,
+  2013: 4796,
+  2014: 5035,
+  2015: 5287,
+  2016: 5551,
+  2017: 5829,
+  2018: 6120,
+  2019: 6426,
+  2020: 6885,
+  2021: 7215,
+  2022: 7648,
+  2023: 7953,
+  2024: 8202,
+   2025: 8366,  // 2025年计发基数=8366（银川2026-01真实表：暂用2024年全口径社平作为2025年计发基数）
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '银川',
+  '石嘴山',
+  '吴忠',
+  '固原',
+  '中卫'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+
+const TRANS_COEF = 0.013  // 宁夏回族自治区过渡系数 1.3%
+const PROV_TAG = 'ningxia'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition', 'special']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+  special:     '知识分子补贴',
+}
+
+// ==================== 特殊增发参数（知识分子补贴） ====================
+
+const SPECIAL_ADDITION_PARAMS = {
+  enabled: true,
+  type: 'intellectual',
+  intellectual_area: 10,    // 知识分子地区津贴（真实表：10.00元/月）
+  intellectual_work: 8.5,   // 知识分子工龄补贴（真实表：8.50元/月）
+  note: '知识分子补贴 = 地区津贴10元/月 + 工龄补贴8.5元/月 = 18.5元/月（宁政办发[2006]126号及相关规定）',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：宁夏男2024.04退休（非知识分子）
+  {
+    case_id: "1",
+    province: "ningxia",
+    base_rates: { prov: PROV_BASE },
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1964,
+    birth_month: 4,
+    work_year: 1983,
+    work_month: 6,
+    retire_year: 2024,
+    retire_month: 4,
+    total_years: 40.92,
+    sight_years: 7.58,
+    pre_account_years: 12.58,
+    personal_account: 95751.34,
+    months: 139,
+    expected: {
+      basic_pension: 2830,
+      personal_pension: 688.86,
+      transitional_pension: 960.13,
+      total: 4480.29
+    },
+    notes: "宁夏2024年4月退休男职工，1964-04生，1983-06参工。过渡系数1.3%（表上明确标注）。视同7.58年+建账前实际5年=12.58年建账前年限。usePreAccountYears=true。低指数0.7392。",
+    avg_index: 0.7392,
+    base_number: 7953,
+    base_prov: 7953
+  },
+  // 案例2：宁夏男2026.01退休（知识分子）
+  {
+    case_id: "2",
+    province: "ningxia",
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1966,
+    birth_month: 1,
+    work_year: 1988,
+    work_month: 8,
+    retire_year: 2026,
+    retire_month: 1,
+    total_years: 37.5,
+    sight_years: 2.42,
+    pre_account_years: 7.42,
+    personal_account: 122313.73,
+    months: 139,
+    expected: {
+      basic_pension: 2771.13,
+      personal_pension: 879.95,
+      transitional_pension: 680.50,
+      total: 4350.08
+    },
+    notes: "宁夏2026年1月银川退休男职工（知识分子），1966-01生，1988-08参工。视同2.42年+建账前实际5年=7.42年建账前年限。平均指数0.7666（建账前年限下取整7年，累计缴费年限上取整38年，(7×1+22.1315)/38=0.7666）。知识分子过渡系数1.43%(1.3%+0.13%)；地区津贴10元/月+工龄补贴8.5元/月=18.5元/月。2025年计发基数8366。",
+    intellectual: true,
+    avg_index: 0.7666,
+    base_number: 8366,
+    base_prov: 8366
+  },
+  // 案例3：宁夏男2026.01退休（知识分子，详细）
+  {
+    case_id: "3",
+    province: "ningxia",
+    city: "宁夏",
+    gender: "男",
+    birth_year: 1966,
+    birth_month: 1,
+    work_year: 1988,
+    work_month: 8,
+    retire_year: 2026,
+    retire_month: 1,
+    total_years: 37.5,
+    sight_years: 7.67,
+    personal_account: 122312.42,
+    months: 139,
+    intellectual: true,
+    expected: {
+      basic_pension: 2632.36,
+      personal_pension: 879.95,
+      transitional_pension: 658.32,
+      intellectual_subsidy: 18.5,
+      total: 4189.13
+    },
+    notes: "宁夏2026年1月退休男知识分子。知识分子工龄补贴10.00元/月+地区补贴8.50元/月=18.50元/月。过渡养老金=8082×指数化月均×视同7.67年×(1.3%+知识分子增量)。",
+    avg_index: 0.7371,
+    base_number: 8082,
+    base_prov: 8082
+  }
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/ningxia.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+        // 知识分子过渡系数增加（1.3% → 1.43%）
+        modules.transitional_pension.coefficient_intellectual = 0.0143;
+      }
+    }
+  }
+  if (MODULES.includes('special')) {
+    modules.special_addition = { ...SPECIAL_ADDITION_PARAMS };
+  }
+
+  // 冬季取暖费补贴：按年发放，**不计入月基本养老金**；标准逐年浮动
+  // 机制（自治区人社厅）：= 上一年度全区企业参保退休人员月平均养老金 + 2010年以来增加的人均 750 元
+  //   2020年度 4193 元（月均 3443 + 750）；2021年度 4394 元（月均 3644 + 750）
+  // ⚠️ avgPensionData.latest 用的是最近一次已公布的月均基数，之后年份须按当年公布值更新
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '标准逐年浮动＝上年度全区企业参保退休人员月平均养老金＋750元；此处沿用最近一次已公布基数，非当年实际值',
+    items: [
+      { name: '冬季取暖费补贴', formula: 'avgPensionPlus', avgPensionData: { latest: 3644 }, plus: 750, unit: '元/年', when: '每年10月随养老金一次性发放', source: '自治区人社厅/财政厅年度通知（2021年度为4394元）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: {
+      prov: PROV_BASE
+    },
+    
+      base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+    base_rates: { prov: PROV_BASE },
+
+    province: PROV_TAG,
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: true,  // 宁夏使用建账前缴费年限
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '宁夏平均缴费工资指数算法：建账前各年缴费指数均视同为1；建账后按实际缴费工资÷上年社平计算当年指数；建账前年限下取整，累计缴费年限上取整，平均指数=(建账前年限下取整×1+建账后指数和)÷累计缴费年限上取整。知识分子过渡系数1.3%→1.43%，并发放地区津贴10元/月+工龄补贴8.5元/月。使用建账前缴费年限（preAccountYears）。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1995: 469.58,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1996: 469.58,
+  1997: 506.25,
+  1998: 568.5,
+  1999: 629.17,
+  2000: 723.42,
+  2001: 876.75,
+  2002: 976.92,
+  2003: 1088,
+  2004: 1225.75,
+  2005: 1434.25,
+  2006: 1769.92,
+  2007: 2184.17,
+  2008: 2559.92,
+  2009: 2840.25,
+  2010: 3262,
+  2011: 3714.5,
+  2012: 4080.08,
+  2013: 4348.75,
+  2014: 4734.25,
+  2015: 5206.83,
+  2016: 5652.5,
+  2017: 6064.92,
+  2018: 6532,
+  2019: 6885,
+  2020: 5595.17,
+  2021: 6110,
+  2022: 7104,
+  2023: 7666,
+  2024: 8088,
+  2025: 8258,
+  // [V2已删] 2025: 8574,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
+  2026: 8371,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["ningxia"] = cfg;
@@ -5775,227 +5913,239 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 官方数据
-// 2024年计发基数：8878元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/qinghai.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 青海省养老金计算模块
-// TODO：补充1995-2023年官方计发基数
-
-// ==================== 计发基数 ====================
-
-const PROV_BASE = {
-  1978: 941,
-  1979: 988,
-  1980: 1037,
-  1981: 1089,
-  1982: 1144,
-  1983: 1201,
-  1984: 1261,
-  1985: 1324,
-  1986: 1390,
-  1987: 1460,
-  1988: 1533,
-  1989: 1609,
-  1990: 1690,
-  1991: 1774,
-  1992: 1863,
-  1993: 1956,
-  1994: 2054,
-  1995: 2157,
-  1996: 2265,
-  1997: 2378,
-  1998: 2497,
-  1999: 2622,
-  2000: 2753,
-  2001: 2890,
-  2002: 3035,
-  2003: 3187,
-  2004: 3346,
-  2005: 3513,
-  2006: 3689,
-  2007: 3873,
-  2008: 4067,
-  2009: 4270,
-  2010: 4484,
-  2011: 4708,
-  2012: 4944,
-  2013: 5191,
-  2014: 5450,
-  2015: 5723,
-  2016: 6009,
-  2017: 6309,
-  2018: 6625,
-  2019: 6956,
-  2020: 7516,
-  2021: 7908,
-  2022: 8261,
-  2023: 8591,
-  2024: 8878,
-   2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号,2025-09-19官方公布;注意≠缴费基数/社平8816)
-};;
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号官方公布;原8816系缴费基数/社平,非计发基数)
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '西宁',
-  '海东'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-// 青海省企业职工基本养老保险个人账户统一建账时间：1996年1月1日（用户官方确认）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.014  // 青海省过渡系数 1.4000000000000001%
-
-const PROV_TAG = 'qinghai'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/qinghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
-  }
-
-  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
-  modules.special_addition = {
-    enabled: true,
-    type: 'qinghai_27_doc',
-    xining_addition: 12,
-    other_addition: 13
-  };
-
-  // 冬季取暖费：按年发放，**不计入月基本养老金**
-  // ⚠️ 待核：目前采信西宁市企业离退休人员口径 3900 元/年（西宁市社保局 2022 年公开发放数据）；
-  //    祁连县 2024 年度决算显示当地企业退休人员取暖费 4133 元/人，提示标准可能分地区、逐年浮动。
-  //    省级统一文件尚未查到，引用前须再核。
-  modules.annual_subsidies = {
-    enabled: true,
-    pendingVerify: true,
-    note: '西宁市企业离退休人员口径；省级统一标准待核，各地州可能不同',
-    items: [
-      { name: '冬季取暖费', amount: 3900, unit: '元/年', when: '每年10月随养老金发放', source: '西宁市社保局公开发放数据（省级统一文件待核）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: true,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1995: 479.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1996: 479.42,
-  1997: 557.25,
-  1998: 590.92,
-  1999: 667.58,
-  2000: 756.75,
-  2001: 837.5,
-  2002: 1075.5,
-  2003: 1206,
-  2004: 1279.67,
-  2005: 1435.75,
-  2006: 1590.33,
-  2007: 1889.92,
-  2008: 2180.5,
-  2009: 2581.92,
-  2010: 2796.75,
-  2011: 3098.5,
-  2012: 3541.08,
-  2013: 3902.25,
-  2014: 4342.08,
-  2015: 4817,
-  2016: 5155.67,
-  2017: 5620.92,
-  2018: 6377.92,
-  2019: 5682.83,
-  2020: 6084.5,
-  2021: 7023,
-  2022: 7604,
-  2023: 8029,
-  2024: 8643,
-  2025: 8816,
-  2026: 8888,   // 2025年统计口径社平（2026年度执行）：青海2026年缴费基数已公布（2026-09 官网）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 官方数据
+// 2024年计发基数：8878元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/qinghai.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 青海省养老金计算模块
+// TODO：补充1995-2023年官方计发基数
+
+// ==================== 计发基数 ====================
+
+const PROV_BASE = {
+  1978: 941,
+  1979: 988,
+  1980: 1037,
+  1981: 1089,
+  1982: 1144,
+  1983: 1201,
+  1984: 1261,
+  1985: 1324,
+  1986: 1390,
+  1987: 1460,
+  1988: 1533,
+  1989: 1609,
+  1990: 1690,
+  1991: 1774,
+  1992: 1863,
+  1993: 1956,
+  1994: 2054,
+  1995: 2157,
+  1996: 2265,
+  1997: 2378,
+  1998: 2497,
+  1999: 2622,
+  2000: 2753,
+  2001: 2890,
+  2002: 3035,
+  2003: 3187,
+  2004: 3346,
+  2005: 3513,
+  2006: 3689,
+  2007: 3873,
+  2008: 4067,
+  2009: 4270,
+  2010: 4484,
+  2011: 4708,
+  2012: 4944,
+  2013: 5191,
+  2014: 5450,
+  2015: 5723,
+  2016: 6009,
+  2017: 6309,
+  2018: 6625,
+  2019: 6956,
+  2020: 7516,
+  2021: 7908,
+  2022: 8261,
+  2023: 8591,
+  2024: 8878,
+   2025: 9056,  // 2025年计发基数=9056(青人社厅发〔2025〕69号,2025-09-19官方公布;注意≠缴费基数/社平8816)
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '西宁',
+  '海东'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+// 青海省企业职工基本养老保险个人账户统一建账时间：1996年1月1日（用户官方确认）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+// ⭐ 2026-10-09 订正：过渡性养老金的年限截止是 **1997-12-31**，不是建账日 1996-01。
+//   青劳社厅发〔2006〕59号 / 西宁市社保局《企业离退休人员服务指南》第十五条(三)：
+//     「过渡性养老金月计发标准 = 退休上一年度全省在岗职工月平均工资 × [(本人平均缴费工资指数+1)/2]
+//       × **1997年12月31日前的缴费年限（含视同缴费年限）** × 1.4%」
+//   青海 usePreAccountYears=true，preAccountYears = calcYears(work, viewing_start || account_start)
+//   ⇒ 靠 viewing_start 单独指定截止，不动 account_start（避免影响其它年限推算）。
+//   语义同 calcYears(a,b)：**不含 b 当月** ⇒ 「1997-12-31 前（含 1997-12 整月）」写 {year:1998, month:1}。
+//   实证：青海 case 2（1986-08 参工）官方过渡年限 11.42 年 = 137 个月 = calcYears(1986-08, 1998-01) ✅
+//       （旧口径算到 1995-12 只有 9.42 年，少 2 年，样本 −203.90 元/月）
+//   依据：https://lvshi.sogou.com/article/detail/DSLOHB6IKXG5.html（⚠️ 非政府域名，与多份公开核定表反演一致）
+const VIEWING_START = { year: 1998, month: 1 }
+
+const TRANS_COEF = 0.014  // 青海省过渡系数 1.4000000000000001%
+
+const PROV_TAG = 'qinghai'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：待用户提供官方核定表
+  // 案例2：待用户提供官方核定表
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/qinghai.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true, coefficient: TRANS_COEF, formula_type: 'weighted_transition' };
+  }
+
+  // 青海青劳社厅发[2004]27号：提高企业退休人员待遇（西宁地区+12，其他地区+13）
+  modules.special_addition = {
+    enabled: true,
+    type: 'qinghai_27_doc',
+    xining_addition: 12,
+    other_addition: 13
+  };
+
+  // 冬季取暖费：按年发放，**不计入月基本养老金**
+  // ⚠️ 待核：目前采信西宁市企业离退休人员口径 3900 元/年（西宁市社保局 2022 年公开发放数据）；
+  //    祁连县 2024 年度决算显示当地企业退休人员取暖费 4133 元/人，提示标准可能分地区、逐年浮动。
+  //    省级统一文件尚未查到，引用前须再核。
+  modules.annual_subsidies = {
+    enabled: true,
+    pendingVerify: true,
+    note: '西宁市企业离退休人员口径；省级统一标准待核，各地州可能不同',
+    items: [
+      { name: '冬季取暖费', amount: 3900, unit: '元/年', when: '每年10月随养老金发放', source: '西宁市社保局公开发放数据（省级统一文件待核）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: true,
+    // ⭐ 过渡性养老金年限截止＝1997-12-31（青劳社厅发〔2006〕59号），与建账日 1996-01 分离
+    viewing_start: VIEWING_START,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数8591元（青人社厅函〔2023〕461号），2024年基数8878元（青政办〔2019〕56号）；过渡性按1997-12-31前年限（含视同）计；青劳社厅发[2004]27号西宁地区+12元/月，其他地区+13元/月。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1995: 479.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1996: 479.42,
+  1997: 557.25,
+  1998: 590.92,
+  1999: 667.58,
+  2000: 756.75,
+  2001: 837.5,
+  2002: 1075.5,
+  2003: 1206,
+  2004: 1279.67,
+  2005: 1435.75,
+  2006: 1590.33,
+  2007: 1889.92,
+  2008: 2180.5,
+  2009: 2581.92,
+  2010: 2796.75,
+  2011: 3098.5,
+  2012: 3541.08,
+  2013: 3902.25,
+  2014: 4342.08,
+  2015: 4817,
+  2016: 5155.67,
+  2017: 5620.92,
+  2018: 6377.92,
+  2019: 5682.83,
+  2020: 6084.5,
+  2021: 7023,
+  2022: 7604,
+  2023: 8029,
+  2024: 8643,
+  2025: 8816,
+  2026: 8888,   // 2025年统计口径社平（2026年度执行）：青海2026年缴费基数已公布（2026-09 官网）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["qinghai"] = cfg;
@@ -6003,242 +6153,253 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：官方（陕西省人社厅/统计局历年全口径社平公布通知 + 2025计发基数官网核验，2026-07-23）
-// 2024年计发基数：7727元/月（2023计发基数7489→7727，+3.18%）；2025年计发基数：7881元/月（2026-06-23 公布）
-// 2024全口径社平：7750元/月（93003元/年）；2025全口径社平：8031元/月（涨幅3.62%，2026-06-25 公布）
-// 更新时间：2026-07-23 官网核验
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shaanxi.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 陕西省养老金计算模块
-// 数据状态（2026-07-23 官网核验）：PROV_BASE 2023-2025 与官方计发基数吻合(7489/7727/7881)，1978-2022 为平滑外推占位(待逐年官方核定)。
-
-// ==================== 计发基数 ====================
-
-// 【时间标记核验 2026-07-23】PROV_BASE（陕西：计发基数全省统一，独立于社平，由人社厅逐年公布）
-// ✅ 已核(陕西税务/人社厅公布 + 腾讯新闻2026-06-23核实)：2023:7489 / 2024:7727 / 2025:7881（2025计发基数2026-06-23公布）
-// ⚠️ 推定(平滑外推，非官方)：1978:819 … 2022:7202（2022前无逐年官方计发基数）
-// 注：陕西计发基数≠上年社平（涨得比社平快），与 AVG 不同序；2026计发基数未公布，2026退休暂用7881由引擎预发。
-const PROV_BASE = {
-  1978: 819,
-  1979: 860,
-  1980: 903,
-  1981: 948,
-  1982: 996,
-  1983: 1045,
-  1984: 1098,
-  1985: 1152,
-  1986: 1210,
-  1987: 1271,
-  1988: 1334,
-  1989: 1401,
-  1990: 1471,
-  1991: 1544,
-  1992: 1622,
-  1993: 1703,
-  1994: 1788,
-  1995: 1877,
-  1996: 1971,
-  1997: 2070,
-  1998: 2173,
-  1999: 2282,
-  2000: 2396,
-  2001: 2516,
-  2002: 2641,
-  2003: 2774,
-  2004: 2912,
-  2005: 3058,
-  2006: 3211,
-  2007: 3371,
-  2008: 3540,
-  2009: 3717,
-  2010: 3903,
-  2011: 4098,
-  2012: 4303,
-  2013: 4518,
-  2014: 4744,
-  2015: 4981,
-  2016: 5230,
-  2017: 5491,
-  2018: 5766,
-  2019: 6054,
-  2020: 6594,
-  2021: 6914,
-  2022: 7202,
-  2023: 7489,
-  2024: 7727,
-   2025: 7881,  // ✅ 2025年计发基数=7881（2026-06-23 公布，陕西税务/腾讯新闻核实）
-};
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 7881,  // ✅ 2025年计发基数=7881（2026-06-23 公布，与 PROV_BASE[2025] 一致）
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '西安',
-  '铜川',
-  '宝鸡',
-  '咸阳',
-  '渭南',
-  '延安',
-  '汉中',
-  '榆林',
-  '安康',
-  '商洛'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.014  // 陕西省过渡系数 1.4%（陕政发〔2006〕20号）
-
-const PROV_TAG = 'shaanxi'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/shaanxi.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  // 供热采暖补贴：按采暖季发放，**不计入月基本养老金**
-  // 陕人社发〔2017〕57号：企业退休（职）人员供热采暖补贴标准调整为 2360 元，2017年冬季取暖季起执行
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '参加企业职工基本养老保险的退休（职）人员，从养老保险基金支付；发放时间为11、12月及次年1、2月',
-    items: [
-      { name: '供热采暖补贴', amount: 2360, unit: '元/采暖季', when: '11、12月及次年1、2月发放', source: '陕人社发〔2017〕57号' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    sight_cutoff_by_payment_start: true,  // 陕西特殊：过渡性年限截止到实际缴费开始时间
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2024年计发基数7727元（2023:7489→+3.18%）；2025年计发基数7881元（2026-06-23公布）。2026计发基数未公布，2026退休暂用7881预发。过渡系数1.4%。陕西特殊：过渡性养老金年限截止到"实际缴费开始时间"，不是全省统账时间1996-01；统账前已有实际缴费的年限不计入过渡性年限。例如1993-01参加工作并同时缴费者，无视同缴费年限，过渡性养老金为0。计算平均缴费指数时，分母为"应缴纳年限"（含断缴时间）。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// 【时间标记核验 2026-07-23】AVG_SALARY_HISTORY（陕西全口径社平，元/月，官方公布）
-// ✅ 已核(省人社厅历年公布 + 陕人社函〔2024〕301号 + 2025全口径官网)：1993:240.83 … 2023:7598(91180÷12) / 2024:7750(93003÷12) / 2025:8031(2026-06-25公布,涨幅3.62%)
-// ⚠️ 推定(平滑外推，非官方)：1992:212.08（MD自1993起列示）
-// 注：陕西计发基数(PROV_BASE)独立于社平(AVG)，二者不同序。
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  1992: 212.08,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1993: 212.08,
-  1994: 240.83,   // 2890元/年 ÷12，陕西全省在岗职工年工资
-  1995: 316.92,   // 3803元/年 ÷12
-  1996: 366.33,
-  1997: 406.83,
-  1998: 473.67,
-  1999: 502.42,
-  2000: 577.58,
-  2001: 650.33,
-  2002: 760,
-  2003: 862.58,
-  2004: 955.08,
-  2005: 1085.33,
-  2006: 1233,
-  2007: 1409.83,
-  2008: 1782.58,  // 21391元/年 ÷12，按核定表附表修正
-  2009: 2115.92,
-  2010: 2524.42,
-  2011: 2858.25,
-  2012: 3253.58,
-  2013: 3694.17,
-  2014: 4071.08,
-  2015: 4343.25,
-  2016: 4741.33,
-  2017: 5135.5,
-  2018: 5619.42,
-  2019: 6249.42,
-  2020: 6594,
-  2021: 6053,
-  2022: 6543,
-  2023: 7029,
-  2024: 7598,
-  2025: 7750,
-  // [V2已删] 2025: 8031,  // ✅ 2025全口径社平=8031（2026-06-25 公布，涨幅3.62%；非"2024全口径"，2024全口径=7750）
-  2026: 7895,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：官方（陕西省人社厅/统计局历年全口径社平公布通知 + 2025计发基数官网核验，2026-07-23）
+// 2024年计发基数：7727元/月（2023计发基数7489→7727，+3.18%）；2025年计发基数：7881元/月（2026-06-23 公布）
+// 2024全口径社平：7750元/月（93003元/年）；2025全口径社平：8031元/月（涨幅3.62%，2026-06-25 公布）
+// 更新时间：2026-07-23 官网核验
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shaanxi.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 陕西省养老金计算模块
+// 数据状态（2026-07-23 官网核验）：PROV_BASE 2023-2025 与官方计发基数吻合(7489/7727/7881)，1978-2022 为平滑外推占位(待逐年官方核定)。
+
+// ==================== 计发基数 ====================
+
+// 【时间标记核验 2026-07-23】PROV_BASE（陕西：计发基数全省统一，独立于社平，由人社厅逐年公布）
+// ✅ 已核(陕西税务/人社厅公布 + 腾讯新闻2026-06-23核实)：2023:7489 / 2024:7727 / 2025:7881（2025计发基数2026-06-23公布）
+// ⚠️ 推定(平滑外推，非官方)：1978:819 … 2022:7202（2022前无逐年官方计发基数）
+// 注：陕西计发基数≠上年社平（涨得比社平快），与 AVG 不同序；2026计发基数未公布，2026退休暂用7881由引擎预发。
+const PROV_BASE = {
+  1978: 819,
+  1979: 860,
+  1980: 903,
+  1981: 948,
+  1982: 996,
+  1983: 1045,
+  1984: 1098,
+  1985: 1152,
+  1986: 1210,
+  1987: 1271,
+  1988: 1334,
+  1989: 1401,
+  1990: 1471,
+  1991: 1544,
+  1992: 1622,
+  1993: 1703,
+  1994: 1788,
+  1995: 1877,
+  1996: 1971,
+  1997: 2070,
+  1998: 2173,
+  1999: 2282,
+  2000: 2396,
+  2001: 2516,
+  2002: 2641,
+  2003: 2774,
+  2004: 2912,
+  2005: 3058,
+  2006: 3211,
+  2007: 3371,
+  2008: 3540,
+  2009: 3717,
+  2010: 3903,
+  2011: 4098,
+  2012: 4303,
+  2013: 4518,
+  2014: 4744,
+  2015: 4981,
+  2016: 5230,
+  2017: 5491,
+  2018: 5766,
+  2019: 6054,
+  2020: 6594,
+  2021: 6914,
+  2022: 7202,
+  2023: 7489,
+  2024: 7727,
+   2025: 7881,  // ✅ 2025年计发基数=7881（2026-06-23 公布，陕西税务/腾讯新闻核实）
+};
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '西安',
+  '铜川',
+  '宝鸡',
+  '咸阳',
+  '渭南',
+  '延安',
+  '汉中',
+  '榆林',
+  '安康',
+  '商洛'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+// ⭐ 2026-10-09 订正：陕西视同缴费年限截止是 **1992-12-31**，不是建账日 1996-01，也不是 cutoff_date 1995-12。
+//   陕政发〔2006〕27号 明文：「计算平均缴费指数时，**1992 年 12 月 31 日前视同缴费年限**每年的缴费指数按 1.0 确定」
+//   ⇒ 此前默认路径按 account_start(1996-01) 推算，多算 3 年（样本 +235.94 元/月）。
+//   语义同 calcYears(a,b)：**不含 b 当月** ⇒ 「1992-12-31 前（含 1992-12 整月）」写 {year:1993, month:1}。
+//   实证：陕西 case 1（1991-07 参工）官方视同 1.5 年 = 18 个月 = calcYears(1991-07, 1993-01) ✅
+//        case 4（1982-03 参工）官方视同 10.83 年 = 130 个月 = calcYears(1982-03, 1993-01) ✅
+//   依据：https://www.sxshbzj.cn/newstyle/pub_newsshow.asp?chid=100045&id=29005747
+//        https://zcxc.shaanxi.gov.cn/cjwt/698.jhtml
+const SIGHT_CUTOFF  = { year: 1993, month: 1 }
+
+const TRANS_COEF = 0.014  // 陕西省过渡系数 1.4%（陕政发〔2006〕20号）
+
+const PROV_TAG = 'shaanxi'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：待用户提供官方核定表
+  // 案例2：待用户提供官方核定表
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/shaanxi.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  // 供热采暖补贴：按采暖季发放，**不计入月基本养老金**
+  // 陕人社发〔2017〕57号：企业退休（职）人员供热采暖补贴标准调整为 2360 元，2017年冬季取暖季起执行
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '参加企业职工基本养老保险的退休（职）人员，从养老保险基金支付；发放时间为11、12月及次年1、2月',
+    items: [
+      { name: '供热采暖补贴', amount: 2360, unit: '元/采暖季', when: '11、12月及次年1、2月发放', source: '陕人社发〔2017〕57号' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    // ⭐ 默认视同截止＝1992-12-31（陕政发〔2006〕27号）。用户显式传 paymentStart 时仍优先用它
+    //   （sight_cutoff_by_payment_start），二者不冲突：paymentStart 覆盖的是「实际缴费开始」这一更晚的事实。
+    sight_cutoff: SIGHT_CUTOFF,
+    sight_cutoff_by_payment_start: true,  // 陕西特殊：过渡性年限截止到实际缴费开始时间
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年计发基数7727元（2023:7489→+3.18%）；2025年计发基数7881元（2026-06-23公布）。2026计发基数未公布，2026退休暂用7881预发。过渡系数1.4%。陕西特殊：过渡性养老金年限截止到"实际缴费开始时间"，不是全省统账时间1996-01；统账前已有实际缴费的年限不计入过渡性年限。例如1993-01参加工作并同时缴费者，无视同缴费年限，过渡性养老金为0。计算平均缴费指数时，分母为"应缴纳年限"（含断缴时间）。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// 【时间标记核验 2026-07-23】AVG_SALARY_HISTORY（陕西全口径社平，元/月，官方公布）
+// ✅ 已核(省人社厅历年公布 + 陕人社函〔2024〕301号 + 2025全口径官网)：1993:240.83 … 2023:7598(91180÷12) / 2024:7750(93003÷12) / 2025:8031(2026-06-25公布,涨幅3.62%)
+// ⚠️ 推定(平滑外推，非官方)：1992:212.08（MD自1993起列示）
+// 注：陕西计发基数(PROV_BASE)独立于社平(AVG)，二者不同序。
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  1992: 212.08,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1993: 212.08,
+  1994: 240.83,   // 2890元/年 ÷12，陕西全省在岗职工年工资
+  1995: 316.92,   // 3803元/年 ÷12
+  1996: 366.33,
+  1997: 406.83,
+  1998: 473.67,
+  1999: 502.42,
+  2000: 577.58,
+  2001: 650.33,
+  2002: 760,
+  2003: 862.58,
+  2004: 955.08,
+  2005: 1085.33,
+  2006: 1233,
+  2007: 1409.83,
+  2008: 1782.58,  // 21391元/年 ÷12，按核定表附表修正
+  2009: 2115.92,
+  2010: 2524.42,
+  2011: 2858.25,
+  2012: 3253.58,
+  2013: 3694.17,
+  2014: 4071.08,
+  2015: 4343.25,
+  2016: 4741.33,
+  2017: 5135.5,
+  2018: 5619.42,
+  2019: 6249.42,
+  2020: 6594,
+  2021: 6053,
+  2022: 6543,
+  2023: 7029,
+  2024: 7598,
+  2025: 7750,
+  // [V2已删] 2025: 8031,  // ✅ 2025全口径社平=8031（2026-06-25 公布，涨幅3.62%；非"2024全口径"，2024全口径=7750）
+  2026: 7895,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["shaanxi"] = cfg;
@@ -6246,246 +6407,269 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 官方数据
-// 2024年计发基数：7678元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shandong.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 山东省养老金计算数据模块
-// TODO：补充1995-2022年官方计发基数（目前只有2023-2025年官方数据）
-// 依据：鲁人社字〔2023〕108号、鲁人社字〔2024〕112号、鲁人社字〔2025〕100号
-
-// ==================== 基础数据 ====================
-
-// 山东省历年计发基数（元/月）
-// 2023-2025来自官方文件，其余年份待补充
-const PROV_BASE = {
-  1978: 814,
-  1979: 855,
-  1980: 897,
-  1981: 942,
-  1982: 989,
-  1983: 1039,
-  1984: 1091,
-  1985: 1145,
-  1986: 1202,
-  1987: 1263,
-  1988: 1326,
-  1989: 1392,
-  1990: 1462,
-  1991: 1535,
-  1992: 1611,
-  1993: 1692,
-  1994: 1777,
-  1995: 419.33,
-  1996: 484.08,
-  1997: 520.08,
-  1998: 531,
-  1999: 583.08,
-  2000: 664.67,
-  2001: 750,
-  2002: 849.92,
-  2003: 949,
-  2004: 1091.42,
-  2005: 1294.17,
-  2006: 1602.33,
-  2007: 1903.67,
-  2008: 2200.33,
-  2009: 2474,
-  2010: 2810.75,
-  2011: 3166,
-  2012: 3547.92,
-  2013: 3971,
-  2014: 4371.67,
-  2015: 4849.75,
-  2016: 5296.83,
-  2017: 5775.42,
-  2018: 5448.58,
-  2019: 5761.33,
-  2020: 6573,
-  2021: 6893,
-  2022: 7182.5,
-  2023: 7468,
-  2024: 7678,
-   2025: 7831,  // 2025年计发基数（济南2026-01正式核定表，2025-09预发仍用7678）
-};;
-
-// 山东省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 约2%年增速
-  MERGE_YEAR: 2031,
-  PROV_2025: 7831,  // 2025年计发基数（济南2026-01正式核定表，2025-09预发仍用7678）
-}
-
-// 山东省城市列表（地级市）
-// ⚠️【2026-08-11 事实订正】原注释"菏泽市执行省平"与官方文件相反。
-//    鲁人社字〔2025〕100号原文："2025年度我省机关事业单位养老保险和【除菏泽市以外】的企业养老保险
-//    基本养老金月计发基数，按照7831元执行。"→ 菏泽企业养老保险被官方明文单列，不执行省计发基数。
-//    菏泽实际走"全省全口径社平"：2024年度7359元(=2023全口径)，2025年度对应7506元(=2024全口径)，
-//    比其他15市的7831元低325元/月。
-//    本项目仍按用户 2026-07-12 决定：暂不单独建模，菏泽退休人员计算结果会偏高，需人工留意。
-const CITY_LIST = [
-  '济南市', '青岛市', '淄博市', '枣庄市', '东营市',
-  '烟台市', '潍坊市', '济宁市', '泰安市', '威海市',
-  '日照市', '临沂市', '德州市', '聊城市', '滨州市',
-  '菏泽市',
-]
-
-// ==================== 核心规则 ====================
-
-// 山东省养老保险建账时间和 cutoff 时间
-// 山东省建账时间：鲁政发〔1995〕98号《山东省企业职工基本养老保险社会统筹和个人账户相结合实施办法》，从1996年1月起建立个人账户（潍坊市人社局确认）；视同缴费截止1995-12（1998-01为并轨国家统一制度日期，非建账时间）
-const ACCOUNT_START = { year: 1996, month: 1 }
-const CUTOFF_DATE   = { year: 1995, month: 12 }
-
-const TRANS_COEF = 0.013  // 山东过渡系数固定 1.3%（鲁政发[2006]92号，济南2026-01临时待遇核定表确认）（待官方文件确认）
-// TODO：补充官方文件编号（如：鲁政发〔2006〕XX号）
-
-const PROV_TAG = 'shandong'
-
-// 山东省模块配置（有基础养老金 + 个人账户养老金 + 过渡性养老金）
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-// TODO：添加至少2个官方核定表案例
-// 案例来源必须是官方核定表，不能AI自己编
-const cases = [
-  // 案例1：待添加（需官方核定表）
-  // 案例2：待添加（需官方核定表）
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/shandong.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**
-  // 鲁人社办发〔2013〕106号：企业退休职工年取暖补贴由 1100 元调整为每人每年 1700 元
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '企业退休、退职人员（含以灵活就业身份参加职工养老保险并办理退休的人员）',
-    items: [
-      { name: '冬季取暖补贴', amount: 1700, unit: '元/年', when: '每年10月随当月养老待遇一并发放', source: '鲁人社办发〔2013〕106号（原鲁人社发〔2010〕38号）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2024年基数7678元（鲁人社字〔2024〕112号）；济南2026-01临时待遇基数7831元。过渡系数1.3%。',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// 【时间标记核验 2026-08-11】AVG_SALARY_HISTORY 全量重核（元/月）
-// ❗修复重大 bug：原 1997-2019 段整体错位一年 + 两列口径混用
-//    - 错位：原 AVG[Y] 实际装的是官方 Y-1 年的社平（如原 AVG[2017]=5296.83×12=63562 = 官方2016年在岗工资；
-//      原 AVG[2019]=5448.58×12=65383 = 官方2018年全口径）。引擎注释曾记"早期修正实际仍错位"，本次彻底对齐。
-//    - 混用：原 1997-2007 取"社平工资"列、2008-2018 又跳取"在岗工资"列，两套口径混在一张表里。
-// ✅ 真相源：滕州市人社局《山东省历年社平工资》（省人社口径，专供参保人查询，1992-2017 双列 + 2018起全口径）
-//    交叉验证：山东省统计年鉴2012 表C0413（1995-2011 逐年吻合）
-// 📐 统一口径：1996-2017 一律取该表"社平工资"列（城镇非私营单位从业人员平均工资）÷12，不再混用"在岗工资"列
-// 🔀 2018 起口径切换为"全省全口径城镇单位就业人员平均工资"（国办发〔2019〕13号并轨），
-//    与 2017 及以前不可连线比增速（2017社平68081 → 2018全口径65383，账面降2698元系口径含私营所致，非真降）
-// 📌 参考：同年"在岗工资"列（更高，仅备查不入表）：2016=63562 2017=69305
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  // ===== 旧口径：城镇非私营单位从业人员平均工资（社平工资列）=====
-  1996: 484.08,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1997: 484.08,     // 5809÷12  ✅滕州人社局省表(年鉴在岗5809吻合)
-  1998: 520.08,     // 6241÷12  ✅
-  1999: 531,        // 6372÷12  ✅省人社口径(年鉴统计口径6800，社保取人社口径)
-  2000: 583.08,     // 6997÷12  ✅
-  2001: 664.67,     // 7976÷12  ✅
-  2002: 750,        // 9000÷12  ✅
-  2003: 849.92,     // 10199÷12 ✅
-  2004: 949,        // 11388÷12 ✅
-  2005: 1091.42,    // 13097÷12 ✅
-  2006: 1294.17,    // 15530÷12 ✅(同年在岗16614)
-  2007: 1602.33,    // 19228÷12 ✅(社平=在岗同值)
-  2008: 1806.42,    // 21677÷12 ✅(同年在岗22844；原引擎误取在岗列)
-  2009: 2107.42,    // 25289÷12 ✅(同年在岗26404；原误取在岗列)
-  2010: 2474,       // 29688÷12 ✅(社平=在岗同值)
-  2011: 2810.75,    // 33729÷12 ✅(社平=在岗同值)
-  2012: 3134.83,    // 37618÷12 ✅(同年在岗37992；原误取在岗列，年鉴合计37618吻合)
-  2013: 3492,       // 41904÷12 ✅(同年在岗42572；原误取在岗列)
-  2014: 3916.5,     // 46998÷12 ✅(同年在岗47652)
-  2015: 4318.75,    // 51825÷12 ✅(同年在岗52460)
-  2016: 4772.5,     // 57270÷12 ✅(同年在岗58197)
-  2017: 5211.58,    // 62539÷12 ✅(同年在岗63562)
-  2018: 5673.42,    // 68081÷12 ✅(同年在岗69305)
-  // ===== 新口径：全省全口径城镇单位就业人员平均工资（2018起并轨）=====
-  2019: 5448.58,    // 65383÷12 ✅滕州人社局省表(省全口径)
-  2020: 5761.33,    // 69136÷12 ✅滕州人社局省表(省全口径)
-  2021: 6242.17,    // 74906÷12 ✅鲁人社字〔2021〕131号
-  2022: 6633.08,    // 79597÷12 ✅鲁人社字〔2022〕89号
-  2023: 7069.25,    // 84831÷12 ✅鲁人社字〔2023〕59号(淄博鲁人社字〔2023〕134号复述"7069元"印证)
-  2024: 7359.42,    // 88313÷12 ✅鲁人社字〔2024〕64号(济南/烟台/济宁转发文复述"7359元"印证)
-  2025: 7506,       // 90072÷12 ✅2024全口径(省统计局2025-07-03；非私营108131/在岗110732/私营61196)
-  // [V2已删] 2025: 7774,       // 🔮外推预测值(≈7506×1.036)；2025官方全口径截至2026-08未公布，非官方
-  2026: 7621,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 官方数据
+// 2024年计发基数：7678元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shandong.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 山东省养老金计算数据模块
+// TODO：补充1995-2022年官方计发基数（目前只有2023-2025年官方数据）
+// 依据：鲁人社字〔2023〕108号、鲁人社字〔2024〕112号、鲁人社字〔2025〕100号
+
+// ==================== 基础数据 ====================
+
+// 山东省历年计发基数（元/月）
+// 2023-2025来自官方文件，其余年份待补充
+const PROV_BASE = {
+  1978: 814,
+  1979: 855,
+  1980: 897,
+  1981: 942,
+  1982: 989,
+  1983: 1039,
+  1984: 1091,
+  1985: 1145,
+  1986: 1202,
+  1987: 1263,
+  1988: 1326,
+  1989: 1392,
+  1990: 1462,
+  1991: 1535,
+  1992: 1611,
+  1993: 1692,
+  1994: 1777,
+  1995: 419.33,
+  1996: 484.08,
+  1997: 520.08,
+  1998: 531,
+  1999: 583.08,
+  2000: 664.67,
+  2001: 750,
+  2002: 849.92,
+  2003: 949,
+  2004: 1091.42,
+  2005: 1294.17,
+  2006: 1602.33,
+  2007: 1903.67,
+  2008: 2200.33,
+  2009: 2474,
+  2010: 2810.75,
+  2011: 3166,
+  2012: 3547.92,
+  2013: 3971,
+  2014: 4371.67,
+  2015: 4849.75,
+  2016: 5296.83,
+  2017: 5775.42,
+  2018: 5448.58,
+  2019: 5761.33,
+  2020: 6573,
+  2021: 6893,
+  2022: 7182.5,
+  2023: 7468,
+  2024: 7678,
+   2025: 7831,  // 2025年计发基数（济南2026-01正式核定表，2025-09预发仍用7678）
+};;
+
+// 山东省基数增长预测参数
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// 山东省城市列表（地级市）
+// ⚠️【2026-08-11 事实订正，2026-10-09 官方原件复核】原注释"菏泽市执行省平"与官方文件相反。
+//
+// 【已核实的官方原文】鲁人社字〔2025〕100号《山东省人力资源和社会保障厅关于公布2025年度职工
+//   基本养老保险待遇计发基数的通知》（省人社厅，2025-10-16印发）**全文正文只有一句**：
+//   「根据有关规定，2025年度我省机关事业单位养老保险和**除菏泽市以外**的企业养老保险
+//     基本养老金月计发基数，按照 **7831 元**执行。」
+//   官方原件 PDF：https://bmj.shandong.gov.cn/resource/srst/att/202510/ea855c10-0743-4ef6-8b47-707a98e394f6.pdf
+//
+// 【排除的是什么】= **计发基数本身**（不是某项补贴）。
+//   即：菏泽市"企业养老保险"不适用 7831 这个省级 **待遇计发基数**；机关事业单位仍适用 7831。
+//   ⇒ 受影响的是「基础养老金」和「过渡性养老金」两项（都直接乘计发基数），个人账户养老金不受影响。
+//
+// 【菏泽实际用多少】⚠️ **未核到官方原文**，自媒体（腾讯新闻/网易/头条）普遍称
+//   2024 年度 7359 元、2025 年度 7506 元，恰好等于"全省全口径社平"（与本文件
+//   AVG_SALARY_HISTORY[2024]=7359.42 / [2025]=7506 完全对得上，鲁人社字〔2024〕64号/〔2025〕91号
+//   分别为 88313÷12、90072÷12）——交叉印证度很高，但**没有菏泽市人社局或省厅的明文**，
+//   按"严禁编造"纪律 **本轮不写入 base_rates.heze**。
+//
+// 【2026-10-09 第二轮核查】再次定向找菏泽市人社局（heze.gov.cn / hzrsj.heze.gov.cn）原文，
+//   **仍未核到**菏泽市 2024/2025 年度**待遇计发基数**的官方文件。结论不变：⚠️ 未核到官方原文，不写 base_rates.heze。
+//   补充一条易混淆的官方线索（勿当作菏泽计发基数依据）：鲁人社字〔2025〕91号（省人社厅等四部门，2025-09-22）
+//   "二、计发以统筹地区上年度职工月平均工资为基数的相关工伤保险待遇、计算当年职工养老保险月缴费工资指数时，以 7506 元为基数"
+//   https://hrss.shandong.gov.cn/articles/ch07004/202509/cc0f03c9-05d8-4639-b4a5-f4206fe4d96c.shtml
+//   ⇒ 7506 在该文中是**全省**口径（工伤保险待遇 + 缴费工资指数分母），并非"菏泽市待遇计发基数"；
+//     自媒体所称"菏泽 2025 计发基数 7506"极可能是把这两件事混为一谈。**在拿到菏泽明文前不予采信**。
+// 【本轮处置】不改数值。仅把注释补成可追溯状态。待拿到菏泽市人社局/省厅原文后，
+//   再按现有城市单列写法补 `base_rates: { prov: PROV_BASE, heze: HEZE_BASE }`。
+//   注：miniprogram/assets/province-meta.js 中山东 cityTypes 目前只有 ["prov"]，
+//   即便补了 heze 也需同步加城市档位才会在 UI 生效。
+//   影响量级（若菏泽确为 7506）：比 7831 低 325 元/月 ⇒ 菏泽企业退休者基础+过渡性**高估约 4%**。
+const CITY_LIST = [
+  '济南市', '青岛市', '淄博市', '枣庄市', '东营市',
+  '烟台市', '潍坊市', '济宁市', '泰安市', '威海市',
+  '日照市', '临沂市', '德州市', '聊城市', '滨州市',
+  '菏泽市',
+]
+
+// ==================== 核心规则 ====================
+
+// 山东省养老保险建账时间和 cutoff 时间
+// 山东省建账时间：鲁政发〔1995〕98号《山东省企业职工基本养老保险社会统筹和个人账户相结合实施办法》，从1996年1月起建立个人账户（潍坊市人社局确认）；视同缴费截止1995-12（1998-01为并轨国家统一制度日期，非建账时间）
+const ACCOUNT_START = { year: 1996, month: 1 }
+const CUTOFF_DATE   = { year: 1995, month: 12 }
+
+const TRANS_COEF = 0.013  // 山东过渡系数固定 1.3%（鲁政发[2006]92号，济南2026-01临时待遇核定表确认）（待官方文件确认）
+// TODO：补充官方文件编号（如：鲁政发〔2006〕XX号）
+
+const PROV_TAG = 'shandong'
+
+// 山东省模块配置（有基础养老金 + 个人账户养老金 + 过渡性养老金）
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+// TODO：添加至少2个官方核定表案例
+// 案例来源必须是官方核定表，不能AI自己编
+const cases = [
+  // 案例1：待添加（需官方核定表）
+  // 案例2：待添加（需官方核定表）
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/shandong.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**
+  // 鲁人社办发〔2013〕106号：企业退休职工年取暖补贴由 1100 元调整为每人每年 1700 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '企业退休、退职人员（含以灵活就业身份参加职工养老保险并办理退休的人员）',
+    items: [
+      { name: '冬季取暖补贴', amount: 1700, unit: '元/年', when: '每年10月随当月养老待遇一并发放', source: '鲁人社办发〔2013〕106号（原鲁人社发〔2010〕38号）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年基数7678元（鲁人社字〔2024〕112号）；济南2026-01临时待遇基数7831元。过渡系数1.3%。',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// 【时间标记核验 2026-08-11】AVG_SALARY_HISTORY 全量重核（元/月）
+// ❗修复重大 bug：原 1997-2019 段整体错位一年 + 两列口径混用
+//    - 错位：原 AVG[Y] 实际装的是官方 Y-1 年的社平（如原 AVG[2017]=5296.83×12=63562 = 官方2016年在岗工资；
+//      原 AVG[2019]=5448.58×12=65383 = 官方2018年全口径）。引擎注释曾记"早期修正实际仍错位"，本次彻底对齐。
+//    - 混用：原 1997-2007 取"社平工资"列、2008-2018 又跳取"在岗工资"列，两套口径混在一张表里。
+// ✅ 真相源：滕州市人社局《山东省历年社平工资》（省人社口径，专供参保人查询，1992-2017 双列 + 2018起全口径）
+//    交叉验证：山东省统计年鉴2012 表C0413（1995-2011 逐年吻合）
+// 📐 统一口径：1996-2017 一律取该表"社平工资"列（城镇非私营单位从业人员平均工资）÷12，不再混用"在岗工资"列
+// 🔀 2018 起口径切换为"全省全口径城镇单位就业人员平均工资"（国办发〔2019〕13号并轨），
+//    与 2017 及以前不可连线比增速（2017社平68081 → 2018全口径65383，账面降2698元系口径含私营所致，非真降）
+// 📌 参考：同年"在岗工资"列（更高，仅备查不入表）：2016=63562 2017=69305
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  // ===== 旧口径：城镇非私营单位从业人员平均工资（社平工资列）=====
+  1996: 484.08,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1997: 484.08,     // 5809÷12  ✅滕州人社局省表(年鉴在岗5809吻合)
+  1998: 520.08,     // 6241÷12  ✅
+  1999: 531,        // 6372÷12  ✅省人社口径(年鉴统计口径6800，社保取人社口径)
+  2000: 583.08,     // 6997÷12  ✅
+  2001: 664.67,     // 7976÷12  ✅
+  2002: 750,        // 9000÷12  ✅
+  2003: 849.92,     // 10199÷12 ✅
+  2004: 949,        // 11388÷12 ✅
+  2005: 1091.42,    // 13097÷12 ✅
+  2006: 1294.17,    // 15530÷12 ✅(同年在岗16614)
+  2007: 1602.33,    // 19228÷12 ✅(社平=在岗同值)
+  2008: 1806.42,    // 21677÷12 ✅(同年在岗22844；原引擎误取在岗列)
+  2009: 2107.42,    // 25289÷12 ✅(同年在岗26404；原误取在岗列)
+  2010: 2474,       // 29688÷12 ✅(社平=在岗同值)
+  2011: 2810.75,    // 33729÷12 ✅(社平=在岗同值)
+  2012: 3134.83,    // 37618÷12 ✅(同年在岗37992；原误取在岗列，年鉴合计37618吻合)
+  2013: 3492,       // 41904÷12 ✅(同年在岗42572；原误取在岗列)
+  2014: 3916.5,     // 46998÷12 ✅(同年在岗47652)
+  2015: 4318.75,    // 51825÷12 ✅(同年在岗52460)
+  2016: 4772.5,     // 57270÷12 ✅(同年在岗58197)
+  2017: 5211.58,    // 62539÷12 ✅(同年在岗63562)
+  2018: 5673.42,    // 68081÷12 ✅(同年在岗69305)
+  // ===== 新口径：全省全口径城镇单位就业人员平均工资（2018起并轨）=====
+  2019: 5448.58,    // 65383÷12 ✅滕州人社局省表(省全口径)
+  2020: 5761.33,    // 69136÷12 ✅滕州人社局省表(省全口径)
+  2021: 6242.17,    // 74906÷12 ✅鲁人社字〔2021〕131号
+  2022: 6633.08,    // 79597÷12 ✅鲁人社字〔2022〕89号
+  2023: 7069.25,    // 84831÷12 ✅鲁人社字〔2023〕59号(淄博鲁人社字〔2023〕134号复述"7069元"印证)
+  2024: 7359.42,    // 88313÷12 ✅鲁人社字〔2024〕64号(济南/烟台/济宁转发文复述"7359元"印证)
+  2025: 7506,       // 90072÷12 ✅2024全口径(省统计局2025-07-03；非私营108131/在岗110732/私营61196)
+  // [V2已删] 2025: 7774,       // 🔮外推预测值(≈7506×1.036)；2025官方全口径截至2026-08未公布，非官方
+  2026: 7621,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["shandong"] = cfg;
@@ -6497,7 +6681,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -6571,15 +6755,29 @@ const PROV_BASE = {
   2023: 12183,
   2024: 12307,
   2025: 12434,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-  2026: 12577,  // 2026年计发基数（沪已并轨全口径社平，2026年8月启用，较2025年12434增143元）
+  // ✅ 2026 计发基数 12577 已确认在配置中（无需补录）。
+  //   官方依据：上海市人社局 2026-08-18《本市调整2026年度社保缴费基数上下限》
+  //     "本市2025年度全口径城镇单位就业人员平均工资为12577元/月"
+  //     https://rsj.sh.gov.cn/tgsgg_17341/20260818/t0035_1443203.html
+  //   上海已实现"计发基数 = 上年度全口径社平"并轨 ⇒ 2026 计发基数 = 12577（较2025的12434增143，+1.15%）。
+  2026: 12577,
 };
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.045,
-  MERGE_YEAR: 2031,
-  PROV_2025: 12434,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ==================== "当年增加养老金" current_year_increase（2026-10-09 复核）====================
+// 性质：上海企退「补充计发待遇」（地方固定额），非公式计算项，由 case/前端以 current_year_increase 注入，
+//       引擎在 engine/pension-engine.js 中仅对 province==='sh' 计入月基本养老金总额（rawSum）。
+// 已知官方值：2023=280 / 2024=325 / 2025=325 元/月。
+// ⚠️ 2026 年度标准**尚未官宣**（截至 2026-08-20 未见沪人社规文件）：
+//    当前案例（cases/shanghai/2.json）沿用 2025 值 325，**但这是沿用值、不是已核实的 2026 值**。
+//    2026 年度标准公布后必须回核：若官宣值 ≠ 325，须同步改 cases/shanghai/2.json 的
+//    current_year_increase 与 expected.total（核定表 9747.3 = 9422.3 + 325）。
+// 数值本轮**不动**（未官宣 ⇒ 无依据可改）。
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 上海市行政区划（直辖市，无地级市区分）
 const CITY_LIST = []
@@ -6607,13 +6805,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7']
 
-// 计发基数预测函数（上海市专用）
-function predictBase(year) {
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 12434
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -6665,6 +6858,9 @@ const cases = [
 
 function getEngineConfig() {
   // 将 MODULES 数组转换为 engines.modules 对象
+  // ⚠️ 计发办法依据已更新为《沪人社规〔2026〕16号》（2026-07-24 发布、2026-08-16 施行，有效期至 2031-08-15）；
+  //    该文同日废止 沪人社规〔2021〕32号 与 沪人社规〔2021〕27号。
+  //    一(一) 剩余月数折算为年、保留 4 位小数；二(一) 基础养老金公式；三 过渡性养老金（含虚账实记÷120）；四 三项分别见分进角。
   const modules = {};
   if (MODULES.includes('base')) modules.basic_pension = { enabled: true, rate_per_year: 0.01, formula_type: 'shanghai' };
   if (MODULES.includes('extra')) {
@@ -6674,6 +6870,7 @@ function getEngineConfig() {
       modules.extra_pension.trigger = EXTRA_PARAMS.trigger;
     }
   }
+  // round_to_jiao ⇒ 引擎对个人账户养老金做"见分进角"（沪人社规〔2026〕16号 四）
   if (MODULES.includes('personal')) modules.personal_account = { enabled: true, round_to_jiao: true };
   if (MODULES.includes('transition')) {
     modules.transitional_pension = { enabled: true, formula_type: "shanghai" };
@@ -6761,7 +6958,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
 getEngineConfig,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -6772,7 +6968,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -6781,249 +6976,249 @@ getEngineConfig,
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 官方数据
-// 2024年计发基数：7111元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shanxi.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 山西省养老金计算模块
-// TODO：补充1995-2022年官方计发基数（2023-2025已核：6897/7111/7253）
-
-// ==================== 计发基数 ====================
-// 【时间标记核验 2026-07-23】山西计发基数（元/月），规则：省单独公布加权基数，非简单“计发基数=上年社平”（PROV_BASE[2025]=7253 vs AVG[2024]=6997 印证）
-//   ✅ 2023-2025：与 MD 附表一 + 晋人社厅发文件一致（2023=6897、2024=7111、2025=7253）
-//   ⚠️ 1978-2022：推定占位（平滑约2%外推），MD 无历年计发基数表，待省统计局逐年公示核实（见 MD 附表二注“更早年份对应关系仍建议核实”）
-//   📋 2026+：未发布，引擎按 PROV_GROWTH=2% 外推
-const PROV_BASE = {
-  1978: 754,
-  1979: 791,
-  1980: 831,
-  1981: 873,
-  1982: 916,
-  1983: 962,
-  1984: 1010,
-  1985: 1061,
-  1986: 1114,
-  1987: 1169,
-  1988: 1228,
-  1989: 1289,
-  1990: 1354,
-  1991: 1421,
-  1992: 1492,
-  1993: 1567,
-  1994: 1645,
-  1995: 1728,
-  1996: 1814,
-  1997: 1905,
-  1998: 2000,
-  1999: 2100,
-  2000: 2205,
-  2001: 2315,
-  2002: 2431,
-  2003: 2552,
-  2004: 2680,
-  2005: 2814,
-  2006: 2955,
-  2007: 3103,
-  2008: 3258,
-  2009: 3421,
-  2010: 3592,
-  2011: 3771,
-  2012: 3960,
-  2013: 4158,
-  2014: 4366,
-  2015: 4584,
-  2016: 4813,
-  2017: 5054,
-  2018: 5306,
-  2019: 5572,
-  2020: 5921,
-  2021: 6257,
-  2022: 6695,
-  2023: 6987,
-  2024: 7111,
-   2025: 7253,  // ✅ 2025年计发基数=7253(晋人社厅发〔2025〕36号)，独立于全口径社平(6997)，非“=上年社平”
-};;
-
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 6997,  // 2025年社平/缴费基数=6997元/月（晋人社厅发〔2025〕35号），非计发基数(计发基数见 PROV_BASE[2025]=7253)
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = [
-  '太原',
-  '大同',
-  '阳泉',
-  '长治',
-  '晋城',
-  '朔州',
-  '晋中',
-  '运城',
-  '忻州',
-  '临汾',
-  '吕梁'
-]
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-const ACCOUNT_START = { year: 1997, month: 7 }  // 个人账户建立=1997-07(官方核定表"建账缴费时间1997年7月")；晋政发〔1998〕21号中人分界1998-07-01是另一概念(资格线)
-const CUTOFF_DATE   = { year: 1997, month: 6 }  // 视同缴费截止=建账前一月(1997-06)，与核定表视同155个月=12.9167年一致
-
-const TRANS_COEF = 0.013  // 山西省过渡系数 1.3%
-
-const PROV_TAG = 'shanxi'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于个人账户余额精确计算
-// 数据来源：provinces/shanxi.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
-;
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-    // 山西双指数（晋政发〔2006〕32号）：基础养老金与过渡性养老金使用不同平均缴费指数。
-    // 基础用 avg_index（基础平均缴费指数），过渡用 trans_index（过渡平均缴费指数）。
-    // 引擎不自动反推双指数，需案例/前端显式注入 trans_index；formula_type 显式声明身份，
-    // 由 calcTransitionalPension 的 'shanxi' 分支强制校验（缺失则告警，防止静默误用基础指数）。
-    modules.transitional_pension.formula_type = 'shanxi';
-    modules.transitional_pension.double_index = true;
-  }
-
-  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**（企业离退休，统筹基金支付）
-  // 晋人社厅发〔2017〕9号：标准由 2400 元调整为每人每年 3360 元，每年 10 月随基本养老金一次性发放
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '参加山西省城镇企业职工基本养老保险、当年9月30日前办理离退休手续并按月领取基本养老金的人员',
-    items: [
-      { name: '冬季取暖补贴', amount: 3360, unit: '元/年', when: '每年10月随基本养老金一次性发放', source: '晋人社厅发〔2017〕9号（2016年10月起执行）' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2024年基数7111元（晋人社厅发〔2024〕39号），2025年基数7253元（晋人社厅发〔2025〕36号）',
-  }
-}
-
-// ==================== 导出 ====================
-
-// 【时间标记核验 2026-07-23】山西缴费社平（元/月，当年口径），对照 MD 附表二（1995-2025）
-//   ✅ 1995-2025：与 MD 附表二逐值吻合（393.42…6997，含 2018 全口径 4656、2019=4832、2020=5392.33 等已订正值）
-//   ⚠️ 1992-1994：建账前（1997-07建账）占位/旧序列，MD 自1995起列示，早年值仅作个人账户历史近似
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  // 山西为「当年」口径：槽位Y存Y年度官方社平值（元/年÷12）。
-  // 原序列整体错位一年（槽位Y=Y-1值，如2010槽=2009/12），已整体【上移一年】纠正为本年口径。
-  // 2025=6997 取自晋人社厅发〔2025〕35号（2025年缴费基数6997元/月，下限4198/上限20991，2025-01-01起执行），即2025年度社平/缴费基数。计发基数另见 PROV_BASE[2025]=7253（晋人社厅发〔2025〕36号），二者不可混。
-  1992: 210.83,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1993: 210.83,
-  1994: 252.08,
-  1995: 333.08,
-  1996: 393.42,
-  1997: 431.92,
-  1998: 443.33,
-  1999: 470.08,
-  2000: 505.42,
-  2001: 576.5,
-  2002: 676.83,
-  2003: 779.75,
-  2004: 894.17,
-  2005: 1078.58,
-  2006: 1303.75,
-  2007: 1525,
-  2008: 1793.75,
-  2009: 2152.33,
-  2010: 2372.42,
-  2011: 2795.33,
-  2012: 3325.25,
-  2013: 3745.25,
-  2014: 3867.25,
-  2015: 4080.75,
-  2016: 4413.33,
-  2017: 4581,
-  2018: 5129,
-  2019: 4656,  // 2018年山西切入全口径(官方表标注全口径),与第二列4656一致
-
-  2020: 4832,    // 官方表(图3)第二列2019社平=4832(原5392.33系与2020重复,已修正)
-
-  2021: 5392.33, // 官方表第二列2020社平=5392,吻合
-  2022: 5914,
-  2023: 6438.08,
-  2024: 6854.58,
-  2025: 6997,
-  // [V2已删] 2025: 6997,  // 2025年缴费基数=6997元/月（晋人社厅发〔2025〕35号），即2025年度社平/缴费基数
-  2026: 7073,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 官方数据
+// 2024年计发基数：7111元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/shanxi.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 山西省养老金计算模块
+// TODO：补充1995-2022年官方计发基数（2023-2025已核：6897/7111/7253）
+
+// ==================== 计发基数 ====================
+// 【时间标记核验 2026-07-23】山西计发基数（元/月），规则：省单独公布加权基数，非简单“计发基数=上年社平”（PROV_BASE[2025]=7253 vs AVG[2024]=6997 印证）
+//   ✅ 2023-2025：与 MD 附表一 + 晋人社厅发文件一致（2023=6897、2024=7111、2025=7253）
+//   ⚠️ 1978-2022：推定占位（平滑约2%外推），MD 无历年计发基数表，待省统计局逐年公示核实（见 MD 附表二注“更早年份对应关系仍建议核实”）
+//   📋 2026+：未发布，引擎按 PROV_GROWTH=2% 外推
+const PROV_BASE = {
+  1978: 754,
+  1979: 791,
+  1980: 831,
+  1981: 873,
+  1982: 916,
+  1983: 962,
+  1984: 1010,
+  1985: 1061,
+  1986: 1114,
+  1987: 1169,
+  1988: 1228,
+  1989: 1289,
+  1990: 1354,
+  1991: 1421,
+  1992: 1492,
+  1993: 1567,
+  1994: 1645,
+  1995: 1728,
+  1996: 1814,
+  1997: 1905,
+  1998: 2000,
+  1999: 2100,
+  2000: 2205,
+  2001: 2315,
+  2002: 2431,
+  2003: 2552,
+  2004: 2680,
+  2005: 2814,
+  2006: 2955,
+  2007: 3103,
+  2008: 3258,
+  2009: 3421,
+  2010: 3592,
+  2011: 3771,
+  2012: 3960,
+  2013: 4158,
+  2014: 4366,
+  2015: 4584,
+  2016: 4813,
+  2017: 5054,
+  2018: 5306,
+  2019: 5572,
+  2020: 5921,
+  2021: 6257,
+  2022: 6695,
+  2023: 6897,  // 🔴 2026-10-09 订正：原填 6987 系 6897 数字换位（本文件头部注释自述 2023=6897；
+               //    cases/shanxi/4、5 两张 2023-04 真实核定表均用 6897）⇒ 6897。原值使 2023 年退休者高估约 1.3%
+  2024: 7111,
+   2025: 7253,  // ✅ 2025年计发基数=7253(晋人社厅发〔2025〕36号)，独立于全口径社平(6997)，非“=上年社平”
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = [
+  '太原',
+  '大同',
+  '阳泉',
+  '长治',
+  '晋城',
+  '朔州',
+  '晋中',
+  '运城',
+  '忻州',
+  '临汾',
+  '吕梁'
+]
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+const ACCOUNT_START = { year: 1997, month: 7 }  // 个人账户建立=1997-07(官方核定表"建账缴费时间1997年7月")；晋政发〔1998〕21号中人分界1998-07-01是另一概念(资格线)
+const CUTOFF_DATE   = { year: 1997, month: 6 }  // 视同缴费截止=建账前一月(1997-06)，与核定表视同155个月=12.9167年一致
+
+const TRANS_COEF = 0.013  // 山西省过渡系数 1.3%
+
+const PROV_TAG = 'shanxi'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：待用户提供官方核定表
+  // 案例2：待用户提供官方核定表
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于个人账户余额精确计算
+// 数据来源：provinces/shanxi.json avg_salary_history（已统一为元/月格式，2025-07-06 校验）
+;
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+    // 山西双指数（晋政发〔2006〕32号）：基础养老金与过渡性养老金使用不同平均缴费指数。
+    // 基础用 avg_index（基础平均缴费指数），过渡用 trans_index（过渡平均缴费指数）。
+    // 引擎不自动反推双指数，需案例/前端显式注入 trans_index；formula_type 显式声明身份，
+    // 由 calcTransitionalPension 的 'shanxi' 分支强制校验（缺失则告警，防止静默误用基础指数）。
+    modules.transitional_pension.formula_type = 'shanxi';
+    modules.transitional_pension.double_index = true;
+  }
+
+  // 冬季取暖补贴：按年一次性发放，**不计入月基本养老金**（企业离退休，统筹基金支付）
+  // 晋人社厅发〔2017〕9号：标准由 2400 元调整为每人每年 3360 元，每年 10 月随基本养老金一次性发放
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '参加山西省城镇企业职工基本养老保险、当年9月30日前办理离退休手续并按月领取基本养老金的人员',
+    items: [
+      { name: '冬季取暖补贴', amount: 3360, unit: '元/年', when: '每年10月随基本养老金一次性发放', source: '晋人社厅发〔2017〕9号（2016年10月起执行）' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2024年基数7111元（晋人社厅发〔2024〕39号），2025年基数7253元（晋人社厅发〔2025〕36号）',
+  }
+}
+
+// ==================== 导出 ====================
+
+// 【时间标记核验 2026-07-23】山西缴费社平（元/月，当年口径），对照 MD 附表二（1995-2025）
+//   ✅ 1995-2025：与 MD 附表二逐值吻合（393.42…6997，含 2018 全口径 4656、2019=4832、2020=5392.33 等已订正值）
+//   ⚠️ 1992-1994：建账前（1997-07建账）占位/旧序列，MD 自1995起列示，早年值仅作个人账户历史近似
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  // 山西为「当年」口径：槽位Y存Y年度官方社平值（元/年÷12）。
+  // 原序列整体错位一年（槽位Y=Y-1值，如2010槽=2009/12），已整体【上移一年】纠正为本年口径。
+  // 2025=6997 取自晋人社厅发〔2025〕35号（2025年缴费基数6997元/月，下限4198/上限20991，2025-01-01起执行），即2025年度社平/缴费基数。计发基数另见 PROV_BASE[2025]=7253（晋人社厅发〔2025〕36号），二者不可混。
+  1992: 210.83,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1993: 210.83,
+  1994: 252.08,
+  1995: 333.08,
+  1996: 393.42,
+  1997: 431.92,
+  1998: 443.33,
+  1999: 470.08,
+  2000: 505.42,
+  2001: 576.5,
+  2002: 676.83,
+  2003: 779.75,
+  2004: 894.17,
+  2005: 1078.58,
+  2006: 1303.75,
+  2007: 1525,
+  2008: 1793.75,
+  2009: 2152.33,
+  2010: 2372.42,
+  2011: 2795.33,
+  2012: 3325.25,
+  2013: 3745.25,
+  2014: 3867.25,
+  2015: 4080.75,
+  2016: 4413.33,
+  2017: 4581,
+  2018: 5129,
+  2019: 4656,  // 2018年山西切入全口径(官方表标注全口径),与第二列4656一致
+
+  2020: 4832,    // 官方表(图3)第二列2019社平=4832(原5392.33系与2020重复,已修正)
+
+  2021: 5392.33, // 官方表第二列2020社平=5392,吻合
+  2022: 5914,
+  2023: 6438.08,
+  2024: 6854.58,
+  2025: 6997,
+  // [V2已删] 2025: 6997,  // 2025年缴费基数=6997元/月（晋人社厅发〔2025〕35号），即2025年度社平/缴费基数
+  2026: 7073,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["shanxi"] = cfg;
@@ -7040,7 +7235,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -7129,12 +7324,11 @@ const PROV_BASE = {
 // 2023年月平均工资：7518.33元
 // 2024年全口径社平：7646元（=AVG[2024]）；✅已核实：2024全口径=91752元（川人社办发〔2025〕39号），÷12=7646，引擎正确；MD第三节"约7894"为5%外推参考值，无官方依据，错误
 // 2025年全口径社平：7646元（官方未公布，暂沿用2024值，预发）；2025计发基数见PROV_BASE[2025]=8462
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.050,  // 约 5.0%/年
-  MERGE_YEAR: 2031,
-  PROV_2025: 7646,  // 2025全口径社平未公布，暂=AVG[2024]=7646（预发）；真实值待官方公布
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 四川省行政区划（全省统筹，无地级市区分）
 const CITY_LIST = [
@@ -7191,7 +7385,7 @@ const MIN_YEARS_CONFIG = {
   2039: 20, 2040: 20, 2041: 20, 2042: 20, 2043: 20, 2044: 20, 2045: 20
 }
 
-// 延迟退休参数由引擎统一处理（国办发〔2025〕5号，全国一致），省份不再配置。
+// 延迟退休参数由引擎统一处理（《国务院关于渐进式延迟法定退休年龄的办法》，全国一致），省份不再配置。
 // 2026-09-12 修复 P0：原 DELAY_RETIREMENT 带 effective_date="2026-01-01"（政策为 2025-01-01），
 // 且是 ace9938「各省已删除」时漏删的唯一一份（写的是常量引用，批量脚本只匹配字面量）。
 // 后果：四川 2025 年退休人群被判「政策未生效 ⇒ 不延迟」。本段其余键（fc/fw55）因键名与引擎
@@ -7419,13 +7613,8 @@ const cases = [
   }
 ]
 
-// 计发基数预测函数（四川省专用）
-function predictBase(year) {
-  const lastYear = 2026
-  const lastVal  = PROV_BASE[lastYear] || 8462
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 
 // 【时间标记核验 2026-08-05】建账以来(1996–2024)社平全口径核对：
@@ -7478,7 +7667,6 @@ const AVG_SALARY_HISTORY = {
 module.exports = {
   PROV_BASE,
   AVG_SALARY_HISTORY,
-  BASE_PARAMS,
   CITY_LIST,
   ACCOUNT_START,
   CUTOFF_DATE,
@@ -7489,7 +7677,6 @@ module.exports = {
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
   getEngineConfig,
 }
 
@@ -7499,259 +7686,270 @@ module.exports = {
 (function () {
   var module = { exports: {} };
   var exports = module.exports;
-// 数据来源：✅ 官方数据
-// 2024年计发基数：9232元/月
-// 更新时间：2026-06-10
-
-// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/tianjin.js
-// ==================== 字段定义（_definitions）====================
-// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
-//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
-//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
-//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
-//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
-//   TRANS_COEF            过渡系数。
-//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
-//   formula_type          公式类型（见手册 5.6）。
-// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
-// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
-//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
-// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
-// ==============================================================
-
-// 天津市养老金计算模块
-// 计发基数(PROV_BASE)状态：
-//   1992-2019 经用户官方表(2026-07-18)确认=社平口径(2020前天津计发基数=社平工资)；
-//   2020(7940)/2021(8324)/2022(8672)/2023(9016)/2024(9232)/2025(9417) 已逐年限核官方：
-//     2020=津人社局发〔2020〕16号 / 2021=津人社局发〔2021〕(2021-11-05) /
-//     2022=hrss.tj.gov.cn 2022-09政策问答 / 2023=津人社局发〔2023〕15号 /
-//     2024=津人社办发〔2024〕49号 / 2025=天津官方公布(案例1核定表实测)
-//   ⚠️口径提示：2020改革前官方定义"计发基数=上年度在岗职工月平均工资"
-//     (津人社局发〔2020〕16号载：2019计发基数=7540=2018在岗职工)；引擎按项目惯例
-//     取同年社平(PROV_BASE[2019]=6323=2019全口径)，与MD年表一致、与他省口径统一，
-//     故2020前计发基数沿用同年社平，不单独回溯；如需严格按官方"上年度"口径再议。
-
-// ==================== 计发基数 ====================
-
-// 【时间标记核验 2026-07-23】对照 articles/天津社平工资-现实调音师.md + 官网红头
-//   PROV_BASE 1992-2019：与MD社平年表逐值吻合(2020前天津计发基数=社平口径) ✅已核
-//   PROV_BASE 2020-2025：7940/8324/8672/9016/9232/9417 已逐年限核官网红头 ✅已核
-//     2020=津人社局发〔2020〕16号 / 2021=津人社局发〔2021〕(2021-11-05) /
-//     2022=hrss.tj.gov.cn 2022-09政策问答 / 2023=津人社局发〔2023〕15号 /
-//     2024=津人社办发〔2024〕49号 / 2025=天津官方公布(案例1核定表实测)
-//   PROV_BASE 1978-1991：平滑外推占位(官方表自1992年起，不在范围) 📋占位
-//   数值未改。
-
-const PROV_BASE = {
-  1978: 979,
-  1979: 1027,
-  1980: 1079,
-  1981: 1133,
-  1982: 1189,
-  1983: 1249,
-  1984: 1311,
-  1985: 1377,
-  1986: 1446,
-  1987: 1518,
-  1988: 1594,
-  1989: 1674,
-  1990: 1757,
-  1991: 1845,
-  1992: 260,
-  1993: 334,
-  1994: 447,
-  1995: 542,
-  1996: 637,
-  1997: 690,
-  1998: 829,
-  1999: 921,
-  2000: 1040,
-  2001: 1192,
-  2002: 1355,
-  2003: 1554,
-  2004: 1813,
-  2005: 2106,
-  2006: 2370,
-  2007: 2823,
-  2008: 3465,
-  2009: 3731,
-  2010: 4266,
-  2011: 4836,
-  2012: 5320,
-  2013: 5714,
-  2014: 6047,
-  2015: 6350,
-  2016: 6731,
-  2017: 7073,
-  2018: 7540,
-  2019: 6323,
-  2020: 7940,
-  2021: 8324,
-  2022: 8672,
-  2023: 9016,
-  2024: 9232,
-   2025: 9417,  // 2025年计发基数（天津官方公布；案例1核定表实测：2026-03退休使用9417。计发基数由天津单独公布，≠社平8540）
-};;
-
-const BASE_PARAMS = {
-  PROV_GROWTH: 0.026,
-  LATEST_BASE_YEAR: 2024,
-  LATEST_BASE_VALUE: 8540,
-  PROV_2025: 9417,  // 2025年计发基数=9417(天津官方公布，≠2024全口径社平8540；天津计发基数单独公布)
-}
-
-// ==================== 城市列表 ====================
-
-const CITY_LIST = []
-
-// ==================== 核心参数 ====================
-
-// 建账时间（个人账户制度建立时间）
-// 官方依据: 津政发〔1994〕92号(1994-12-23) "自本办法实施之日起建立职工基本养老保险个人帐户制度"
-//   天津市社保中心《天津社会保险》2009年第1期确认"1994年10月正式建立养老保险个人账户"(置信度高)
-// 注: 天津过渡性养老金年限按"1997年底前"计算(见TRANS_COEF注释), 与建账日1994-10分离,
-//   故 CUTOFF_DATE 保持 1997-12 不动(政策口径), 仅 ACCOUNT_START 订正为真实建账日。
-const ACCOUNT_START = { year: 1994, month: 10 }
-const CUTOFF_DATE   = { year: 1997, month: 12 }
-
-const TRANS_COEF = 0.010  // 天津市过渡系数 1.0%（真实表核定：过渡=基数×全部平均工资指数×1997年底前年限×1%）
-
-const PROV_TAG = 'tianjin'
-
-// ==================== 模块配置 ====================
-
-const MODULES = ['base', 'personal', 'transition']
-const MODULE_LABELS = {
-  base:        '基础养老金',
-  personal:    '个人账户养老金',
-  transition:  '过渡性养老金',
-}
-
-// ==================== 测试案例 ====================
-
-const cases = [
-  // 案例1：待用户提供官方核定表
-  // 案例2：待用户提供官方核定表
-]
-
-// ==================== 引擎配置 ====================
-
-
-// 历年社平工资（元/月）—— 用于缴费指数分母(计算Y年指数用Y-1年本市在岗职工月平均工资)
-// 数据来源：用户提供的"天津市历年在岗职工月平均工资大全"(2026-07-18，元/月，1992-2024)
-//   → 1992-2024 已逐行核对一致；2025=8861为外推值待官方公布；1990-1991不在表范围。
-
-
-function getEngineConfig() {
-  const modules = {};
-  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
-  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
-  if (MODULES.includes('transition')) {
-    modules.transitional_pension = { enabled: true };
-    if (TRANS_COEF) {
-      if (typeof TRANS_COEF === 'number') {
-        modules.transitional_pension.coefficient = TRANS_COEF;
-      }
-    }
-  }
-
-  // 冬季取暖补贴 + 集中供热采暖补助费：按采暖季一次性发放，**不计入月基本养老金**
-  // 天津市人社局/财政局：冬季取暖补贴 335 元/年 + 集中供热采暖补助费 185 元/年 = 520 元
-  modules.annual_subsidies = {
-    enabled: true,
-    note: '退休职工由企业职工基本养老保险基金发放；采暖季内新退休的按4个月平均折算后一次性发放',
-    items: [
-      { name: '冬季取暖补贴', amount: 335, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '天津市人社局2018年完善发放方式通知（2008年起由235元提至335元）' },
-      { name: '集中供热采暖补助费', amount: 185, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '津政发〔2000〕72号' }
-    ]
-  };
-  return {
-  avg_salary_history: AVG_SALARY_HISTORY,
-base_rates: PROV_BASE,
-      account_start: ACCOUNT_START,
-    cutoff_date: CUTOFF_DATE,
-
-    province: PROV_TAG,
-    base_rates: { prov: PROV_BASE },
- avg_salary_history: AVG_SALARY_HISTORY,
- modules: modules,
-    
-    cutoff_date: CUTOFF_DATE,
-    usePreAccountYears: false,
-    cities: CITY_LIST || [],
-    cases: cases || [],
-    notes: '2023年基数9016元（津人社局发〔2023〕15号），2024年基数9232元（津人社办发〔2024〕49号）',
-  }
-}
-
-// ==================== 导出 ====================
-
-
-// 【时间标记核验 2026-07-23】对照 articles/天津社平工资-现实调音师.md 官方社平年表
-//   AVG 1992-2024：与MD社平年表逐值吻合(260...8540) ✅已核
-//   AVG 2025=8861：外推值，待官方公布 📋占位
-//   AVG 1990-1991：146.42/153.75 不在官方表范围(表自1992起)，未核对（天津建账1998-01，计算不使用）⚠️推定
-//   数值未改。
-
-// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
-const AVG_SALARY_HISTORY = {
-  // ⚠️ 1990-1991 不在用户提供的官方表范围(表自1992年起)，保留引擎原值但未核对；
-  //    天津建账1998-01，实际计算不使用1990-1991，待官方表补齐。
-  1990: 146.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
-  1991: 146.42,
-  1992: 153.75,
-  // 以下1992-2024 = 用户提供的"天津市历年在岗职工月平均工资大全"(2026-07-18，单位元/月)。
-  // 该表=缴费指数分母(官方说明：计算Y年指数用Y-1年本市在岗职工月平均工资)。
-  // 1992-2019 与 PROV_BASE(计发基数)重合，因2020改革前天津计发基数=社平工资；
-  // 2020起社平(全口径)与计发基数脱钩，社平走低、计发基数单独公布(见PROV_BASE)。
-  1993: 260,
-  1994: 334,
-  1995: 447,
-  1996: 542,
-  1997: 637,
-  1998: 690,
-  1999: 829,
-  2000: 921,
-  2001: 1040,
-  2002: 1192,
-  2003: 1355,
-  2004: 1554,
-  2005: 1813,
-  2006: 2106,
-  2007: 2370,
-  2008: 2823,
-  2009: 3465,
-  2010: 3731,
-  2011: 4266,
-  2012: 4836,
-  2013: 5320,
-  2014: 5714,
-  2015: 6047,
-  2016: 6350,
-  2017: 6731,
-  2018: 7073,
-  2019: 7540,
-  2020: 6323,   // 2020全口径切换前最后一年(在岗职工口径)；2019<2018为口径切换下凹
-  2021: 6777,   // 2020起全口径城镇单位就业人员平均工资(与PROV_BASE计发基数脱钩)
-  2022: 7478,
-  2023: 7919,
-  2024: 8355,
-  2025: 8540,   // 2024全口径社平=计算2025缴费指数分母(用户表注明)
-  // [V2已删] 2025: 8861,   // 2025年度社保缴费基数(外推，待官方公布)
-  2026: 8634,   // 2025年统计口径社平（2026年度执行）
-};
-
-
-module.exports = {
-  PROV_TAG,
-  PROV_BASE,
-  CITY_LIST,
-  MODULES,
-  MODULE_LABELS,
-  cases,
-  getEngineConfig,
-}
+// 数据来源：✅ 官方数据
+// 2024年计发基数：9232元/月
+// 更新时间：2026-06-10
+
+// 本文件 = 唯一真相源：cloudfunctions/calculate/provinces/tianjin.js
+// ==================== 字段定义（_definitions）====================
+// 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
+//   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
+//   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
+//   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
+//   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
+//   TRANS_COEF            过渡系数。
+//   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
+//   formula_type          公式类型（见手册 5.6）。
+// 核心等式：某年计发基数 = 上一年社平工资（如 2024社平→2025计发基数；2025社平7705→2026计发/缴费基数）。
+// 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
+//   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
+// 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
+// ==============================================================
+
+// 天津市养老金计算模块
+// 计发基数(PROV_BASE)状态：
+//   1992-2019 经用户官方表(2026-07-18)确认=社平口径(2020前天津计发基数=社平工资)；
+//   2020(7940)/2021(8324)/2022(8672)/2023(9016)/2024(9232)/2025(9417) 已逐年限核官方：
+//     2020=津人社局发〔2020〕16号 / 2021=津人社局发〔2021〕(2021-11-05) /
+//     2022=hrss.tj.gov.cn 2022-09政策问答 / 2023=津人社局发〔2023〕15号 /
+//     2024=津人社办发〔2024〕49号 / 2025=天津官方公布(案例1核定表实测)
+//   ⚠️口径提示：2020改革前官方定义"计发基数=上年度在岗职工月平均工资"
+//     (津人社局发〔2020〕16号载：2019计发基数=7540=2018在岗职工)；引擎按项目惯例
+//     取同年社平(PROV_BASE[2019]=6323=2019全口径)，与MD年表一致、与他省口径统一，
+//     故2020前计发基数沿用同年社平，不单独回溯；如需严格按官方"上年度"口径再议。
+
+// ==================== 计发基数 ====================
+
+// 【时间标记核验 2026-07-23】对照 articles/天津社平工资-现实调音师.md + 官网红头
+//   PROV_BASE 1992-2019：与MD社平年表逐值吻合(2020前天津计发基数=社平口径) ✅已核
+//   PROV_BASE 2020-2025：7940/8324/8672/9016/9232/9417 已逐年限核官网红头 ✅已核
+//     2020=津人社局发〔2020〕16号 / 2021=津人社局发〔2021〕(2021-11-05) /
+//     2022=hrss.tj.gov.cn 2022-09政策问答 / 2023=津人社局发〔2023〕15号 /
+//     2024=津人社办发〔2024〕49号 / 2025=天津官方公布(案例1核定表实测)
+//   PROV_BASE 1978-1991：平滑外推占位(官方表自1992年起，不在范围) 📋占位
+//   数值未改。
+
+const PROV_BASE = {
+  1978: 979,
+  1979: 1027,
+  1980: 1079,
+  1981: 1133,
+  1982: 1189,
+  1983: 1249,
+  1984: 1311,
+  1985: 1377,
+  1986: 1446,
+  1987: 1518,
+  1988: 1594,
+  1989: 1674,
+  1990: 1757,
+  1991: 1845,
+  1992: 260,
+  1993: 334,
+  1994: 447,
+  1995: 542,
+  1996: 637,
+  1997: 690,
+  1998: 829,
+  1999: 921,
+  2000: 1040,
+  2001: 1192,
+  2002: 1355,
+  2003: 1554,
+  2004: 1813,
+  2005: 2106,
+  2006: 2370,
+  2007: 2823,
+  2008: 3465,
+  2009: 3731,
+  2010: 4266,
+  2011: 4836,
+  2012: 5320,
+  2013: 5714,
+  2014: 6047,
+  2015: 6350,
+  2016: 6731,
+  2017: 7073,
+  2018: 7540,
+  2019: 6323,
+  2020: 7940,
+  2021: 8324,
+  2022: 8672,
+  2023: 9016,
+  2024: 9232,
+   2025: 9417,  // 2025年计发基数（天津官方公布；案例1核定表实测：2026-03退休使用9417。计发基数由天津单独公布，≠社平8540）
+};;
+
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
+
+// ==================== 城市列表 ====================
+
+const CITY_LIST = []
+
+// ==================== 核心参数 ====================
+
+// 建账时间（个人账户制度建立时间）
+// 官方依据: 津政发〔1994〕92号(1994-12-23) "自本办法实施之日起建立职工基本养老保险个人帐户制度"
+//   天津市社保中心《天津社会保险》2009年第1期确认"1994年10月正式建立养老保险个人账户"(置信度高)
+// 注: 天津过渡性养老金年限按"1997年底前"计算(见TRANS_COEF注释), 与建账日1994-10分离,
+//   故 CUTOFF_DATE 保持 1997-12 不动(政策口径), 仅 ACCOUNT_START 订正为真实建账日。
+const ACCOUNT_START = { year: 1994, month: 10 }
+const CUTOFF_DATE   = { year: 1997, month: 12 }
+// ⭐ 2026-10-09 订正：视同（过渡性）年限截止**不等于建账日**。
+//   津劳局〔2006〕329号 第四条 + 市人社局 2025-02-27 答复：
+//     「过渡性养老金 = 全部指数化月平均缴费工资 × **截至 1997 年 12 月 31 日前本人缴费年限** × 1%」
+//     「**97 年 12 月前年限包括视同工龄和实际缴费**」
+//   此前引擎 sightCutoff 只认 account_start(1994-10)，默认路径少算约 2.7 年（样本 −286.64 元/月）。
+//   语义同 calcYears(a,b)：**不含 b 当月** ⇒ 「截至 1997-12-31 前」写 {year:1998, month:1}。
+//   依据：https://zw.enorth.com.cn/gov_open/75855.html 、https://www.tj.gov.cn/zmhd/zmljl/zmljllyxq/?id=4652447
+const SIGHT_CUTOFF  = { year: 1998, month: 1 }
+
+const TRANS_COEF = 0.010  // 天津市过渡系数 1.0%（真实表核定：过渡=基数×全部平均工资指数×1997年底前年限×1%）
+
+const PROV_TAG = 'tianjin'
+
+// ==================== 模块配置 ====================
+
+const MODULES = ['base', 'personal', 'transition']
+const MODULE_LABELS = {
+  base:        '基础养老金',
+  personal:    '个人账户养老金',
+  transition:  '过渡性养老金',
+}
+
+// ==================== 测试案例 ====================
+
+const cases = [
+  // 案例1：待用户提供官方核定表
+  // 案例2：待用户提供官方核定表
+]
+
+// ==================== 引擎配置 ====================
+
+
+// 历年社平工资（元/月）—— 用于缴费指数分母(计算Y年指数用Y-1年本市在岗职工月平均工资)
+// 数据来源：用户提供的"天津市历年在岗职工月平均工资大全"(2026-07-18，元/月，1992-2024)
+//   → 1992-2024 已逐行核对一致；2025=8861为外推值待官方公布；1990-1991不在表范围。
+
+
+function getEngineConfig() {
+  const modules = {};
+  if (MODULES.includes('base'))       modules.basic_pension = { enabled: true, rate_per_year: 0.01 };
+  if (MODULES.includes('personal'))  modules.personal_account = { enabled: true };
+  if (MODULES.includes('transition')) {
+    modules.transitional_pension = { enabled: true };
+    if (TRANS_COEF) {
+      if (typeof TRANS_COEF === 'number') {
+        modules.transitional_pension.coefficient = TRANS_COEF;
+      }
+    }
+  }
+
+  // 冬季取暖补贴 + 集中供热采暖补助费：按采暖季一次性发放，**不计入月基本养老金**
+  // 天津市人社局/财政局：冬季取暖补贴 335 元/年 + 集中供热采暖补助费 185 元/年 = 520 元
+  modules.annual_subsidies = {
+    enabled: true,
+    note: '退休职工由企业职工基本养老保险基金发放；采暖季内新退休的按4个月平均折算后一次性发放',
+    items: [
+      { name: '冬季取暖补贴', amount: 335, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '天津市人社局2018年完善发放方式通知（2008年起由235元提至335元）' },
+      { name: '集中供热采暖补助费', amount: 185, unit: '元/采暖季', when: '每年11月随养老金一次性发放', source: '津政发〔2000〕72号' }
+    ]
+  };
+  return {
+  avg_salary_history: AVG_SALARY_HISTORY,
+base_rates: PROV_BASE,
+      account_start: ACCOUNT_START,
+    cutoff_date: CUTOFF_DATE,
+
+    province: PROV_TAG,
+    base_rates: { prov: PROV_BASE },
+ avg_salary_history: AVG_SALARY_HISTORY,
+ modules: modules,
+    
+    // ⭐ 视同/过渡性年限截止（津劳局〔2006〕329号：截至 1997-12-31 前），优先级高于 account_start
+    sight_cutoff: SIGHT_CUTOFF,
+    // ⭐ 年限保留 2 位小数、第 3 位四舍五入（津劳局〔2006〕329号 第四条明文）
+    rounding: { years_decimal: 2, years_round_mode: 'round' },
+    cutoff_date: CUTOFF_DATE,
+    usePreAccountYears: false,
+    cities: CITY_LIST || [],
+    cases: cases || [],
+    notes: '2023年基数9016元（津人社局发〔2023〕15号），2024年基数9232元（津人社办发〔2024〕49号）',
+  }
+}
+
+// ==================== 导出 ====================
+
+
+// 【时间标记核验 2026-07-23】对照 articles/天津社平工资-现实调音师.md 官方社平年表
+//   AVG 1992-2024：与MD社平年表逐值吻合(260...8540) ✅已核
+//   AVG 2025=8861：外推值，待官方公布 📋占位
+//   AVG 1990-1991：146.42/153.75 不在官方表范围(表自1992起)，未核对（天津建账1998-01，计算不使用）⚠️推定
+//   数值未改。
+
+// SALARY_SEMANTICS_V2: avg_salary_history[Y] = Y 年度执行社平（= Y-1 统计年），2026-09-20 统一
+const AVG_SALARY_HISTORY = {
+  // ⚠️ 1990-1991 不在用户提供的官方表范围(表自1992年起)，保留引擎原值但未核对；
+  //    天津建账1998-01，实际计算不使用1990-1991，待官方表补齐。
+  1990: 146.42,   // 首端兜底：早于数据起始年的参保年份取最早已知值（SALARY_SEMANTICS_V2）
+  1991: 146.42,
+  1992: 153.75,
+  // 以下1992-2024 = 用户提供的"天津市历年在岗职工月平均工资大全"(2026-07-18，单位元/月)。
+  // 该表=缴费指数分母(官方说明：计算Y年指数用Y-1年本市在岗职工月平均工资)。
+  // 1992-2019 与 PROV_BASE(计发基数)重合，因2020改革前天津计发基数=社平工资；
+  // 2020起社平(全口径)与计发基数脱钩，社平走低、计发基数单独公布(见PROV_BASE)。
+  1993: 260,
+  1994: 334,
+  1995: 447,
+  1996: 542,
+  1997: 637,
+  1998: 690,
+  1999: 829,
+  2000: 921,
+  2001: 1040,
+  2002: 1192,
+  2003: 1355,
+  2004: 1554,
+  2005: 1813,
+  2006: 2106,
+  2007: 2370,
+  2008: 2823,
+  2009: 3465,
+  2010: 3731,
+  2011: 4266,
+  2012: 4836,
+  2013: 5320,
+  2014: 5714,
+  2015: 6047,
+  2016: 6350,
+  2017: 6731,
+  2018: 7073,
+  2019: 7540,
+  2020: 6323,   // 2020全口径切换前最后一年(在岗职工口径)；2019<2018为口径切换下凹
+  2021: 6777,   // 2020起全口径城镇单位就业人员平均工资(与PROV_BASE计发基数脱钩)
+  2022: 7478,
+  2023: 7919,
+  2024: 8355,
+  2025: 8540,   // 2024全口径社平=计算2025缴费指数分母(用户表注明)
+  // [V2已删] 2025: 8861,   // 2025年度社保缴费基数(外推，待官方公布)
+  2026: 8634,   // 2025年统计口径社平（2026年度执行）
+};
+
+
+module.exports = {
+  PROV_TAG,
+  PROV_BASE,
+  CITY_LIST,
+  MODULES,
+  MODULE_LABELS,
+  cases,
+  getEngineConfig,
+}
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
   window.PROVINCE_CONFIGS["tianjin"] = cfg;
@@ -7770,7 +7968,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -7838,15 +8036,20 @@ const PROV_BASE = {
   2023: 7625,
   2024: 8332,    // 2024年计发基数(官方公布值)
    2025: 8448,  // 2025年计发基数=2024全口径社平101381元/年=8448元/月(新人社函〔2025〕168号，2025-08-25发布)
-   2026: 8744,  // 2026年计发基数（媒体汇总口径8744，最终以新疆人社厅正式文件为准）
+   2026: 8744,  // ✅ 2026-10-09 回核通过，已找到官方原文（不再是"媒体汇总"）：
+  //   新疆维吾尔自治区人社厅《关于明确2026年自治区城镇职工基本养老保险缴费基数的通知》（人社厅+财政厅+区税务局，2026-07-27）
+  //   "一、2025年自治区全口径城镇单位就业人员平均工资为104926元（8744元/月）。"
+  //   "二、2026年自治区职工基本养老保险个人缴费基数下限（60%）为5246元/月，上限（300%）为26231元/月。"
+  //   "上述数据关系参保单位及参保人员缴费、**待遇核定**等。"（原文明确含"待遇核定"，故即2026年度计发基数）
+  //   新疆已实现计发基数与全口径社平并轨：2025基数8448=2024全口径101381÷12，2026基数8744=2025全口径104926÷12，口径链一致。
+  //   官方依据 URL：https://rst.xinjiang.gov.cn/xjrst/c112734/202609/234e01d8b8b9404ca3c98c2cee384903.shtml
 };;
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 8448,  // 2025年计发基数=2024全口径社平101381元/年=8448元/月(新人社函〔2025〕168号)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -7904,7 +8107,12 @@ function getEngineConfig() {
     }
   }
 
-  // 冬季采暖补贴 120元/月（新政办发[2010]167号）
+  // 冬季采暖补贴 120元/月（新政办发〔2010〕167号）
+  // ✅ 2026-10-09 官方复核通过，现行标准仍为**每人每月120元，由社保经办机构按月与养老金一并发放**：
+  //   依据《关于对参加自治区城镇企业职工基本养老保险社会统筹的离退休人员实施冬季采暖费补贴的通知》（新政办发〔2010〕167号）
+  //   "对参加城镇企业职工基本养老保险社会统筹的离退休人员，按照每人每月120元的标准发放冬季采暖费补贴。由社会保险经办机构按月与养老金一并发放。"
+  //   配套：新人社发〔2010〕143号（明确167/168/169号执行问题）、新人社发〔2011〕99号（原企业报销的采暖费与120元补贴同时执行）。
+  //   官方依据 URL：https://rst.xinjiang.gov.cn/xjrst/c112711/201101/0d73f8c80bf6407c833e9fcc6c9c4567.shtml （区人社厅12333政策解析）
   if (MODULES.includes('other')) {
     modules.special_addition = { enabled: true, type: 'fixed', amount: 120, label: '冬季采暖补贴' };
   }
@@ -7995,14 +8203,21 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
 //   PROV_TAG/ACCOUNT_START 省份标识 / 建账时间。
 //   formula_type          公式类型（见手册 5.6）。
-// 核心等式（西藏特例）：某年计发基数 = 当年社平工资（如 2025退休用2025社平÷12=11777；2024退休用2024社平÷12=11546）。
-// 这与多数省份"计发基数=上年社平"不同，由官方核定表多张交叉验证。
+// 核心等式：某年计发基数 = 上年度全区职工月平均工资（与多数省份"计发基数=上年社平"**一致**，并非特例）。
+// 🔴 口径订正 2026-10-09（原注释"西藏当年口径/与多数省不同"有误，已据区人社厅官网原文更正）：
+//    西藏自治区人社厅每年发文的名称固定为《关于发布 YYYY 年**上年度**全区职工月平均工资的通知》，
+//    文内表述为"确定 YYYY 年**上年度**全区职工月平均工资为 X 元，作为全区基本养老保险…基数征缴和**待遇计发**的依据，从 YYYY 年1月1日起执行"。
+//    即 PROV_BASE[Y] = Y 年度执行的「Y-1 年度全区职工月平均工资」，属**上年度口径**。
+//    官方近年序列（西藏区税务局12366知识库 + 拉萨市人社局历年社平表，逐年代吻合）：
+//      2019:7815 / 2020:8143 / 2021:8839 / 2022:9900 / 2023:10791 / 2024:11546 / 2025:11777 / 2026:11954
+//    ⚠️ 结论：所谓"基数当年 vs 上年口径与区人社厅答复矛盾"——官方口径为「上年度」，此前"当年口径"的判断不成立，
+//       但因 PROV_BASE[Y] 的下标语义本就是"Y年使用年"，数值映射不受影响（2025=11777、2026=11954 均正确）。
 // 未发布年份不写固定值，由引擎 getBase() 按「该省上一年已公布增幅」外推产生
 //   （inferGrowthRate：取最近两个已公布年份的增幅，跳过预发年，夹到 0~3%；2026-09-14 起执行）。
 // 各省特有城市级常量（CC_BASE/SY_BASE/DL_BASE/SHENZHEN_BASE/ZHENGZHOU_BASE/XIZANG_SUBSIDIES/CONTRIB_BASE_TIERS 等）均有独立行内注释。
@@ -8015,10 +8230,12 @@ module.exports = {
 
 // 【时间标记核验 2026-07-23】PROV_BASE
 // ✅ 已核(社保核验表逐行确认，2025-12-10出具)：2005:1550 / 2006:2300 / 2007:2500 / 2008:2800 / 2009:2900 / 2010:3000 / 2011:3200 / 2012:3500 / 2013:3600 / 2014:4000 / 2015:5100 / 2016:5929 / 2017:6708 / 2018:7587 / 2019:7815 / 2020:8143 / 2021:8839 / 2022:9900 / 2023:10791 / 2024:11546 / 2025:11777
-//    注：西藏当年口径 → PROV_BASE[Y]=AVG[Y]=当年社平÷12，故 2005-2025 与下方 AVG 完全一致（2004前为外推占位，见下 📋）。
+//    注：口径已订正为**上年度**（见文件头"🔴 口径订正 2026-10-09"）→ PROV_BASE[Y] = Y年度执行的「Y-1年度全区职工月平均工资」，
+//        故 2005-2025 与下方 AVG 槽位同值只是"槽位语义同为Y年度执行值"的巧合，并非"=当年社平÷12"。
 // 📋 占位(平滑外推，非官方)：1978:1224 … 2004:4352（西藏2000才建账，1978-1999 真实无数据，仅维持序列连续）
-// ⚠️ 特殊口径：PROV_BASE[2024]=11546 与多数省"=上年社平"不同，此处=2024当年社平÷12（与 AVG[2024] 同值），由多张官方核定表交叉验证。
-// BASE_PARAMS.PROV_2025=11777 已与 PROV_BASE[2025] 一致（西藏当年口径）。
+// ⚠️ 口径订正：PROV_BASE[2024]=11546 **就是**「2024年上年度全区职工月平均工资」，与多数省"计发基数=上年社平"**一致**，此前的"西藏当年口径/与多数省不同"判断作废。
+//    2025=11777（藏人社发〔2025〕56号）、2026=11954（藏人社发〔2026〕46号）均已核到区人社厅官网原文，不再依赖自媒体。
+// BASE_PARAMS.PROV_2025=11777 已与 PROV_BASE[2025] 一致（上年度口径）。
 const PROV_BASE = {
   1978: 1224,
   1979: 1285,
@@ -8067,20 +8284,23 @@ const PROV_BASE = {
   2022: 9900,
   2023: 10791,
   2024: 11546,
-   2025: 11777,  // 2025年计发基数=2025全口径社平÷12=141324÷12（西藏当年口径，官方已发布）
-   2026: 11954,  // 2026年计发基数（藏人社发〔2026〕46号，2026-09-14公布，较2025年11777增177元）
+   2025: 11777,  // ✅ 已核官方原文：藏人社发〔2025〕56号《关于发布2025年上年度全区职工月平均工资的通知》
+  //   "确定2025年上年度全区职工月平均工资为11777元，作为全区基本养老保险…基数征缴和待遇计发的依据，从2025年1月1日起执行"（上限35331、下限7066.2）
+  //   依据 URL：https://hrss.xizang.gov.cn/xwzx/tzgg/202509/t20250922_501002.html
+  //   注：原注释"=2025全口径社平÷12=141324÷12（当年口径）"表述有误 → 141324/年 实为**2024年度**全区职工年平均工资（上年度口径），数值11777不变。
+   2026: 11954,  // ✅ 已核官方原文（非自媒体）：藏人社发〔2026〕46号，区人社厅 2026-09-14 发布；较2025年11777增177元（+1.5%）
+  //   依据 URL：https://hrss.xizang.gov.cn/xwzx/tzgg/202609/t20260914_558610.html
 };
 
 // 西藏历年社平工资（元/月，用于个人账户计算）
 // 数据来源：用户提供官方核定表截图（2005-2025年，元/年÷12→元/月）
 
 
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.02,  // 预估年增长2%
-  MERGE_YEAR: 2031,
-  PROV_2025: 11777,  // 2025年计发基数=2025全口径社平÷12=141324÷12（西藏当年口径）
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // ==================== 城市列表 ====================
 
@@ -8171,7 +8391,7 @@ base_rates: PROV_BASE,
     usePreAccountYears: false,
     cities: CITY_LIST || [],
     cases: cases || [],
-    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。西藏计发基数=当年社平÷12（非多数省的上年口径），由多张官方核定表交叉验证。特殊待遇按地区类别分项计发。西藏无独生子女父母退休加发，引擎不计算此项。',
+    notes: '社平数据：1998-2004=西藏统计局官方（当年口径，元/年÷12）；2005-2025=社保核验表逐行确认（2025-12-10出具，缴费指数=缴费工资÷社平工资精确匹配）。西藏计发基数=上年度全区职工月平均工资（藏人社发〔2025〕56号=11777、藏人社发〔2026〕46号=11954，区人社厅官网原文，2026-10-09口径订正为"上年度"，与多数省一致）。特殊待遇按地区类别分项计发。西藏无独生子女父母退休加发，引擎不计算此项。',
   }
 }
 
@@ -8250,7 +8470,7 @@ module.exports = {
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -8300,18 +8520,26 @@ const PROV_BASE = {
    2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 };;
 
+// ⚠️【2026-10-24】本块内的 PROV_GROWTH 外推率已删除（无官方来源，且只服务于已删除的 predictBase）。
+//   未来年份计发基数一律用引擎 inferGrowthRate()／getBase()。本块因 AVG_PENSIONER_PENSION 仍被引用而保留。
 const BASE_PARAMS = {
   
-  PROV_GROWTH: 0.026,
   // 全省退休人员人均养老金（元/月），用于计算独生子女补贴
   AVG_PENSIONER_PENSION: {
     2021: 3158,
     2022: 3293,
     2023: 3431,  // 真实表确认：2023年全省退休人员月平均基本养老金3431元
-    2024: 3431,  // 2024年尚未公布，预发暂用2023年值
-    2025: 3431,  // 2025年尚未公布，预发暂用2023年值
-    // ⚠️ 纪律：未发布年份不写固定值。2026-09-14 删除了原 2026-2030 五条「按约5%年增长」的
-    //   预测值（无官方来源）。缺失年份引擎回退到 2023 年真实值 3431。
+    2024: 3431,  // 2024年度值（= 2025年退休适用的"上年度"值）
+    // ⭐ 2026-10-09 订正（云劳社〔2002〕76号第十条第十三款：按**上年度**全省退休人员月平均基本养老金的 5% 增发）
+    //   槽位语义＝「退休年 → 应适用的上年度值」，故：
+    //     2025 年退休 → 2024 年度值 3553（2025-09 真实核定表实证）
+    //     2026 年退休 → 2025 年度值 3623（云人社发〔2026〕8号 明文「2025年度企业退休人员人均基本养老金为 3623 元/月」）
+    //   此前 2024/2025 两槽都回退 3431 ⇒ 2026 年退休者每月少发 (3623−3431)×5% = 9.60 元。
+    //   依据：https://ylbz.yn.gov.cn/index.php?c=show&id=6431
+    //        https://yn.people.com.cn/BIG5/n2/2026/0829/c378439-41680941.html
+    2025: 3553,
+    2026: 3623,
+    // ⚠️ 纪律：未发布年份不写固定值。2027 起缺失，引擎回退到 2023 年真实值 3431（保守，不会高估）。
   },
   PROV_2025: 8265,  // 2025年计发基数=2024年全省全口径社平（真实表 2025-09 确认）
 }
@@ -8348,13 +8576,8 @@ const MODULE_FORMULAS = {
 }
 const MODULE_COLORS = ['#1d4ed5','#0ea5e9','#0284c7','#2563eb']
 
-// 计发基数预测函数（云南省专用）
-function predictBase(year) {
-  const lastYear = 2025
-  const lastVal  = PROV_BASE[lastYear] || 8265
-  if (year <= lastYear) return PROV_BASE[year] || 0
-  return Math.round(lastVal * Math.pow(1 + BASE_PARAMS.PROV_GROWTH, year - lastYear))
-}
+// ⛔【已废弃·2026-10-24 删除】原 predictBase() 已删除：全仓库**零调用**（引擎实际走 getBase()），
+//   且其依赖的 PROV_GROWTH 外推率无官方来源。预测未来年份基数请用 getBase(city, year, config)。
 
 // 验证案例（从官方核定表提取）
 const cases = [
@@ -8553,7 +8776,6 @@ getEngineConfig,
   MODULE_FORMULAS,
   MODULE_COLORS,
   cases,
-  predictBase,
 }
 
   var cfg = (typeof getEngineConfig === "function") ? getEngineConfig() : module.exports.getEngineConfig();
@@ -8571,7 +8793,7 @@ getEngineConfig,
 // 修改本文件前，先读以下语义与"索引年"口径，避免社平年/计发年错位（本项目历史高频 bug）：
 //   PROV_BASE[Y]           使用年/退休年 → Y 年计发基数（元/月）。[注意]黑龙江特例：下标=社平年（见该省注释）。
 //   AVG_SALARY_HISTORY[Y]  社平年/统计年 → Y 年度官方社平工资（元/月）。
-//   BASE_PARAMS           { PROV_GROWTH, MERGE_YEAR, PROV_YYYY } 外推参数。
+//   （原 BASE_PARAMS 外推参数块与 predictBase() 已于 2026-10-24 删除，理由见文件内注释）
 //   MODULES/MODULE_LABELS 养老金分项模块开关 / 中文标签。
 //   CITY_LIST             本省城市清单（仅用于城市选择，不代表有独立基数）。
 //   TRANS_COEF            过渡系数。
@@ -8585,6 +8807,24 @@ getEngineConfig,
 
 // 浙江省养老金计算数据模块
 // TODO：补充1995-2022年官方计发基数（目前只有2023-2025年数据）
+//
+// ============ 浙江「替代指数 1.279」专项核查结论（2026-10-09）============
+// 结论：**已内置，本文件(zhejiang.js)无需补参数，不改代码**。
+// 1) 现行值确为 1.279，官方原文可查：
+//    · 杭州市人社局《关于杭州市区基本养老保险统筹管理若干问题的意见》（2017-12-13）：
+//      "核定养老金时，视同缴费年限**替代指数统一为1.279**"
+//      URL: https://hrss.hangzhou.gov.cn/art/2017/12/13/art_1229196644_1786206.html
+//    · 淳安县《杭州市基本养老保障办法淳安县实施细则》第十二条（分段口径，与引擎完全一致）：
+//      "1992年12月31日以前的视同缴费年限工资指数按替代指数**1.279**确定，1993年1月1日以后的视同缴费年限工资指数按替代指数**1**确定"
+//      URL: https://www.qdh.gov.cn/art/2016/4/26/art_1289748_5969813.html
+//    · 建德市实施细则第十三条（不分段表述）："视同缴费年限的年缴费工资指数按替代指数1.279确定"
+//      URL: https://www.jiande.gov.cn/art/2021/9/13/art_1229535310_1797894.html
+//    ⚠️ 三处均为**市/县级**文件，省级原始出处（浙劳社险〔1999〕165号）本轮未核到官网原文，但内容互相印证且引擎口径取分段版。
+// 2) 引擎内位置：不在省份配置里，而在**平均缴费指数计算器** `calc-index.js` 的 D4 视同指数分支：
+//      deemedIndex: 'replace_zj' → year <= 1992 ? (city==='温州' ? 1.1 : 1.279) : 1.0
+//    （主仓 / web / web-index / index-engine / index-mini 五处 calc-index 均已内置，见 scripts/verify-index-web.js 用例）
+// 3) 因此 zhejiang.js 只负责计发基数与分项模块，替代指数不在此处，无需新增字段。
+// ====================================================================
 // 依据：浙人社规〔2023〕?号、浙人社规〔2024〕?号、浙人社规〔2025〕?号
 
 // ==================== 基础数据 ====================
@@ -8640,15 +8880,15 @@ const PROV_BASE = {
   2023: 8020,
   2024: 8310,
    2025: 8433,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
+   2026: 8537,  // 浙江已并轨：2026年计发基数=2025年度加权平均工资8537元/月（浙人社发〔2026〕52号）
 };;
 
 // 浙江省基数增长预测参数
-const BASE_PARAMS = {
-  
-  PROV_GROWTH: 0.015,  // 约1.5%年增速
-  MERGE_YEAR: 2031,
-  PROV_2025: 8433,  // 2025年计发基数=2024全口径社平(国办发〔2019〕13号口径，官方已发布)
-}
+// ⛔【已废弃·2026-10-24 删除】原 BASE_PARAMS 外推参数块（PROV_GROWTH／MERGE_YEAR 等）已整块删除。
+//   ① PROV_GROWTH 系早期估值，**无官方来源**；② MERGE_YEAR 2031「并轨」**无任何官方文件**，属臆设；
+//   ③ 本块只服务于同文件已删除的 predictBase()，而 predictBase() 全仓库**零调用**（引擎实际走 getBase()）。
+//   ⇒ 未来年份计发基数的唯一口径：引擎 inferGrowthRate()（取基数表最近两个已公布年份的增幅，夹 0~3%）。
+//   ⚠️ 不得恢复。需要未来年份基数一律调用 getBase(city, year, config)。
 
 // 浙江省城市列表（地级市）
 const CITY_LIST = [
@@ -8750,6 +8990,7 @@ const AVG_SALARY_HISTORY = {
   2023: 8020,
   2024: 8310.17,
   2025: 8432.83,
+  2026: 8537,  // 浙人社发〔2026〕52号：2025年度非私营和私营单位加权平均工资102446元=8537元/月（2026年度执行）
   // [V2已删] 2025: 8746,  // 2025年度社保缴费基数·2024全口径社平（官方已发布，人社通汇总）
 };
 
