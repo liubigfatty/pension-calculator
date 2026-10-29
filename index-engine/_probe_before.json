@@ -1,0 +1,439 @@
+{
+  "generatedAt": "2026-10-29T03:06:14.970Z",
+  "data": {
+    "anhui": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "beijing": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "chongqing": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "fujian": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "gansu": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "guangdong": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "guangxi": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "guizhou": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "hainan": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "hebei": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "heilongjiang": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "henan": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "hubei": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "hunan": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "jiangsu": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "jiangxi": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "jilin": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "liaoning": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "neimenggu": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "ningxia": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "qinghai": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "shaanxi": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "shandong": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "shanghai": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "shanxi": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "sichuan": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "tianjin": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "xinjiang": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "xizang": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "yunnan": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    },
+    "zhejiang": {
+      "U1": {
+        "avgIndex": 1,
+        "totalYears": 21
+      },
+      "U2": {
+        "avgIndex": 1.0083,
+        "totalYears": 20.08
+      },
+      "U3": {
+        "avgIndex": 1.0087,
+        "totalYears": 19.08
+      }
+    }
+  }
+}
