@@ -111,7 +111,7 @@ const PROVINCE_RULES = {
   xinjiang:   { denom: 'prev',    deemedInDenom: false, deemedIndex: '1.0',          cap: 'default',   dualIndex: false,      gapZero: false, accountStart: '1996-01' }
 }
 
-const DEFAULT_RULE = { denom: 'prev', deemedInDenom: false, deemedIndex: '1.0', cap: 'default', dualIndex: false, gapZero: false, gapFloor: null, accountStart: '1996-01', indexWeight: 'month', numeratorType: 'level', retireYearInIndex: true, firstYearFull: false, autoFillGapYears: false }
+const DEFAULT_RULE = { denom: 'prev', deemedInDenom: false, deemedIndex: '1.0', cap: 'default', dualIndex: false, gapZero: false, gapFloor: null, accountStart: '1996-01', indexWeight: 'month', numeratorType: 'level', retireYearInIndex: true, firstYearFull: false, autoFillGapYears: false, unpaidMonthsFill: false, unpaidIndex: null, denomByYear: null }
 
 // ════════════════════════════════════════════════════════
 //  2026-10-29 新增：指数「权重算子」表（三维度 ②③）
@@ -138,6 +138,9 @@ const DEFAULT_RULE = { denom: 'prev', deemedInDenom: false, deemedIndex: '1.0', 
 //  retireYearInIndex 退休当年是否计入指数（false = 吉/辽/冀/宁/甘/琼/皖 7 省）
 //  firstYearFull     安徽：首次参保当年权重取 1；中间结算年度 ÷12
 //  autoFillGapYears  应缴年限省：首末缴费年之间的缺年自动补记（否则断缴年不会进 N）
+//  unpaidMonthsFill  年内欠缴月份按 unpaidIndex 补记（黑龙江：未缴月份按 60% 基数核定）
+//  denomByYear       { until } —— ≤until 的缴费年走「同年比同年」（取 hist[Y+1]）；
+//                    详见 `resolveDenom`；只给有省级文号支持的省配，其余保持 null
 // ════════════════════════════════════════════════════════
 const INDEX_WEIGHT_RULES = {
   // ① 吉林模式：年化指数 + 整年分母 ⇒ 某年缴 1 个月 300% 档，该年指数 = 3.0
@@ -151,6 +154,13 @@ const INDEX_WEIGHT_RULES = {
   hunan:        { indexWeight: 'year' },
   beijing:      { indexWeight: 'year', autoFillGapYears: true },
   yunnan:       { indexWeight: 'year' },
+  // 陕西：N 用**应缴年限**（含断缴年，autoFillGapYears 已配）+ 分子用年度总额。
+  //   ⚠️ 关于「2020 前后两套 X/C 配对」：已按官方实算点复核，**暂不启用 denomByYear**：
+  //      · 2020 前：2017 年缴费，官方公布分母 = 5619.42 = hist[2017]（现行行为已吻合）
+  //      · 2020 后：2024 年按下限 4650 缴，指数恰好 0.6 ⇒ 分母 = hist[2024] = 7750（同样吻合）
+  //      ⇒ 拿 hist[Y+1] 当「同年统计年」会与两个官方实算实例冲突，偏差达 −9.9%。
+  //      另有口径隐患：hist 存的是**在岗职工**口径，而陕人社函〔2020〕422号说的是**全口径**，两者不同。
+  //      待拿到「分口径、分年份」的社平表后，再用 denomByYear 机制接入。
   shaanxi:      { indexWeight: 'year', numeratorType: 'annualSum', autoFillGapYears: true },
   // ② 福建省级统筹：年权重按「年限尾数」取整，不是按月
   fujian:       { indexWeight: 'half' },
@@ -160,7 +170,11 @@ const INDEX_WEIGHT_RULES = {
   anhui:        { retireYearInIndex: false, firstYearFull: true },
   // ④ 分母 N 为「应缴/应当计算的年限」⇒ 断缴年度必须补记进 N
   tianjin:      { autoFillGapYears: true },
-  heilongjiang: { autoFillGapYears: true }
+  // ⑤ 黑龙江：N 取「应当计算的年限」，且**年内欠缴月份**按 60% 基数核定
+  //    （2020-10-23 修订版：「未缴费年度当年缴费工资指数按0.6计算（含缴费年度中欠缴的月份）……
+  //      Xn（未缴费月份按60%基数核定）」）
+  //    ⚠️ 仅在能确定「该年应缴月数」时才补，避免把年中参保/年中退休误判成欠缴 ⇒ 见 payableMonthsOf
+  heilongjiang: { autoFillGapYears: true, unpaidMonthsFill: true, unpaidIndex: 0.6 }
 }
 
 /**
@@ -183,6 +197,143 @@ function indexWeightUnits(rule, rec, firstContribYear) {
     default:
       return m
   }
+}
+
+// ════════════════════════════════════════════════════════
+//  2026-10-29 ②：社保年度「分段取社平」规则
+//  依据 `_核查-31省社平执行周期与缴费年度-20261029.md` §三 A 型省
+//
+//  ⚠️ 前置结论（改这段前必须读懂）：
+//    社平**统计口径 31 省一律自然年**；跨年的只是「适用期」。
+//    7-6 式省份的社保年度 Y = Y.7.1 ～ (Y+1).6.30，**整段用同一档社平**
+//    = (Y−1) 自然年社平 = `avg_salary_history[Y]`（与既有 hist 语义一致）。
+//
+//    ⇒ 一个**自然年**被劈成两半：
+//        1–6 月 属社保年度 (Y−1) ⇒ 用 hist[Y−1]
+//        7–12 月 属社保年度 Y    ⇒ 用 hist[Y]
+//    现行引擎全年共用 hist[Y]，把上半年系统性**高估约一档工资涨幅 g**
+//    （全年平均指数偏高约 g/2 ≈ 1%，传导到基础养老金约 10 元/月量级）。
+//
+//    🔴 反例别一并改：北京、河南虽也是 7-6 式**缴费年度**，但它们的
+//       X/C 是「自然年对齐」（Xₙ÷Cₙ₋₁，一个自然年＝一段）⇒ **不需要分段**，改了反而错。
+// ════════════════════════════════════════════════════════
+const SOCIAL_YEAR_SPLIT = {
+  guangdong: { startMonth: 7 },
+  shanghai:  { startMonth: 7 },
+  hubei:     { startMonth: 7 },
+  jilin:     { startMonth: 7 }
+}
+
+/**
+ * clamp 到合法月份
+ */
+function clampMonth(m) {
+  const v = Math.round(Number(m) || 1)
+  return Math.min(12, Math.max(1, v))
+}
+
+/**
+ * 该年缴费覆盖的起始月份
+ *   显式的 rec.startMonth > 首缴起始月 > 缺省 1 月
+ */
+function firstMonthOfYear(rec, ctx) {
+  if (rec.startMonth) return clampMonth(rec.startMonth)
+  if (ctx.firstContribYear === rec.year && ctx.firstStartMonth) return clampMonth(ctx.firstStartMonth)
+  return 1
+}
+
+/**
+ * 按社保年度把该年的缴费月切成若干段。
+ * 未配置分段的省 ⇒ 返回单一整段（targetYear = year）⇒ **与原实现完全等价**（零回归的关键）。
+ *
+ * @returns {Array<{months:number, targetYear:number, fromMonth:number}>}
+ */
+function splitYearRange(from, m, year, split) {
+  if (m <= 0) return []
+  if (!split) return [{ months: m, targetYear: year, fromMonth: from }]
+  const sm = split.startMonth
+  const to = Math.min(from + m - 1, 12)   // 年内 clamp，保证段数守恒
+
+  const segs = []
+  // 上半段：落在 [1, sm-1] 的月 ⇒ 归社保年度 (year-1)
+  const lowTo = Math.min(to, sm - 1)
+  const low = from <= lowTo ? (lowTo - from + 1) : 0
+  if (low > 0) segs.push({ months: low, targetYear: year - 1, fromMonth: from })
+  // 下半段：落在 [sm, 12] 的月 ⇒ 归社保年度 year
+  const highFrom = Math.max(from, sm)
+  const high = to >= highFrom ? (to - highFrom + 1) : 0
+  if (high > 0) segs.push({ months: high, targetYear: year, fromMonth: highFrom })
+
+  if (segs.length === 0) return [{ months: m, targetYear: year, fromMonth: from }]
+  // 权重守恒：clamp 造成的差额补回最后一段
+  const got = segs.reduce((s, x) => s + x.months, 0)
+  if (got < m) segs[segs.length - 1].months += (m - got)
+  return segs
+}
+
+/**
+ * 生成该年的「月度计算单元」——每段携带自己的基数与分母年份
+ *   ① 年内多条记录（7-6 式省份上下半年基数不同）⇒ 归一为 `_parts`
+ *   ② 社保年度分段 ⇒ 每段还可能再被社保年度劈成两半
+ *
+ * 无 _parts 且无 split 时退化为单一整段 ⇒ **与改造前逐位等价**（零回归的关键）
+ */
+function buildYearSegments(rec, ctx, split) {
+  const hasParts = rec._parts && rec._parts.length > 0
+  const parts = hasParts ? rec._parts : [{ months: rec.months || 0, baseAvg: rec.baseAvg || 0, startMonth: rec.startMonth }]
+  let cursor = firstMonthOfYear(rec, ctx)
+  const out = []
+  for (const p of parts) {
+    const m = Math.max(0, p.months || 0)
+    if (m <= 0) continue
+    const from = p.startMonth ? clampMonth(p.startMonth) : cursor
+    const base = (p.baseAvg != null ? p.baseAvg : (rec.baseAvg || 0))
+    for (const s of splitYearRange(from, m, rec.year, split)) {
+      out.push(Object.assign({ baseAvg: base }, s))
+    }
+    cursor = Math.min(from + m, 13)
+  }
+  if (out.length === 0) {
+    out.push({
+      months: Math.max(0, rec.months || 0), targetYear: rec.year,
+      fromMonth: firstMonthOfYear(rec, ctx), baseAvg: rec.baseAvg || 0
+    })
+  }
+  return out
+}
+
+/**
+ * 旧名兼容：单条记录形式的分段入口（供反推与测试调用）
+ */
+function splitBySocialYear(rec, ctx, split) {
+  return buildYearSegments(rec, ctx, split)
+}
+
+/**
+ * 2026-10-29 ③：X/C 配对分界 —— 统一的分母入口
+ *   denomByYear: { until } ⇒ ≤until 的**缴费年**走「同年比同年」（hist[Y+1]，= 同年统计年社平）
+ *   其余走既有 D1 口径（hist[Y] = Y 年执行 = Y−1 统计年）
+ */
+function resolveDenom(rule, salaryHist, year) {
+  const dy = rule.denomByYear
+  const eff = (dy && year <= dy.until) ? year + 1 : year
+  const v = getSocialAvg(salaryHist, eff)
+  if (v && v > 0) return v
+  return getSocialAvg(salaryHist, eff + 1)   // 兜底：本年缺则用次年（更新的统计年）
+}
+
+/**
+ * 该年「应缴月数」——仅用于黑龙江年内欠缴补记。
+ * 无法确定时返回 null ⇒ **不补**（避免把年中参保/年中退休误判为欠缴）。
+ */
+function payableMonthsOf(rec, ctx) {
+  if (ctx.retireYear != null && rec.year === ctx.retireYear) {
+    return ctx.retireMonth ? clampMonth(ctx.retireMonth) : null
+  }
+  if (ctx.firstContribYear === rec.year) {
+    return ctx.firstStartMonth ? (13 - clampMonth(ctx.firstStartMonth)) : null
+  }
+  return 12
 }
 
 /**
@@ -255,6 +406,15 @@ function parseAccountStartYear(accountStart) {
  *    故「缴费年 year 用当年使用基数」 ⇒ 取 [year]
  *   （'current' 分支取 [year+1] = 当年统计年社平，2026-09-20 起已无省份使用，保留备用）
  */
+/**
+ * 合并后的省规（PROVINCE_RULES 基础 + INDEX_WEIGHT_RULES 覆盖 + DEFAULT 兜底）
+ * ⚠️ 反推链路也必须走这里，否则 `denomByYear` 之类的算子只在正向生效，
+ *    「按目标指数反推缴费基数」会与正向不对齐。
+ */
+function mergedRule(provinceCode) {
+  return Object.assign({}, DEFAULT_RULE, PROVINCE_RULES[provinceCode] || {}, INDEX_WEIGHT_RULES[provinceCode] || {})
+}
+
 function getDenominator(rule, salaryHist, year) {
   if (rule.denom === 'current') {
     return getSocialAvg(salaryHist, year + 1) || getSocialAvg(salaryHist, year) // 当年
@@ -262,6 +422,24 @@ function getDenominator(rule, salaryHist, year) {
   const prev = getSocialAvg(salaryHist, year) // 上年
   if (prev && prev > 0) return prev
   return getSocialAvg(salaryHist, year + 1) // 兜底：本年缺则用次年（更新的统计年）
+}
+
+/**
+ * 该年「等效单档社平」——7-6 式省份按 12 个月分布做两段加权平均。
+ * 供反推（按目标指数/当前基数生成缴费基数序列）使用：
+ * 只要正向对该年也是同样的两段分布，正向重算即可还原同一个指数。
+ */
+function blendedSocialAvg(provinceCode, salaryHist, year) {
+  const rule = mergedRule(provinceCode)
+  const split = SOCIAL_YEAR_SPLIT[provinceCode] || null
+  if (!split) return resolveDenom(rule, salaryHist, year)
+  const segs = splitBySocialYear({ year, months: 12 }, { firstContribYear: year, firstStartMonth: 1 }, split)
+  let sum = 0, tot = 0
+  for (const seg of segs) {
+    const d = resolveDenom(rule, salaryHist, seg.targetYear)
+    if (d && d > 0) { sum += d * seg.months; tot += seg.months }
+  }
+  return tot > 0 ? sum / tot : resolveDenom(rule, salaryHist, year)
 }
 
 /**
@@ -401,12 +579,14 @@ function getDeemedSum(rule, deemedYears, deemedStartYear, opts) {
  * @param {number} [params.deemedStartYear] - 视同起始年（用于浙江/江苏/江西分段取值）
  * @param {string} [params.city] - 地市（广东查表用）
  * @param {boolean} [params.gapYearCountsInAvg] - 覆盖开关（默认由省规 gapZero 决定）
+ * @param {number} [params.retireYear] - 退休年份（7 省需要判断是否排除退休当年）
+ * @param {number} [params.retireMonth] - 退休月份（1-12，用于退休当年应缴月数）
+ * @param {Object} [params.contributionStart] - 首缴年月 { year, month }，用于首年应缴月数与月分布推断
  * @returns {Object} { avgIndex, transIndex, accountBalance, totalMonths, totalYears, yearsDetail }
  */
-function calculateIndex({ provinceConfig, provinceCode, contribution, granularity = 'A', deemedYears = 0, deemedStartYear = null, city = null, gapYearCountsInAvg = null, retireYear = null }) {
+function calculateIndex({ provinceConfig, provinceCode, contribution, granularity = 'A', deemedYears = 0, deemedStartYear = null, city = null, gapYearCountsInAvg = null, retireYear = null, retireMonth = null, contributionStart = null }) {
   const salaryHist = resolveSalaryHist(provinceConfig.avg_salary_history, city)
-  const baseRule = PROVINCE_RULES[provinceCode] || DEFAULT_RULE
-  const rule = Object.assign({}, DEFAULT_RULE, baseRule, INDEX_WEIGHT_RULES[provinceCode] || {})
+  const rule = mergedRule(provinceCode)
   const gapZero = (gapYearCountsInAvg != null) ? gapYearCountsInAvg : rule.gapZero
   const gapFloor = rule.gapFloor || null
   const accountStartYear = parseAccountStartYear(rule.accountStart)
@@ -430,6 +610,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
   let totalIndexSum = 0      // 实际缴费年指数加权和（N 单位由 rule.indexWeight 决定）
   let weightSum = 0          // 指数分母 N 的累加（月数 / 年数 / 福建尾数）
   let monthsSum = 0          // 实际缴费月数（与 N 单位解耦，供个人账户与年限展示）
+  let unpaidMonthsTotal = 0  // 黑龙江：年内欠缴补记月数（累计，用于 _meta 暴露）
   let accountBalance = 0      // 个人账户余额（复利累计）
   const yearsDetail = []       // 逐年明细
   const warnings = []          // 超常规区间 [0.6,3.0] 的年份提示（仅提示，不改数值）
@@ -445,6 +626,23 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
   // 退休当年：显式入参优先；缺省退化为「最后有缴费记录的年份」
   const retireY = (retireYear != null && retireYear > 0) ? Number(retireYear) : lastContribYear
   const retireYearInferred = !(retireYear != null && retireYear > 0)
+  const retireM = (retireMonth != null && retireMonth > 0) ? clampMonth(retireMonth) : null
+
+  // 首缴起始月：显式 contributionStart 优先；否则取末年之外 records 自带的 startMonth
+  let firstStartMonth = null
+  if (contributionStart && contributionStart.year && contributionStart.year === firstContribYear) {
+    firstStartMonth = clampMonth(contributionStart.month)
+  } else {
+    const firstRec = yearlyRecords.find(r => r.year === firstContribYear)
+    if (firstRec && firstRec.startMonth) firstStartMonth = clampMonth(firstRec.startMonth)
+  }
+
+  // 社保年度分段规则（粤/沪/鄂/吉）
+  const salSplit = SOCIAL_YEAR_SPLIT[provinceCode] || null
+  const ctx = {
+    retireYear: retireY, retireMonth: retireM,
+    firstContribYear, firstStartMonth
+  }
 
   // ── 应缴年限省：首末缴费年之间的缺年自动补记（否则断缴年永远进不了分母 N）──>
   let workRecords = yearlyRecords
@@ -460,27 +658,6 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
 
   for (const rec of workRecords) {
     const year = rec.year
-
-    // ── 退休当年不计入指数（吉/辽/冀/宁/甘/琼/皖 7 省）──>
-    //    注意：钱照缴、账户照滚，只是这一年的比值不进平均指数。
-    if (rule.retireYearInIndex === false && retireY != null && year === retireY) {
-      const rr = getRate(year)
-      const ppay = (rec.baseAvg || 0) * (rec.months || 0) * 0.08
-      accountBalance = accountBalance * (1 + rr) + ppay
-      monthsSum += (rec.months || 0)
-      const rDenom = getDenominator(rule, salaryHist, year)
-      const rIdx = (rec.baseAvg > 0 && rDenom && rDenom > 0)
-        ? round4(applyCap(rule, rec.baseAvg / rDenom, year, accountStartYear)) : null
-      yearsDetail.push({
-        year, months: rec.months, baseAvg: rec.baseAvg,
-        socialAvg: rDenom, index: rIdx,
-        excludedFromIndex: true,
-        indexWeight: 0,
-        accountContribution: ppay, balanceAfterYear: accountBalance,
-        note: '退休当年不计入平均缴费指数（省级明文），但缴费月数计入缴费年限'
-      })
-      continue
-    }
 
     // ── 断缴/空年处理 ──>
     if (rec.baseAvg <= 0) {
@@ -498,7 +675,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
         monthsSum += (rec.months || 0)
         yearsDetail.push({
           year, months: rec.months, baseAvg: 0, indexWeight: gw,
-          socialAvg: getDenominator(rule, salaryHist, year), index: gapValue, weightedIndex: gapValue * gw, rate: grate,
+          socialAvg: resolveDenom(rule, salaryHist, year), index: gapValue, weightedIndex: gapValue * gw, rate: grate,
           accountContribution: 0, balanceAfterYear: accountBalance, gap: true, gapCounted: true, autoFilled: !!rec._autoFilled
         })
       } else {
@@ -509,7 +686,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
           : '缺少' + year + '年社平'
         yearsDetail.push({
           year, months: rec.months, baseAvg: 0,
-          socialAvg: (gapSocial && gapSocial > 0) ? getDenominator(rule, salaryHist, year) : null,
+          socialAvg: (gapSocial && gapSocial > 0) ? resolveDenom(rule, salaryHist, year) : null,
           index: null, gap: true, skipped: true,
           note
         })
@@ -517,10 +694,21 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
       continue
     }
 
-    // ── D1 分母：上年/当年社平 ──>
-    const socialAvg = getDenominator(rule, salaryHist, year)
+    // ── D1 分母：按社保年度分段取社平（粤/沪/鄂/吉）；其余省恒为整段 ──>
+    //    单段时 months≣段月数 ⇒ monthRatio ≡ baseAvg/denom，**与原实现逐位等价**（零回归）
+    const segs = buildYearSegments(rec, ctx, salSplit)
+    let ratioMonthSum = 0       // Σ(该段月比值 × 段月数)
+    let missingSeg = false
+    const segDetail = []
+    for (const seg of segs) {
+      const d = resolveDenom(rule, salaryHist, seg.targetYear)
+      if (!d || d <= 0) { missingSeg = true; continue }
+      segDetail.push({ months: seg.months, fromMonth: seg.fromMonth, targetYear: seg.targetYear, denom: d })
+      ratioMonthSum += (seg.baseAvg / d) * seg.months
+    }
+    const segMonths = segDetail.reduce((s, x) => s + x.months, 0)
 
-    if (!socialAvg || socialAvg <= 0) {
+    if (missingSeg || segMonths <= 0) {
       yearsDetail.push({
         year, months: rec.months, baseAvg: rec.baseAvg,
         socialAvg: null, index: null,
@@ -529,15 +717,42 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
       continue
     }
 
+    // 代表性的单档社平（供明细展示：多段时取按段月数加权平均）
+    const socialAvg = segDetail.length === 1
+      ? segDetail[0].denom
+      : segDetail.reduce((s, x) => s + x.denom * x.months, 0) / segMonths
+
     // ── 计算该年平均缴费指数 + D5 省级明文修正 ──>
-    //    rec.baseAvg 是「月平均缴费基数」，socialAvg 是月社平 ⇒ 'level' 下
-    //    年指数 = 水平比值，不足整年也不会被稀释。
+    //    rec.baseAvg 是「月平均缴费基数」⇒ 'level' 下年指数 = 各段月比值的**按段月数加权平均**，
+    //    不足整年也不会被稀释。
     //    'annualSum'：分子改用「年度基数和 ÷ 年社平」（陕西 陕劳社发〔2006〕84号），
-    //    不足整年时自然被稀释（÷12 方向的 m/12 缩放）。
+    //    不足整年时自然被稀释（÷12 方向的 months/12 缩放）。
+    const monthRatio = ratioMonthSum / segMonths
     const yearIndexRaw = (rule.numeratorType === 'annualSum')
-      ? (rec.baseAvg * (rec.months || 0)) / (socialAvg * 12)
-      : rec.baseAvg / socialAvg
+      ? monthRatio * ((rec.months || 0) / 12)
+      : monthRatio
     const yearIndex = applyCap(rule, yearIndexRaw, year, accountStartYear)
+
+    // ── 退休当年不计入指数（吉/辽/冀/宁/甘/琼/皖 7 省）──>
+    //    注意：钱照缴、账户照滚，只是这一年的比值不进平均指数。
+    //    ⚠️ 必须放在分段之后：否则该年只会用单档分母，7-6 式省份又走回「全年共用一档」的老错。
+    if (rule.retireYearInIndex === false && retireY != null && year === retireY) {
+      const rr = getRate(year)
+      const ppay = (rec.baseAvg || 0) * (rec.months || 0) * 0.08
+      accountBalance = accountBalance * (1 + rr) + ppay
+      monthsSum += (rec.months || 0)
+      yearsDetail.push({
+        year, months: rec.months, baseAvg: rec.baseAvg,
+        socialAvg, index: round4(yearIndex),
+        excludedFromIndex: true,
+        indexWeight: 0,
+        segments: segDetail.length > 1 ? segDetail : undefined,
+        accountContribution: ppay, balanceAfterYear: accountBalance,
+        note: '退休当年不计入平均缴费指数（省级明文），但缴费月数计入缴费年限'
+      })
+      continue
+    }
+
     const flag = outOfRangeFlag(yearIndex)
     if (flag) {
       warnings.push({
@@ -560,6 +775,23 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
     weightSum += w
     monthsSum += (rec.months || 0)
 
+    // ── 黑龙江：年内欠缴月份按 0.6 补记（「含缴费年度中欠缴的月份」）──>
+    //    仅在能确定该年应缴月数时才补（payableMonthsOf 返回 null 时不动），
+    //    否则年中参保 6 个月会被误判成欠缴 6 个月。
+    let unpaidMonths = 0
+    if (rule.unpaidMonthsFill && rule.unpaidIndex != null) {
+      const payable = payableMonthsOf(rec, ctx)
+      if (payable != null) {
+        unpaidMonths = Math.max(0, payable - Math.max(0, rec.months || 0))
+        if (unpaidMonths > 0) {
+          const uw = indexWeightUnits(rule, { year, months: unpaidMonths }, firstContribYear)
+          totalIndexSum += rule.unpaidIndex * uw
+          weightSum += uw
+          unpaidMonthsTotal += unpaidMonths
+        }
+      }
+    }
+
     // ── 计算个人账户本年计入金额（用实际基数，不受指数修正影响）──>
     const annualAccountPay = rec.baseAvg * rec.months * 0.08
     const rate = getRate(year)
@@ -570,12 +802,14 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
       months: rec.months,
       baseAvg: rec.baseAvg,
       indexWeight: w,
+      unpaidMonths: unpaidMonths || 0,
       socialAvg,
       index: yearIndex,
       indexRaw: round4(yearIndexRaw),
       outOfRange: flag,
       weightedIndex: yearIndex * w,
       rate,
+      segments: segDetail.length > 1 ? segDetail : undefined,
       accountContribution: annualAccountPay,
       balanceAfterYear: accountBalance
     })
@@ -621,9 +855,18 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
       retireYearInIndex: rule.retireYearInIndex,
       retireYear: retireY,
       retireYearInferred,
+      retireMonth: retireM,
+      contributionStartMonth: firstStartMonth,
       indexDenominatorN: round4(weightSum),
       firstYearFull: rule.firstYearFull,
       autoFillGapYears: rule.autoFillGapYears,
+      // ② 社保年度分段取社平
+      socialYearSplit: salSplit ? salSplit.startMonth : null,
+      socialYearSplitApplied: salSplit ? yearsDetail.some(y => y.segments) : false,
+      // ③ X/C 配对分界（陕西 ≤2019 同年比同年）
+      denomByYear: rule.denomByYear || null,
+      // ⑤ 黑龙江年内欠缴补记
+      unpaidMonthsTotal: rule.unpaidMonthsFill ? unpaidMonthsTotal : 0,
       rule,
       rateSource: '剪刀财经 UNIFIED_RATES 1996-2025',
       gapZero,
@@ -705,8 +948,8 @@ function buildInferTemplate(contribution, granularity, salaryHist) {
   // 反推模板用"分母社平"：默认上年（与正向一致，陕/藏会取当年）
   return yearly
     .map(y => {
-      const rule = y._provinceCode ? PROVINCE_RULES[y._provinceCode] : DEFAULT_RULE
-      return { year: y.year, months: y.months, socialAvg: getDenominator(rule, resolved, y.year) }
+      const rule = mergedRule(y._provinceCode)
+      return { year: y.year, months: y.months, socialAvg: resolveDenom(rule, resolved, y.year) }
     })
     .filter(y => y.socialAvg && y.socialAvg > 0)
 }
@@ -729,7 +972,31 @@ function normalizeGranularityA(data) {
   else return []
 
   if (records.length > 0 && records[0].months !== undefined && records[0].baseAvg !== undefined) {
-    return records.map(r => ({ year: r.year, months: r.months, baseAvg: r.baseAvg }))
+    // 同年多条记录 ⇒ 合并为一年，但保留 `_parts` 分段明细。
+    //   7-6 式省份（粤/沪/鄂/吉）上下半年的缴费基数本就不同 —— 不保留就会被压成一个
+    //   「全年月均」而丢失真实分布；保留后各段可用自己的真实基数。
+    //   单条记录 ⇒ 无 _parts，与旧行为逐位等价。
+    const byYear = {}
+    for (const r of records) {
+      const y = r.year
+      if (!byYear[y]) byYear[y] = { year: y, months: 0, startMonth: r.startMonth, parts: [] }
+      const m = Math.max(0, r.months || 0)
+      byYear[y].months += m
+      byYear[y].parts.push({ months: m, baseAvg: r.baseAvg || 0, startMonth: r.startMonth })
+      if (r.startMonth && !byYear[y].startMonth) byYear[y].startMonth = r.startMonth
+    }
+    return Object.values(byYear).map(e => {
+      const parts = e.parts.filter(p => p.months > 0)
+      if (parts.length <= 1) {
+        return { year: e.year, months: e.months, baseAvg: parts[0] ? parts[0].baseAvg : 0, startMonth: e.startMonth }
+      }
+      // ⚠️ baseAvg 必须取「按段月数加权」的平均，**不能写 0** ——否则主循环会当成断缴年跳过
+      const wSum = parts.reduce((s, p) => s + p.months, 0)
+      const wBase = wSum > 0
+        ? parts.reduce((s, p) => s + p.baseAvg * p.months, 0) / wSum
+        : 0
+      return { year: e.year, months: e.months, baseAvg: wBase, startMonth: e.startMonth, _parts: parts }
+    })
   }
 
   const yearMap = {}
@@ -801,19 +1068,45 @@ function round2(n) { return Math.round(n * 100) / 100 }
 /**
  * 反推模式②：已知当前月缴费基数 -> 反推历年基数 + 平均指数 + 账户余额
  */
+/**
+ * 反推用：按目标（或换算出的）指数合成历年缴费基数序列。
+ *
+ * ⚠️ 2026-10-29 修正两件事：
+ *   1) hist 必须 resolveSalaryHist —— 广东等省是 {prov, 市} 嵌套，直接取会全部落空，
+ *      旧版因此抛「无有效社平数据」（既有 bug）。
+ *   2) 7-6 式省份（粤/沪/鄂/吉）合成时**直接生成上下半年两条**，而不是塞一个平均值。
+ *      否则正向重算会有 g²/4 的二阶偏差（实测 0.3%~0.5%）。
+ */
+function synthRowsByIndex(provinceCode, salaryHist, span, indexValue) {
+  const split = SOCIAL_YEAR_SPLIT[provinceCode] || null
+  const rule = mergedRule(provinceCode)
+  const out = []
+  for (const s of span) {
+    if (split && s.months >= 12) {
+      const d1 = resolveDenom(rule, salaryHist, s.year - 1)
+      const d2 = resolveDenom(rule, salaryHist, s.year)
+      if (d1 && d1 > 0 && d2 && d2 > 0) {
+        out.push({ year: s.year, months: 6, baseAvg: d1 * indexValue, startMonth: 1 })
+        out.push({ year: s.year, months: 6, baseAvg: d2 * indexValue, startMonth: 7 })
+        continue
+      }
+    }
+    const d = blendedSocialAvg(provinceCode, salaryHist, s.year)
+    if (d && d > 0) out.push({ year: s.year, months: s.months, baseAvg: d * indexValue })
+  }
+  return out
+}
+
 function inferYearlyFromCurrentBase({ provinceConfig, provinceCode, startYear, startMonth, totalMonths, currentBase, gapYearCountsInAvg = null }) {
-  const salaryHist = provinceConfig.avg_salary_history || {}
+  const salaryHist = resolveSalaryHist(provinceConfig.avg_salary_history, null)
   const span = spreadMonthsToYears({ startYear, startMonth, totalMonths })
   if (!span || span.length === 0) return { error: '无法构建缴费年度序列，请检查首缴年月与缴费月数。' }
   const endYear = span[span.length - 1].year
-  const endSocialDenom = getDenominator(PROVINCE_RULES[provinceCode] || DEFAULT_RULE, salaryHist, endYear)
+  const endSocialDenom = blendedSocialAvg(provinceCode, salaryHist, endYear)
   if (!endSocialDenom || endSocialDenom <= 0) return { error: '缺少缴费期末年（' + endYear + '年）的社平数据，无法用当前基数换算。' }
   if (!(currentBase > 0)) return { error: '当前月缴费基数必须大于 0。' }
   const currentIndex = currentBase / endSocialDenom
-  const synth = span.map(function (s) {
-    const social = getDenominator(PROVINCE_RULES[provinceCode] || DEFAULT_RULE, salaryHist, s.year)
-    return { year: s.year, months: s.months, baseAvg: (social && social > 0) ? social * currentIndex : null }
-  }).filter(function (r) { return r.baseAvg != null })
+  const synth = synthRowsByIndex(provinceCode, salaryHist, span, currentIndex)
   if (synth.length === 0) return { error: '无有效社平数据，无法反推历年基数。' }
   const fwd = calculateIndex({ provinceConfig, provinceCode, contribution: synth, granularity: 'A', gapYearCountsInAvg })
   if (fwd.error) return { error: fwd.error }
@@ -825,14 +1118,11 @@ function inferYearlyFromCurrentBase({ provinceConfig, provinceCode, startYear, s
  * 反推模式③：已知目标平均指数 -> 反推历年应缴基数
  */
 function inferYearlyFromTargetIndex({ provinceConfig, provinceCode, startYear, startMonth, totalMonths, targetIndex, gapYearCountsInAvg = null }) {
-  const salaryHist = provinceConfig.avg_salary_history || {}
+  const salaryHist = resolveSalaryHist(provinceConfig.avg_salary_history, null)
   const span = spreadMonthsToYears({ startYear, startMonth, totalMonths })
   if (!span || span.length === 0) return { error: '无法构建缴费年度序列，请检查首缴年月与缴费月数。' }
   if (!(targetIndex > 0)) return { error: '目标平均指数必须大于 0。' }
-  const synth = span.map(function (s) {
-    const social = getDenominator(PROVINCE_RULES[provinceCode] || DEFAULT_RULE, salaryHist, s.year)
-    return { year: s.year, months: s.months, baseAvg: (social && social > 0) ? social * targetIndex : null }
-  }).filter(function (r) { return r.baseAvg != null })
+  const synth = synthRowsByIndex(provinceCode, salaryHist, span, targetIndex)
   if (synth.length === 0) return { error: '无有效社平数据，无法反推历年基数。' }
   const fwd = calculateIndex({ provinceConfig, provinceCode, contribution: synth, granularity: 'A', gapYearCountsInAvg })
   if (fwd.error) return { error: fwd.error }
@@ -856,9 +1146,16 @@ module.exports = {
   getRate,
   getSocialAvg,
   getDenominator,
+  resolveDenom,
+  blendedSocialAvg,
+  mergedRule,
   applyCap,
   indexWeightUnits,
   INDEX_WEIGHT_RULES,
+  SOCIAL_YEAR_SPLIT,
+  buildYearSegments,
+  splitBySocialYear,
+  payableMonthsOf,
   outOfRangeFlag,
   shanghaiFloor,
   resolveSalaryHist,

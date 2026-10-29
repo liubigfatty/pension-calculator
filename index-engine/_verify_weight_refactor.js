@@ -39,10 +39,49 @@ function pickHist(cfg) {
 }
 
 // ── 未改造名单：这些省的 avgIndex 必须 1:1 不变 ──>
-const UNTOUCHED = ['shanghai', 'guangdong', 'chongqing', 'guangxi', 'guizhou', 'hainan',
+// ⚠️ 2026-10-29 第二批改造后，粤/沪/鄂/吉 因「社保年度分段取社平」退出本名单，
+//    它们不再适用「全年单一社平」，单独在第九节验证。
+const UNTOUCHED = ['chongqing', 'guangxi', 'guizhou', 'hainan',
   'jiangsu', 'jiangxi', 'shandong', 'shanxi', 'sichuan', 'tianjin', 'xinjiang', 'xizang',
-  'zhejiang', 'hubei', 'ningxia', 'anhui', 'yunnan', 'qinghai', 'neimenggu', 'hunan',
-  'hebei', 'liaoning', 'jilin', 'gansu', 'henan', 'beijing', 'shaanxi', 'fujian', 'heilongjiang']
+  'zhejiang', 'ningxia', 'anhui', 'yunnan', 'qinghai', 'neimenggu', 'hunan',
+  'hebei', 'liaoning', 'gansu', 'henan', 'beijing', 'shaanxi', 'fujian', 'heilongjiang']
+
+// ── 7-6 式社保年度省：这些省的分母要按社保年度分段 ──>
+const SOCIAL_YEAR_SPLIT_PROVINCES = ['guangdong', 'shanghai', 'hubei', 'jilin']
+
+/**
+ * 构造「真实」的缴费记录。
+ *
+ * ⚠️ 关键：7-6 式省份一年内**上下半年用不同的缴费基数**（7 月调基），
+ *    所以按 100% 档参保的人，逐年录入时必然是两条：
+ *      上半年 6 个月 × hist[y-1]，下半年 6 个月 × hist[y]
+ *    若硬塞「全年一个月均值」，本身就是失真数据 —— 那不是引擎的错。
+ */
+function contribLines(cfg, fromY, toY, opts = {}) {
+  const h = pickHist(cfg)
+  const rows = []
+  const splitProv = opts.split === true
+  for (let y = fromY; y <= toY; y++) {
+    if (y === opts.gapYear) continue
+    const prev = h[y - 1] || h[y]
+    const cur = h[y] || h[y + 1]
+    if (!cur || cur <= 0) continue
+    const short = (opts.shortYear === y)
+    if (short) {
+      // 1 月缴 ⇒ 属上一社保年度 ⇒ 300% 档应按上一社保年度的上限（prev）核定
+      const refLv = (splitProv && prev && prev > 0) ? prev : cur
+      rows.push({ year: y, months: 1, baseAvg: refLv * 3.0, startMonth: 1 })
+      continue
+    }
+    if (splitProv && prev && prev > 0) {
+      rows.push({ year: y, months: 6, baseAvg: prev, startMonth: 1 })
+      rows.push({ year: y, months: 6, baseAvg: cur, startMonth: 7 })
+    } else {
+      rows.push({ year: y, months: 12, baseAvg: cur })
+    }
+  }
+  return rows
+}
 
 function contrib(cfg, opts = {}) {
   const rows = []
@@ -101,10 +140,8 @@ console.log('二、核心断言：吉林模式「缴1个月300档 ⇒ 该年指�
 console.log('═'.repeat(72))
 {
   const cfg = loadCfg('jilin')
-  const h = pickHist(cfg)
-  const rows = []
-  for (let y = 2000; y <= 2019; y++) rows.push({ year: y, months: 12, baseAvg: h[y] || h[y + 1] })
-  rows.push({ year: 2020, months: 1, baseAvg: (h[2020] || h[2021]) * 3.0 })
+  // 吉林 = 7-6 式社保年度省 ⇒ 按真实形态录入：上半年用 hist[y-1]、下半年用 hist[y]
+  const rows = contribLines(cfg, 2000, 2020, { split: true, shortYear: 2020 })
   const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'jilin', contribution: rows, granularity: 'A', retireYear: 2020 })
   const d2020 = r.yearsDetail.find(d => d.year === 2020)
   check('吉林 2020 年指数 = 3.0（不受月数影响）', d2020 && Math.abs(d2020.index - 3.0) < 1e-6,
@@ -113,7 +150,10 @@ console.log('═'.repeat(72))
   // 20 个 1.0 + 排除 2020 → N=20, Σ=20
   check('吉林 N = 20 年（整年计数）', Math.abs(r._meta.indexDenominatorN - 20) < 1e-6,
     'N=' + r._meta.indexDenominatorN)
-  check('吉林 avgIndex = 1.0', Math.abs(r.avgIndex - 1.0) < 1e-6, '实得 ' + r.avgIndex)
+  check('吉林 avgIndex = 1.0（真实两段数据下各年指数恰为 1）', Math.abs(r.avgIndex - 1.0) < 1e-6, '实得 ' + r.avgIndex)
+  const d2005 = r.yearsDetail.find(d => d.year === 2005)
+  check('吉林 2005 年被社保年度劈成两段', d2005 && d2005.segments && d2005.segments.length === 2,
+    '段数=' + (d2005 && d2005.segments && d2005.segments.length))
 
   // 同一份数据按旧算法：应为 ≈1.0 附近但略有不同
   if (OLD) {
@@ -233,6 +273,123 @@ for (const [code, expectN] of [['tianjin', 252], ['beijing', 21]]) {
   check(`${code} 2010 断缴年自动补记且 index=0`, !!g && g.autoFilled === true && g.index === 0,
     'N=' + r._meta.indexDenominatorN)
   check(`${code} N = ${expectN}`, Math.abs(r._meta.indexDenominatorN - expectN) < 1e-6, 'N=' + r._meta.indexDenominatorN)
+}
+
+console.log()
+console.log('═'.repeat(72))
+console.log('九、社保年度分段取社平（粤/沪/鄂/吉）——本轮最大改造')
+console.log('═'.repeat(72))
+{
+  console.log('  构造：按 100% 档参保，上半年 6 个月 × hist[y-1]，下半年 6 个月 × hist[y]')
+  console.log('  期望：每年指数恰好 = 1.0（这正是「7-6 式省份」的真实形态）')
+  for (const code of SOCIAL_YEAR_SPLIT_PROVINCES) {
+    const cfg = loadCfg(code)
+    const rows = contribLines(cfg, 2000, 2020, { split: true })
+    const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: code, contribution: rows, granularity: 'A' })
+    if (r.error) { check(code + ' 可计算', false, r.error); continue }
+    // 逐代号：每年都应是 1.0
+    const bad = r.yearsDetail.filter(d => d.index != null && Math.abs(d.index - 1.0) > 1e-6)
+    check(`${code} 逐年指数全为 1.0`, bad.length === 0,
+      bad.length ? ('异常年=' + bad.slice(0, 3).map(b => b.year + ':' + b.index).join(',')) : `avgIndex=${r.avgIndex}`)
+    const seg = r.yearsDetail.find(d => d.year === 2010)
+    check(`${code} 2010 年被劈成两段且档位不同`,
+      seg && seg.segments && seg.segments.length === 2 && Math.abs(seg.segments[0].denom - seg.segments[1].denom) > 1e-9,
+      seg && seg.segments ? ('C1=' + seg.segments[0].denom.toFixed(0) + ' C2=' + seg.segments[1].denom.toFixed(0)) : 'no seg')
+  }
+  // 反向 sanity：若误给「全年单一月均」，新算法会偏离 1.0（说明数据结构必须匹配）
+  {
+    const cfg = loadCfg('guangdong')
+    const h = pickHist(cfg)
+    const flat = []
+    for (let y = 2000; y <= 2020; y++) flat.push({ year: y, months: 12, baseAvg: h[y] || h[y + 1] })
+    const rf = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'guangdong', contribution: flat, granularity: 'A' })
+    check('广东「全年单一基数」输入时会偏离 1.0（属数据失真，非算法错）',
+      Math.abs(rf.avgIndex - 1.0) > 1e-6, 'avgIndex=' + rf.avgIndex)
+  }
+  // 北京/河南虽也是 7-6 式缴费年度，但 X/C 自然年对齐 ⇒ **不该被分段**
+  {
+    const enabled = Object.keys(NEW.SOCIAL_YEAR_SPLIT)
+    check('北京/河南未被纳入分段名单（它们的 X/C 是自然年对齐）',
+      !enabled.includes('beijing') && !enabled.includes('henan'), '名单=' + enabled.join(','))
+  }
+}
+
+console.log()
+console.log('═'.repeat(72))
+console.log('十、黑龙江：年内欠缴月份按 0.6 补记')
+console.log('═'.repeat(72))
+{
+  const cfg = loadCfg('heilongjiang')
+  const h = pickHist(cfg)
+  // 2000 年参保、2000-2020 逐年满缴，其中 2010 年只缴 6 个月（应缴 12）⇒ 补 6 个月 × 0.6
+  const rows = []
+  for (let y = 2000; y <= 2020; y++) rows.push({ year: y, months: y === 2010 ? 6 : 12, baseAvg: h[y] || h[y + 1] })
+  const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'heilongjiang', contribution: rows, granularity: 'A' })
+  const d = r.yearsDetail.find(x => x.year === 2010)
+  check('黑龙江 2010 年识别到 6 个欠缴月', d && Math.abs(d.unpaidMonths - 6) < 1e-9, 'unpaidMonths=' + (d && d.unpaidMonths))
+  check('黑龙江 N = 21×12 = 252（含欠缴月）', Math.abs(r._meta.indexDenominatorN - 252) < 1e-6,
+    'N=' + r._meta.indexDenominatorN)
+  // 期望：Σ = 20年×12×1 + (6×1 + 6×0.6) ；N=252
+  const expect = (20 * 12 * 1 + (6 * 1 + 6 * 0.6)) / 252
+  check('黑龙江 avgIndex = (240 + 6×1 + 6×0.6)/252 ≈ ' + expect.toFixed(4),
+    Math.abs(r.avgIndex - expect) < 1e-4, '实得 ' + r.avgIndex)
+  // 首年/退休年无月份信息 ⇒ 不补（避免误判）
+  const rows2 = []
+  for (let y = 2000; y <= 2020; y++) rows2.push({ year: y, months: y === 2000 ? 6 : 12, baseAvg: h[y] || h[y + 1] })
+  const r2 = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'heilongjiang', contribution: rows2, granularity: 'A' })
+  const d2 = r2.yearsDetail.find(x => x.year === 2000)
+  check('黑龙江首年缺月信息时不补（不误判成欠缴）', d2 && (d2.unpaidMonths || 0) === 0,
+    'unpaidMonths=' + (d2 && d2.unpaidMonths))
+}
+
+console.log()
+console.log('═'.repeat(72))
+console.log('十一、陕西「2020 前后 X/C 配对」——经官方实算复核暂不启用')
+console.log('═'.repeat(72))
+{
+  const cfg = loadCfg('shaanxi')
+  const h = pickHist(cfg)
+  const rows = [{ year: 2017, months: 12, baseAvg: 3081.3 }]   // 官方实例：下限 3081.3，分母 5619.42
+  const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'shaanxi', contribution: rows, granularity: 'A' })
+  const d = r.yearsDetail.find(x => x.year === 2017)
+  check('陕西 2017 分母 = 5619.42（官方实算点）', d && Math.abs(d.socialAvg - 5619.42) < 1e-6,
+    '实得 ' + (d && d.socialAvg))
+  const rows2 = [{ year: 2024, months: 12, baseAvg: 4650 }]    // 官方实例：下限 4650 ⇒ 指数恰好 0.6
+  const r2 = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'shaanxi', contribution: rows2, granularity: 'A' })
+  const d2 = r2.yearsDetail.find(x => x.year === 2024)
+  check('陕西 2024 按下限缴 ⇒ 指数 = 0.6（官方实算点）', d2 && Math.abs(d2.index - 0.6) < 1e-6,
+    '实得 ' + (d2 && d2.index))
+  check('陕西未启用 denomByYear', !NEW.INDEX_WEIGHT_RULES.shaanxi.denomByYear)
+}
+
+console.log()
+console.log('═'.repeat(72))
+console.log('十二、反推自洽：按目标指数生成的基数序列，正向重算必须还原')
+console.log('═'.repeat(72))
+for (const code of ['guangdong', 'shanghai', 'hubei', 'jilin', 'guangxi', 'shandong', 'heilongjiang', 'beijing']) {
+  const cfg = loadCfg(code)
+  if (!cfg) { check(code + ' 配置可读', false); continue }
+  const r = NEW.inferYearlyFromTargetIndex({
+    provinceConfig: cfg, provinceCode: code,
+    startYear: 2000, startMonth: 1, totalMonths: 240, targetIndex: 1.0
+  })
+  check(code + ' 目标指数 1.0 → 重算 1.0', !r.error && Math.abs(r.avgIndex - 1.0) < 1e-3,
+    r.error || ('实得 ' + r.avgIndex))
+}
+{
+  const cfg = loadCfg('shanghai')
+  const rn = NEW.inferYearlyFromTargetIndex({ provinceConfig: cfg, provinceCode: 'shanghai', startYear: 2000, startMonth: 1, totalMonths: 240, targetIndex: 0.6 })
+  const ro = OLD ? OLD.inferYearlyFromTargetIndex({ provinceConfig: cfg, provinceCode: 'shanghai', startYear: 2000, startMonth: 1, totalMonths: 240, targetIndex: 0.6 }) : null
+  check('上海 target=0.6 被省级保底抬到 0.86（新旧一致，非回归）',
+    !rn.error && Math.abs(rn.avgIndex - 0.86) < 1e-3 && (!ro || ro.error || Math.abs(ro.avgIndex - rn.avgIndex) < 1e-9),
+    '新=' + rn.avgIndex + ' 旧=' + (ro ? ro.avgIndex : 'n/a'))
+}
+{
+  // 广东 hist 是 {prov, 市} 嵌套 ⇒ 反推前必须 resolveSalaryHist
+  const cfg = loadCfg('guangdong')
+  const r = NEW.inferYearlyFromTargetIndex({ provinceConfig: cfg, provinceCode: 'guangdong', startYear: 2000, startMonth: 1, totalMonths: 240, targetIndex: 2.0 })
+  check('广东嵌套 hist 可被反推（旧版报「无有效社平数据」的既有 bug 已修）',
+    !r.error, r.error || ('实得 ' + r.avgIndex))
 }
 
 console.log()
