@@ -405,7 +405,7 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   if (firstMonths > 0 && firstMonths < 12) {
     const baseY = getBase(city, fYear, config, 'avg_salary_history')
     || getBase(city, fYear, config)
-    const monthPayY = baseY * avgIndex * 0.08
+    const monthPayY = baseY * avgIndex * getAccountRate(fYear, config)
     const accRateY = getAccRate(fYear, config)
     // 正确：上年末余额计息 + 本年存入（不计当年利息）
     totalAcc = totalAcc * (1 + accRateY) + monthPayY * firstMonths
@@ -416,7 +416,7 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   for (let y = fYear + 1; y < retireDate.year; y++) {
     const baseYear = getBase(city, y, config, 'avg_salary_history')
       || getBase(city, y, config)
-    const annualPay = baseYear * avgIndex * 0.08 * 12
+    const annualPay = baseYear * avgIndex * getAccountRate(y, config) * 12
     const accRate = getAccRate(y, config)
     // 正确：上年末余额计息 + 本年存入（不计当年利息）
     totalAcc = totalAcc * (1 + accRate) + annualPay
@@ -426,7 +426,7 @@ function calcPersonalAccountPension(city, avgIndex, retireDate, startInfo, confi
   const lastMonths = retireDate.month - 1
   if (lastMonths > 0) {
     const baseRetire = getSalaryBase(city, retireDate.year, config)
-    const monthPay = baseRetire * avgIndex * 0.08
+    const monthPay = baseRetire * avgIndex * getAccountRate(retireDate.year, config)
     const rate = getAccRate(retireDate.year, config)
     // 正确逻辑：先算利息（上年累计按实际月数单利计息），再加本年存入额
     totalAcc = totalAcc * Math.pow(1 + rate, lastMonths / 12) + monthPay * lastMonths
@@ -1599,6 +1599,43 @@ function getBase(city, year, config, sourceField = 'base_rates') {
  * @param {Object} config - 省份配置（保留参数兼容性，不再使用 interest_rates）
  * @returns {number} 记账利率
  */
+/**
+ * 个人账户**记账比例**（不是缴费比例）——按省、按年。2026-10-30 新增。
+ *
+ * 全国基准：1998-01-01 起按本人缴费工资 **11%** 记账（国发〔1997〕26号）。
+ * 规模 11%→8% 的起点全国分三批：
+ *   ① 辽宁  2001-07-01  辽政发〔2001〕24号 二/四（国函〔2001〕辽宁试点方案）
+ *   ② 吉林、黑龙江 2004-01-01  吉政发〔2004〕28号 二（国函〔2004〕35号）；国函〔2004〕36号（黑）
+ *   ③ 其余 28 省 2006-01-01  国发〔2005〕38号 六
+ *
+ * ⚠️ 年中分界的年份按**年度加权平均**填（各省滚存按年走，年内各月基数相同期等价）：
+ *    吉林 1998 = (6×16% + 6×11%)/12 = 13.5%；辽宁 2001 = (6×11% + 6×8%)/12 = 9.5%
+ *
+ * ⚠️ 1998 年之前各省不一（辽 12%、吉 16%、多数省 12%），**只填有省级明文的三省**，
+ *    其余省 1998 前维持 8%（未查全，不臆断）。
+ */
+const HLJ_SCHEDULE = { 1998: 0.11, 1999: 0.11, 2000: 0.11, 2001: 0.11, 2002: 0.11, 2003: 0.11 }
+
+const ACCOUNT_RATE_SCHEDULE = {
+  // 吉政发〔1998〕22号 四(一)3：1995-07-01~1998-06-30 记 16%；1998-07-01 起 11%
+  // 吉政发〔2004〕28号 二：2004-01-01 起 8%
+  jilin: { 1995: 0.16, 1996: 0.16, 1997: 0.16, 1998: 0.135, 1999: 0.11, 2000: 0.11, 2001: 0.11, 2002: 0.11, 2003: 0.11 },
+  // 辽宁省人社厅《辽宁试点前后基本养老保险个人账户有什么不同?》：1996-01-01~1997-12-31 记 12%；1998-01 起 11%
+  // 辽政发〔2001〕24号：2001-07-01 起 8%
+  liaoning: { 1996: 0.12, 1997: 0.12, 1998: 0.11, 1999: 0.11, 2000: 0.11, 2001: 0.095 },
+  // 国函〔2004〕36号：2004-01-01 起 8%（1996-1997 段黑龙江省级比例未查到明文，不填）
+  // ⚠️ 黑龙江 config.province 的值是 'hlj'，两个 key 都要有
+  heilongjiang: HLJ_SCHEDULE,
+  hlj: HLJ_SCHEDULE
+}
+
+function getAccountRate(year, config, provinceCode) {
+  const code = provinceCode || (config && (config.province || config.code))
+  const sch = code && ACCOUNT_RATE_SCHEDULE[code]
+  if (sch && sch[year] != null) return sch[year]
+  return 0.08
+}
+
 function getAccRate(year, config) {
   // 统一表（1996-2025）
   if (UNIFIED_INTEREST_RATES[year] !== undefined) {
