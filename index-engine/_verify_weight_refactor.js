@@ -57,25 +57,40 @@ const SOCIAL_YEAR_SPLIT_PROVINCES = ['guangdong', 'shanghai', 'hubei', 'jilin']
  *      上半年 6 个月 × hist[y-1]，下半年 6 个月 × hist[y]
  *    若硬塞「全年一个月均值」，本身就是失真数据 —— 那不是引擎的错。
  */
+/**
+ * 某社保年度 SY 的「100% 档」月基数 = 该年度核定缴费基数上下限所依据的社平。
+ * 吉林：SY ≥ 2020 ⇒ hist[SY-1]（79号(十五)「对应上年度」）；SY ≤ 2019 ⇒ hist[SY]（28号「当年」）
+ * 粤/沪/鄂：hist[SY]（无偏移）
+ */
+function socialYearBase(code, h, sy) {
+  const split = NEW.SOCIAL_YEAR_SPLIT[code]
+  const shift = (split && split.denomShiftFrom != null && sy >= split.denomShiftFrom) ? -1 : 0
+  return h[sy + shift] || h[sy + shift + 1]
+}
+
 function contribLines(cfg, fromY, toY, opts = {}) {
   const h = pickHist(cfg)
+  const code = opts.code
   const rows = []
   const splitProv = opts.split === true
   for (let y = fromY; y <= toY; y++) {
     if (y === opts.gapYear) continue
-    const prev = h[y - 1] || h[y]
     const cur = h[y] || h[y + 1]
     if (!cur || cur <= 0) continue
     const short = (opts.shortYear === y)
     if (short) {
-      // 1 月缴 ⇒ 属上一社保年度 ⇒ 300% 档应按上一社保年度的上限（prev）核定
-      const refLv = (splitProv && prev && prev > 0) ? prev : cur
-      rows.push({ year: y, months: 1, baseAvg: refLv * 3.0, startMonth: 1 })
+      // 1 月缴 ⇒ 属上一社保年度 ⇒ 300% 档按该社保年度的上限核定
+      const refLv = splitProv ? socialYearBase(code, h, y - 1) : cur
+      rows.push({ year: y, months: 1, baseAvg: (refLv || cur) * 3.0, startMonth: 1 })
       continue
     }
-    if (splitProv && prev && prev > 0) {
-      rows.push({ year: y, months: 6, baseAvg: prev, startMonth: 1 })
-      rows.push({ year: y, months: 6, baseAvg: cur, startMonth: 7 })
+    if (splitProv) {
+      // 上半年属 SY=y-1、下半年属 SY=y ⇒ 各按所属年度的 100% 档缴
+      const low = socialYearBase(code, h, y - 1)
+      const high = socialYearBase(code, h, y)
+      if (!low || !high) continue
+      rows.push({ year: y, months: 6, baseAvg: low, startMonth: 1 })
+      rows.push({ year: y, months: 6, baseAvg: high, startMonth: 7 })
     } else {
       rows.push({ year: y, months: 12, baseAvg: cur })
     }
@@ -141,7 +156,7 @@ console.log('═'.repeat(72))
 {
   const cfg = loadCfg('jilin')
   // 吉林 = 7-6 式社保年度省 ⇒ 按真实形态录入：上半年用 hist[y-1]、下半年用 hist[y]
-  const rows = contribLines(cfg, 2000, 2020, { split: true, shortYear: 2020 })
+  const rows = contribLines(cfg, 2000, 2020, { split: true, shortYear: 2020, code: 'jilin' })
   const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'jilin', contribution: rows, granularity: 'A', retireYear: 2020 })
   const d2020 = r.yearsDetail.find(d => d.year === 2020)
   check('吉林 2020 年指数 = 3.0（不受月数影响）', d2020 && Math.abs(d2020.index - 3.0) < 1e-6,
@@ -284,7 +299,7 @@ console.log('═'.repeat(72))
   console.log('  期望：每年指数恰好 = 1.0（这正是「7-6 式省份」的真实形态）')
   for (const code of SOCIAL_YEAR_SPLIT_PROVINCES) {
     const cfg = loadCfg(code)
-    const rows = contribLines(cfg, 2000, 2020, { split: true })
+    const rows = contribLines(cfg, 2000, 2020, { split: true, code })
     const r = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: code, contribution: rows, granularity: 'A' })
     if (r.error) { check(code + ' 可计算', false, r.error); continue }
     // 逐代号：每年都应是 1.0

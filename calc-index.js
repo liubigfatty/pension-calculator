@@ -221,7 +221,16 @@ const SOCIAL_YEAR_SPLIT = {
   guangdong: { startMonth: 7 },
   shanghai:  { startMonth: 7 },
   hubei:     { startMonth: 7 },
-  jilin:     { startMonth: 7 }
+  // 吉林额外带 denomShiftFrom：社保年度 ≥2020 时，分母由 hist[SY] 改为 hist[SY-1]。
+  // 依据（2026-10-29 用真实缴费记录 + 官方公告交叉坐实）：
+  //   ① 吉人社联〔2024〕57号：「2023年全省全口径…平均工资为86142元，用于2024年7月1日至2025年6月30日
+  //      核定社会保险缴费基数」⇒ 86142/12=7178.5=hist[2023] ⇒ **吉林 hist[Y] 是「统计年」，不是执行年**
+  //   ② 吉人社联字〔2019〕169号：「年度社会保险缴费基数上、下限核定**使用上年度**全省全口径平均工资」
+  //   ③ 吉人社联〔2020〕79号（十五）：「2020年以后各年度缴费工资指数以本人各年实际缴费水平与
+  //      **对应上年度**确定缴费基数上下限的工资口径的比值确定」
+  //   ⇒ 2020 年度起：SY 年度的分母 = SY-1 统计年 = hist[SY-1]
+  //   反证：不改则吉林 2025 年度取不到分母（hist 止于 2024），而 2025 年度社平 7322 正在 hist[2024]。
+  jilin:     { startMonth: 7, denomShiftFrom: 2020 }
 }
 
 /**
@@ -320,6 +329,19 @@ function resolveDenom(rule, salaryHist, year) {
   const v = getSocialAvg(salaryHist, eff)
   if (v && v > 0) return v
   return getSocialAvg(salaryHist, eff + 1)   // 兜底：本年缺则用次年（更新的统计年）
+}
+
+/**
+ * 按「社保年度」取指数分母，并叠加该省的年份偏移。
+ *
+ * 大多数 7-6 式省份：SY 年度的缴费，分母 = hist[SY]（现行行为，零回归）。
+ * 吉林特殊：hist 是「统计年」语义，且 2020 年度起文件改口为「对应上年度」
+ *   ⇒ SY ≥ 2020 时分母 = hist[SY-1]；SY ≤ 2019 仍为 hist[SY]（= 吉政发〔2004〕28号「当年」）。
+ */
+function socialYearDenom(provinceCode, rule, salaryHist, targetYear) {
+  const split = SOCIAL_YEAR_SPLIT[provinceCode]
+  const shift = (split && split.denomShiftFrom != null && targetYear >= split.denomShiftFrom) ? -1 : 0
+  return resolveDenom(rule, salaryHist, targetYear + shift)
 }
 
 /**
@@ -436,7 +458,7 @@ function blendedSocialAvg(provinceCode, salaryHist, year) {
   const segs = splitBySocialYear({ year, months: 12 }, { firstContribYear: year, firstStartMonth: 1 }, split)
   let sum = 0, tot = 0
   for (const seg of segs) {
-    const d = resolveDenom(rule, salaryHist, seg.targetYear)
+    const d = socialYearDenom(provinceCode, rule, salaryHist, seg.targetYear)
     if (d && d > 0) { sum += d * seg.months; tot += seg.months }
   }
   return tot > 0 ? sum / tot : resolveDenom(rule, salaryHist, year)
@@ -701,7 +723,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
     let missingSeg = false
     const segDetail = []
     for (const seg of segs) {
-      const d = resolveDenom(rule, salaryHist, seg.targetYear)
+      const d = socialYearDenom(provinceCode, rule, salaryHist, seg.targetYear)
       if (!d || d <= 0) { missingSeg = true; continue }
       segDetail.push({ months: seg.months, fromMonth: seg.fromMonth, targetYear: seg.targetYear, denom: d })
       ratioMonthSum += (seg.baseAvg / d) * seg.months

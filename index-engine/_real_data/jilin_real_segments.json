@@ -1,0 +1,200 @@
+[
+ {
+  "year": 1994,
+  "months": 1,
+  "baseAvg": 0.0,
+  "startMonth": 1
+ },
+ {
+  "year": 1995,
+  "months": 6,
+  "baseAvg": 202.0,
+  "startMonth": 7
+ },
+ {
+  "year": 1996,
+  "months": 12,
+  "baseAvg": 234.0,
+  "startMonth": 1
+ },
+ {
+  "year": 1997,
+  "months": 12,
+  "baseAvg": 195.0,
+  "startMonth": 1
+ },
+ {
+  "year": 1998,
+  "months": 12,
+  "baseAvg": 305.0,
+  "startMonth": 1
+ },
+ {
+  "year": 1999,
+  "months": 12,
+  "baseAvg": 280.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2000,
+  "months": 12,
+  "baseAvg": 314.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2001,
+  "months": 12,
+  "baseAvg": 360.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2002,
+  "months": 12,
+  "baseAvg": 413.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2003,
+  "months": 12,
+  "baseAvg": 458.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2004,
+  "months": 12,
+  "baseAvg": 483.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2005,
+  "months": 12,
+  "baseAvg": 532.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2006,
+  "months": 12,
+  "baseAvg": 635.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2007,
+  "months": 12,
+  "baseAvg": 891.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2008,
+  "months": 12,
+  "baseAvg": 1148.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2009,
+  "months": 12,
+  "baseAvg": 1355.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2010,
+  "months": 12,
+  "baseAvg": 1441.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2011,
+  "months": 12,
+  "baseAvg": 1466.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2012,
+  "months": 4,
+  "baseAvg": 8002.0,
+  "startMonth": 9
+ },
+ {
+  "year": 2013,
+  "months": 12,
+  "baseAvg": 9693.81,
+  "startMonth": 1
+ },
+ {
+  "year": 2014,
+  "months": 12,
+  "baseAvg": 9856.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2015,
+  "months": 12,
+  "baseAvg": 7299.37,
+  "startMonth": 1
+ },
+ {
+  "year": 2016,
+  "months": 9,
+  "baseAvg": 10034.08,
+  "startMonth": 1
+ },
+ {
+  "year": 2016,
+  "months": 3,
+  "baseAvg": 15261.0,
+  "startMonth": 10
+ },
+ {
+  "year": 2017,
+  "months": 12,
+  "baseAvg": 16788.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2018,
+  "months": 12,
+  "baseAvg": 18411.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2019,
+  "months": 12,
+  "baseAvg": 2767.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2020,
+  "months": 4,
+  "baseAvg": 2767.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2020,
+  "months": 8,
+  "baseAvg": 10200.0,
+  "startMonth": 5
+ },
+ {
+  "year": 2021,
+  "months": 12,
+  "baseAvg": 13500.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2022,
+  "months": 8,
+  "baseAvg": 12868.0,
+  "startMonth": 1
+ },
+ {
+  "year": 2022,
+  "months": 4,
+  "baseAvg": 14600.0,
+  "startMonth": 9
+ },
+ {
+  "year": 2023,
+  "months": 11,
+  "baseAvg": 14600.0,
+  "startMonth": 1
+ }
+]
