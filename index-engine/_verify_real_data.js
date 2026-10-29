@@ -21,8 +21,14 @@ const SEGS = JSON.parse(fs.readFileSync(path.join(__dirname, '_real_data/jilin_r
 const YEARLY = JSON.parse(fs.readFileSync(path.join(__dirname, '_real_data/jilin_real_yearly.json'), 'utf-8'))
 const CFG = JSON.parse(fs.readFileSync(path.join(__dirname, '../provinces/jilin.json'), 'utf-8'))
 
-// 真实个账储存额（xlsx 末尾汇总行 I 列）：171463.29
-const REAL_ACCOUNT_BALANCE = 171463.29
+// ⚠️ 2026-10-30 订正：171463.29 **不是**个人账户储存额，而是 xlsx I 列「个人应缴金额」本金合计。
+//    精确复算吻合：数据行 147,849.25 + 后续 4 笔（1,168 + 18,214.08 + 1,193.28 + 1,518.84 + 1,519.84）= 171,463.29
+//    xlsx 末尾三行 171463.29 / 47053.04 / 218516.33 ⇒ 218,516.33 才是「本金+某类利息」的总计
+//    （47,053.04 的性质待向经办核实：疑为记账利息或单位划入）。
+//    依据脚本：_real_data/_reconcile_account.py
+const REAL_PERSONAL_PAID_PRINCIPAL = 171463.29   // 个人实缴本金合计（含 2009-2011 灵活就业按 20% 缴）
+const REAL_ACCOUNT_TOTAL = 218516.33             // xlsx 末尾总计（本金 + 47,053.04，性质待核）
+const REAL_ACCOUNT_BALANCE = REAL_PERSONAL_PAID_PRINCIPAL  // 兼容旧引用
 
 let pass = 0, fail = 0
 let rNowIdx = null
@@ -114,25 +120,27 @@ console.log('─'.repeat(74))
 // ── 三、个人账户对账（最硬的锚点）──>
 console.log()
 console.log('─'.repeat(74))
-console.log('三、个人账户储存额对账（xlsx 汇总行 = 171463.29）')
+console.log('三、个人账户对账（2026-10-30 口径订正后）')
 console.log('─'.repeat(74))
 {
-  // 引擎滚存到退休年；真实余额截至 2025-01，且含 2023-12/2024-01/2025-01 的后续缴费
+  // 引擎滚存到退休年；xlsx 是「缴费流水」，不是账户台账 ⇒ 只能作量级参照
   const r = NEW.calculateIndex({
     provinceConfig: CFG, provinceCode: 'jilin', contribution: contrib, granularity: 'A'
   })
   const bal = r.accountBalance
-  const diff = (bal - REAL_ACCOUNT_BALANCE) / REAL_ACCOUNT_BALANCE
-  console.log(`  引擎滚存(至 2023 年) = ${bal}`)
-  console.log(`  真实余额(至 2025-01) = ${REAL_ACCOUNT_BALANCE}`)
-  console.log(`  差 = ${(diff * 100).toFixed(2)}%`)
-  console.log('  ⚠️ 两者口径不一致：真实余额含 2023-12 之后的缴费与利息，且吉林早期个人缴费比例并非一律 8%')
+  console.log(`  引擎滚存(至 2023 年)          = ${bal}`)
+  console.log(`  xlsx 个人实缴本金合计          = ${REAL_PERSONAL_PAID_PRINCIPAL}`)
+  console.log(`  xlsx 末尾总计(本金+47053.04)   = ${REAL_ACCOUNT_TOTAL}`)
+  console.log(`  引擎 / 实缴本金 = ${(bal / REAL_PERSONAL_PAID_PRINCIPAL).toFixed(3)}` +
+              `   引擎 / 末尾总计 = ${(bal / REAL_ACCOUNT_TOTAL).toFixed(3)}`)
+  console.log('  ✅ 结论（2026-10-30）：「引擎高估约 10%」不成立 —— 那是拿账户储存额去比缴费流水本金。')
+  console.log('     真实且可量化的一处偏差是**反向**的：引擎按一刀切 8% 记账，')
+  console.log('     而吉林 1995-07~1997 记 16%、1998~2005 记 11%（国发〔1995〕6号／〔1997〕26号／〔2005〕38号），')
+  console.log('     ⇒ 本人少记本金 1,641 元，约占记入本金 1.2%（详见 _real_data/_reconcile_account.py）。')
   console.log('     本项只作量级参照，不作通过/失败判定。')
-  check('个账量级合理（引擎值在真实值的 75%~130% 之间）',
-    bal > REAL_ACCOUNT_BALANCE * 0.75 && bal < REAL_ACCOUNT_BALANCE * 1.30,
-    '比值=' + (bal / REAL_ACCOUNT_BALANCE).toFixed(3))
-  console.log('  ⚠️ 引擎高估约 10%：疑似吉林早期个人缴费比例并非一律 8%（国发〔1995〕6号起为渐进提高），')
-  console.log('     且真实余额含 2023-12 之后缴费。已记为待核项，不影响指数计算。')
+  check('个账量级合理（引擎值落在实缴本金与末尾总计之间 ±15%）',
+    bal > REAL_PERSONAL_PAID_PRINCIPAL * 0.85 && bal < REAL_ACCOUNT_TOTAL * 1.15,
+    '比值=' + (bal / REAL_PERSONAL_PAID_PRINCIPAL).toFixed(3))
 }
 
 // ── 四、吉林分母年份偏移（本轮核心改动）──>

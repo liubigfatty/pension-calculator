@@ -253,7 +253,7 @@
   },
   {
     "code": "hainan",
-    "fullIdx": 1.3202,
+    "fullIdx": 1.2679,
     "name": "海南",
     "tier": "A",
     "weight": "month",
@@ -262,29 +262,23 @@
     "gapFloor": null,
     "autoFill": false,
     "split": false,
-    "idx": 1.2497,
-    "baseIdx": 1.2844,
-    "idxDeemed": 1.2358,
-    "rawIdx": 1.1035,
-    "N": 304,
-    "baseN": 315,
+    "idx": 1.2114,
+    "baseIdx": 1.2455,
+    "idxDeemed": 1.2002,
+    "rawIdx": 1.0708,
+    "N": 322,
+    "baseN": 333,
     "w2012": 4,
     "i2012": 2.500171843853302,
     "w2023": 0,
     "excl2023": true,
-    "missing": 2,
-    "capHit": 15,
-    "dropYears": [
-      1995,
-      1996
-    ],
-    "dropMonths": 18,
-    "missDenom": [
-      1995,
-      1996
-    ],
+    "missing": 0,
+    "capHit": 17,
+    "dropYears": [],
+    "dropMonths": 0,
+    "missDenom": [],
     "dev": [],
-    "acc": 219257.75
+    "acc": 220324.82
   },
   {
     "code": "hebei",
@@ -375,7 +369,7 @@
   },
   {
     "code": "hubei",
-    "fullIdx": 1.3371,
+    "fullIdx": 1.2679,
     "name": "湖北",
     "tier": "A",
     "weight": "month",
@@ -384,30 +378,23 @@
     "gapFloor": null,
     "autoFill": false,
     "split": true,
-    "idx": 1.3222,
-    "baseIdx": 1.3222,
-    "idxDeemed": 1.3041,
-    "rawIdx": 1.0471,
-    "N": 303,
-    "baseN": 303,
+    "idx": 1.2494,
+    "baseIdx": 1.2494,
+    "idxDeemed": 1.2366,
+    "rawIdx": 0.9951,
+    "N": 333,
+    "baseN": 333,
     "w2012": 4,
     "i2012": 2.500171843853302,
     "w2023": 11,
     "excl2023": false,
-    "missing": 2,
-    "capHit": 14,
-    "dropYears": [
-      1995,
-      1996,
-      1997
-    ],
-    "dropMonths": 30,
-    "missDenom": [
-      1995,
-      1996
-    ],
+    "missing": 0,
+    "capHit": 16,
+    "dropYears": [],
+    "dropMonths": 0,
+    "missDenom": [],
     "dev": [],
-    "acc": 238368.73
+    "acc": 239972.95
   },
   {
     "code": "hunan",
@@ -890,7 +877,7 @@
   },
   {
     "code": "xizang",
-    "fullIdx": 1.3202,
+    "fullIdx": 1.2679,
     "name": "西藏",
     "tier": "A",
     "weight": "month",
@@ -899,29 +886,23 @@
     "gapFloor": null,
     "autoFill": false,
     "split": false,
-    "idx": 1.2844,
-    "baseIdx": 1.2844,
-    "idxDeemed": 1.2844,
-    "rawIdx": 0.9252,
-    "N": 315,
-    "baseN": 315,
+    "idx": 1.2455,
+    "baseIdx": 1.2455,
+    "idxDeemed": 1.2455,
+    "rawIdx": 0.8909,
+    "N": 333,
+    "baseN": 333,
     "w2012": 4,
     "i2012": 2.500171843853302,
     "w2023": 11,
     "excl2023": false,
-    "missing": 2,
-    "capHit": 15,
-    "dropYears": [
-      1995,
-      1996
-    ],
-    "dropMonths": 18,
-    "missDenom": [
-      1995,
-      1996
-    ],
+    "missing": 0,
+    "capHit": 17,
+    "dropYears": [],
+    "dropMonths": 0,
+    "missDenom": [],
     "dev": [],
-    "acc": 259469.68
+    "acc": 261416.44
   },
   {
     "code": "yunnan",
