@@ -1631,6 +1631,10 @@ function getAccRate(year, config) {
  * @returns {number} 记账比例（小数）
  */
 const HLJ_SCHEDULE = { 1998: 0.11, 1999: 0.11, 2000: 0.11, 2001: 0.11, 2002: 0.11, 2003: 0.11 }
+// 全国默认段（未单列的 28 省）：国发〔1997〕26号 四 → 11%；国发〔2005〕38号 六 → 2006-01-01 起 8%
+// ⚠️ 1998 年之前各省建账早晚不一且缺明文，一律不填（维持 8% 兜底）
+const DEFAULT_ACCOUNT_SCHEDULE = { 1998: 0.11, 1999: 0.11, 2000: 0.11, 2001: 0.11, 2002: 0.11, 2003: 0.11, 2004: 0.11, 2005: 0.11 }
+
 
 const ACCOUNT_RATE_SCHEDULE = {
   // 吉政发〔1998〕22号 四(一)3：1995-07-01~1998-06-30 记 16%；1998-07-01 起 11%
@@ -1647,9 +1651,10 @@ const ACCOUNT_RATE_SCHEDULE = {
 
 function getAccountRate(year, config, provinceCode) {
   const code = provinceCode || (config && (config.province || config.code))
-  const sch = code && ACCOUNT_RATE_SCHEDULE[code]
-  if (sch && sch[year] != null) return sch[year]
-  return 0.08
+const sch = code && ACCOUNT_RATE_SCHEDULE[code]
+if (sch) return (sch[year] != null) ? sch[year] : 0.08   // 有专属表 ⇒ 表内年份按表、表外按 8%
+const d = DEFAULT_ACCOUNT_SCHEDULE[year]
+return (d != null) ? d : 0.08                            // 无专属表 ⇒ 走全国默认段
 }
 
 // ==================== 数据辅助 ====================

@@ -108,7 +108,7 @@ const PROVINCE_RULES = {
   xinjiang:   { denom: 'prev',    deemedInDenom: false, deemedIndex: '1.0',          cap: 'default',   dualIndex: false,      gapZero: false, accountStart: '1996-01' }
 }
 
-const DEFAULT_RULE = { denom: 'prev', deemedInDenom: false, deemedIndex: '1.0', cap: 'default', dualIndex: false, gapZero: false, gapFloor: null, accountStart: '1996-01', indexWeight: 'month', numeratorType: 'level', retireYearInIndex: true, firstYearFull: false, autoFillGapYears: false, unpaidMonthsFill: false, unpaidIndex: null, denomByYear: null }
+const DEFAULT_RULE = { denom: 'prev', deemedInDenom: false, deemedIndex: '1.0', cap: 'default', dualIndex: false, gapZero: false, gapFloor: null, accountStart: '1996-01', indexWeight: 'month', numeratorType: 'level', retireYearInIndex: true, firstYearFull: false, autoFillGapYears: false, unpaidMonthsFill: false, unpaidIndex: null, denomByYear: null, denomWeight: 'same', actualYearsFrom: null }
 
 // ════════════════════════════════════════════════════════
 //  2026-10-29 新增：指数「权重算子」表（三维度 ②③）
@@ -163,7 +163,11 @@ const INDEX_WEIGHT_RULES = {
   //      ⇒ 拿 hist[Y+1] 当「同年统计年」会与两个官方实算实例冲突，偏差达 −9.9%。
   //      另有口径隐患：hist 存的是**在岗职工**口径，而陕人社函〔2020〕422号说的是**全口径**，两者不同。
   //      待拿到「分口径、分年份」的社平表后，再用 denomByYear 机制接入。
-  shaanxi:      { indexWeight: 'year', numeratorType: 'annualSum', autoFillGapYears: true },
+  // 陕西：N 用**应缴年限**（含断缴年，autoFillGapYears 已配）+ 分子用年度总额。
+  // 🆕 2026-10-30 用户拍板：2026-01-01 起退休的，N 改用**实际缴费年限**（断缴年不再进分母）。
+  //    依据：2026 年两份退休核定表实算（宝鸡张姐 228.78125÷31.25＝0.61，按应缴年限则为 0.585）；
+  //    ⚠️ 尚无省级文件，只有核定表实例 + 一条天津市民信访旁证（信中称「陕西已于 2026 年调整」）。
+  shaanxi:      { indexWeight: 'year', numeratorType: 'annualSum', autoFillGapYears: true, actualYearsFrom: 2026 },
   // ② 福建省级统筹：年权重按「年限尾数」取整，不是按月
   fujian:       { indexWeight: 'half' },
   // ③ 同样「截止退休上年」，但分子口径不等价 ⇒ **不能**归入吉林模式
@@ -199,6 +203,28 @@ function indexWeightUnits(rule, rec, firstContribYear) {
     default:
       return m
   }
+}
+
+/**
+ * 指数**分母**权重（2026-10-30 新增）
+ *
+ * 默认与分子权重同值（rule.denomWeight = 'same'）——各省「X/C 的加权平均」里，
+ * 分子项与分母项本是同一个权重，无需区分。
+ *
+ * 只有一种情况必须拆开（陕西 2026 起）：
+ *   分子项 = Xᵢ/Cᵢ（年度总额 ÷ 全年社平，已含该年实缴月数的稀释）
+ *   分母项 Nᵢ = 该年**实际缴费年限** = 实缴月数 ÷ 12
+ *   ⇒ 分子权重恒为 1，分母权重为 months/12。
+ *   若沿用「分子分母同权重」，断缴年会被 (m/12)² 二次稀释，与核定表不符。
+ *
+ * @param {Object} rule - 合并后的省规
+ * @param {Object} rec - 年记录
+ * @param {number} gw - 分子权重（保底返回值）
+ * @returns {number} 分母权重
+ */
+function denomWeightUnits(rule, rec, gw) {
+  if (rule.denomWeight === 'actualYears') return Math.max(0, rec.months || 0) / 12
+  return gw
 }
 
 // ════════════════════════════════════════════════════════
@@ -435,8 +461,18 @@ function parseAccountStartYear(accountStart) {
  * ⚠️ 反推链路也必须走这里，否则 `denomByYear` 之类的算子只在正向生效，
  *    「按目标指数反推缴费基数」会与正向不对齐。
  */
-function mergedRule(provinceCode) {
-  return Object.assign({}, DEFAULT_RULE, PROVINCE_RULES[provinceCode] || {}, INDEX_WEIGHT_RULES[provinceCode] || {})
+function mergedRule(provinceCode, retireYear) {
+  const base = Object.assign({}, DEFAULT_RULE, PROVINCE_RULES[provinceCode] || {}, INDEX_WEIGHT_RULES[provinceCode] || {})
+  // ── 时效性切换：退休年 ≥ actualYearsFrom ⇒ N 由「应缴年限」改为「实际缴费年限」──>
+  //   断缴整年不再补进分母；分子仍按 Xᵢ/Cᵢ（年度总额 ÷ 全年社平），分母按实缴月数/12。
+  if (base.actualYearsFrom != null && retireYear != null && retireYear >= base.actualYearsFrom) {
+    return Object.assign({}, base, {
+      autoFillGapYears: false,
+      denomWeight: 'actualYears',
+      _actualYearsApplied: true
+    })
+  }
+  return base
 }
 
 function getDenominator(rule, salaryHist, year) {
@@ -610,7 +646,7 @@ function getDeemedSum(rule, deemedYears, deemedStartYear, opts) {
  */
 function calculateIndex({ provinceConfig, provinceCode, contribution, granularity = 'A', deemedYears = 0, deemedStartYear = null, city = null, gapYearCountsInAvg = null, retireYear = null, retireMonth = null, contributionStart = null }) {
   const salaryHist = resolveSalaryHist(provinceConfig.avg_salary_history, city)
-  const rule = mergedRule(provinceCode)
+  let rule = mergedRule(provinceCode)
   const gapZero = (gapYearCountsInAvg != null) ? gapYearCountsInAvg : rule.gapZero
   const gapFloor = rule.gapFloor || null
   const accountStartYear = parseAccountStartYear(rule.accountStart)
@@ -650,6 +686,14 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
   // 退休当年：显式入参优先；缺省退化为「最后有缴费记录的年份」
   const retireY = (retireYear != null && retireYear > 0) ? Number(retireYear) : lastContribYear
   const retireYearInferred = !(retireYear != null && retireYear > 0)
+
+  // ── 规则可能随退休年切换（陕西 2026 起 N 改实际缴费年限）⇒ 退休年确定后重算一次 ──>
+  if (rule.actualYearsFrom != null) {
+    const r2 = mergedRule(provinceCode, retireY)
+    if (r2._actualYearsApplied) {
+      for (const k of Object.keys(r2)) rule[k] = r2[k]
+    }
+  }
   const retireM = (retireMonth != null && retireMonth > 0) ? clampMonth(retireMonth) : null
 
   // 首缴起始月：显式 contributionStart 优先；否则取末年之外 records 自带的 startMonth
@@ -695,7 +739,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
         accountBalance = accountBalance * (1 + grate)
         const gw = indexWeightUnits(rule, rec, firstContribYear)
         totalIndexSum += gapValue * gw
-        weightSum += gw
+        weightSum += denomWeightUnits(rule, rec, gw)
         monthsSum += (rec.months || 0)
         yearsDetail.push({
           year, months: rec.months, baseAvg: 0, indexWeight: gw,
@@ -796,7 +840,7 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
     // 加权累加（权重单位由省规决定：月数 / 整年 1 / 福建尾数 0.5·1）
     const w = indexWeightUnits(rule, rec, firstContribYear)
     totalIndexSum += yearIndex * w
-    weightSum += w
+    weightSum += denomWeightUnits(rule, rec, w)
     monthsSum += (rec.months || 0)
 
     // ── 黑龙江：年内欠缴月份按 0.6 补记（「含缴费年度中欠缴的月份」）──>
@@ -884,6 +928,9 @@ function calculateIndex({ provinceConfig, provinceCode, contribution, granularit
       indexDenominatorN: round4(weightSum),
       firstYearFull: rule.firstYearFull,
       autoFillGapYears: rule.autoFillGapYears,
+      // 2026-10-30 新增：N 是否已切到「实际缴费年限」（陕西 2026 起）
+      denomWeight: rule.denomWeight,
+      actualYearsApplied: !!rule._actualYearsApplied,
       // ② 社保年度分段取社平
       socialYearSplit: salSplit ? salSplit.startMonth : null,
       socialYearSplitApplied: salSplit ? yearsDetail.some(y => y.segments) : false,

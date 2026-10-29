@@ -379,6 +379,43 @@ console.log('═'.repeat(72))
 
 console.log()
 console.log('═'.repeat(72))
+console.log('十二·补、陕西「2026 起 N 改实际缴费年限」哨兵（2026-10-30 落地）')
+console.log('═'.repeat(72))
+{
+  // 构造：1995 起缴、2012 只缴 4 个月（断缴 8 个月）、2023 停缴
+  const cfg = loadCfg('shaanxi')
+  const contrib = []
+  for (let y = 1995; y <= 2023; y++) {
+    const m = (y === 2012) ? 4 : 12
+    contrib.push({ year: y, months: m, startMonth: 1, baseAvg: 3000 })
+  }
+  const r25 = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'shaanxi', contribution: contrib, granularity: 'A', retireYear: 2025, retireMonth: 12 })
+  const r26 = NEW.calculateIndex({ provinceConfig: cfg, provinceCode: 'shaanxi', contribution: contrib, granularity: 'A', retireYear: 2026, retireMonth: 12 })
+  const d = (r, y) => (r.yearsDetail || []).find(x => x.year === y)
+
+  check('2025 退休：N 用应缴年限（整年，含断缴年）',
+    !r25.error && r25._meta.actualYearsApplied === false && Math.abs(r25._meta.indexDenominatorN - 29) < 1e-6,
+    'N=' + r25._meta.indexDenominatorN)
+  check('2026 退休：N 改用实际缴费年限（断缴年按 4/12 计）',
+    !r26.error && r26._meta.actualYearsApplied === true && Math.abs(r26._meta.indexDenominatorN - 28.3333) < 1e-3,
+    'N=' + r26._meta.indexDenominatorN)
+  const d12 = d(r26, 2012)
+  const expect12 = (4 * 3000) / (12 * (d12 ? d12.socialAvg : 1))
+  check('2026 退休：断缴年分子仍按 X/C（年度总额÷全年社平），不被二次稀释',
+    d12 && Math.abs(d12.index - expect12) < 1e-9,
+    '2012 指数 ' + (d12 && d12.index) + '，应为 ' + expect12.toFixed(6))
+  check('切换方向正确：断缴者 2026 起指数上升（与核定表 0.61 > 0.585 同向）',
+    r26.avgIndex > r25.avgIndex,
+    r25.avgIndex + ' → ' + r26.avgIndex)
+  check('分子权重恒为 1（分母权重单独走 months/12）',
+    d(r26, 2012) && d(r26, 2012).indexWeight === 1,
+    'indexWeight=' + (d(r26, 2012) && d(r26, 2012).indexWeight))
+  check('其余省不受影响（denomWeight 默认 same）',
+    NEW.mergedRule('henan').denomWeight === 'same' && NEW.mergedRule('jilin').actualYearsFrom == null)
+}
+
+console.log()
+console.log('═'.repeat(72))
 console.log('十二、反推自洽：按目标指数生成的基数序列，正向重算必须还原')
 console.log('═'.repeat(72))
 for (const code of ['guangdong', 'shanghai', 'hubei', 'jilin', 'guangxi', 'shandong', 'heilongjiang', 'beijing']) {
